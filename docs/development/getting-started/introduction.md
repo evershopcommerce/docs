@@ -78,6 +78,7 @@ import Link from '@docusaurus/Link';
             Front store
           </Link>
 </div>
+<span>admin credentials : demo@gmail.com/123456</span>
 
 ## Development
 
