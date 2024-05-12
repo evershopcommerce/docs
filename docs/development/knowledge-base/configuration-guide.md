@@ -15,6 +15,10 @@ In this section, we will focus on the configuration from the `config/` directory
 
 Under the hood, EverShop makes use of [config package](https://www.npmjs.com/package/config) to handle the configuration.
 
+:::info
+If you are looking for information about deploying changes in docker go to the end of the page.
+:::
+
 ## Configuration file location
 
 Configurations are JSON files stored in configuration files within a directory named `config` located at the root level of your application.
@@ -385,3 +389,22 @@ The customer address schema contains the configuration for the customer address.
 ```
 
 EverShop will use this schema to validate the customer address. This json schema is based on [ajv](https://ajv.js.org/) library.
+
+### Custom configuration using docker
+
+If you use docker the config & translation folder is found by default in:
+```bash
+cd /var/lib/docker/volumes/container_name_config/_data/
+cd /var/lib/docker/volumes/container_name_translations/_data/
+```
+Or under /app if you jump in to the container.
+
+When using docker these are empty and you have to create the config/languages changes you want in the respective folder.
+
+To apply the changes to docker you would then run the the npm run build command against the container that's running evershop
+
+```bash
+docker exec "container_name" npm run build
+```
+
+This can take some time to complete depending on your changes.

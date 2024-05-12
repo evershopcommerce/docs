@@ -36,6 +36,14 @@ docker-compose up -d
 The Docker image will start a fresh EverShop installation with the default configuration. You can access the site at `http://localhost:3000` and the admin panel at `http://localhost:3000/admin`.
 
 :::info
+The docker installation above will also set up a config/ and translations/ folder as a volume, this is where you place custom configurations & translations to supported languages. Default location for these would be
+
+```bash
+cd /var/lib/docker/volumes/
+```
+:::
+
+:::info
 To create a new admin user, terminal into the Docker app container and run the following command:
 
 ```bash
@@ -261,6 +269,8 @@ CMD ["npm", "run", "start"]
 And this is the `docker-compose.yml` file:
 
 ```yml title="docker-compose.yml"
+# With new versions of docker compose & docker engine using "version" to validate compose files is obsolete.
+# You would instead use "name:" or none of them and start your file from "services"
 version: '3.8'
 
 services:
@@ -269,6 +279,9 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    volumes:
+    - config:/app/config
+    - translations:/app/translations
     environment:
       DB_HOST: database
       DB_PORT: 5432
@@ -303,5 +316,7 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-data:
+  postgres-data: {}
+  config: {}
+  translations: {}
 ```
