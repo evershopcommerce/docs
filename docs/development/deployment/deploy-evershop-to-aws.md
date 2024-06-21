@@ -129,7 +129,7 @@ After you have your RDS instance, connect to it using a PostgreSQL client. We wi
 
 ### Create a database user
 
-Create a **supper** database user for EverShop. We will use the username `evershop` and the password `evershop` in this tutorial.
+Create a **super** database user for EverShop. We will use the username `evershop` and the password `evershop` in this tutorial.
 
 ### Migrate from local installation
 
