@@ -195,7 +195,7 @@ npm run build
 
 cd ..
 
-# Rename current build folder to previous build folder
+# Remove previous build folder if it exists
 if [ -d "previous-build" ]; then
   rm -rf previous-build
 fi
