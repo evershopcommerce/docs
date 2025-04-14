@@ -71,7 +71,10 @@ Configuration files can be overridden and extended by [environment variables](ht
 
 For example, you can overwrite the configuration for your production store by below steps
 
-- Create a new configuration file named `production.json` in the `config` directory.
+- Create a new configuration file named `production.json` in the `config` directory.(For production environment)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**OR**
+- Create a new configuration file named `developement.json` in the `config` directory.(For development environment)
+- Please note `prod.json` and `develop.json` won't work, the file name has to be one of the above mentioned.
 - Add your configuration for production
 
 ```json
