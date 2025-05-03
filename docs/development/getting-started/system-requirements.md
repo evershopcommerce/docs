@@ -6,6 +6,7 @@ sidebar_label: System requirements
 title: System requirements.
 description: EverShop system requirements. The full list of requirements that you need to check your system before installing EverShop.
 ---
+import { nodeVersionSupport, npmVersionSupport } from '../../_const.md';
 
 # System requirements
 
@@ -18,11 +19,11 @@ EverShop can run on Windows, Linux or Mac-OS.
 
 ## Node.js
 
-To install EverShop, you must have [Node.js](https://nodejs.org/en/) version 18.17.0 or above.
+To install EverShop, you must have [Node.js](https://nodejs.org/en/) version between **{nodeVersionSupport.min}** and **{nodeVersionSupport.max}** (which can be checked by running `node -v`).
 
 ## NPM
 
-[NPM](https://www.npmjs.com/) version 7 or higher (which can be checked by running `node -v`).
+[NPM](https://www.npmjs.com/) version between **{npmVersionSupport.min}** or higher (which can be checked by running `npm -v`).
 
 ## Database
 

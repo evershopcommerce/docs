@@ -6,6 +6,7 @@ sidebar_label: Deploy EverShop To AWS
 title: Deploy EverShop To AWS
 description: This document describes step by step how to deploy EverShop to AWS using AWS EC2 and AWS RDS.
 ---
+import { nodeVersionSupport, npmVersionSupport } from '../../_const.md';
 
 # Deploy EverShop to AWS
 
@@ -33,7 +34,7 @@ sudo apt update
 sudo apt install nodejs npm
 ```
 
-EverShop requires node.js version 14 or higher. Npm version 8 or higher is also required.
+Evershop requires Node.js version between **{nodeVersionSupport.min}** and **{nodeVersionSupport.max}**, and Npm version **{npmVersionSupport.min}** or higher.
 
 ### Install PM2
 

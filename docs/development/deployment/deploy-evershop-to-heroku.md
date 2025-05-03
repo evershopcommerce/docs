@@ -6,6 +6,8 @@ sidebar_label: Deploy EverShop To Heroku
 title: Deploy EverShop To Heroku
 description: This document describes step by step how to deploy EverShop to Heroku.
 ---
+import CodeBlock from '@theme/CodeBlock'
+import { nodeVersionSupport, npmVersionSupport } from '../../_const.md';
 
 # Deploy EverShop To Heroku
 
@@ -118,27 +120,32 @@ Typically, the EverShop project structure will look like this:
 
 ### Specify The Node.js Version
 
+Evershop requires Node.js version between **{nodeVersionSupport.min}** and **{nodeVersionSupport.max}**.
 Heroku will let us specify the Node.js version that we want to use in the `package.json` file. We need to add the following line to the `package.json` file:
 
-```json title="package.json"
+<CodeBlock language="json" title="package.json">
 {
-  "engines": {
-    "node": "18.x"
-  }
+  `{
+    "engines": {
+      "node": "${nodeVersionSupport.min.split('.')[0]}.x"
+    }
+  }`
 }
-```
+</CodeBlock>
 
 ### Specify The NPM Version
 
-EverShop requires NPM version 8+. We need to add the following line to the `package.json` file:
+EverShop requires NPM version **{npmVersionSupport.min}+**. We need to add the following line to the `package.json` file:
 
-```json title="package.json"
+<CodeBlock language="json" title="package.json">
 {
-  "engines": {
-    "npm": "9.x"
-  }
+  `{
+    "engines": {
+      "npm": "${npmVersionSupport.min}.x"
+    }
+  }`
 }
-```
+</CodeBlock>
 
 ### Specify The Start Script
 
