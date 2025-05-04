@@ -363,9 +363,10 @@ const config = {
         ],
         copyright: `© Copyright © ${new Date().getFullYear()} Evershop. Deploys by <a href="https://www.netlify.com" target="_blank" rel="nofollow">Netlify</a>`,
       },
-      // prism: {
-      //   theme: darkTheme,
-      // },
+      prism: {
+        // theme: darkTheme,
+        additionalLanguages: ["scss"]
+      },
       metadata: [
         {
           name: "og:image",
