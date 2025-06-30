@@ -190,8 +190,8 @@ function Pricing() {
               </a> */}
               <a
                 className="button button--primary w-full p-3 text-base"
-                href={`#`}>
-                Coming soon
+                href={`http://marketplace-acc.evershop.io?plan=personal&billing=${selected}`}>
+                Get Personal
               </a>
             </div>
             <div className="mt-4">
@@ -227,8 +227,8 @@ function Pricing() {
               </a> */}
               <a
                 className="button button--primary w-full p-3 text-base"
-                href={`#`}>
-                Coming soon
+                href={`http://marketplace-acc.evershop.io?plan=professional&billing=${selected}`}>
+                Get Professional
               </a>
             </div>
             <div className="mt-4">
