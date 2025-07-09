@@ -217,7 +217,7 @@ Use this endpoint to add customer email to cart.
 
 <Api
   method="POST"
-  url="/api/cart/{id}/contacts"
+  url="/api/carts/{id}/contacts"
   requestSchema={{
   "type": "object",
   "properties": {
@@ -251,7 +251,7 @@ Use this endpoint to add address (Billing or Shipping) to cart.
 
 <Api
   method="POST"
-  url="/api/cart/{id}/addresses"
+  url="/api/carts/{id}/addresses"
   requestSchema={{
   "type": "object",
   "properties": {
@@ -343,7 +343,7 @@ Use this endpoint to add shipping method to cart.
 
 <Api
   method="POST"
-  url="/api/cart/{id}/shippingMethods"
+  url="/api/carts/{id}/shippingMethods"
   requestSchema={{
   "type": "object",
   "properties": {
@@ -385,7 +385,7 @@ Use this endpoint to add payment method to cart.
 
 <Api
   method="POST"
-  url="/api/cart/{id}/paymentMethods"
+  url="/api/carts/{id}/paymentMethods"
   requestSchema={{
   "type": "object",
   "properties": {
