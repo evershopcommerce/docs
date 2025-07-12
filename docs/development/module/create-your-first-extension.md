@@ -1,23 +1,27 @@
 ---
 sidebar_position: 15
 keywords:
-- create EverShop extension
-sidebar_label: Create your first extension
-title: Create your first extension
-description: In this tutorial, we will pick a simple use case and create an extension to demonstrate step by step how to create an extension for EverShop.
+  - create EverShop extension
+  - EverShop development
+  - ecommerce extensions
+sidebar_label: Create Your First Extension
+title: Creating Your First EverShop Extension
+description: This step-by-step tutorial demonstrates how to create a custom extension for EverShop by implementing a product comment feature.
 ---
 
-# Create your first extension
+# Creating Your First Extension
 
-## Requirements
+## Prerequisites
 
-- You must have EverShop version at least 1.0.0-rc.5 installed on your machine. If you don't have EverShop installed, please follow the [installation guide](/docs/development/getting-started/installation-guide).
+Before starting this tutorial, please ensure you have:
 
-- You must have a basic understanding of EverShop module. If you don't know what is a module, please read [this document](/docs/development/module/module-overview).
+- EverShop version 2.0.1 or newer installed on your machine. If you haven't installed EverShop yet, please follow the [installation guide](/docs/development/getting-started/installation-guide).
 
-- You must have a basic understanding of EverShop extension. If you don't know what is an extension, please read [this document](/docs/development/module/extension-development).
+- A basic understanding of EverShop's module system. If you're unfamiliar with modules, please review the [module overview documentation](/docs/development/module/module-overview).
 
-## Youtube video
+- Knowledge of EverShop's extension architecture. If you need to learn about extensions, please read the [extension development guide](/docs/development/module/extension-development).
+
+## Video Tutorial
 
 <div className="block md:hidden">
 <iframe width="100%" height="250" src="https://www.youtube.com/embed/760LriNpjtY?si=V4C_K9YBrXbYQwCf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -27,33 +31,34 @@ description: In this tutorial, we will pick a simple use case and create an exte
 <iframe width="100%" height="500" src="https://www.youtube.com/embed/760LriNpjtY?si=V4C_K9YBrXbYQwCf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-## Scenario
+## Project Scenario
 
-In this tutorial, we will pick a simple use case and create an extension to demonstrate step by step how to create an extension for EverShop.
+In this tutorial, we'll create an extension to enhance EverShop's product functionality. Our scenario involves an online bookstore that wants to allow customers to leave comments on products.
 
-Let's assume that you have a store that sells books. You want to add a new feature to allow customers to comment on the product.
+Our extension will implement the following features:
 
-Below is the list of requirements:
-- Customers can comment on the product.
-- Customers can see the list of comments on the product.
+- A form allowing customers to submit comments on product pages
+- A section displaying all comments for each product
 
-Let's start!
+Let's get started!
 
-## Step 1: Create a new extention project
+## Step 1: Create a New Extension Project
 
-From the root directory of your EverShop project, find the folder named `extensions` and create a new folder named `productComment`.
+Navigate to the root directory of your EverShop installation and locate the `extensions` folder. Create a new folder named `productComment` for our extension.
 
 :::info
-If the folder `extensions` does not exist, please create it.
+If the `extensions` folder doesn't exist yet, create it first.
 :::
 
 ```bash
 ./extensions
     └── productComment
+        └── src
 ```
-## Steps 2: Setup NPM workspace
 
-Edit your `package.json` file in the root directory of your EverShop project and add the following lines:
+## Step 2: Set Up NPM Workspace
+
+Edit the `package.json` file in the root directory of your EverShop project and add the following configuration:
 
 ```js title="package.json"
 {
@@ -63,58 +68,114 @@ Edit your `package.json` file in the root directory of your EverShop project and
 }
 ```
 
-This step is optional, it is only required if your extension has some dependencies.
+This step is optional and only required if your extension has dependencies. It allows npm to recognize your extensions as workspaces, making dependency management easier.
 
-## Step 3: Adding the comment form to the product page
+## Step 3: Create a `package.json` and `tsconfig.json` File for Your Extension
 
-To do this, add a subfolder named `pages`:
+Inside the `productComment` directory, create a `package.json` file with the following content:
+
+```json
+{
+  "name": "@evershop/productComment",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc && copyfiles -u 1 \"src/**/*.{graphql,scss,json}\" dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
+```
+
+This file defines your extension's name, version, and dependencies. The `compile` script is used to compile TypeScript files.
+
+Next, create a `tsconfig.json` file in the same directory with the following content:
+
+```json
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowArbitraryExtensions": true,
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}
+```
+
+That's it for the initial setup! Your extension directory structure should now look like this:
+
+```bash
+/extensions
+    └── productComment
+        ├── src
+        ├── package.json
+        └── tsconfig.json
+```
+
+## Step 4: Add the Comment Form to the Product Page
+
+First, create a `pages` folder structure to organize your extension components:
 
 ```bash
 ./extensions
     └── productComment
-        └── pages
+        └── src
+            └── pages
 ```
 
-We will add the comment form to the product page only. Which has the route id `productView`. You can check it by navigating to the catalog module at `@evershop/evershop/src/modules/catalog/pages/frontStore`
+We want to add our comment form to the product detail page, which has the route ID `productView`. You can verify this by examining the catalog module at `@evershop/evershop/src/modules/catalog/pages/frontStore`.
 
-So to add a Component to this page, we will create a subfolder named `frontStore` and then its subfolder named `productView`:
+Create the necessary folder structure for our product page component:
 
 ```bash
 ./extensions
     └── productComment
-        └── pages
-            └── frontStore
-                └── productView
+        └── src
+            └── pages
+                └── frontStore
+                    └── productView
+                        └── CommentForm.tsx
 ```
 
-Now let's create a [React component](https://reactjs.org/) named `CommentForm.js`:
+Now, create a React component named `CommentForm.tsx` with the following content:
 
-```js title="CommentForm.jsx"
-import React from 'react';
-import { Form } from '@evershop/evershop/src/lib/components/form/Form';
-import { Field } from '@evershop/evershop/src/lib/components/form/Field';
+```js title="CommentForm.tsx"
+import React from "react";
+import { Form } from "@components/common/form/Form";
+import { Field } from "@components/common/form/Field";
 
 export default function ComponentForm() {
   return (
-    <div className='product-comment-form'>
+    <div className="product-comment-form">
       <h3>Your comment</h3>
-      <Form
-        id="comment-form"
-        method="POST"
-        btnText="Submit"
-        isJSON={true}
-      >
+      <Form id="comment-form" method="POST" btnText="Submit" isJSON={true}>
         <Field
           name="user_name"
           label="Your Name"
           type="text"
-          validationRules={['notEmpty']} # This is a mandatory field
+          validationRules={["notEmpty"]} // This field is required
         />
         <Field
           name="comment"
           label="Your Comment"
           type="textarea"
-          validationRules={['notEmpty']} # This is a mandatory field
+          validationRules={["notEmpty"]} // This field is required
         />
       </Form>
     </div>
@@ -122,38 +183,32 @@ export default function ComponentForm() {
 }
 ```
 
-We will use the default `Form` component and this form has two fields: `user_name` and `comment`. The `user_name` field is a text field and the `comment` field is a textarea field.
+We're using EverShop's `Form` and `Field` components to create a simple comment form with name and comment fields. At this point, the form doesn't have any submission logic, which we'll implement later.
 
-For now, we will not add any logic to the form. We will do it later. 
+To position our form in the left column of the product page, we need to update the `CommentForm.tsx` file to include layout information:
 
-We want to display the form to the left column of the product page. To do that, we update the `CommentForm.js` file and add the layout definition:
-
-```js title="CommentForm.jsx"
-import React from 'react';
-import { Form } from '@evershop/evershop/src/lib/components/form/Form';
-import { Field } from '@evershop/evershop/src/lib/components/form/Field';
+```js title="CommentForm.tsx"
+import React from "react";
+import { ComponentLayout } from "@evershop/evershop";
+import { Form } from "@components/common/form/Form";
+import { Field } from "@components/common/form/Field";
 
 export default function ComponentForm() {
   return (
-    <div className='product-comment-form'>
+    <div className="product-comment-form">
       <h3>Your comment</h3>
-      <Form
-        id="comment-form"
-        method="POST"
-        btnText="Submit"
-        isJSON={true}
-      >
+      <Form id="comment-form" method="POST" btnText="Submit" isJSON={true}>
         <Field
           name="user_name"
           label="Your Name"
           type="text"
-          validationRules={['notEmpty']}
+          validationRules={["notEmpty"]}
         />
         <Field
           name="comment"
           label="Your Comment"
           type="textarea"
-          validationRules={['notEmpty']}
+          validationRules={["notEmpty"]}
         />
       </Form>
     </div>
@@ -162,45 +217,49 @@ export default function ComponentForm() {
 
 // highlight-start
 
-export const layout = {
-  areaId: 'productPageMiddleLeft',
-  sortOrder: 50
-}
+export const layout: ComponentLayout = {
+  areaId: "productPageMiddleLeft",
+  sortOrder: 50,
+};
 
 // highlight-end
 ```
 
 :::info
-To see list of available areas, please check the file `@evershop/evershop/src/modules/catalog/pages/frontStore/productView/Layout.js`
+To see a list of available areas where you can place components, check the file `@evershop/evershop/src/modules/catalog/pages/frontStore/productView/Layout.js`.
 :::
 
-The product page will be look like this:
+With this layout configuration, your product page should now display the comment form in the left column:
 
 ![product page](./img/product-comment-form.png)
 
-## Step 4: Create a PostgreSQL table to store the comments
+## Step 5: Create a Database Table for Comments
 
-When a customer submits the comment form, we will save the comment to the database. To do that, we need to create a PostgreSQL table to store the comments.
+To store user comments, we need to create a database table. EverShop provides a migration system that makes this process straightforward.
 
-To create a PostgreSQL table, we will use the migration feature of EverShop. To do that, we will create a new folder named `migration` in our extension:
+Create a new folder named `migration` in your extension directory:
 
 ```bash
 ./extensions
     └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
+        ├── src
+        │   └── pages
+        │       └── frontStore
+        │           └── productView
+        │               └── CommentForm.tsx
         └── migration
+            └── Version-1.0.0.js
 ```
 
-In the `migration` folder, we will create a new file named `Version-1.0.0.js`:
+In the `migration` folder, create a file named `Version-1.0.0.js`:
 
-```js title="migration/Version-1.0.0.js"
-const { execute } = require('@evershop/postgres-query-builder');
+```ts title="migration/Version-1.0.0.js"
+import { execute } from "@evershop/postgres-query-builder";
 
-// eslint-disable-next-line no-multi-assign
-module.exports = exports = async (connection) => {
-  await execute(connection, `CREATE TABLE \`product_comment\` (
+export default async (connection) => {
+  await execute(
+    connection,
+    `CREATE TABLE \`product_comment\` (
   \`comment_id\` int(10) unsigned NOT NULL AUTO_INCREMENT,
   \`product_id\` int(10) unsigned NOT NULL,
   \`user_name\` varchar(255) NOT NULL,
@@ -209,52 +268,39 @@ module.exports = exports = async (connection) => {
   PRIMARY KEY (\`comment_id\`),
   CONSTRAINT \`FK_PRODUCT_COMMENT\` FOREIGN KEY (\`product_id\`) REFERENCES \`product\` (\`product_id\`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-`);
+`
+  );
 };
 ```
 
-In the above example, a migration file provides a function that accepts a PostgreSQL connection as a parameter. This parameter is provided by the EverShop core.
+Each migration file exports a function that receives a PostgreSQL connection parameter provided by the EverShop core. This migration creates a `product_comment` table with the necessary fields.
 
-That's it. A new PostgreSQL table named `product_comment` will be created automatically when you start the project later.
+For simplicity, we're using just four columns: `comment_id`, `product_id`, `user_name`, and `comment`. In a production environment, you might want to add more fields such as `email`, `rating`, `status` (for moderation), `updated_at`, etc.
 
-For now, let's make it simple with 4 columns only: `comment_id`, `product_id`, `user_name` and `comment`.
+## Step 6: Create an API Endpoint for Comment Submission
 
-In real case, you may want to add more columns such as `email`, `rating`, `status` (approved or not), `created_at`, `updated_at`...
+Now we need to create an API endpoint to handle form submissions and save comments to the database.
 
-## Step 5: Create an API endpoint to save the comment
-
-When a customer submits the comment form, we will send the data to the server and save it to the database. To do that, we will create a new API endpoint.
-
-To create an API endpoint, we will create a new folder named `api` in our extension:
+Create an `api` folder in your extension directory:
 
 ```bash
 ./extensions
     └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │── migration
-        └── api
+        ├── src
+            └── api
+                └── addComment
+                    ├── route.json
+                    ├── bodyParser.ts
+                    ├── [bodyParser]validateComment.ts
+                    └── [validateComment]saveComment.ts
+
 ```
 
-We will create a folder named `addComment` in the `api` folder:
+### API Route Definition
 
-```bash
-./extensions
-    └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │── migration
-        └── api
-            └── addComment
-```
+In the `addComment` folder, create a file named `route.json`:
 
-### API route definition
-
-In the `addComment` folder, we will create a new file named `route.json` with the following content:
-
-```js title="api/frontStore/productComment/route.json"
+```js title="api/addComment/route.json"
 {
   "methods": [
     "POST"
@@ -264,81 +310,85 @@ In the `addComment` folder, we will create a new file named `route.json` with th
 }
 ```
 
-Above code means that we will create a new API endpoint with the URL `/api/comments` and the HTTP method is `POST`. This API endpoint is accessible for everyone.
+This creates an API endpoint at `/api/comments` that accepts POST requests and is publicly accessible.
 
-### API middleware functions
+### API Middleware Functions
 
-#### Parse the request body
+For our API endpoint, we need several middleware functions to process requests:
 
-The first middleware that we need is a middleware to parse the request body. To do that, we will create a new file named `bodyParser.js`:
+#### 1. Parse the Request Body
 
-```js title="api/frontStore/productComment/bodyParser.js"
-const bodyParser = require('body-parser');
+Create a file named `bodyParser.ts` to handle request parsing:
 
-module.exports = (request, response, delegate, next) => {
+```ts title="api/addComment/bodyParser.ts"
+import bodyParser from "body-parser";
+
+export default (request, response, next) => {
   bodyParser.json({ inflate: false })(request, response, next);
-}
+};
 ```
 
-#### Validate the comment
+#### 2. Validate the Comment Data
 
-The second middleware that we need is a middleware to validate the comment. This middleware will be executed after the `bodyParser` middleware. To do that, we will create a new file named `[bodyParser]validateComment.js`:
+Create a file named `[bodyParser]validateComment.ts` to validate incoming data:
 
-```js title="api/frontStore/productComment/[bodyParser]validateComment.js.js"
-module.exports = (request, response) => {
+```ts title="api/addComment/[bodyParser]validateComment.ts"
+import { Request, Response } from "express";
+
+export default (request: Request, response: Response) => {
   const { body } = request;
   // Validate the comment data
   if (!body.product_id) {
-    throw new Error('product Id is required');
+    throw new Error("Product ID is required");
   }
 
   if (!body.user_name) {
-    throw new Error('User name is required');
+    throw new Error("User name is required");
   }
 
   if (!body.comment) {
-    throw new Error('Comment is required');
+    throw new Error("Comment is required");
   }
-}
+};
 ```
 
-For now let's make it simple, we check and make sure the `product_id`, `user_name` and `comment` are not empty.
+This middleware ensures all required fields are present. In a production environment, you might implement more sophisticated validation, such as checking for logged-in users or filtering inappropriate content.
 
-In real case, you may want to do more like validating the customer info and only allow the logged-in customer to submit the comment.
+#### 3. Save the Comment
 
-#### Save the comment
+Create a file named `[validateComment]saveComment.ts` to save validated comments:
 
-The last middleware that we need is a middleware to save the comment. This middleware will be executed after the `validateComment` middleware. To do that, we will create a new file named `[validateComment]saveComment.js`:
+```ts title="api/addComment/[validateComment]saveComment.ts"
+import { pool } from "@evershop/evershop/lib/postgres";
+import { insert } from "@evershop/postgres-query-builder";
 
-```js title="api/frontStore/productComment/[validateComment]saveComment.js"
-const { pool } = require('@evershop/evershop/src/lib/postgres/connection');
-const { insert } = require('@evershop/postgres-query-builder');
-
-module.exports = async function graphql(request, response, delegate, next) {
+export default async function graphql(request, response, next) {
   try {
-    const { body: { product_id, user_name, comment } } = request;
+    const {
+      body: { product_id, user_name, comment },
+    } = request;
     // Insert the comment into the database
-    await insert('product_comment')
+    const comment = await insert("product_comment")
       .given({
         product_id,
         user_name,
-        comment
+        comment,
       })
       .execute(pool);
-    response.json({ success: true });
+    response.json({ success: true, data: { comment } });
   } catch (error) {
     next(error);
   }
 }
 ```
 
-Above code will insert the comment into the database table or call the `next` function with the error if any.
+This middleware saves the comment data to the database and returns a success response, or passes any errors to the next error-handling middleware.
 
-Now let's test the API endpoint. To do that, we will use the `curl` command:
+You can test the API endpoint using curl:
 
 ```bash
 curl -X POST \
-  http://localhost:3000/productComments \
+  http://localhost:3000/api/comments \
   -H 'Content-Type: application/json' \
   -d '{
   "product_id": 1,
@@ -347,87 +397,29 @@ curl -X POST \
 }'
 ```
 
-If everything is OK, you will see the following response:
+If successful, you should receive:
 
 ```json
-{"success":true}
-```
-
-Now let's go back to the `CommentForm` component and add this API endpoint to the form:
-
-```js title="src/components/CommentForm.jsx"
-import React from 'react';
-import { Form } from '@evershop/evershop/src/lib/components/form/Form';
-import { Field } from '@evershop/evershop/src/lib/components/form/Field';
-
-export default function ComponentForm({ action }) {
-  const [error, setError] = React.useState(null);
-
-  const onSuccess = (response) => {
-    if (response.success) {
-      window.location.reload();
-    } else {
-      setError(response.message);
+{
+  "success": true,
+  "data": {
+    "comment": {
+      "commentId": 1,
+      "userName": "John Doe",
+      "comment": "This is a comment",
+      "createdAt": "2023-01-01T00:00:00Z"
     }
   }
-
-  return (
-    <div className='product-comment-form'>
-      <h3>Your comment</h3>
-      {error && <div className='error'>{error}</div>}
-      <Form
-        id="comment-form"
-        action={action}
-        method="POST"
-        btnText="Submit"
-        onSuccess={onSuccess}
-        isJSON={true}
-      >
-        <Field
-          name="user_name"
-          label="Your Name"
-          type="text"
-          validationRules={['notEmpty']}
-        />
-        <Field
-          name="comment"
-          label="Your Comment"
-          type="textarea"
-          validationRules={['notEmpty']}
-        />
-      </Form>
-    </div>
-  );
 }
-
-export const layout = {
-  areaId: 'productPageMiddleLeft',
-  sortOrder: 50
-}
-
-// highlight-start
-
-export const query = `
-  query {
-    action: url(routeId: "productComment")
-  }
-`;
-
-// highlight-end
 ```
 
-In the above code, we use a GraphQL query to get the API endpoint URL. The GraphQL query result will be passed to the `CommentForm` component as the `action` prop.
+Now, let's update our `CommentForm` component to use this API endpoint:
 
-We also create a `onSuccess` function to handle the response from the API endpoint. If the response is successful, we will reload the page to show the new comment. Otherwise, we will show the error message.
-
-Because our API requires a field named `product_id` to be passed to the API endpoint, get the current product id and pass it to the `CommentForm` component:
-
-The final code of the `CommentForm` component is:
-
-```js title="src/components/CommentForm.jsx"
-import React from 'react';
-import { Form } from '@evershop/evershop/src/lib/components/form/Form';
-import { Field } from '@evershop/evershop/src/lib/components/form/Field';
+```ts title="pages/frontStore/productView/CommentForm.tsx"
+import React from "react";
+import { ComponentLayout } from "@evershop/evershop";
+import { Field } from "@components/common/form/Field";
+import { Form } from "@components/common/form/Form";
 
 export default function ComponentForm({ action, product }) {
   const [error, setError] = React.useState(null);
@@ -438,46 +430,41 @@ export default function ComponentForm({ action, product }) {
     } else {
       setError(response.message);
     }
-  }
+  };
 
   return (
-    <div className='product-comment-form'>
+    <div className="product-comment-form">
       <h3>Your comment</h3>
-      {error && <div className='error'>{error}</div>}
+      {error && <div className="error">{error}</div>}
       <Form
         id="comment-form"
         action={action}
         method="POST"
         btnText="Submit"
         onSuccess={onSuccess}
-        isJSON={true}
-      >
+        isJSON={true}>
         <Field
           name="user_name"
           label="Your Name"
           type="text"
-          validationRules={['notEmpty']}
+          validationRules={["notEmpty"]}
         />
         <Field
           name="comment"
           label="Your Comment"
           type="textarea"
-          validationRules={['notEmpty']}
+          validationRules={["notEmpty"]}
         />
-        <Field
-          type='hidden'
-          name='product_id'
-          value={product.productId}
-        />
+        <Field type="hidden" name="product_id" value={product.productId} />
       </Form>
     </div>
   );
 }
 
-export const layout = {
-  areaId: 'productPageMiddleLeft',
-  sortOrder: 50
-}
+export const layout: ComponentLayout = {
+  areaId: "productPageMiddleLeft",
+  sortOrder: 50,
+};
 
 export const query = `
   query {
@@ -489,52 +476,24 @@ export const query = `
 `;
 ```
 
-## Step 6: Build the GraphQL schema for the product comment
+## Step 7: Build the GraphQL Schema for Comments
 
-### GraphQL Schema for the comments
+Now we need to create a GraphQL schema to fetch and display comments on the product page.
 
-Now let's show the comments on the product page. To do that, the first step we need to do is define the Comment GraphQL type. To do that, we will create a subfolders named `graphql` under our extension folder and inside that folder, we will create a folder named `types`:
+### Create the Comment GraphQL Type
 
-```bash
-./extensions
-    └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │── migration
-        │── api
-        └── graphql
-            └── types
-```
-
-Now let's create a subfolder named `Comment` under the `types` folder and inside that folder, we will create a file named `Comment.graphql`:
+First, create the directory structure for your GraphQL types:
 
 ```bash
 ./extensions
     └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │── migration
-        │── api
-        └── graphql
-            └── types
-                └── Comment
-                    └── Comment.graphql
+        └── src
+            └── graphql
+                └── types
+                    └── Comment
 ```
 
-Now let's add the following code to the `Comment.graphql` file:
-
-```graphql title="graphql/types/Comment/Comment.graphql"
-type Comment {
-  commentId: Int!
-  userName: String
-  comment: String
-  createdAt: String
-}
-```
-
-We also need to extend the `Query` type and add our `comments` field to it. The final code of the `Comment.graphql` file is:
+Create a file named `Comment.graphql` in the `Comment` directory:
 
 ```graphql title="graphql/types/Comment/Comment.graphql"
 type Comment {
@@ -549,92 +508,73 @@ extend type Query {
 }
 ```
 
-### GraphQL Resolver for the comments
+This defines a `Comment` type with the necessary fields and extends the root `Query` type with a `comments` field that accepts a `productId` parameter.
 
-Now let's create the GraphQL resolver for the comments. To do that, we will add a new file named `Comment.resolvers.js` under the `Comment` folder:
+### Create the GraphQL Resolver
 
-```bash
-./extensions
-    └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │── migration
-        │── api
-        └── graphql
-            └── types
-                └── Comment
-                    │── Comment.graphql
-                    └── Comment.resolvers.js
-```
+Next, create a resolver for the `comments` field. Create a file named `Comment.resolvers.ts` in the same directory:
 
-The code of the `Comment.resolvers.js` file is:
+```ts title="graphql/types/Comment/Comment.resolvers.ts"
+import { camelCase } from "@evershop/evershop/lib/util/camelCase";
+import { select } from "@evershop/postgres-query-builder";
 
-```js title="graphql/types/Comment/Comment.resolvers.js"
-const { camelCase } = require('@evershop/evershop/src/lib/util/camelCase');
-const { select } = require('@evershop/postgres-query-builder');
-
-module.exports = {
+export default {
   Query: {
     comments: async (root, { productId }, { pool }) => {
       const comments = await select()
-        .from('product_comment')
-        .where('product_id', '=', productId)
+        .from("product_comment")
+        .where("product_id", "=", productId)
         .execute(pool);
 
-      return comments.map(comment => camelCase(comment));
-    }
-  }
-}
+      return comments.map((comment) => camelCase(comment));
+    },
+  },
+};
 ```
 
-That's it. Now we have the GraphQL schema and resolver for the comments. In next step, we will use the GraphQL query to get the comments and show them on the product page.
+This resolver fetches comments for a specific product from the database and converts the field names to camelCase for consistency with the GraphQL schema.
 
-## Step 7: Show the comments on the product page
+## Step 8: Display Comments on the Product Page
 
-Now let's show the comments on the product page. To do that, we will create a new component named `Comments` under the `productView` folder:
+Finally, let's create a component to display comments. Create a file named `Comments.tsx` in the `productView` directory:
 
 ```bash
 ./extensions
     └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │           │── CommentForm.jsx
-        │           └── Comments.jsx
-        │── migration
-        │── api
-        └── graphql
+        └── src
+            └── pages
+                └── frontStore
+                    └── productView
+                        └── Comments.tsx
 ```
 
-The code of the `Comments.js` file is:
+Add the following code to `Comments.tsx`:
 
-```js title="src/components/Comments.jsx"
-import React from 'react';
+```tsx title="pages/frontStore/productView/Comments.tsx"
+import React from "react";
+import { ComponentLayout } from "@evershop/evershop";
+import "./Component.scss";
 
 export default function Comments({ comments = [] }) {
-  return <div id="productComments">
-    <h3>Comments</h3>
-    <ul className="comment-list">
-      {comments.map((comment) => (
-        <li key={comment.commentId}>
-          <div className='user-name'>{comment.userName}</div>
-          <p className='comment'>{comment.comment}</p>
-        </li>
-      ))}
-    </ul>
-  </div>;
+  return (
+    <div id="productComments">
+      <h3>Comments</h3>
+      <ul className="comment-list">
+        {comments.map((comment) => (
+          <li key={comment.commentId}>
+            <div className="user-name">{comment.userName}</div>
+            <p className="comment">{comment.comment}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-// highlight-start
-
-// We display the comment list above the comment form
-export const layout = {
-  areaId: 'productPageMiddleLeft',
-  sortOrder: 45
-}
-
-// highlight-end
+export const layout: ComponentLayout = {
+  areaId: "productPageMiddleLeft",
+  sortOrder: 45,
+};
 
 export const query = `
   query {
@@ -648,28 +588,14 @@ export const query = `
 `;
 ```
 
-We use GraphQL query to get the comments and pass the comments to the `Comments` component. The `Comments` component will show the comments on the product page.
+This component displays a list of comments for the current product, positioned above the comment form.
 
-Let's create a new file named 'Component.scss' and add some styles to it:
+### Add Styling for Comments
 
-```bash
-./extensions
-    └── productComment
-        │── pages
-        │   └── frontStore
-        │       └── productView
-        │           │── CommentForm.jsx
-        │           │── Comments.jsx
-        │           └── Component.scss
-        │── migration
-        │── api
-        └── graphql
-```
+Let's add some basic styling for the comments. Create a file named `Component.scss` in the `productView` directory:
 
-The code of the `Component.scss` file is:
-
-```scss title="src/components/Component.scss"
-.comment-list  {
+```scss title="pages/frontStore/productView/Component.scss"
+.comment-list {
   margin-bottom: 20px;
   li {
     padding: 10px 0;
@@ -682,36 +608,39 @@ The code of the `Component.scss` file is:
     font-weight: bold;
     margin-bottom: 5px;
   }
-  .comment{
+  .comment {
     font-style: italic;
   }
 }
 ```
 
-Update the `Comments.js` file to use the `Component.scss` file:
+Update the `Comments.tsx` file to import the styles:
 
-```js title="src/components/Comments.jsx"
-import React from 'react';
-import './Comments.scss';
+```tsx title="pages/frontStore/productView/Comments.tsx"
+import React from "react";
+import { ComponentLayout } from "@evershop/evershop";
+import "./Component.scss";
 
 export default function Comments({ comments = [] }) {
-  return <div id="productComments">
-    <h3>Comments</h3>
-    <ul className="comment-list">
-      {comments.map((comment) => (
-        <li key={comment.commentId}>
-          <div className='user-name'>{comment.userName}</div>
-          <p className='comment'>{comment.comment}</p>
-        </li>
-      ))}
-    </ul>
-  </div>;
+  return (
+    <div id="productComments">
+      <h3>Comments</h3>
+      <ul className="comment-list">
+        {comments.map((comment) => (
+          <li key={comment.commentId}>
+            <div className="user-name">{comment.userName}</div>
+            <p className="comment">{comment.comment}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-export const layout = {
-  areaId: 'productPageMiddleLeft',
-  sortOrder: 45
-}
+export const layout: ComponentLayout = {
+  areaId: "productPageMiddleLeft",
+  sortOrder: 45,
+};
 
 export const query = `
   query {
@@ -725,11 +654,9 @@ export const query = `
 `;
 ```
 
-So far, we have completed our extension. Let's jump to the next step and enable the extension.
+## Step 9: Enable the Extension
 
-## Step 8: Enable the extension
-
-To start using our extension, we need update our configuration. Open the file in your `/config` directory. Depend on the environment you are using, the file name will be different. For example, if you are using the `development` environment, the file name will be `development.json`. Add the following code to the file (under the `system` section):
+The final step is to enable our extension in the EverShop configuration. Open the configuration file for your environment (e.g., `development.json`) in the `/config` directory and add the following code to the `system` section:
 
 ```json title="config/development.json"
 {
@@ -746,49 +673,78 @@ To start using our extension, we need update our configuration. Open the file in
 }
 ```
 
-Now, start the server and open the product page. You should see the comments and the comment form.
+Now, start the server and navigate to a product page. You should see both the comment form and the list of existing comments.
+
+```bash
+npm run dev
+```
+
+## Step 10: Build and Test Your Extension in production mode
+
+Navigate to your EverShop root directory and run the following command to build your extension:
+
+```bash
+npm run compile
+```
+
+This command compiles your TypeScript files into JavaScript, making them ready for production.
+After compiling, you can test your extension in production mode by running:
+
+```bash
+npm run start
+```
 
 ## Conclusion
 
-In this tutorial, we have learned:
+Congratulations! You've successfully built a custom extension for EverShop. In this tutorial, you've learned:
 
-- How to create a new extension
-- How to work with layout and Component
-- How to create a GraphQL schema and resolver
-- How to create a RESTful API
-- How to create a database migration
-- How to style a component
-- How to enable the extension
+- How to create an extension project structure
+- How to add React components to existing pages
+- How to use EverShop's layout system to position components
+- How to create database tables using migrations
+- How to implement RESTful API endpoints
+- How to define GraphQL schemas and resolvers
+- How to add styling to your components
+- How to configure and enable your extension
 
-## Bonus: Publish the extension as a NPM package
+## Publishing Your Extension as an NPM Package
 
-If you want to share your extension with the community, you can publish it as a NPM package. To do that, go to the extension folder and run the following command:
+If you want to share your extension with the community, you can publish it as an NPM package. Here's how:
+
+1. Navigate to your extension directory:
 
 ```bash
-npm init
+cd extensions/productComment
 ```
 
-Then, you will be asked to fill in some information about your extension. After that, you can publish your extension to NPM by running the following command:
+2. Publish your package to the npm registry:
 
 ```bash
 npm publish --access public
 ```
 
-Now your extension can be installed just like any other NPM package. However, the extension resolver will be different. For example, if your extension name is `productcomment`, the configuration will be:
+Once published, others can install your extension using npm:
 
-```json title="config/development.json"
+```bash
+npm install your-package-name
+```
+
+When using an npm-installed extension, the configuration would look like:
+
+```json title="config/production.json"
 {
   "system": {
         ...
         "extensions": [
             {
                 "name": "productComment",
-                "resolve": "node_modules/productcomment",
-                "enabled": true
+                "resolve": "node_modules/your-package-name",
+                "enabled": true,
+                "priority": 10
             }
         ]
     }
 }
 ```
 
-The final source code of this tutorial can be found [here](https://github.com/evershopcommerce/evershop/tree/main/extensions/productComment).
+The source code for this tutorial is available in the [EverShop GitHub repository](https://github.com/evershopcommerce/evershop/tree/dev/extensions/product_review).

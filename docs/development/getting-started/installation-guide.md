@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 keywords:
-- EverShop installation
+  - EverShop installation
 sidebar_label: Installation guide
 title: Evershop installation guide.
 description: This document will guide you through the installation process of EverShop. The quick installation guide is also available to help you install EverShop template quickly.
@@ -16,13 +16,14 @@ The following installation guides will guide you step-by-step to create a new Ev
 Please check [this document](/docs/development/getting-started/system-requirements) for the system requirements list.
 
 :::
+
 ## Install EverShop Using `create-evershop-app` command
 
 ```bash
-npx create-evershop-app my-app
+npx create-evershop-app my-evershop-app
 ```
 
-The `create-evershop-app` command will create a new folder named `my-app` and install all of the dependencies for you.
+The `create-evershop-app` command will create a new folder named `my-evershop-app` and install all of the dependencies for you.
 
 ## Install EverShop Using Docker
 
@@ -41,6 +42,7 @@ To create a new admin user, terminal into the Docker app container and run the f
 ```bash
 npm run user:create -- --email "your email" --password "your password" --name "your name"
 ```
+
 :::
 
 :::caution
@@ -61,9 +63,8 @@ The public Docker image is for installing EverShop in your local environment onl
 
 `@evershop/evershop` is the core of the EverShop platform. It contains all of the core modules like `catalog`, `checkout`, `order`.
 
-
 ```js title="Install the @evershop/evershop Npm package"
-npm init;
+npm init -y;
 npm install @evershop/evershop;
 ```
 
@@ -77,7 +78,6 @@ Open the package.json file and add the following scripts:
     "build": "evershop build",
     "start": "evershop start",
     "start:debug": "evershop start --debug",
-    "dev": "evershop dev",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
 }
@@ -147,15 +147,20 @@ Upgrading EverShop requires running the `build` command again.
 
 If you are a developer and want to start the project in the development mode, there are some additional steps you need to follow.
 
-### Adding the `dev` script
+### Install some additional dependencies for development
+
+To run the project in development mode, you need to install some additional dependencies. These dependencies are not required for production but are essential for development.
+
+```bash
+npm install --save-dev @types/node typescript @parcel/watcher @types/config @types/express @types/pg @types/react execa
+```
+
+### Adding the `dev` script to the package.json file.
 
 Open the package.json and add the following script:
 
 ```js title="Add the core dev script"
 "scripts": {
-    "setup": "evershop install",
-    "build": "evershop build",
-    "start": "evershop start",
     "dev": "evershop dev"
 }
 ```
@@ -166,7 +171,8 @@ Open the package.json and add the following configuration:
 
 ```js title="Adding the workspace configuration"
  "workspaces": [
-    "extensions/*" #This is where you put your extensions
+    "extensions/*", #This is where you put your extensions
+    "themes/*", #This is where you put your themes
   ],
 ```
 
@@ -174,30 +180,6 @@ Open the package.json and add the following configuration:
 
 ```js title="Start the site in development mode"
 npm run dev
-```
-
-### Adding `jsconfig.json` file
-
-Open the `jsconfig.json` file and add the following content:
-
-```js title="Add the jsconfig.json file"
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": [
-        "./themes/<Your Theme Folder>/components/*",
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@components-origin/*": [
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@default-theme/*" : [
-        "./node_modules/@evershop/evershop/src/modules/*/pages/*"
-      ]
-    }
-  }
-}
 ```
 
 ### The debug mode
@@ -209,6 +191,12 @@ To run the project in debug mode, you are required to add the debugging script t
     ...,
     "start:debug": "evershop start --debug",
 }
+```
+
+And then you can run the project in debug mode by running the following commands:
+
+```js title="Start the site in debug mode"
+npm run start:debug
 ```
 
 And then you can run the project in debug mode by running the following commands:
@@ -261,11 +249,11 @@ CMD ["npm", "run", "start"]
 And this is the `docker-compose.yml` file:
 
 ```yml title="docker-compose.yml"
-version: '3.8'
+version: "3.8"
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     restart: always
@@ -281,8 +269,8 @@ services:
       - database
     ports:
       - 3000:3000
-  
-  #The postgres database: 
+
+  #The postgres database:
   database:
     image: postgres:16
     restart: unless-stopped

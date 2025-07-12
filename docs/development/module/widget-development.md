@@ -1,145 +1,163 @@
 ---
 sidebar_position: 20
 keywords:
-- widget development
+  - widget development
+  - EverShop customization
+  - e-commerce widgets
 sidebar_label: Widget Development
-title: Widget Development
-description: Understand the Need for a Evershop widget development and how to develop a Evershop widget.
+title: Developing Widgets for EverShop
+description: Learn how to develop custom widgets for your EverShop store, enhancing functionality and providing a unique shopping experience.
 ---
 
 ## What is a Widget?
 
 <p align="center">
 
-  ![EverShop widget system](./img/widget.png "EverShop widget system")
+![EverShop widget system](./img/widget.png "EverShop widget system")
+
 </p>
 
-Widgets are small blocks that can be embedded in a store front. They are used to display information or provide functionality to users. Widgets can be used to display a wide range of content, such as a product listings, a banner or a block of text. They can also be used to provide functionality, such as a search box or a shopping cart.
+Widgets are modular, self-contained components that can be embedded throughout your EverShop storefront. They serve as building blocks that display specific content or provide functionality to users. Widgets can present various types of content, such as product listings, promotional banners, or informational text. They can also offer interactive functionality, like search boxes or shopping cart summaries.
 
-In EverShop, widgets are used to display content on the front-end of the website. They are used to display product listings, banners, blocks of text, and other content. Admin user can create and manage widgets from the admin panel and display them on the front-end of the website.
+In EverShop, widgets are a key part of the storefront's user interface. Store administrators can create, configure, and manage widgets through the admin panel without requiring technical knowledge. Once configured, these widgets display on the customer-facing pages, creating a dynamic and engaging shopping experience.
 
-## Why developing a Widget?
+## Why Develop Custom Widgets?
 
-Widgets are a powerful tool for displaying content on the front-end of a website. They offer a flexible and customizable way to display content, and can be used to create a wide range of layouts and designs for the store.
-Widgets help the store owner to create a unique and engaging shopping experience for customers.
+Custom widgets offer significant benefits for EverShop stores:
 
-## How to develop a Widget?
+1. **Flexible Content Display**: Widgets provide a structured way to present various types of content throughout your store.
+
+2. **Enhanced User Experience**: Well-designed widgets can improve navigation, highlight key products, and streamline the shopping process.
+
+3. **Store Customization**: Custom widgets allow store owners to create a unique brand identity and shopping experience that distinguishes them from competitors.
+
+4. **Modular Functionality**: Widgets encapsulate specific functionality in reusable components, making your codebase more maintainable.
+
+5. **Non-Technical Management**: Once developed, widgets can be managed by non-technical staff through the admin interface.
+
+## How to Develop a Widget
 
 :::info
-Before you start developing a widget, we recommend reading [EverShop’s module overview documentation](./module-overview) and [Create your first module documentation](./create-your-first-extension) to understand the module structure and how to create a module.
+Before beginning widget development, we recommend reviewing the [EverShop Module Overview](./module-overview) and [Create Your First Extension](./create-your-first-extension) documentation to understand module structure and extension development.
 :::
 
-This document will guide you through the process of developing a widget for EverShop.
+This guide will walk you through the process of developing a custom widget for EverShop. We'll create a simple greeting widget that displays a customizable welcome message on your storefront.
 
-Let's assume that you have already installed EverShop and you have a running project. If you haven't installed EverShop yet, please check [this document](../getting-started/installation-guide) for the installation guide.
+We'll assume you have a running EverShop installation. If you haven't installed EverShop yet, please follow the [installation guide](../getting-started/installation-guide) first.
 
 Let's start!
 
-### Step 1: Create an extension
+### Step 1: Create an Extension
 
-The first step in developing a widget is to create an extension. Let's call our extension `greeting_widget`. Our extension structure will look like this:
+The first step in developing a widget is to create an extension that will contain your widget code. Let's create an extension called `greeting_widget` with the following structure:
 
 ```bash
 extensions/
 └── greeting_widget/
-    ├── bootstrap.js
-    ├── components/
-    │   └── widget/
-    │       ├── GreetingWidgetSetting.jsx
-    │       └── GreetingWidget.jsx
+    ├── dist/                     # Compiled code for the extension
+    ├── src/
+    │   ├── bootstrap.ts
+    │   ├── components/
+    │   │   └── widgets/
+    │   │       ├── GreetingWidgetSetting.tsx
+    │   │       └── GreetingWidget.tsx
     └── package.json
-  
-
 ```
 
-And this is how the `package.json` file will look like:
+Create a `package.json` file with the following content:
 
 ```json title="extensions/greeting_widget/package.json"
 {
   "name": "greeting_widget",
   "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc && copyfiles -u 1 \"src/**/*.{graphql,scss,json}\" dist"
+  },
   "description": "A simple greeting widget for EverShop",
-  "keywords": [
-    "EverShop widget"
-  ],
-  "author": "The Nguyen (https://evershop.io/)",
-  "license": "GNU GENERAL PUBLIC LICENSE 3.0",
-  "engines": {
-    "node": ">= 14.0.0"
-  }
+  "keywords": ["EverShop widget"]
 }
 ```
 
-### Step 2: Register our widget from the `bootstrap.js` file
+### Step 2: Register Your Widget
 
-From the `bootstrap.js` file, we will register our widget. Here is an example of how to register a widget:
+Next, create a `bootstrap.ts` file to register your widget with EverShop. This file runs when your extension initializes:
 
-```javascript title="extensions/greeting_widget/bootstrap.js"
-const config = require('config');
+```ts title="extensions/greeting_widget/src/bootstrap.ts"
+import config from "config";
+import path from "path";
+import { CONSTANTS } from "@evershop/evershop/lib/helpers";
+import { registerWidget } from "@evershop/evershop/lib/widget";
 
-module.exports = () => {
-    // Register our greeting widget
-    const greetingWidget = {
-        greeting_widget: {
-            setting_component:
-                'greeting_widget/components/widget/GreetingWidgetSetting.jsx',
-            component:
-                'greeting_widget/components/widget/GreetingWidget.jsx',
-            name: 'My greeting Widget',
-            description: 'A simple greeting widget',
-            default_settings: {
-                
-            },
-            enabled: true
-        }
-    };
-    config.util.setModuleDefaults('widgets', greetingWidget);
-}
+export default () => {
+  // Register our greeting widget
+  registerWidget({
+    type: "greeting_widget",
+    name: "Greeting Widget",
+    description: "Display a greeting message",
+    settingComponent: path.resolve(
+      CONSTANTS.LIBPATH,
+      "components/widgets/GreetingWidgetSetting.js"
+    ),
+    component: path.resolve(
+      CONSTANTS.LIBPATH,
+      "components/widgets/GreetingWidget.js"
+    ),
+    enabled: true,
+    defaultSettings: {
+      text: "Hello, welcome to our store!",
+      className: "",
+    },
+  });
+};
 ```
 
-In the above example, we have registered a widget called `greeting_widget`. Let's break down the properties of the widget object above:
+Let's examine the properties in the widget registration object:
 
-- `setting_component`: The path to the setting component of the widget. This component is used to configure the widget settings. In this example, the setting component is located at `extensions/greeting_widget/components/widget/GreetingWidgetSetting.jsx`.
-- `component`: The path to the main component of the widget. This component is used to render the widget on the front-end of the website. In this example, the main component is located at `extensions/greeting_widget/components/widget/GreetingWidget.jsx`.
-- `name`: The name of the widget. This is the name that will be displayed in the admin panel when adding a new widget.
-- `description`: A description of the widget. This is a brief description of what the widget does.
-- `default_settings`: The default settings for the widget if any. These settings will be used when admin user adds a new widget.
-- `enabled`: Whether the widget is enabled or not. If set to `false`, the widget will not be available for use.
+- `settingComponent`: Path to the component that renders the widget's configuration interface in the admin panel
+- `component`: Path to the component that renders the actual widget on the storefront
+- `name`: The name displayed in the admin panel when adding the widget
+- `type`: A unique identifier for the widget type, used internally by EverShop
+- `description`: A brief explanation of the widget's purpose and functionality
+- `defaultSettings`: Initial configuration values for newly created widgets
+- `enabled`: Flag that determines whether the widget is available for use
 
 :::warning
-Both `setting_component` and `component` properties must be resolvable paths to the component files. In our example, you must run `npm install greeting_widget` to install our extension. This will tell Node.js to recognize our extension as a module. Please make sure you have configured the folder `extensions` as a workspace.
+Both `settingComponent` and `component` paths must be resolvable by Node.js. Make sure you've configured the `extensions` folder as a workspace in your project's root `package.json` file. This allows Node.js to locate your components correctly.
 :::
 
-Ok, we have registered our widget. Let's move to the next step. 
+Ok, we have registered our widget. Let's move to the next step.
 
-### Step 3: Create the setting component
+### Step 3: Create the Setting Component
 
-The setting component is used to configure the widget settings. It is displayed in the admin panel when adding a new widget. Here is an example of how the setting component can look like:
+The setting component provides the configuration interface for your widget in the admin panel. This component allows administrators to customize how your widget behaves and appears.
 
-```javascript title="extensions/greeting_widget/components/widget/GreetingWidgetSetting.jsx"
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Field } from '@components/common/form/Field';
+Create a file called `GreetingWidgetSetting.tsx`:
+
+```javascript title="extensions/greeting_widget/components/widget/GreetingWidgetSetting.tsx"
+import React from "react";
+import PropTypes from "prop-types";
+import { Field } from "@components/common/form/Field";
 
 export default function GreetingWidgetSetting({
-  greetingWidget: { text, className }
+  greetingWidget: { text, className },
 }) {
   return (
     <div>
-        <p>Configure your greeting widget</p>
-        <Field
-            type="text"
-            name="settings[className]"
-            label="Custom css classes"
-            value={className}
-            placeholder="Custom css classes"
-        />
-        <Field
-            type="textarea"
-            name="settings[text]"
-            label="Greeting text"
-            value={text}
-        />
+      <p>Configure your greeting widget</p>
+      <Field
+        type="text"
+        name="settings[className]"
+        label="Custom CSS Classes"
+        value={className}
+        placeholder="Enter custom CSS classes"
+      />
+      <Field
+        type="textarea"
+        name="settings[text]"
+        label="Greeting Message"
+        value={text}
+      />
     </div>
   );
 }
@@ -147,15 +165,15 @@ export default function GreetingWidgetSetting({
 GreetingWidgetSetting.propTypes = {
   greetingWidget: PropTypes.shape({
     text: PropTypes.string,
-    className: PropTypes.string
-  })
+    className: PropTypes.string,
+  }),
 };
 
 GreetingWidgetSetting.defaultProps = {
   greetingWidget: {
-    text: 'Hello, welcome to our store!',
-    className: ''
-  }
+    text: "Hello, welcome to our store!",
+    className: "",
+  },
 };
 
 export const query = `
@@ -172,37 +190,46 @@ export const variables = `{
 }`;
 ```
 
-In the above example, we have created a simple setting component for our greeting widget. There are few things to explain here:
+Key points about the setting component:
 
-- We do not need to handle the form submission in the setting component. The form submission is handled by the EverShop admin panel.
+- EverShop handles form submission automatically, so you don't need to implement submission logic.
 
-- We use graphql query to fetch the widget settings. In above example, we query the `greetingWidget` settings. So we need to define the query and variables for the graphql query. This will be covered in the next step.
+- The component uses GraphQL to fetch current widget settings. The query returns data based on the widget's configured settings.
 
-- There is a special function `getWidgetSetting()` in the above example. This function is used to get the settings of the widget. EverShop will automatically inject the widget instance settings into the query for you.
+- The special function `getWidgetSetting()` retrieves the settings for the specific widget instance being configured. EverShop automatically injects this data into your query.
 
-### Step 4: Define the graphql query
+- Each setting field must have a name that follows the format `settings[fieldName]` to be properly saved by EverShop.
 
-As mentioned in the previous step, we need to define the graphql query to fetch the widget settings. Let's navigate to the extension folder and define our graphql types for our Greeting widget:
+### Step 4: Define the GraphQL Schema
+
+Next, we need to create GraphQL types and resolvers to support our widget's data requirements. Create the following directory structure:
 
 ```bash
 extensions/
 └── greeting_widget/
-    ├── graphql/
+    ├── dist/                     # Compiled code for the extension
+    ├── src/
+    │   ├── bootstrap.ts
+    │   ├── components/
+    │   │   └── widgets/
+    │   │       ├── GreetingWidgetSetting.tsx
+    │   │       └── GreetingWidget.tsx
+    │   ├── graphql/
     │   └── types/
-    │       └── GreetingWidget
+    │       └── GreetingWidget/
     │           ├── GreetingWidget.graphql
-    │           └── GreetingWidget.resolvers.js
+    │           └── GreetingWidget.resolvers.ts
 ```
 
 :::info
-You can learn more about graphql in EverShop here [EverShop’s graphql documentation](../knowledge-base/graphql).
+To learn more about GraphQL in EverShop, refer to the [GraphQL documentation](../knowledge-base/graphql).
 :::
 
-Let's define our graphql types for the Greeting widget:
+First, let's define the GraphQL type for our Greeting widget:
 
 ```graphql title="extensions/greeting_widget/graphql/types/GreetingWidget/GreetingWidget.graphql"
 """
-Return a text Widget
+A widget that displays a greeting message
 """
 type GreetingWidget {
   text: String
@@ -214,30 +241,40 @@ extend type Query {
 }
 ```
 
-And the resolver for the Greeting widget:
+Next, create the resolver that will handle our widget's data:
 
-```javascript title="extensions/greeting_widget/graphql/types/GreetingWidget/GreetingWidget.resolvers.js"
-
-module.exports = {
+```ts title="extensions/greeting_widget/src/graphql/types/GreetingWidget/GreetingWidget.resolvers.ts"
+export default {
   Query: {
     greetingWidget(_, { settings }) {
-      return { text: settings.text, className: settings.className };
-    }
-  }
+      return {
+        text: settings.text,
+        className: settings.className,
+      };
+    },
+  },
 };
 ```
 
-In the above example, we have defined a graphql type `GreetingWidget` with two fields `text` and `className`. We have also defined a query `greetingWidget` to fetch the widget settings.
+This GraphQL schema defines:
 
-### Step 5: Create the main component
+1. A `GreetingWidget` type with `text` and `className` fields
+2. A query called `greetingWidget` that accepts settings as input and returns a GreetingWidget object
+3. A resolver that transforms the input settings into the proper format
 
-The main component is used to render the widget on the front-end of the website. Here is an example of how the main component can look like:
+The resolver is straightforward in this example, but for more complex widgets, you could perform additional processing, validation, or data fetching here.
 
-```javascript title="extensions/greeting_widget/components/widget/GreetingWidget.jsx"
-import React from 'react';
-import PropTypes from 'prop-types';
+### Step 5: Create the Main Component
 
-export default function GreetingWidget({ greetingWidget: { text, className }}) {
+Now, let's create the component that will render your widget on the storefront:
+
+```javascript title="extensions/greeting_widget/src/components/widget/GreetingWidget.jsx"
+import React from "react";
+import PropTypes from "prop-types";
+
+export default function GreetingWidget({
+  greetingWidget: { text, className },
+}) {
   return (
     <div className={className}>
       <h1>{text}</h1>
@@ -246,13 +283,17 @@ export default function GreetingWidget({ greetingWidget: { text, className }}) {
 }
 
 GreetingWidget.propTypes = {
-  text: PropTypes.string,
-  className: PropTypes.string
+  greetingWidget: PropTypes.shape({
+    text: PropTypes.string,
+    className: PropTypes.string,
+  }),
 };
 
 GreetingWidget.defaultProps = {
-  text: '',
-  className: ''
+  greetingWidget: {
+    text: "",
+    className: "",
+  },
 };
 
 export const query = `
@@ -269,11 +310,17 @@ export const variables = `{
 }`;
 ```
 
-In the above example, we have created a simple main component for our greeting widget. The component will render a heading with the greeting text to the front-end of the website.
+This component:
 
-### Step 6: Enable our extension
+1. Receives the configured settings through props
+2. Renders a heading with the greeting text
+3. Applies any custom CSS classes specified in the settings
+4. Uses the same GraphQL query as the settings component to fetch data
+5. Defines PropTypes for type checking and default values
 
-To enable our extension, we need to add the following lines to the configuration file in your EverShop project:
+### Step 6: Enable Your Extension
+
+To make your widget available, you need to enable your extension in your EverShop configuration file:
 
 ```javascript title="./config/production.json"
 {
@@ -284,60 +331,108 @@ To enable our extension, we need to add the following lines to the configuration
                 "name": "greeting_widget",
                 "resolve": "extensions/greeting_widget",
                 "enabled": true,
-                "priority": 20 
+                "priority": 20
             }
         ]
     }
 }
 ```
 
-### Step 7: Build your project
+This configuration:
 
-After enabling the extension, you need to build your project again to apply the changes. Run the following command to build your project:
+- Specifies the extension name
+- Provides the path to resolve your extension code
+- Sets the extension to enabled
+- Assigns a priority (lower numbers execute first)
+
+### Step 7: Test Your Widget In Development Mode
+
+After enabling your extension, you can start your development server to see your changes in action:
+
+```bash
+npm run dev
+```
+
+This process compiles your components and makes your widget available in the admin panel.
+
+Congratulations! You've successfully developed a widget for EverShop. You can now create instances of your widget from the admin panel and display them on your storefront.
+
+### Step 8: Build Your Extension And Run Your Project In Production Mode
+
+To prepare your extension for production, you need to build it. Run the following command in your extension directory:
+
+```bash
+npm run compile
+```
+
+This command compiles your TypeScript code and prepares the extension for deployment.
+After building your extension, you can run your project in production mode:
+
+```bash
+npm run start
+```
+
+## Customizing Existing Widgets
+
+EverShop allows you to override widget components to customize their appearance or behavior without modifying the original code. This is particularly useful when working with third-party extensions or core widgets.
+
+### How to Override a Widget Component
+
+To override a widget component, update your configuration file to specify a custom component path:
+
+```ts title="extensions/greeting_widget/src/bootstrap.ts"
+import config from "config";
+import path from "path";
+import { CONSTANTS } from "@evershop/evershop/lib/helpers";
+import { updateWidget } from "@evershop/evershop/lib/widget";
+
+export default () => {
+  // Register our greeting widget
+  updateWidget("greeting_widget", {
+    settingComponent: path.resolve(
+      CONSTANTS.LIBPATH,
+      "components/widgets/GreetingWidgetSettingNew.js"
+    ),
+    component: path.resolve(
+      CONSTANTS.LIBPATH,
+      "components/widgets/GreetingWidgetNew.js"
+    ),
+  });
+};
+```
+
+:::info
+Remember to rebuild your project after changing widget configuration settings:
 
 ```bash
 npm run build
 ```
 
-That's it! You have successfully developed a widget for EverShop. You can now create a new widget from the admin panel and display it on the front-end of the website. It will look like this:
-
-*The widget setting:*
-
-<p align="center">
-
-  ![Greeting widget setting](./img/widget-setting.png "Greeting widget setting")
-</p>
-
-*The widget on the front-end:*
-
-<p align="center">
-
-  ![Greeting widget on the front-end](./img/greeting-widget.png "Greeting widget on the front-end")
-</p>
-
-## How to override a widget component?
-
-You can override a widget component by changing the widget configuration. Let's say you want to override the `GreetingWidget` component for applying custom styles. You can do this by changing the widget configuration from your configuration file. Here is an example of how to override the `GreetingWidget` component:
-
-```javascript title="./config/production.json"
-{
-    ...,
-    "system": {
-        "widgets": {
-            greeting_widget: {
-                component: 'extensions/my_custom_greeting_widget/components/widget/MyCustomGreetingWidget.jsx'
-            }
-        }
-    }
-}
-```
-
-In the above example, we have overridden the `GreetingWidget` component with `MyCustomGreetingWidget` component. Now, the `MyCustomGreetingWidget` component will be used to render the widget on the front-end of the website.
-
-:::info
-You will need to build your project again after changing the widget configuration.
 :::
+
+## Best Practices for Widget Development
+
+When developing widgets for EverShop, consider these best practices:
+
+1. **Keep widgets focused**: Each widget should serve a single, clear purpose.
+
+2. **Make settings intuitive**: Design your configuration interface to be straightforward for administrators.
+
+3. **Optimize performance**: Ensure your widget loads efficiently and doesn't negatively impact page performance.
+
+4. **Use responsive design**: Make sure your widget displays correctly on all device sizes.
+
+5. **Implement error handling**: Add fallbacks to handle cases where data might be missing or incorrectly formatted.
 
 ## Conclusion
 
-In this document, we have learned how to develop a widget for EverShop. We have covered the steps to create an extension, register a widget, create the setting component, define the graphql query, create the main component, enable the extension, and build the project. We have also learned how to override a widget component. You can now create custom widgets for your EverShop project and provide a unique shopping experience for your customers.
+In this guide, we've covered the complete process of developing a custom widget for EverShop:
+
+- Creating an extension to house your widget code
+- Registering your widget with EverShop
+- Building configuration and display components
+- Setting up GraphQL schema and resolvers
+- Enabling your extension and building your project
+- Overriding existing widget components
+
+Custom widgets are a powerful way to enhance your EverShop store's functionality and provide a unique shopping experience for your customers. By leveraging the widget system, you can create modular, reusable components that store administrators can easily configure through the user interface.

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 keywords:
-- EverShop introduction
+  - EverShop introduction
 sidebar_label: Introduction
 title: Free open-source Node Ecommerce Platform
 description: EverShop is a full stack Node Ecommerce platform that helps developing an e-commerce store. EverShop is a flexible with both admin panel and front store are extensible.
@@ -50,7 +50,7 @@ Heavy inspired by Shopify, we have a fully-featured admin panel using React that
 
 The admin panel is also designed to be extensible and customizable. Developers can easily add new features to the admin panel without modifying the core source code.
 
-## Front store view - React Graphql Ecommerce 
+## Front store view - React Graphql Ecommerce
 
 ![EverShop front store](./img/evershop-product-detail.png "EverShop front store")
 

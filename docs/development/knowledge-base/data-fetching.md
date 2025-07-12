@@ -1,7 +1,7 @@
 ---
 sidebar_position: 31
 keywords:
-- evershop data loading, evershop data fetching, evershop graphql
+  - evershop data loading, evershop data fetching, evershop graphql
 sidebar_label: Data Fetching
 title: Data Fetching
 description: EverShop allows you to fetch data from the server using the GraphQL query language. This document explains how to fetch data from the server and pass it to React Component using GraphQL.
@@ -9,9 +9,9 @@ description: EverShop allows you to fetch data from the server using the GraphQL
 
 ![Data Fetching In EverShop](./img/data-fetching-evershop.png "Data Fetching In EverShop")
 
-# Data Fetching In EverShop
+# Data Fetching in EverShop
 
-EverShop makes use of [GraphQL](https://graphql.org/) for data fetching. GraphQL is a query language for your API, and a server-side runtime for executing queries by using a type system you define for your data.
+EverShop uses [GraphQL](https://graphql.org/) for data fetching. GraphQL is a query language for your API and a server-side runtime for executing queries using a type system you define for your data.
 
 :::info
 Check this [GraphQL document](/docs/development/knowledge-base/graphql) to learn more about GraphQL in EverShop.
@@ -19,11 +19,11 @@ Check this [GraphQL document](/docs/development/knowledge-base/graphql) to learn
 
 EverShop allows you to fetch data for your [React](https://reactjs.org/) components using the GraphQL query language. This document explains how to fetch data from the server using GraphQL.
 
-## GraphQL Query In React Component
+## GraphQL Query in React Components
 
-When you create a React component that needs some data for SSR(Server Side Rendering), you need to fetch the data from the server during the request time. To do this, all you need to do is export a GraphQL query in React component file. The query will be executed on the server and the result will be passed to React component as a prop.
+When creating a React component that requires data for SSR (Server-Side Rendering), you need to fetch the data from the server during the request time. To do this, export a GraphQL query in the React component file. The query will be executed on the server, and the result will be passed to the React component as a prop.
 
-Let's take a look below example:
+Let's look at the example below:
 
 ```js title="modules/catalog/pages/productView/GeneralInformation.jsx"
 export default function GeneralInfo({ product }) {
@@ -34,28 +34,28 @@ export default function GeneralInfo({ product }) {
         {
           component: { default: Name },
           props: {
-            name: product.name
+            name: product.name,
           },
           sortOrder: 10,
-          id: 'productSingleName'
+          id: "productSingleName",
         },
         {
           component: { default: Price },
           props: {
             regular: product.price.regular,
-            special: product.price.special
+            special: product.price.special,
           },
           sortOrder: 10,
-          id: 'productSinglePrice'
+          id: "productSinglePrice",
         },
         {
           component: { default: Sku },
           props: {
-            sku: product.sku
+            sku: product.sku,
           },
           sortOrder: 20,
-          id: 'productSingleSku'
-        }
+          id: "productSingleSku",
+        },
       ]}
     />
   );
@@ -81,30 +81,31 @@ export const query = `
     }
   }`;
 
-  // highlight-end
+// highlight-end
 ```
 
-In the above example, we have exported a GraphQL query in the `GeneralInformation.js` component file. During the request time, EverShop will consolidate all the queries from all the components and execute them in a single request. The result of the GraphQL query will be passed to the React component as a prop.
+In the example above, we export a GraphQL query in the `GeneralInformation.js` component file. During the request time, EverShop consolidates all queries from all components and executes them in a single request. The result of the GraphQL query is passed to the React component as a prop.
 
-### When is the GraphQL query executed?
+### When is the GraphQL Query Executed?
 
-The query will be executed on the server during the request time. The query will be executed only if the component is rendered on the server.
+The query is executed on the server during the request time. It will only be executed if the component is rendered on the server.
 
-The graphQL query will be strimmed from the component file and will be executed on the server. The result of the query will be passed to the component as a prop.
+The GraphQL query is extracted from the component file and executed on the server. The result of the query is then passed to the component as a prop.
 
-### The GraphQL query format
+### The GraphQL Query Format
 
 :::warning
-Since the build process will use Regex to parse for the query, collect and remove them from the component file, you have to make sure the the export statement must follow the below format:
+Since the build process uses Regex to parse, collect, and remove queries from the component file, you must ensure the export statement follows the format below:
 
 ```js
 export const query = `<Your GraphQL query>`;
 ```
+
 :::
 
-### The `getContextValue` function.
+### The `getContextValue` Function
 
-Sometime you need to pass some arguments to the GraphQL query. For example, you want to fetch the product details for a specific product. In this case, you need to pass the product id to the GraphQL query. To do this, you can use the `getContextValue` function. The `getContextValue` function will return the value of the context key that you pass to it.
+Sometimes, you need to pass arguments to the GraphQL query. For example, to fetch product details for a specific product, you need to pass the product ID to the GraphQL query. To do this, use the `getContextValue` function. This function returns the value of the context key you pass to it.
 
 ```js title="modules/catalog/pages/productView/GeneralInformation.jsx"
 export const query = `
@@ -126,31 +127,37 @@ export const query = `
   }`;
 ```
 
-To add a value to the context, we can use middleware function to add the value to the context. Let's take a look at the below example:
+To add a value to the context, use a middleware function. Here's an example:
 
 ```js title="modules/catalog/pages/categoryView/index.js"
-const { select } = require('@evershop/postgres-query-builder');
-const { pool } = require('@evershop/evershop/src/lib/postgres/connection');
-const { setContextValue } = require('../../../../graphql/services/contextHelper');
+import { select } from "@evershop/postgres-query-builder";
+import { pool } from "@evershop/evershop/lib/postgres";
+import { setContextValue } from "@evershop/evershop/graphql/services";
 
-module.exports = async (request, response, stack, next) => {
+export default async (request, response, next) => {
   try {
     const query = select();
-    query.from('category')
-      .leftJoin('category_description')
-      .on('category.`category_id`', '=', 'category_description.`category_description_category_id`');
+    query
+      .from("category")
+      .leftJoin("category_description")
+      .on(
+        "category.`category_id`",
+        "=",
+        "category_description.`category_description_category_id`"
+      );
 
-    query.where('category_description.`url_key`', '=', request.params.url_key);
+    query.where("category_description.`url_key`", "=", request.params.url_key);
     const category = await query.load(pool);
+
     if (category === null) {
       response.status(404);
       next();
     } else {
-      setContextValue(request, 'categoryId', category.category_id);
-      setContextValue(request, 'pageInfo', {
+      setContextValue(request, "categoryId", category.category_id);
+      setContextValue(request, "pageInfo", {
         title: category.meta_title || category.name,
         description: category.meta_description || category.short_description,
-        url: request.url
+        url: request.url,
       });
       next();
     }
@@ -160,35 +167,35 @@ module.exports = async (request, response, stack, next) => {
 };
 ```
 
-In the above example, we have a middleware function `index.js` to validate the category availability. If the category is available, we will add the category id to the context by using `setContextValue` function. The `getContextValue` function will return the category id that we have added to the context.
+In the example above, the middleware function `index.js` validates the category's availability. If the category is available, we add the category ID to the context using the `setContextValue` function. The `getContextValue` function then retrieves the category ID from the context.
 
-### The `setContextValue` function.
+### The `setContextValue` Function
 
-This function is used to add a value to the graphQL execution context. The `setContextValue` function accepts three arguments:
+This function adds a value to the GraphQL execution context. It accepts three arguments:
 
 - `request`: The request object.
-- `key`: The key of the context.
-- `value`: The value of the context.
+- `key`: The context key.
+- `value`: The context value.
 
 :::info
-By default, EverShop will add the all the data in current `request` object to the context. For example you can call the `getContextValue('url')` function to get the current request url.
+By default, EverShop adds all data in the current `request` object to the context. For example, you can call the `getContextValue('url')` function to get the current request URL.
 :::
 
-## Client Side Data Fetching
+## Client-Side Data Fetching
 
-### GraphQL API endpoint
+### GraphQL API Endpoint
 
-EverShop provides a GraphQL API endpoint to fetch data from the server. The GraphQL API endpoint is available at `/graphql` path. You can use the GraphQL API endpoint to fetch data from the server.
+EverShop provides a GraphQL API endpoint to fetch data from the server. The GraphQL API endpoint is available at the `/graphql` path. You can use this endpoint to fetch data from the server.
 
-### The `useQuery` hook from URQL
+### The `useQuery` Hook from URQL
 
-EverShop makes use of [URQL](https://formidable.com/open-source/urql/) to fetch data from the server using graphQL API. URQL is a GraphQL client that helps you fetch data from the server. It is a fully-featured GraphQL client that supports all GraphQL features and can be used with any GraphQL server.
+EverShop uses [URQL](https://formidable.com/open-source/urql/) to fetch data from the server using the GraphQL API. URQL is a fully-featured GraphQL client that supports all GraphQL features and can be used with any GraphQL server.
 
 Example:
-  
+
 ```js
-import React from 'react';
-import { useQuery } from 'urql';
+import React from "react";
+import { useQuery } from "urql";
 
 const TodosQuery = `
   query {
@@ -211,7 +218,7 @@ const Todos = () => {
 
   return (
     <ul>
-      {data.todos.map(todo => (
+      {data.todos.map((todo) => (
         <li key={todo.id}>{todo.title}</li>
       ))}
     </ul>

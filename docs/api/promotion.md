@@ -2,27 +2,30 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
+  - EverShop API
+  - Promotion API
+  - Coupon API
+  - E-commerce API
+  - Discount API
 sidebar_label: Promotion
 title: Promotion REST API
-description: Use the REST API to interact with EverShop promotions. Create, update, delete, and get promotions.
+description: Use the EverShop REST API to manage promotions and coupons - create, update, delete, and apply promotional discounts to customer orders.
 ---
-
 
 # Promotion API
 
-Use the REST API to interact with EverShop promotions.
+The Promotion API allows you to programmatically manage promotional offers and discount coupons in your EverShop store. This RESTful interface provides endpoints for creating, updating, deleting, and applying coupons.
 
-## Create a coupon
+## Create a Coupon
 
-Use this endpoint to create a coupon.
+Creates a new discount coupon in your EverShop store with the specified attributes.
 
 import Api from '@site/src/components/rest/Api';
 
 <Api
-  method="POST"
-  url="/api/coupons"
-  requestSchema={{
+method="POST"
+url="/api/coupons"
+requestSchema={{
   "type": "object",
   "properties": {
     "coupon": {
@@ -286,7 +289,7 @@ import Api from '@site/src/components/rest/Api';
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "coupon_id": 30,
     "uuid": "d63601a5a67311edb46b60d819134f39",
@@ -327,18 +330,18 @@ import Api from '@site/src/components/rest/Api';
     ]
   }
 }`}
- />
+/>
 
 <hr />
 
-## Update a coupon
+## Update a Coupon
 
-Use this endpoint to update a coupon.
+Updates an existing coupon with new attribute values.
 
 <Api
-  method="PATCH"
-  url="/api/coupons/{id}"
-  requestSchema={{
+method="PATCH"
+url="/api/coupons/{id}"
+requestSchema={{
   "type": "object",
   "properties": {
     "coupon": {
@@ -598,7 +601,7 @@ Use this endpoint to update a coupon.
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "coupon_id": 30,
     "uuid": "d63601a5a67311edb46b60d819134f39",
@@ -639,18 +642,24 @@ Use this endpoint to update a coupon.
     ]
   }
 }`}
- />
+/>
 
- <hr />
+### Path Parameters
 
- ## Delete a coupon
+| Parameter | Type   | Required | Description                      |
+| --------- | ------ | -------- | -------------------------------- |
+| id        | string | Yes      | The UUID of the coupon to update |
 
-Use this endpoint to delete a coupon.
+<hr />
+
+## Delete a Coupon
+
+Removes a coupon from your EverShop store.
 
 <Api
-  method="DELETE"
-  url="/api/coupons/{id}"
-  responseSample={`{
+method="DELETE"
+url="/api/coupons/{id}"
+responseSample={`{
   "data": {
     "coupon_id": 30,
     "uuid": "d63601a5a67311edb46b60d819134f39",
@@ -673,16 +682,22 @@ Use this endpoint to delete a coupon.
     "updated_at": "2023-02-07 15:07:53"
   }
 }`}
- />
+/>
 
- ## Apply a coupon
+### Path Parameters
 
-Use this endpoint to apply a coupon to a cart.
+| Parameter | Type   | Required | Description                      |
+| --------- | ------ | -------- | -------------------------------- |
+| id        | string | Yes      | The UUID of the coupon to delete |
+
+## Apply a Coupon
+
+Applies a coupon code to a specific shopping cart.
 
 <Api
-  method="POST"
-  url="/api/carts/{cart_id}/coupons"
-  requestSchema={{
+method="POST"
+url="/api/carts/{cart_id}/coupons"
+requestSchema={{
   "type": "object",
   "properties": {
     "coupon": {
@@ -699,9 +714,184 @@ Use this endpoint to apply a coupon to a cart.
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "coupon": "coupon"
   }
 }`}
- />
+/>
+
+### Path Parameters
+
+| Parameter | Type   | Required | Description                                 |
+| --------- | ------ | -------- | ------------------------------------------- |
+| cart_id   | string | Yes      | The UUID of the cart to apply the coupon to |
+
+## Get a Coupon
+
+Retrieves detailed information about a specific coupon.
+
+<Api
+method="GET"
+url="/api/coupons/{id}"
+responseSample={`{
+  "data": {
+    "coupon_id": 30,
+    "uuid": "d63601a5a67311edb46b60d819134f39",
+    "status": 1,
+    "description": "Summer Sale Discount",
+    "discount_amount": 10,
+    "free_shipping": 0,
+    "discount_type": "fixed_discount_to_entire_order",
+    "coupon": "SUMMER10",
+    "used_time": 5,
+    "target_products": null,
+    "condition": {
+      "order_total": 50
+    },
+    "user_condition": null,
+    "buyx_gety": null,
+    "max_uses_time_per_coupon": "100",
+    "max_uses_time_per_customer": "1",
+    "start_date": "2023-06-01",
+    "end_date": "2023-08-31",
+    "created_at": "2023-02-07 15:07:53",
+    "updated_at": "2023-02-07 15:07:53",
+    "links": [
+      {
+        "rel": "couponGrid",
+        "href": "/admin/coupons",
+        "action": "GET",
+        "types": [
+          "text/xml"
+        ]
+      },
+      {
+        "rel": "edit",
+        "href": "/admin/coupon/edit/d63601a5a67311edb46b60d819134f39",
+        "action": "GET",
+        "types": [
+          "text/xml"
+        ]
+      }
+    ]
+  }
+}`}
+/>
+
+### Path Parameters
+
+| Parameter | Type   | Required | Description                        |
+| --------- | ------ | -------- | ---------------------------------- |
+| id        | string | Yes      | The UUID of the coupon to retrieve |
+
+## List Coupons
+
+Retrieves a paginated list of coupons from your EverShop store.
+
+<Api
+method="GET"
+url="/api/coupons"
+responseSample={`{
+  "data": [
+    {
+      "coupon_id": 30,
+      "uuid": "d63601a5a67311edb46b60d819134f39",
+      "status": 1,
+      "description": "Summer Sale Discount",
+      "discount_amount": 10,
+      "free_shipping": 0,
+      "discount_type": "fixed_discount_to_entire_order",
+      "coupon": "SUMMER10",
+      "used_time": 5,
+      "max_uses_time_per_coupon": "100",
+      "start_date": "2023-06-01",
+      "end_date": "2023-08-31",
+      "links": [
+        {
+          "rel": "edit",
+          "href": "/admin/coupon/edit/d63601a5a67311edb46b60d819134f39",
+          "action": "GET",
+          "types": [
+            "text/xml"
+          ]
+        }
+      ]
+    },
+    // More coupons...
+  ],
+  "total": 8,
+  "currentPage": 1,
+  "limit": 20,
+  "links": [
+    {
+      "rel": "first",
+      "href": "/api/coupons?page=1",
+      "action": "GET"
+    },
+    {
+      "rel": "last",
+      "href": "/api/coupons?page=1",
+      "action": "GET"
+    }
+  ]
+}`}
+/>
+
+### Query Parameters
+
+| Parameter | Type    | Required | Description                                        |
+| --------- | ------- | -------- | -------------------------------------------------- |
+| page      | integer | No       | Page number for pagination (default: 1)            |
+| limit     | integer | No       | Number of coupons per page (default: 20, max: 100) |
+| sort      | string  | No       | Field to sort by (e.g., "coupon", "created_at")    |
+| order     | string  | No       | Sort order ("asc" or "desc")                       |
+| status    | integer | No       | Filter by status (0 = disabled, 1 = enabled)       |
+| coupon    | string  | No       | Filter by coupon code                              |
+| keyword   | string  | No       | Search coupons by keyword                          |
+
+## Remove a Coupon from Cart
+
+Removes a previously applied coupon from a shopping cart.
+
+<Api
+method="DELETE"
+url="/api/carts/{cart_id}/coupons/{coupon}"
+responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+/>
+
+### Path Parameters
+
+| Parameter | Type   | Required | Description                             |
+| --------- | ------ | -------- | --------------------------------------- |
+| cart_id   | string | Yes      | The UUID of the cart                    |
+| coupon    | string | Yes      | The coupon code to remove from the cart |
+
+## Discount Types
+
+EverShop supports various discount types that can be specified in the `discount_type` parameter:
+
+| Discount Type                            | Description                                               |
+| ---------------------------------------- | --------------------------------------------------------- |
+| fixed_discount_to_entire_order           | Applies a fixed amount discount to the entire order       |
+| percentage_discount_to_entire_order      | Applies a percentage discount to the entire order         |
+| fixed_discount_to_specific_products      | Applies a fixed amount discount to specific products only |
+| percentage_discount_to_specific_products | Applies a percentage discount to specific products only   |
+| buy_x_get_y                              | Buy X quantity of products, get Y quantity free           |
+
+## Troubleshooting
+
+### Common Error Codes
+
+| Status Code | Description      | Solution                                      |
+| ----------- | ---------------- | --------------------------------------------- |
+| 400         | Bad Request      | Check your request payload for invalid data   |
+| 401         | Unauthorized     | Ensure your API credentials are correct       |
+| 404         | Not Found        | Verify the coupon ID exists                   |
+| 409         | Conflict         | The coupon code may already be in use         |
+| 422         | Validation Error | The coupon conditions are not met by the cart |
+| 500         | Server Error     | Contact support if the issue persists         |

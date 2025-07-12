@@ -2,26 +2,34 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
-sidebar_label: Cms Page
-title: Cms Page REST API
-description: Use the REST API to interact with EverShop cms pages. Create, update, delete, and get cms pages.
+  - EverShop API
+  - CMS Pages
+  - Content Management
+  - Static Pages
+  - REST API
+sidebar_label: CMS Pages
+title: CMS Page REST API
+description: Comprehensive guide to managing content pages in EverShop. Learn how to create, update, retrieve, and delete CMS pages using the REST API.
 ---
 
-# Cms Page API
+# CMS Page API
 
-Use the REST API to interact with EverShop cms pages.
+## Overview
 
-## Create a page
-
-Use this endpoint to create a category.
+The CMS Page API provides endpoints for managing static content pages in your EverShop store. CMS pages are useful for creating informational content such as About Us, Contact Us, Terms and Conditions, Privacy Policy, and other content that doesn't fit within the product catalog structure.
 
 import Api from '@site/src/components/rest/Api';
 
+## Endpoints
+
+### Create a CMS Page
+
+Creates a new content page in the system. You can specify the page content, layout, and SEO metadata.
+
 <Api
-  method="POST"
-  url="/api/pages"
-  requestSchema={{
+method="POST"
+url="/api/pages"
+requestSchema={{
   "type": "object",
   "properties": {
     "status": {
@@ -34,7 +42,8 @@ import Api from '@site/src/components/rest/Api';
         "1",
         0,
         1
-      ]
+      ],
+      "description": "Page status: 1 for published, 0 for unpublished"
     },
     "layout": {
       "type": "string",
@@ -43,25 +52,32 @@ import Api from '@site/src/components/rest/Api';
         "twoColumnsLeft",
         "twoColumnsRight",
         "threeColumns"
-      ]
+      ],
+      "description": "Page layout template to use for this content"
     },
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "Title of the page displayed to visitors"
     },
     "content": {
-      "type": "string"
+      "type": "string",
+      "description": "HTML content of the page"
     },
     "url_key": {
-      "type": "string"
+      "type": "string",
+      "description": "URL-friendly identifier for the page"
     },
     "meta_title": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta title for SEO purposes"
     },
     "meta_description": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta description for SEO purposes"
     },
     "meta_keywords": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta keywords for SEO purposes"
     }
   },
   "required": [
@@ -76,22 +92,22 @@ import Api from '@site/src/components/rest/Api';
   ],
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "cms_page_id": 14,
     "uuid": "e15da567a66c11edb46b60d819134f39",
     "layout": "oneColumn",
     "status": 1,
-    "created_at": null,
-    "updated_at": null,
+    "created_at": "2023-02-07 10:15:32",
+    "updated_at": "2023-02-07 10:15:32",
     "cms_page_description_id": 15,
     "cms_page_description_cms_page_id": 14,
-    "url_key": "OSbIajIBDgJMem2VtiF4",
-    "name": "OSbIajIBDgJMem2VtiF4",
-    "content": "OSbIajIBDgJMem2VtiF4",
-    "meta_title": "fixed_discount_to_entire_order",
-    "meta_keywords": "fixed_discount_to_entire_order",
-    "meta_description": "fixed_discount_to_entire_order",
+    "url_key": "about-us",
+    "name": "About Our Company",
+    "content": "<h1>About Us</h1><p>Welcome to our company. We specialize in providing high-quality products and exceptional customer service.</p>",
+    "meta_title": "About Us | Our Company Story",
+    "meta_keywords": "about us, company history, our story, mission",
+    "meta_description": "Learn about our company's history, mission, and values. Discover why customers choose us for their shopping needs.",
     "links": [
       {
         "rel": "cmsPageGrid",
@@ -111,7 +127,7 @@ import Api from '@site/src/components/rest/Api';
       },
       {
         "rel": "view",
-        "href": "/page/OSbIajIBDgJMem2VtiF4",
+        "href": "/page/about-us",
         "action": "GET",
         "types": [
           "text/xml"
@@ -120,18 +136,18 @@ import Api from '@site/src/components/rest/Api';
     ]
   }
 }`}
- />
+/>
 
 <hr />
 
-## Update a page
+### Update a CMS Page
 
-Use this endpoint to update a page.
+Modifies an existing content page. You can update any of the page attributes, including content, layout, and SEO metadata.
 
 <Api
-  method="PATCH"
-  url="/api/pages/{id}"
-  requestSchema={{
+method="PATCH"
+url="/api/pages/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+requestSchema={{
   "type": "object",
   "properties": {
     "status": {
@@ -144,7 +160,8 @@ Use this endpoint to update a page.
         "1",
         0,
         1
-      ]
+      ],
+      "description": "Page status: 1 for published, 0 for unpublished"
     },
     "layout": {
       "type": "string",
@@ -153,25 +170,32 @@ Use this endpoint to update a page.
         "twoColumnsLeft",
         "twoColumnsRight",
         "threeColumns"
-      ]
+      ],
+      "description": "Page layout template to use for this content"
     },
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "Title of the page displayed to visitors"
     },
     "content": {
-      "type": "string"
+      "type": "string",
+      "description": "HTML content of the page"
     },
     "url_key": {
-      "type": "string"
+      "type": "string",
+      "description": "URL-friendly identifier for the page"
     },
     "meta_title": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta title for SEO purposes"
     },
     "meta_description": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta description for SEO purposes"
     },
     "meta_keywords": {
-      "type": "string"
+      "type": "string",
+      "description": "Meta keywords for SEO purposes"
     }
   },
   "required": [
@@ -179,22 +203,22 @@ Use this endpoint to update a page.
   ],
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "cms_page_id": 14,
-    "uuid": "e15da567a66c11edb46b60d819134f39",
+    "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
     "layout": "oneColumn",
     "status": 1,
-    "created_at": null,
-    "updated_at": null,
+    "created_at": "2023-02-07 10:15:32",
+    "updated_at": "2023-02-07 14:18:05",
     "cms_page_description_id": 15,
     "cms_page_description_cms_page_id": 14,
     "url_key": "contact-us",
-    "name": "Contact us",
-    "content": "Page content",
-    "meta_title": "Contact us",
-    "meta_keywords": "Contact us",
-    "meta_description": "Contact us",
+    "name": "Contact Us",
+    "content": "<h1>Contact Us</h1><p>We'd love to hear from you! Please use the form below to get in touch with our customer service team.</p><form>...</form>",
+    "meta_title": "Contact Us | Customer Support",
+    "meta_keywords": "contact, customer service, support, help",
+    "meta_description": "Contact our customer support team for assistance with orders, returns, or product questions.",
     "links": [
       {
         "rel": "cmsPageGrid",
@@ -206,7 +230,7 @@ Use this endpoint to update a page.
       },
       {
         "rel": "edit",
-        "href": "/admin/pages/edit/e15da567a66c11edb46b60d819134f39",
+        "href": "/admin/pages/edit/433ba97f-8be7-4be9-be3f-a9f341f2b89f",
         "action": "GET",
         "types": [
           "text/xml"
@@ -214,7 +238,7 @@ Use this endpoint to update a page.
       },
       {
         "rel": "view",
-        "href": "/page/OSbIajIBDgJMem2VtiF4",
+        "href": "/page/contact-us",
         "action": "GET",
         "types": [
           "text/xml"
@@ -223,34 +247,159 @@ Use this endpoint to update a page.
     ]
   }
 }`}
- />
+/>
 
- <hr />
+<hr />
 
- ## Delete a page
+### Delete a CMS Page
 
-Use this endpoint to delete a page.
+Permanently removes a content page from the system.
 
 <Api
-  method="DELETE"
-  url="/api/pages/{id}"
-  responseSample={`{
+method="DELETE"
+url="/api/pages/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+responseSample={`{
   "data": {
     "cms_page_id": 14,
-    "uuid": "e15da567a66c11edb46b60d819134f39",
+    "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
     "layout": "twoColumnsLeft",
     "status": 1,
-    "created_at": null,
+    "created_at": "2023-02-07 10:15:32",
     "updated_at": "2023-02-07 14:18:05",
     "cms_page_description_id": 15,
     "cms_page_description_cms_page_id": 14,
-    "url_key": "OSbIajIBDgJMem2VtiF4",
     "url_key": "contact-us",
-    "name": "Contact us",
-    "content": "Page content",
-    "meta_title": "Contact us",
-    "meta_keywords": "Contact us",
-    "meta_description": "Contact us"
+    "name": "Contact Us",
+    "content": "<h1>Contact Us</h1><p>We'd love to hear from you! Please use the form below to get in touch with our customer service team.</p><form>...</form>",
+    "meta_title": "Contact Us | Customer Support",
+    "meta_keywords": "contact, customer service, support, help",
+    "meta_description": "Contact our customer support team for assistance with orders, returns, or product questions."
   }
 }`}
- />
+/>
+
+<hr />
+
+### Get a CMS Page
+
+Retrieves detailed information about a specific content page.
+
+<Api
+method="GET"
+url="/api/pages/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+responseSample={`{
+  "data": {
+    "cms_page_id": 14,
+    "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
+    "layout": "oneColumn",
+    "status": 1,
+    "created_at": "2023-02-07 10:15:32",
+    "updated_at": "2023-02-07 14:18:05",
+    "cms_page_description_id": 15,
+    "cms_page_description_cms_page_id": 14,
+    "url_key": "contact-us",
+    "name": "Contact Us",
+    "content": "<h1>Contact Us</h1><p>We'd love to hear from you! Please use the form below to get in touch with our customer service team.</p><form>...</form>",
+    "meta_title": "Contact Us | Customer Support",
+    "meta_keywords": "contact, customer service, support, help",
+    "meta_description": "Contact our customer support team for assistance with orders, returns, or product questions."
+  }
+}`}
+/>
+
+<hr />
+
+### List All CMS Pages
+
+Retrieves a paginated list of all content pages in the system.
+
+<Api
+method="GET"
+url="/api/pages"
+responseSample={`{
+  "data": [
+    {
+      "cms_page_id": 12,
+      "uuid": "d15da567a66c11edb46b60d819134f39",
+      "layout": "oneColumn",
+      "status": 1,
+      "created_at": "2023-02-06 10:15:32",
+      "updated_at": "2023-02-06 10:15:32",
+      "name": "About Us",
+      "url_key": "about-us",
+      "content": "<h1>About Us</h1><p>Welcome to our company...</p>"
+    },
+    {
+      "cms_page_id": 13,
+      "uuid": "d35da567a66c11edb46b60d819134f39",
+      "layout": "twoColumnsRight",
+      "status": 1,
+      "created_at": "2023-02-06 11:20:15",
+      "updated_at": "2023-02-06 11:20:15",
+      "name": "Terms and Conditions",
+      "url_key": "terms-and-conditions",
+      "content": "<h1>Terms and Conditions</h1><p>Please read our terms carefully...</p>"
+    },
+    {
+      "cms_page_id": 14,
+      "uuid": "e15da567a66c11edb46b60d819134f39",
+      "layout": "oneColumn",
+      "status": 1,
+      "created_at": "2023-02-07 10:15:32",
+      "updated_at": "2023-02-07 14:18:05",
+      "name": "Contact Us",
+      "url_key": "contact-us",
+      "content": "<h1>Contact Us</h1><p>We'd love to hear from you...</p>"
+    }
+  ],
+  "links": {
+    "first": "/api/pages?page=1",
+    "last": "/api/pages?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "path": "/api/pages",
+    "per_page": 20,
+    "to": 3,
+    "total": 3
+  }
+}`}
+/>
+
+## Error Handling
+
+All endpoints may return the following error responses:
+
+| Status Code | Description                            |
+| ----------- | -------------------------------------- |
+| 400         | Bad Request - Invalid parameters       |
+| 401         | Unauthorized - Authentication required |
+| 403         | Forbidden - Insufficient permissions   |
+| 404         | Not Found - CMS page doesn't exist     |
+| 500         | Server Error - Something went wrong    |
+
+Error responses follow this format:
+
+```json
+{
+  "error": {
+    "status": 404,
+    "message": "CMS page not found"
+  }
+}
+```
+
+## Page Layouts
+
+EverShop provides several page layout options for CMS pages:
+
+| Layout Option   | Description                                    |
+| --------------- | ---------------------------------------------- |
+| oneColumn       | Full-width content area                        |
+| twoColumnsLeft  | Content area with a left sidebar               |
+| twoColumnsRight | Content area with a right sidebar              |
+| threeColumns    | Content area with both left and right sidebars |

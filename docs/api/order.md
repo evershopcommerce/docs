@@ -2,7 +2,7 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
+  - EverShop api
 sidebar_label: Order
 title: Order REST API
 description: Use the REST API to interact with EverShop orders.
@@ -19,9 +19,9 @@ Use this endpoint to create an order.
 import Api from '@site/src/components/rest/Api';
 
 <Api
-  method="POST"
-  url="/api/orders"
-  requestSchema={{
+method="POST"
+url="/api/orders"
+requestSchema={{
   "type": "object",
   "properties": {
     "cart_id": {
@@ -38,7 +38,7 @@ import Api from '@site/src/components/rest/Api';
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "order_id": 274,
     "uuid": "fd0b4f0fd6704ed0b53fa0c64ae7df3c",
@@ -134,7 +134,7 @@ import Api from '@site/src/components/rest/Api';
     ]
   }
 }`}
- />
+/>
 
 <hr />
 
@@ -143,9 +143,9 @@ import Api from '@site/src/components/rest/Api';
 Use this endpoint to create a shipment for an order.
 
 <Api
-  method="POST"
-  url="/api/orders/{id}/shipments"
-  requestSchema={{
+method="POST"
+url="/api/orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments"
+requestSchema={{
   "type": "object",
   "properties": {
     "carrier_name": {
@@ -157,7 +157,7 @@ Use this endpoint to create a shipment for an order.
   },
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "shipment_id": 50,
     "shipment_order_id": 12,
@@ -168,18 +168,18 @@ Use this endpoint to create a shipment for an order.
     "updated_at": "2023-02-06 09:13:35"
   }
 }`}
- />
+/>
 
  <hr />
 
- ## Update a shipment
+## Update a shipment
 
 Use this endpoint to update a shipment.
 
 <Api
-  method="PATCH"
-  url="/api//orders/{order_id}/shipments/{shipment_id}"
-  requestSchema={{
+method="PATCH"
+url="/api//orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments/23de497f-8be7-4be9-be3f-a9f341f2b89f"
+requestSchema={{
   "type": "object",
   "properties": {
     "carrier_name": {
@@ -191,7 +191,7 @@ Use this endpoint to update a shipment.
   },
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "shipment_id": 50,
     "shipment_order_id": 12,
@@ -202,4 +202,4 @@ Use this endpoint to update a shipment.
     "updated_at": "2023-02-06 09:13:35"
   }
 }`}
- />
+/>

@@ -3,8 +3,13 @@
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+  noIndex: process.env.WHERE_IS_THIS === "acc" ? true : false,
   title: "EverShop",
   titleDelimiter: " - ",
+  customFields: {
+    // Put your custom environment here
+    where_is_this: process.env.WHERE_IS_THIS || "production", // "local", "acc", "production"
+  },
   tagline:
     "NodeJS ecommerce platform with essential commerce features. Built with React, modular and fully customizable",
   url: "https://evershop.io",

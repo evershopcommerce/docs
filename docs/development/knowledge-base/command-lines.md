@@ -1,79 +1,111 @@
 ---
 sidebar_position: 12
 keywords:
-- Evershop command lines
-sidebar_label: Command Lines
-title: Command lines
-description: List of EverShop command lines which help you to build and launch your online store with detail explain.
+  - EverShop command-line interface
+  - CLI commands
+  - Store setup commands
+sidebar_label: Command-Line Interface
+title: Command-Line Interface
+description: Comprehensive guide to EverShop's command-line interface with detailed explanations of commands for building, developing, and managing your online store.
 ---
 
-# EverShop command lines
+# EverShop Command-Line Interface
 
-EverShop comes with several command lines which help you to develop and launch your store.
+EverShop provides a robust set of command-line tools to help you develop, build, and manage your online store efficiently. This document outlines all available commands with their purposes and usage examples.
 
-Below is the list of available commands
+## Installation Command
 
-## Evershop Installation Command
-
-This command is used to install your store. Checkout the [installation guide](/docs/development/getting-started/installation-guide) for more information.
+Use this command to install and set up your EverShop store. For detailed steps, refer to the [installation guide](/docs/development/getting-started/installation-guide).
 
 ```bash
 evershop install
 ```
 
-## Evershop Dev Command
+## Development Command
 
-This command will start your store in development mode. 
+Start your store in development mode with hot-reloading enabled for a streamlined development experience:
 
 ```bash
 evershop dev
 ```
 
-## Evershop Debug Command
+This command automatically enables debug mode and watches for file changes, providing immediate feedback during development.
 
-This command will start your store in production mode and enable the debugging. 
+## Debug Command
+
+Run your store in production mode with debugging enabled:
 
 ```bash
 evershop start --debug
 ```
 
 :::info
-The debug mode will enable by default when you run `evershop dev` command.
+Debug mode is automatically enabled when you run the `evershop dev` command. Use this specific command when you need debugging capabilities in a production-like environment.
 :::
 
-## Evershop Build Command
+## Build Command
 
-This command builds the [React](https://reactjs.org/) components and make your store ready for production. The built components will be stored in the `.evershop` folder.
-
+Compile and optimize your store's [React](https://reactjs.org/) components for production deployment:
 
 ```bash
 evershop build
 ```
 
+This command processes all React components and generates optimized bundles in the `.evershop` folder, preparing your application for production deployment.
+
 :::info
-If you want to skip the minimization process, you can run `evershop build -- --skip-minify` command.
+To skip the JavaScript minification process (useful for debugging production builds), use the following command:
+
+```bash
+evershop build -- --skip-minify
+```
+
 :::
 
-## Evershop Start Command
+## Start Command
 
-This command starts your store in production mode. You need to run `evershop build` before running this command.
+Launch your store in production mode:
 
 ```bash
 evershop start
 ```
 
-## Evershop Admin User Create Command
+:::warning
+You must run `evershop build` before using the start command to ensure all components are properly compiled for production.
+:::
 
-You can use this command to create a new admin user.
+## Admin User Management Commands
 
-```bash
-npm run user:create -- --email "user email" --password "user password" --name "user name"
-```
+### Create Admin User
 
-## Evershop Admin User Change Password Command
-
-You can use this command to change the password of an admin user.
+Create a new administrator account for the admin panel:
 
 ```bash
-npm run user:changePassword -- --email "user email" --password "new password"
+npm run user:create -- --email "admin@example.com" --password "securePassword" --name "Admin Name"
 ```
+
+All parameters are required:
+
+- `--email`: Email address for the admin user
+- `--password`: Secure password for account access
+- `--name`: Full name of the administrator
+
+### Change Admin Password
+
+Update the password for an existing administrator account:
+
+```bash
+npm run user:changePassword -- --email "admin@example.com" --password "newSecurePassword"
+```
+
+Required parameters:
+
+- `--email`: Email address of the existing admin user
+- `--password`: New password to set for the account
+
+## Best Practices
+
+- Always run the build command before deploying to production
+- Use development mode during active development to leverage hot-reloading
+- Create separate admin accounts for each team member for better accountability
+- Regularly update admin passwords for enhanced security

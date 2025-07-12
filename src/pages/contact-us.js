@@ -1,5 +1,4 @@
 import React from "react";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import { Formik } from "formik";
 
@@ -231,7 +230,7 @@ function ContactForm() {
                       )}
                     </div>
                     {success && (
-                      <div className="text-white my-2">
+                      <div className="text-green-600 my-2">
                         Thank you! We will get back to you soon.
                       </div>
                     )}
@@ -245,7 +244,7 @@ function ContactForm() {
                         className="button button--primary w-full p-3 text-base"
                         type="submit"
                         disabled={isSubmitting}>
-                        Submit
+                        {isSubmitting ? "Submitting..." : "Submit"}
                       </button>
                       <p className="italic text-sm text-Neutrals-04 pt-1">
                         * Your information is secure with us.
@@ -263,7 +262,6 @@ function ContactForm() {
 }
 
 export default function ContactUs() {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title="Contact Us"

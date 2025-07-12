@@ -1,69 +1,177 @@
 ---
 sidebar_position: 1
-displayed_sidebar: 'apiSidebar'
+displayed_sidebar: "apiSidebar"
 keywords:
-- EverShop api
+  - EverShop API
+  - REST API
+  - GraphQL API
+  - API Authentication
+  - E-commerce API
 sidebar_label: Overview
-title: Api Overview 
-description: The overview of EverShop rest api. Learn more about the rest api authentication, error handling, and more.
+title: API Overview
+description: Comprehensive overview of the EverShop API architecture. Learn about REST and GraphQL APIs, authentication methods, error handling, and best practices for integration.
 ---
 
-# RESTful API Overview
+# API Overview
 
-EverShop is an API based e-commerce platform. It provides a RESTful API and a GraphQL API for developers to build their own e-commerce applications.
+## Introduction
 
-EverShop uses the [REST](https://en.wikipedia.org/wiki/Representational_state_transfer) for creating, updating, and deleting resources. It uses the [GraphQL](https://graphql.org/) for querying resources.
+EverShop is built on a modern API-first architecture, providing developers with powerful and flexible ways to interact with the platform. This approach enables seamless integration with various frontend technologies, third-party systems, and custom applications.
+
+EverShop offers two complementary API approaches:
+
+1. **RESTful API** - For creating, updating, and deleting resources
+2. **GraphQL API** - For efficient querying of resources with precise control over returned data
+
+This dual approach combines the simplicity and standardization of REST with the flexibility and efficiency of GraphQL.
 
 :::info
-Check out [this document](/docs/development/knowledge-base/api-routes.md) to learn more about the API routes.
+For detailed information on API route configuration, refer to our [API Routes documentation](/docs/development/knowledge-base/api-routes.md).
 :::
 
 :::info
-Check out [this document](/docs/development/knowledge-base/graphql.md) to learn more about the GraphQL API in EverShop.
+To learn about EverShop's GraphQL implementation, visit our [GraphQL API documentation](/docs/development/knowledge-base/graphql.md).
 :::
+
+## API Architecture
+
+### REST API
+
+The REST API follows standard RESTful principles with resource-oriented URLs and appropriate HTTP methods. This API is ideal for:
+
+- Creating, updating, and deleting resources
+- Standard CRUD operations
+- Familiar, predictable patterns for developers
+
+### GraphQL API
+
+The GraphQL API provides a single endpoint that accepts complex queries. This API is ideal for:
+
+- Retrieving exactly the data you need, no more or less
+- Reducing the number of network requests
+- Complex data requirements with nested relationships
 
 ## Content Types
 
-EverShop uses the [JSON](https://www.json.org/json-en.html) format for all the API requests and responses. The content type of the request and response is `application/json`.
+All API requests and responses use the [JSON](https://www.json.org/json-en.html) format. The content type for both requests and responses is `application/json`.
+
+When sending data to the API, include the following header:
+
+```
+Content-Type: application/json
+```
 
 ## Authentication
 
-For now, EverShop supports the cookie based authentication. You can get the cookie by calling the [admin login](/docs/api/user) API. This cookie will be used for all the subsequent API calls.
+### Cookie-Based Authentication
 
-Some API endpoints do not require authentication. If the `access` property is set to `public` in the `route.json` file, the API endpoint will be treated as a public API endpoint. Public API endpoints can be accessed by anyone.
+EverShop currently implements cookie-based authentication. To authenticate:
 
-## HTTP verbs
-Where possible, the EverShop REST API strives to use appropriate HTTP verbs for each action. Note that HTTP verbs are case-sensitive.
+1. Call the [admin login](/docs/api/user) API endpoint
+2. The API returns a session cookie
+3. Include this cookie in all subsequent requests requiring authentication
 
-- GET:	Used for retrieving resources.
-- POST:	Used for creating resources.
-- PATCH:	Used for updating resources with partial JSON data. For instance, an Issue resource has title and body attributes. A PATCH request may accept one or more of the attributes to update the resource.
-- DELETE:	Used for deleting resources.
+### Public Endpoints
+
+Some API endpoints are publicly accessible without authentication. These endpoints are identified by the `access` property set to `public` in their respective `route.json` files. No authentication credentials are required for these endpoints.
+
+## HTTP Methods
+
+EverShop's REST API uses standard HTTP methods to perform different actions on resources:
+
+| Method | Description                                | Idempotent |
+| ------ | ------------------------------------------ | ---------- |
+| GET    | Retrieves resources without modifying them | Yes        |
+| POST   | Creates new resources                      | No         |
+| PATCH  | Updates resources with partial data        | Yes        |
+| DELETE | Removes resources                          | Yes        |
+
+### Idempotency
+
+Idempotent methods can be called multiple times with the same effect as calling them once. This is important for reliability and error recovery.
+
+## Response Codes
+
+EverShop uses standard HTTP status codes to indicate the result of API requests:
+
+### Success Codes
+
+| Code | Description | Common Use Cases                        |
+| ---- | ----------- | --------------------------------------- |
+| 200  | OK          | Successful GET, PATCH, or DELETE        |
+| 201  | Created     | Successful POST that created a resource |
+
+### Client Error Codes
+
+| Code | Description        | Common Use Cases                           |
+| ---- | ------------------ | ------------------------------------------ |
+| 400  | Bad Request        | Invalid input or missing parameters        |
+| 401  | Unauthorized       | Authentication failure                     |
+| 403  | Forbidden          | Authenticated but insufficient permissions |
+| 404  | Not Found          | Resource doesn't exist                     |
+| 405  | Method Not Allowed | HTTP method not supported for endpoint     |
+| 409  | Conflict           | Resource state conflict (e.g., duplicate)  |
+
+### Server Error Codes
+
+| Code | Description           | Common Use Cases              |
+| ---- | --------------------- | ----------------------------- |
+| 500  | Internal Server Error | Unexpected server-side errors |
 
 ## Error Handling
 
-EverShop uses the [HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) to indicate the status of the API calls. The HTTP status code is returned in the response header.
-
-List of the HTTP status codes:
-
-- 200: OK
-- 400: Bad Request
-- 401: Unauthorized
-- 403: Forbidden
-- 404: Not Found
-- 405: Method Not Allowed
-- 500: Internal Server Error
-
-### Error Response
-
-If the API call was failed, the response body will contain the error message. The error message is a JSON object with the following structure:
+When an API request fails, the response will include an error object with details about the failure:
 
 ```json
 {
   "error": {
     "status": 500,
-    "message": "error_message"
+    "message": "Detailed error message"
   }
 }
 ```
 
+The error object contains:
+
+- `status`: The HTTP status code
+- `message`: A human-readable description of the error
+
+## Pagination
+
+For endpoints that return collections of resources, EverShop implements pagination to manage response size:
+
+```json
+{
+  "data": [...],
+  "links": {
+    "first": "/api/resource?page=1",
+    "last": "/api/resource?page=5",
+    "prev": "/api/resource?page=2",
+    "next": "/api/resource?page=4"
+  },
+  "meta": {
+    "current_page": 3,
+    "from": 41,
+    "last_page": 5,
+    "path": "/api/resource",
+    "per_page": 20,
+    "to": 60,
+    "total": 100
+  }
+}
+```
+
+### Pagination Parameters
+
+| Parameter | Description              | Default |
+| --------- | ------------------------ | ------- |
+| page      | Page number to retrieve  | 1       |
+| limit     | Number of items per page | 20      |
+
+## Best Practices
+
+1. **Use HTTPS** - Always use secure connections for API requests
+2. **Limit Request Volume** - Implement proper caching and throttling mechanisms
+3. **Handle Rate Limiting** - Be prepared to handle 429 Too Many Requests responses
+4. **Validate Input** - Always validate request data before sending to the API
+5. **Handle Errors Gracefully** - Implement proper error handling in your application

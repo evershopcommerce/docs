@@ -1,31 +1,35 @@
 ---
 sidebar_position: 12
 keywords:
-- Deploy EverShop, Digitalocean, Digitalocean App Platforms
-sidebar_label: Deploy EverShop To Digitalocean - App Platforms
-title: Deploy EverShop To Digitalocean App Platforms
-description: This document gives a step by step explanation on how to deploy EverShop to Digitalocean using Digitalocean App Platforms.
+  - DigitalOcean deployment
+  - App Platform hosting
+  - EverShop cloud deployment
+  - Node.js PostgreSQL deployment
+sidebar_label: Deploy to DigitalOcean App Platform
+title: Deploy EverShop to DigitalOcean App Platform
+description: A comprehensive, step-by-step guide on deploying your EverShop e-commerce application to DigitalOcean App Platform with PostgreSQL database integration.
 ---
 
-# Deploy EverShop To Digitalocean - App Platforms
+# Deploy EverShop to DigitalOcean App Platform
 
-This document gives a step by step explanation on how to deploy EverShop to Digitalocean using Digitalocean App Platforms. 
+This guide provides detailed instructions for deploying EverShop to DigitalOcean App Platform with a managed PostgreSQL database. Follow these steps to get your e-commerce store running in a production environment.
 
 ## Prerequisites
 
-Before you start deploying EverShop to Digitalocean, you need to have the following:
-- A Digitalocean account.
-- A domain name.
-- A GitHub account.
-- A GitHub repository with the EverShop source code.
+Before beginning the deployment process, ensure you have:
 
-## Get started
+- A DigitalOcean account with billing set up
+- A registered domain name (for production use)
+- A GitHub account
+- A GitHub repository containing your EverShop application code
 
-### Preprare a GitHub repository with the EverShop source code
+## Getting Started
 
-Although Digitalocean App Platforms supports several deployment methods, in this tutorial, we will use the GitHub repository as the deployment method. First, you need to have a GitHub repository with the EverShop source code. You will be asked to connect your GitHub account to Digitalocean during the deployment process.
+### Prepare Your GitHub Repository
 
-During the deployment process, Digitalocean will execute the installation command to install the dependencies and build, then start the application. We need to make sure the following commands are available in the `package.json` file:
+While DigitalOcean App Platform supports multiple deployment methods, this tutorial focuses on deployment via GitHub integration. This approach enables continuous deployment whenever you push changes to your repository.
+
+Ensure your `package.json` file contains the following scripts that DigitalOcean will execute during deployment:
 
 ```json
 "scripts": {
@@ -33,123 +37,178 @@ During the deployment process, Digitalocean will execute the installation comman
     "start": "evershop start",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
-  }
+}
 ```
 
-### Create a new Digitalocean App
+### Create a New DigitalOcean App
 
-Login to your Digitalocean account and navigate to the App Platform dashboard. Click on the "Create App" button to create a new app.
+1. Log in to your DigitalOcean account and navigate to the App Platform dashboard.
+
+2. Click the "Create App" button to begin the setup process.
 
 <p align="center">
 
-  ![Create a new Digitalocean App](./img/create-app-repo.png "Create a new Digitalocean App")
+![Create a new DigitalOcean App](./img/create-app-repo.png "Create a new DigitalOcean App")
+
 </p>
 
-In the "Resources" section, select the GitHub repository that contains the EverShop source code. You can click on the "Manage Access" button to grant Digitalocean access to your GitHub repository.
+3. In the "Resources" section, select your GitHub repository containing the EverShop code. If this is your first time connecting GitHub to DigitalOcean, click "Manage Access" to authorize the integration.
 
-After you have selected the GitHub repository, you need to configure the deployment settings. You can use the default settings or customize them according to your needs.
+4. Configure your deployment settings. You can typically use the default settings, but verify the branch you want to deploy.
 
 <p align="center">
 
-  ![Deployment Branch Setup](./img/deployment-branch-setting.png "Deployment Branch Setup")
+![Deployment Branch Setup](./img/deployment-branch-setting.png "Deployment Branch Setup")
+
 </p>
 
-Click "Next" button to continue to the plan review. In this tutorial, we will use the "Basic" plan. You can choose the plan that suits your needs.
+5. Click "Next" to proceed to the plan selection. Choose the plan that best fits your requirements. For testing or small-scale deployments, the "Basic" plan is often sufficient.
 
 <p align="center">
 
-  ![App Plan Review](./img/review-app-plan.png "App Plan Review")
-</p>
+![App Plan Review](./img/review-app-plan.png "App Plan Review")
 
-:::warning
-Do not add a database to your app here. The reason is that EverShop requires a PostgreSQL database 13+ while Digitalocean App Platforms only supports PostgreSQL 12. We will create a separate database later in this tutorial.
-:::
-
-Let's move to the "Environment Variables" section. You can just leave it empty for now. We will add the environment variables later in this tutorial.
-
-<p align="center">
-
-  ![App Environment Variables](./img/create-app-environment.png "App Environment Variables")
-</p>
-
-That's it! You can just go ahead to the "Info" and "Review" sections and finish the app creation process.
-
-## Create a PostgreSQL database
-
-EverShop requires a PostgreSQL database 13+. In this tutorial, we will create a PostgreSQL database using Digitalocean Managed Databases.
-Just click the "Databases" from the navigation menu and then click the "Create Database" button. This step is quite straightforward. You can choose the PostgreSQL version, the region, and the plan that suits your needs.
-
-<p align="center">
-
-  ![Create a PostgreSQL Database](./img/create-postgresql-database.png "Create a PostgreSQL Database")
-</p>
-
-After you have created the database, you can find the connection details in the "Overview" section of your database. You will need these details to connect your EverShop application to the database later in this tutorial.
-
-<p align="center">
-
-  ![PostgreSQL Connection Details](./img/database-connection-details.png "PostgreSQL Connection Details")
 </p>
 
 :::warning
-We need to use the "Public Network" connection method to connect the EverShop application to the database. This is because Digitalocean App Platforms does not support the "VPC Network" connection method.
+Do not add a database to your app at this stage. EverShop requires PostgreSQL 13 or higher, but DigitalOcean App Platform currently offers PostgreSQL 12 through its integrated database option. We'll create a compatible database separately in the next section.
 :::
 
-## Configure the EverShop application
-
-### Configure the environment variables for the EverShop application
-
-Now let's go back to the Digitalocean App Platform dashboard and configure the environment variables for the EverShop application.
-
-Open your app and navigate to the "Settings" tab. Find the "App-level environment variables" section and add the following environment variables:
+6. For now, leave the "Environment Variables" section empty. We'll configure these after creating the database.
 
 <p align="center">
 
-  ![App Environment Variables](./img/setup-environment-variables.png "App Environment Variables")
+![App Environment Variables](./img/create-app-environment.png "App Environment Variables")
+
 </p>
 
-- `DB_HOST`: The hostname of your PostgreSQL database.
-- `DB_PORT`: The port of your PostgreSQL database.
-- `DB_NAME`: The name of your PostgreSQL database.
-- `DB_USER`: The username of your PostgreSQL database.
-- `DB_PASSWORD`: The password of your PostgreSQL database.
-- `DB_SSLMODE`: Set the value to `no-verify`.
+7. Complete the "Info" and "Review" sections, then finalize your app creation by clicking "Create Resources."
 
-### Configure the deployment commands
-Still in the "Settings" tab, select the app component and navigate to the "Commands" section. 
+## Create a PostgreSQL Database
+
+EverShop requires PostgreSQL version 13 or higher. Follow these steps to create a compatible managed database:
+
+1. From the DigitalOcean dashboard, click "Databases" in the main navigation menu.
+
+2. Click the "Create Database Cluster" button.
+
+3. Select "PostgreSQL" as the database type and choose version 13 or higher.
+
+4. Select your preferred region, typically the same region as your App Platform deployment.
+
+5. Choose an appropriate plan based on your expected traffic and database usage.
 
 <p align="center">
 
-  ![App Commands](./img/configure-deploy-commands.png "App Commands")
+![Create a PostgreSQL Database](./img/create-postgresql-database.png "Create a PostgreSQL Database")
+
 </p>
 
-Here you can add the following commands:
+6. After the database is created, navigate to its "Overview" page to find the connection details you'll need for the next steps.
 
 <p align="center">
 
-  ![App Commands](./img/build-start-commands.png "App Commands")
+![PostgreSQL Connection Details](./img/database-connection-details.png "PostgreSQL Connection Details")
+
 </p>
 
+:::warning
+For App Platform integration, you must use the "Public Network" connection method, as DigitalOcean App Platform does not currently support private "VPC Network" connections to managed databases. Consider implementing additional security measures such as IP restrictions if your application handles sensitive data.
+:::
 
-That's it! Digitalocean App Platforms will triggers deploy your EverShop application every time you push the code to the GitHub repository or update the environment variables. And after this step, your EverShop application should be up and running on Digitalocean App Platforms.
+## Configure Your EverShop Application
+
+### Set Up Environment Variables
+
+Now that your database is ready, configure your EverShop application with the appropriate connection details:
+
+1. Return to your App Platform dashboard and select your EverShop application.
+
+2. Navigate to the "Settings" tab and find the "App-level environment variables" section.
+
+3. Add the following environment variables, using the values from your database connection details:
 
 <p align="center">
 
-  ![App Deployed](./img/deploy-success.png "App Deployed")
+![App Environment Variables](./img/setup-environment-variables.png "App Environment Variables")
+
 </p>
 
-## Create an admin user
+- `DB_HOST`: The hostname of your PostgreSQL database
+- `DB_PORT`: The port number (typically 25060 for DigitalOcean managed PostgreSQL)
+- `DB_NAME`: Your database name
+- `DB_USER`: Your database username
+- `DB_PASSWORD`: Your database password
+- `DB_SSLMODE`: Set to `no-verify` (or `require` if you've configured proper SSL)
 
-Now, let's create an admin user for your store.
+### Configure Deployment Commands
 
-From your app dashboard, navigate to the "Console" tab. You can run the following command to create an admin user:
+To ensure your application builds and starts correctly:
+
+1. In the "Settings" tab, select your app component (typically named after your GitHub repository).
+
+2. Navigate to the "Commands" section.
+
+<p align="center">
+
+![App Commands](./img/configure-deploy-commands.png "App Commands")
+
+</p>
+
+3. Verify that the build and run commands match the scripts in your package.json file:
+
+<p align="center">
+
+![App Commands](./img/build-start-commands.png "App Commands")
+
+</p>
+
+4. Save your changes. DigitalOcean will automatically redeploy your application with the new configuration.
+
+After the deployment process completes, your EverShop application should be up and running on DigitalOcean App Platform. You can verify this by checking the deployment status:
+
+<p align="center">
+
+![App Deployed](./img/deploy-success.png "App Deployed")
+
+</p>
+
+## Create an Administrator Account
+
+To access the admin panel and manage your store, create an administrator account:
+
+1. From your App Platform dashboard, select your EverShop application.
+
+2. Navigate to the "Console" tab to access a command-line interface.
+
+3. Run the following command to create an admin user, replacing the placeholder values with your desired credentials:
 
 ```bash
-npm run user:create -- --email "<Email>" --name "<User Name>" --password "Mypassword@123"
+npm run user:create -- --email "admin@example.com" --name "Admin User" --password "SecurePassword123!"
 ```
 
-Now, you can access the admin panel by visiting the `<Your App Domain>/admin` and log in using the credentials you just created.
+4. Once the command completes successfully, access your admin panel by visiting `https://<your-app-domain>/admin` and log in with your newly created credentials.
 
-That's it! You have successfully deployed EverShop to Digitalocean App Platforms. From now on, you can deploy the application by pushing the changes to the GitHub repository.
+## Next Steps
 
-You can also configure the custom domain, SSL certificate, and other settings from the Digitalocean App Platform dashboard.
+Congratulations! You've successfully deployed EverShop to DigitalOcean App Platform. Here are some additional steps to consider:
+
+### Configure Custom Domain
+
+For production use, configure your custom domain through the App Platform "Settings" tab under the "Domains" section.
+
+### Set Up Continuous Deployment
+
+Your application is already configured for automatic deployment when you push changes to your GitHub repository. You can adjust these settings in the "Settings" tab under the "Components" section.
+
+### Implement Monitoring
+
+Consider setting up monitoring and alerts through DigitalOcean's Monitoring service to keep track of your application's health and performance.
+
+### Regular Backups
+
+Configure regular database backups through the DigitalOcean Managed Database dashboard to protect your store's data.
+
+### Performance Optimization
+
+As your store grows, consider scaling your resources in App Platform and optimizing your EverShop application for improved performance.

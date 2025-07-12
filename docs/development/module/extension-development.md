@@ -1,35 +1,45 @@
 ---
 sidebar_position: 10
 keywords:
-- extension development
+  - extension development
+  - EverShop plugins
+  - custom modules
 sidebar_label: Extension Development
-title: Extension Development
-description: Understand the Need for a Evershop extension development and how to develop a Evershop extension.
+title: Developing Extensions for EverShop
+description: Learn how to develop custom extensions for EverShop, from setup to deployment, including structure, naming conventions, and best practices.
 ---
 
 ![EverShop extension development](./img/evershop-extension-development.jpg "EverShop extension development")
 
 :::info
-Before you start writing code for your Evershop module, we recommend reading [EverShop’s module overview documentation](./module-overview) to understand the basic of EverShop module.
+Before you start writing code for your EverShop extension, we recommend reading the [EverShop Module Overview documentation](./module-overview) to understand the basics of EverShop's modular architecture.
 :::
 
-This document will guide you through the process of enabling the extension feature of EverShop. After that, you will be able to create your own extension and install it to your EverShop project.
+This guide will walk you through the process of setting up and developing extensions for EverShop. Extensions allow you to add new features or modify existing functionality without altering the core codebase.
 
-Let's assume that you have already installed EverShop and you have a running project. If you haven't installed EverShop yet, please check [this document](../getting-started/installation-guide) for the installation guide.
+This guide assumes you have already installed EverShop and have a running project. If you haven't installed EverShop yet, please refer to our [installation guide](../getting-started/installation-guide).
 
 Let's start!
 
-## The `extensions` Folder
+## Setting Up Your Development Environment
 
-In the root folder of your EverShop project, you will find a folder named `extensions`. If it doesn't exist, you can create it manually. This folder contains all of the extensions that you have installed to your project. You can create your own extension and install it to this folder.
+### The `extensions` Directory
 
-You can check [this document](../knowledge-base/architecture-overview) to learn more about the project folder structure.
+In the root folder of your EverShop project, locate or create a directory named `extensions`. This directory will house all the extensions for your project, including both those you develop and those you install from other sources.
 
-## The NPM Workspace
+If the directory doesn't exist yet, you can create it with the following command:
 
-An extension can be a NPM package. It means that you can have a `packages.json` file in your extension with some dependency. To do that, you need to create a NPM workspace. A NPM workspace is a NPM package that contains multiple NPM packages. You can read more about NPM workspace [here](https://docs.npmjs.com/cli/v7/using-npm/workspaces).
+```bash
+mkdir extensions
+```
 
-To enable the NPM workspace feature, you need to add the following lines to your `package.json` file in your EverShop project:
+For more information about EverShop's project structure, refer to the [architecture overview](../knowledge-base/architecture-overview).
+
+### Configuring NPM Workspace
+
+Extensions can have their own dependencies managed through NPM. To properly handle these dependencies, EverShop uses NPM workspaces—a feature that allows you to manage multiple packages within a single project.
+
+To enable NPM workspaces for your extensions, add the following configuration to the `package.json` file in your EverShop project root:
 
 ```js title="package.json"
 {
@@ -38,111 +48,124 @@ To enable the NPM workspace feature, you need to add the following lines to your
   ]
 }
 ```
-After that, when you run `npm install` command, it will install all of the dependencies of your extensions.
 
-## Naming Convention
+With this configuration in place, running `npm install` will install all dependencies for your extensions, and npm will properly resolve shared dependencies across your project and its extensions.
 
-We only accept characters `[a-z]` and `_` for the extension name. The extension name must be unique. It means that you can't have two extensions with the same name.
+## Extension Naming Conventions
 
-### Example
+EverShop enforces specific naming conventions for extensions to ensure compatibility and avoid conflicts:
 
-- `FreeShipping`
-- `Vendor_FreeShipping`
+- Use only lowercase letters `[a-z]` and underscores `_` in extension names
+- Each extension name must be unique within your EverShop installation
+- Consider using a vendor prefix (like `Vendor_ExtensionName`) to prevent name collisions with other extensions
 
-## The Extension Folder Structure
+### Examples of Valid Extension Names
 
-Just like a module, below is the folder structure of an extension:
+- `freeshipping`
+- `vendor_freeshipping`
+- `my_custom_payment_method`
+
+## Extension Structure
+
+Extensions follow a structure similar to EverShop modules. A typical extension includes:
 
 ```bash
 extensions
 └── Vendor_ExtensionName
-    ├── api
-    │   └── postCreate
-    │       ├── route.json
-    │       ├── validatePostMiddleware.js
-    │       └── [validatePostMiddleware]savePostMiddleware.js
-    ├── graphql
-    │   └── types
-    ├── migration
-    │   └── Version_1.0.0.js
-    ├── pages
-    │   ├── admin
+    ├── dist                     # This folder contains the compiled code for the extension
+    ├── src                      # React components used in the extension
+    │   ├── api                  # RESTful API endpoints and middleware
     │   │   └── postCreate
     │   │       ├── route.json
-    │   │       ├── index.js
-    │   │       ├── GeneralComponent.jsx
-    │   │       └── FormComponent.jsx
-    │   └── frontStore
-    │       └── postView
-    │           ├── route.json
-    │           ├── index.js
-    │           ├── TitleComponent.jsx
-    │           ├── PriceComponent.jsx
-    │           └── VariantsComponent.jsx
-    ├── bootstrap.js
-    └── packages.json
+    │   │       ├── validatePostMiddleware.ts
+    │   │       └── [validatePostMiddleware]savePostMiddleware.ts
+    │   ├── graphql              # GraphQL schema definitions and resolvers
+    │   │   └── types
+    │   ├── migration            # Database migration scripts
+    │   │   └── Version_1.0.0.ts
+    │   ├── pages
+    │   │   ├── admin            # Admin panel pages
+    │   │   │   └── postCreate
+    │   │   │       ├── route.json
+    │   │   │       ├── index.ts
+    │   │   │       ├── GeneralComponent.tsx
+    │   │   │       └── FormComponent.tsx
+    │   │   └── frontend        # Frontend pages and components
+    │   │       └── postView
+    │   │           ├── route.json
+    │   │           ├── index.ts
+    │   │           ├── TitleComponent.tsx
+    │   │           ├── PriceComponent.tsx
+    │   │           └── VariantsComponent.tsx
+    │   └── bootstrap.ts
+    ├── tsconfig.json
+    └── package.json         # Extension dependencies
 ```
-You can check [this document](./module-overview) to learn more about the module folder structure.
 
-## Active/Deactive Your Extension
+For more detailed information about module structure, refer to the [module overview documentation](./module-overview).
 
-Let's assume that you have created an extension named `myExtension`. To enable it, you need to add the following lines to your config file in your EverShop project:
+## Activating and Deactivating Extensions
 
-```js title="./config/production.config.json"
+After developing an extension, you need to enable it in your EverShop configuration. For example, if you've created an extension named `myExtension`, add the following configuration to your EverShop config file:
+
+```js title="./config/production.json"
 {
   ...
   "system": {
-        "database": {
-            "host": "localhost",
-            "port": 3306,
-            "database": "evershop",
-            "user": "root",
-            "password": ""
-        },
         "extensions": [
             {
                 "name": "myExtension",
                 "resolve": "extensions/myExtension",
                 "enabled": true,
-                "priority": 10 // Smaller number means higher priority
+                "priority": 10  // Lower numbers indicate higher priority
             }
         ]
     }
 }
 ```
-To disable it, you need to change the `enabled` property to `false`.
+
+To disable the extension, simply change the `enabled` property to `false`.
 
 :::info
-Enabling or disabling an extension requires building your project again.
+After enabling or disabling an extension, you must rebuild your project for the changes to take effect.
 :::
 
-## Publish your extension as a NPM package
+## Publishing Your Extension as an NPM Package
 
-By default, extension is located in the `extensions` folder of your EverShop project. However, you can publish your extension as a NPM package and install it to your EverShop project just like any other NPM package.
+While extensions can be used directly from the `extensions` directory, you can also publish them as NPM packages to make them easy to share and install in other EverShop projects.
 
-```bash 
-npm install @evershop/productcomment
-```
+### Publishing Process
 
-and then hook it up to your EverShop project:
+1. Prepare your extension for publishing:
 
-```js title="./config/production.config.json"
+   - Ensure your `package.json` includes all necessary metadata
+   - Add appropriate documentation
+   - Test your extension thoroughly
+
+2. Publish your package to NPM:
+
+   ```bash
+   npm publish --access public
+   ```
+
+3. Install your published extension in any EverShop project:
+
+   ```bash
+   npm install @yournamespace/your-extension-name
+   ```
+
+4. Configure the extension in your EverShop project:
+
+```js title="./config/production.json"
 {
   ...
   "system": {
-        "database": {
-            "host": "localhost",
-            "port": 3306,
-            "database": "evershop",
-            "user": "root",
-            "password": ""
-        },
         "extensions": [
             {
-                "name": "productcomment",
-                "resolve": "node_modules/@evershop/productcomment",
+                "name": "yourExtensionName",
+                "resolve": "node_modules/@yournamespace/your-extension-name",
                 "enabled": true,
-                "priority": 10 // Smaller number means higher priority
+                "priority": 10
             }
         ]
     }
@@ -150,5 +173,47 @@ and then hook it up to your EverShop project:
 ```
 
 :::info
-Check out the [create your first extension](./create-your-first-extension) document to learn how to create your first extension.
+For a hands-on tutorial on creating your first extension, check out our [Create Your First Extension guide](./create-your-first-extension).
 :::
+
+## Extension Development Best Practices
+
+To ensure your extensions are maintainable, compatible, and provide the best experience for users, follow these best practices:
+
+### 1. Follow EverShop Coding Standards
+
+Maintain consistency with EverShop's core codebase by following the same coding standards and patterns. This makes your extension more intuitive for other developers familiar with EverShop.
+
+### 2. Minimize Core Overrides
+
+Avoid directly overriding core files whenever possible. Instead, use EverShop's extension points, events, and hooks to modify behavior.
+
+### 3. Proper Versioning
+
+Use semantic versioning for your extensions to clearly communicate changes:
+
+- Increment the major version for breaking changes
+- Increment the minor version for new features
+- Increment the patch version for bug fixes
+
+### 4. Comprehensive Testing
+
+Test your extensions thoroughly across different configurations and with other common extensions to ensure compatibility.
+
+### 5. Clear Documentation
+
+Provide clear documentation that includes:
+
+- Installation instructions
+- Configuration options
+- Feature descriptions
+- Any dependencies on other extensions
+- Screenshots or diagrams for complex features
+
+### 6. Handle Updates Gracefully
+
+Implement proper migration scripts for database changes and provide clear update paths between versions of your extension.
+
+### 7. Error Handling
+
+Implement robust error handling to prevent your extension from breaking the entire application if something goes wrong.

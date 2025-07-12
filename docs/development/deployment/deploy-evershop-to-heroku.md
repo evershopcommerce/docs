@@ -1,203 +1,178 @@
 ---
 sidebar_position: 7
 keywords:
-- Deploy EverShop To Heroku
-sidebar_label: Deploy EverShop To Heroku
-title: Deploy EverShop To Heroku
-description: This document describes step by step how to deploy EverShop to Heroku.
+  - Heroku deployment
+  - EverShop hosting
+  - PostgreSQL setup
+  - Node.js cloud hosting
+sidebar_label: Deploy to Heroku
+title: Deploy EverShop to Heroku
+description: A comprehensive guide for deploying your EverShop e-commerce application to Heroku with PostgreSQL database integration.
 ---
 
-# Deploy EverShop To Heroku
+# Deploy EverShop to Heroku
 
-The purpose of this guide is to allow users to deploy EverShop applications on Heroku. This guide uses the Heroku CLI tool with a PostgreSQL database provided by Heroku.
+This guide provides detailed instructions for deploying an EverShop application on Heroku's cloud platform using the Heroku Command Line Interface (CLI) and a PostgreSQL database add-on.
 
 ## Prerequisites
 
-1. An active Heroku account.
-2. An EverShop project installed on your local machine.
-3. Git installed (for version control if your app is in a Git repository).
+Before beginning the deployment process, ensure you have:
+
+1. An active Heroku account
+2. An EverShop project installed and running on your local machine
+3. Git installed on your local machine
+4. [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed
 
 ## Step 1: Create a New Heroku App
 
-1. Log in to the Heroku dashboard (https://dashboard.heroku.com).
-2. Click on the "New" button and select "Create new app" from the dropdown menu.
-3. Fill out the necessary information, including the app name, region, and other settings.
+1. Log in to the [Heroku dashboard](https://dashboard.heroku.com).
+2. Click the "New" button and select "Create new app" from the dropdown menu.
+3. Enter a unique app name, select your preferred region, and click "Create app".
 
 <p align="center">
 
-  ![Heroku Create New App](./img/heroku-create-app.png "Heroku Create New App")
+![Heroku Create New App](./img/heroku-create-app.png "Heroku Create New App")
+
 </p>
 
+## Step 2: Install and Configure Heroku CLI
 
-## Step 2: Install Heroku CLI
-
-1. Download and install the Heroku CLI tool from [heroku](https://devcenter.heroku.com/articles/heroku-cli).
-2. Open a terminal and run the following command to log in to Heroku:
+1. If you haven't already, download and install the Heroku CLI from the [official Heroku documentation](https://devcenter.heroku.com/articles/heroku-cli).
+2. Open your terminal and authenticate with Heroku:
 
 ```bash
 heroku login
 ```
 
-## Step 3: Create a New Heroku Postgres Database
+Follow the prompts to complete the authentication process.
 
-EverShop requires Postgres database. Let's use the Heroku CLI and create a new Heroku Postgres database:
+## Step 3: Set Up a PostgreSQL Database
+
+EverShop requires a PostgreSQL database. Add the Heroku Postgres add-on to your application:
 
 ```bash
-heroku addons:create heroku-postgresql:PLAN_NAME -a APP_NAME
+heroku addons:create heroku-postgresql:PLAN_NAME -a YOUR_APP_NAME
 ```
 
 :::caution
-Replace `PLAN_NAME` with the plan name you want to use. Check [this page](https://devcenter.heroku.com/articles/heroku-postgres-plans) for more information about the available plans.
+Replace `PLAN_NAME` with your desired PostgreSQL plan (e.g., `hobby-dev` for the free tier). See the [Heroku Postgres plans](https://devcenter.heroku.com/articles/heroku-postgres-plans) for available options.
 
-Replace `APP_NAME` with the name of your Heroku app.
+Replace `YOUR_APP_NAME` with your Heroku application name.
 :::
 
-The database credentials are stored as a `string` with the config variable name `DATABASE_URL`. The database credentials can be retrieved using the following command in the terminal:
+### Configure Database Connection
+
+Heroku provides database credentials as a connection string in the `DATABASE_URL` environment variable. View this connection string with:
 
 ```bash
-heroku config -a APP_NAME
+heroku config -a YOUR_APP_NAME
 ```
 
-:::caution
-Replace `APP_NAME` with the name of your Heroku app.
-:::
+You'll see output similar to:
 
-The output should look like this:
-
-```bash
-DATABASE_URL: postgres://gqdnxqkaxcrbyd:dd3aecf3715167ce8a519c518f637sdfcb9ebb0dda3723d050e8a3b8a7cf19fc789@ec2-52-205-11-146.compute-1.amazonaws.com:5432/d468v1qsdfnb0arsqf
+```
+DATABASE_URL: postgres://username:password@host:port/database_name
 ```
 
-EverShop does not support the `DATABASE_URL` format. We need to parse the `DATABASE_URL` get the details of the database connection:
-
-For example, the `DATABASE_URL` above can be parsed as follows:
+Since EverShop requires individual database configuration parameters rather than a connection string, parse the `DATABASE_URL` and set the following environment variables:
 
 ```bash
+heroku config:set DB_HOST=your_database_host -a YOUR_APP_NAME
+heroku config:set DB_PORT=5432 -a YOUR_APP_NAME
+heroku config:set DB_USER=your_database_username -a YOUR_APP_NAME
+heroku config:set DB_PASSWORD=your_database_password -a YOUR_APP_NAME
+heroku config:set DB_NAME=your_database_name -a YOUR_APP_NAME
+heroku config:set DB_SSLMODE=no-verify -a YOUR_APP_NAME
+```
+
+:::tip
+The values for these environment variables can be extracted from the `DATABASE_URL`. For example, if your `DATABASE_URL` is:
+
+```
+postgres://gqdnxqkaxcrbyd:dd3aecf3715167ce8a519c518f637sdfcb9ebb0dda3723d050e8a3b8a7cf19fc789@ec2-52-205-11-146.compute-1.amazonaws.com:5432/d468v1qsdfnb0arsqf
+```
+
+Then your environment variables would be:
+
+```
 DB_HOST=ec2-52-205-11-146.compute-1.amazonaws.com
 DB_PORT=5432
 DB_USER=gqdnxqkaxcrbyd
 DB_PASSWORD=dd3aecf3715167ce8a519c518f637sdfcb9ebb0dda3723d050e8a3b8a7cf19fc789
 DB_NAME=d468v1qsdfnb0arsqf
-DB_SSLMODE=no-verify
 ```
 
-Now, we need to add these environment variables to the Heroku app. We can do this by running the following command:
-
-```bash
-heroku config:set DB_HOST=ec2-52-205-11-146.compute-1.amazonaws.com -a APP_NAME
-heroku config:set DB_PORT=5432 -a APP_NAME
-heroku config:set DB_USER=gqdnxqkaxcrbyd -a APP_NAME
-heroku config:set DB_PASSWORD=dd3aecf3715167ce8a519c518f637sdfcb9ebb0dda3723d050e8a3b8a7cf19fc789 -a APP_NAME
-heroku config:set DB_NAME=d468v1qsdfnb0arsqf -a APP_NAME
-heroku config:set DB_SSLMODE=no-verify -a APP_NAME
-```
-
-:::caution
-Replace `APP_NAME` with the name of your Heroku app.
 :::
 
-## Step 4: Prepare The Local Project
+## Step 4: Prepare Your Local Project
 
-We assume that you already have an EverShop project installed on your local machine. If not, please follow the [installation guide](/docs/development/getting-started/installation-guide) to install EverShop on your local machine.
+Assuming you have an EverShop project ready for deployment, you'll need to make a few configuration changes to ensure compatibility with Heroku.
 
-Typically, the EverShop project structure will look like this:
+A typical EverShop project structure looks like:
 
-```bash
-├── .evershop # This is where the production build is stored
-├── .log
-├── extensions # This is where the extensions are stored
-├── media # This is where the uploaded images are stored
-├── themes # This is where the themes are stored
-├── node_modules # This is where the node modules are stored
-├── public # This is where the public files are stored
-├── .env
-├── package.json
-├── package-lock.json
-└── README.md
+```
+├── .evershop     # Production build files
+├── .log          # Application logs
+├── extensions    # Custom extensions
+├── media         # Uploaded images and media
+├── themes        # Custom themes
+├── node_modules  # Node.js dependencies
+├── public        # Static public files
+├── .env          # Environment variables (local only)
+├── package.json  # Project configuration
+└── README.md     # Documentation
 ```
 
-### Specify The Node.js Version
+### Specify Node.js and NPM Versions
 
-Heroku will let us specify the Node.js version that we want to use in the `package.json` file. We need to add the following line to the `package.json` file:
+Add Node.js and NPM version specifications to your `package.json`:
 
 ```json title="package.json"
 {
   "engines": {
-    "node": "18.x"
-  }
-}
-```
-
-### Specify The NPM Version
-
-EverShop requires NPM version 8+. We need to add the following line to the `package.json` file:
-
-```json title="package.json"
-{
-  "engines": {
+    "node": "20.x",
     "npm": "9.x"
   }
 }
 ```
 
-### Specify The Start Script
+### Configure Scripts for Heroku
 
-Heroku will run the `npm start` command to start the application. We need to add the following line to the `package.json` file:
+Update your `package.json` with the necessary scripts for Heroku deployment:
 
 ```json title="package.json"
 {
   "scripts": {
-    "start": "evershop start"
+    "build": "evershop build --skip-minify",
+    "start": "evershop start",
+    "user:create": "evershop user:create"
   }
 }
 ```
 
-### Configure The Build Behavior
+:::note
+The `--skip-minify` flag speeds up the build process. Remove this flag for production-optimized assets if preferred.
+:::
 
-During the deployment process, Heroku will install both `dependencies` and `devDependencies`. If you want to skip the installation of `devDependencies`, you can tell Heroku to do so by using the following command:
+### Configure Build Behavior
 
-```bash title="Heroku CLI"
-heroku config:set NPM_CONFIG_PRODUCTION=true -a APP_NAME
-```
+Control how Heroku builds your application with these environment variables:
 
-In this tutorial, we want to use `npm install` instead of `npm ci`. Let's use the Heroku CLI to tell Heroku to use npm to install the dependencies:
+```bash
+# Skip installing devDependencies (recommended for production)
+heroku config:set NPM_CONFIG_PRODUCTION=true -a YOUR_APP_NAME
 
-```bash title="Heroku CLI"
-heroku config:set USE_NPM_INSTALL=true -a APP_NAME
+# Use 'npm install' instead of 'npm ci' (if you encounter issues with npm ci)
+heroku config:set USE_NPM_INSTALL=true -a YOUR_APP_NAME
 ```
 
 :::info
-By default, Heroku set the `NODE_ENV` environment variable to `production`.
+Heroku automatically sets `NODE_ENV=production` for all deployed applications.
 :::
 
-Now, let's add a `build` command to the `package.json` file so that Heroku can build the application before running it:
+### Create a .gitignore File
 
-```json title="package.json"
-{
-  "scripts": {
-    "build": "evershop build --skip-minify", // Skip the minification process, if you want to minify the code, remove the --skip-minify flag
-    "start": "evershop start"
-  }
-}
-```
-
-### Adding Scripts To Create Users
-
-After the application is deployed the first time, we need to create a user to access the admin panel. Let's add a script to the `package.json` file:
-
-```json title="package.json"
-{
-  "scripts": {
-    "build": "evershop build --skip-minify", // Skip the minification process, if you want to minify the code, remove the --skip-minify flag
-    "start": "evershop start",
-    "user:create": "evershop user:create",
-  }
-}
-```
-
-### Adding The Git Ignore File
-
-Let's go ahead and create a `.gitignore` file with the following content:
+Create a `.gitignore` file to exclude unnecessary files from deployment:
 
 ```bash title=".gitignore"
 .evershop
@@ -206,61 +181,115 @@ node_modules
 .env
 ```
 
-## Step 5: Deploy The Application
+## Step 5: Deploy Your Application
 
-### Initialize A Git Repository
+### Initialize Git Repository
 
-If your project is not in a Git repository, you need to initialize a Git repository:
+If your project isn't already in a Git repository:
 
 ```bash
 git init
 ```
 
-### Commit The Changes
+### Commit Your Changes
 
-Let's commit the changes:
+Add and commit all files:
 
 ```bash
 git add .
-git commit -m "Initial commit"
+git commit -m "Prepare EverShop for Heroku deployment"
 ```
 
-### Add The Heroku Remote To The Local Git Repository
+### Connect to Heroku Remote
 
-Let's add the Heroku remote to the local Git repository:
+Link your local repository to your Heroku app:
 
 ```bash
-heroku git:remote -a APP_NAME
+heroku git:remote -a YOUR_APP_NAME
 ```
 
-:::caution
-Replace `APP_NAME` with the name of your Heroku app.
-:::
+### Deploy to Heroku
 
-### Push The Changes To Heroku
-
-Let's push the changes to Heroku:
+Push your code to deploy:
 
 ```bash
 git push heroku main
 ```
 
-This will trigger the deployment process. Once the deployment process is completed, you can access the application by visiting the URL of your Heroku app.
+If your primary branch is named `master` instead of `main`, use:
+
+```bash
+git push heroku master
+```
+
+Heroku will automatically detect your Node.js application, install dependencies, run the build script, and start your application. You can monitor the deployment process in your terminal.
+
+Once deployed, you can access your application at:
+
+```
+https://YOUR_APP_NAME.herokuapp.com
+```
 
 <p align="center">
 
-  ![Heroku Default Domain](./img/heroku-default-domain.png "Heroku Default Domain")
+![Heroku Default Domain](./img/heroku-default-domain.png "Heroku Default Domain")
+
 </p>
 
-## Step 6: Create A User
+## Step 6: Create an Administrator Account
 
-If this is the first time you deploy the application, you need to create a user to access the admin panel. Let's run the following command using the Heroku CLI:
+After your first deployment, create an administrator account to access the admin panel:
 
 ```bash
-heroku run npm run user:create -- -- --email "<Email>" --name "<User Name>" --password "Mypassword@123" -a myevershop
+heroku run npm run user:create -- --email "admin@example.com" --name "Admin User" --password "SecurePassword123!" -a YOUR_APP_NAME
 ```
 
-Now, you can access the admin panel by visiting the `<Your Heroku Domain>/admin` and log in using the credentials you just created.
+:::caution
+Replace the example credentials with a secure email, name, and strong password.
+:::
 
+Once created, you can access the admin panel at:
 
-That's it! You have successfully deployed EverShop to Heroku. From now on, you can deploy the application by pushing the changes to the Heroku remote.
+```
+https://YOUR_APP_NAME.herokuapp.com/admin
+```
+
+## Troubleshooting and Maintenance
+
+### Viewing Application Logs
+
+Monitor your application logs with:
+
+```bash
+heroku logs --tail -a YOUR_APP_NAME
+```
+
+### Scaling Your Application
+
+As your store grows, you may need to scale your application:
+
+```bash
+heroku ps:scale web=2 -a YOUR_APP_NAME
+```
+
+### Managing Database Backups
+
+Create regular backups of your PostgreSQL database:
+
+```bash
+heroku pg:backups:capture -a YOUR_APP_NAME
+```
+
+### Updating Your Application
+
+To deploy updates, simply commit your changes and push to Heroku:
+
+```bash
+git add .
+git commit -m "Update application"
+git push heroku main
+```
+
+## Conclusion
+
+Congratulations! You've successfully deployed EverShop to Heroku. Your e-commerce application is now accessible to customers worldwide, backed by Heroku's reliable cloud infrastructure.

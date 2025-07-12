@@ -1,100 +1,110 @@
 ---
 sidebar_position: 28
 keywords:
-- EverShop API Routes
+  - RESTful API
+  - API endpoints
+  - API authentication
+  - Request validation
 sidebar_label: RESTful API Routes
-title: API Routes
-description: EverShop supports API Routes, which allow you to build your API  endpoints to provide backend functionality. Learn how it works here.
+title: RESTful API Routes
+description: Learn how to build and manage RESTful API endpoints in EverShop to provide robust backend functionality with proper authentication and validation.
 ---
 
 # RESTful API Routes
 
+EverShop provides a comprehensive system for building RESTful API endpoints that power your store's backend functionality. This document explains how to create, structure, and secure these endpoints.
+
 :::info
-Check the [module structure](/docs/development/module/module-overview) to learn more about the structure of EverShop modules.
+Before diving into API routes, it's recommended to familiarize yourself with the [module structure](/docs/development/module/module-overview) to understand how modules are organized in EverShop.
 :::
 
-EverShop RESTful are located in the `api` folder of each module. Bellow is an example of a page in the `api` folder of the `catalog` module:
+## API Organization
+
+EverShop's RESTful APIs are located in the `api` folder of each module. Below is an example of the API structure in the `catalog` module:
 
 ```bash
 catalog
 ├── api
-│   ├── createProduct
-│   │   ├── ... // Other middleware functions
-│   │   └── route.json
-│   ├── updateProduct
-│   │   ├── ... // Other middleware functions
-│   │   └── route.json
-│   ├── createCategory
-│   │   ├── ... // Other middleware functions
-│   │   └── route.json
-│   ├── updateCategory
-│   │   ├── ... // Other middleware functions
-│   │   └── route.json
-│   ├── createAttribute
-│   │   ├── ... // Other middleware functions
-│   │   └── route.json
-│   └── updateAttribute
-│   │   ├── ... // Other middleware functions
-│       └── route.json
+│   ├── createProduct
+│   │   ├── ... // Middleware functions
+│   │   └── route.json
+│   ├── updateProduct
+│   │   ├── ... // Middleware functions
+│   │   └── route.json
+│   ├── createCategory
+│   │   ├── ... // Middleware functions
+│   │   └── route.json
+│   ├── updateCategory
+│   │   ├── ... // Middleware functions
+│   │   └── route.json
+│   ├── createAttribute
+│   │   ├── ... // Middleware functions
+│   │   └── route.json
+│   └── updateAttribute
+│       ├── ... // Middleware functions
+│       └── route.json
 
 ```
 
-## `api` folder structure
+## API Folder Structure
 
-The `api` folder contains the following subfolders:
+The `api` folder contains the following organization:
 
-- `global` - This folder contains middleware functions that are used in all API. For example, the `global` folder contains the `auth` middleware function that is used in all API endpoints.
+- `global` - Contains middleware functions that apply to all API endpoints. For example, the `auth` middleware that handles authentication for all secured endpoints.
 
-- `<apiID>` - Those folders are the API endpoints. For example, the `createProduct` folder is the create product API endpoint.
+- `<apiID>` - Individual folders representing specific API endpoints. For example, the `createProduct` folder contains all the components needed for the product creation API.
 
-## The single api folder
+## Single API Endpoint Structure
 
-Each api folder contains the middleware functions and the route definition for the API endpoint.
-
-Below is an example of an api folder:
+Each API endpoint folder contains middleware functions and a route definition file. Here's an example structure:
 
 ```bash
 ├── createProduct
-│   ├── [context]bodyParser[auth].js
-│   ├── saveProduct.js
-│   └── route.json
+│   ├── [context]bodyParser[auth].ts
+│   ├── saveProduct.ts
+│   └── route.json
 ```
 
-## The API route definition 
+The middleware functions handle the request processing, while the `route.json` file defines how the endpoint is accessed.
 
-In each api folder, there is a `route.json` file. This file contains the route definition for the API endpoint. For example, the `route.json` file of the `deleteProduct` API is:
+## API Route Definition
 
-```bash
+Every API endpoint requires a `route.json` file that specifies the HTTP methods, path, and access restrictions. For example, here's the route definition for a product deletion API:
+
+```json
 {
-  "methods": [
-    "DELETE"
-  ],
+  "methods": ["DELETE"],
   "path": "/products/:id",
   "access": "private"
 }
 ```
 
 :::warning
-The folder name will be used as the routeId, so make sure the folder name is unique and does not contain any special characters.
+The folder name is used as the routeId, so ensure each folder name is unique and contains only URL-safe characters. The routeId is important for correctly routing and identifying API endpoints.
 :::
 
 :::info
-Check the [routing system document](/docs/development/knowledge-base/routing-system) to learn more about the routing system.
+For more detailed information on routing patterns and options, refer to the [routing system documentation](/docs/development/knowledge-base/routing-system).
 :::
 
-## The api authentication
+## API Authentication
 
-In the `route.json` file, you can set the `access` property to `public` or `private`. If you set the `access` property to `private`, the API endpoint will be protected by the authentication system. Private API endpoints can only be accessed by the authenticated users (admin users).
+The `access` property in the `route.json` file controls endpoint security:
+
+- `public` - The endpoint can be accessed without authentication
+- `private` - The endpoint requires authentication (admin user credentials)
 
 :::warning
-For security reasons, if the `access` property is not set, the API endpoint will be treated as a private API endpoint.
+For security best practices, endpoints without an explicitly defined `access` property are treated as `private` by default, requiring authentication to access.
 :::
 
-## The api request data validation
+## API Request Data Validation
 
-EverShop allows you to define the request data schema for each API endpoint. You can define the request data schema using a json file named `payloadSchema.json` in the api folder. For example, the `createProduct` API endpoint has the following request data schema:
+EverShop allows you to define validation schemas for API request data using a `payloadSchema.json` file in the API endpoint folder. This ensures that incoming data meets your requirements before processing.
 
-```bash title = "createProduct/payloadSchema.json"
+Here's an example schema for product creation:
+
+```json title="createProduct/payloadSchema.json"
 {
   "type": "object",
   "properties": {
@@ -121,83 +131,39 @@ EverShop allows you to define the request data schema for each API endpoint. You
       "type": "string"
     },
     "status": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"]
     },
     "sku": {
       "type": "string"
     },
     "price": {
-      "type": [
-        "string",
-        "number"
-      ],
+      "type": ["string", "number"],
       "pattern": "^\\d+(\\.\\d{1,2})?$"
     },
     "weight": {
-      "type": [
-        "string",
-        "number"
-      ],
+      "type": ["string", "number"],
       "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"
     },
     "qty": {
-      "type": [
-        "string",
-        "number"
-      ],
+      "type": ["string", "number"],
       "pattern": "^[0-9]+$"
     },
     "manage_stock": {
-      "type": [
-        "string",
-        "number"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["string", "number"],
+      "enum": [0, 1, "0", "1"]
     },
     "stock_availability": {
-      "type": [
-        "string",
-        "number"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["string", "number"],
+      "enum": [0, 1, "0", "1"]
     },
     "group_id": {
-      "type": [
-        "string",
-        "integer"
-      ],
+      "type": ["string", "integer"],
       "pattern": "^[0-9]+$"
     },
     "visibility": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"]
     },
     "images": {
       "type": "array",
@@ -214,10 +180,7 @@ EverShop allows you to define the request data schema for each API endpoint. You
             "type": "string"
           },
           "value": {
-            "type": [
-              "string",
-              "array"
-            ],
+            "type": ["string", "array"],
             "items": {
               "type": "string"
             }
@@ -228,10 +191,7 @@ EverShop allows you to define the request data schema for each API endpoint. You
     "categories": {
       "type": "array",
       "items": {
-        "type": [
-          "string",
-          "integer"
-        ],
+        "type": ["string", "integer"],
         "pattern": "^[0-9]+$"
       }
     },
@@ -245,22 +205,11 @@ EverShop allows you to define the request data schema for each API endpoint. You
           },
           "option_type": {
             "type": "string",
-            "enum": [
-              "select",
-              "multiselect"
-            ]
+            "enum": ["select", "multiselect"]
           },
           "is_required": {
-            "type": [
-              "string",
-              "integer"
-            ],
-            "enum": [
-              0,
-              1,
-              "0",
-              "1"
-            ],
+            "type": ["string", "integer"],
+            "enum": [0, 1, "0", "1"],
             "default": 0
           },
           "values": {
@@ -272,21 +221,14 @@ EverShop allows you to define the request data schema for each API endpoint. You
                   "type": "string"
                 },
                 "extra_price": {
-                  "type": [
-                    "string",
-                    "number"
-                  ],
+                  "type": ["string", "number"],
                   "pattern": "^\\d+(\\.\\d{1,2})?$"
                 }
               }
             }
           }
         },
-        "required": [
-          "option_name",
-          "option_type",
-          "values"
-        ],
+        "required": ["option_name", "option_type", "values"],
         "additionalProperties": true
       }
     }
@@ -307,24 +249,36 @@ EverShop allows you to define the request data schema for each API endpoint. You
 }
 ```
 
-The request data will be validated based on this schema. If the validation was failed, an error response will be sent to client.
+When a request is made to the API endpoint, the request data is automatically validated against this schema. If validation fails, an appropriate error response is sent to the client with details about the validation issues.
 
 :::info
-EverShop makes use of [Ajv JSON schema validator](https://ajv.js.org/) for request payload validation.
+EverShop uses [Ajv JSON schema validator](https://ajv.js.org/) for request payload validation, providing robust and flexible validation capabilities.
 :::
 
-## The api middleware functions
+## API Middleware Functions
 
-EverShop allows you to create middleware functions for each API. You can create many middleware functions as you need.
+EverShop's API endpoints are powered by middleware functions that process requests sequentially. You can create as many middleware functions as needed for each API endpoint, allowing for modular and maintainable code.
 
 :::info
-Check the [middleware system document](/docs/development/knowledge-base/middleware-system) to learn more about the middleware system.
+For more details on how middleware functions work in EverShop, refer to the [middleware system documentation](/docs/development/knowledge-base/middleware-system).
 :::
 
-### Shared middleware functions
+### Sharing Middleware Across Endpoints
 
-In some cases, you may need to use the same middleware functions in multiple API. For example, you may need to use the same middleware function for the `createProduct` and `updateProduct` API. In this case, you can create a special folder `createProduct+updateProduct` in the `api` folder and put the middleware function in this folder. All middleware function in this folder will be executed in both API endpoints.
+For efficiency, you may need to reuse middleware functions across multiple API endpoints. EverShop provides a convenient way to share middleware:
 
-This special folder does not contain any `route.json` file. It only contains middleware functions.
+1. **Endpoint-Specific Sharing**: Create a special folder named after the endpoints that should share middleware (e.g., `createProduct+updateProduct`) in the `api` directory. Place shared middleware functions in this folder, and they'll be executed for both endpoints.
 
-If you have a middleware function that required for all API endpoints (both frontStore and admin panel), you can put it in the `api/global`.
+2. **Global Sharing**: For middleware that should run for all API endpoints, place it in the `api/global` folder.
+
+These special shared middleware folders should contain only middleware functions without a `route.json` file, as they don't define endpoints themselves but enhance existing ones.
+
+## Best Practices for API Development
+
+When developing APIs for EverShop, consider these best practices:
+
+1. **Proper Validation**: Always define comprehensive validation schemas for request data
+2. **Access Control**: Set appropriate `access` levels for your endpoints
+3. **Modular Design**: Break complex operations into multiple middleware functions
+4. **Error Handling**: Provide clear error responses with appropriate HTTP status codes
+5. **Documentation**: Comment your code and keep API contracts consistent

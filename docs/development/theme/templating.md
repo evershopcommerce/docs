@@ -1,27 +1,34 @@
 ---
 sidebar_position: 25
 keywords:
-- Templating
+  - EverShop Templating
+  - React Components
+  - Theme Customization
+  - Template Overriding
 sidebar_label: Templating
 title: Templating
-description: This document will guide you through the process of customizing the default template using React component. Overwriting the existing components or adding your new components to the template is easy.
+description: A comprehensive guide on customizing EverShop's default templates using React components. Learn how to override existing components or add new ones to create a unique store appearance.
 ---
 
 # Templating
 
-Developing a theme is a process of customizing the default template or adding new components to provide a unique look and feel to your store. This document will guide you through the process of customizing the default template using React component. Overwriting the existing components or adding your new components to the template is easy.
+## Introduction
 
-As you may know, each of EverShop module has a `pages` folder that contains the React component for each page. We suggest you to check out the [pages](/docs/development/knowledge-base/pages) and [module structure](/docs/development/module/module-overview) document to learn more about the module structure.
+Developing a theme in EverShop involves customizing the default templates or adding new components to create a unique look and feel for your store. This document provides a comprehensive guide on how to customize templates using React components, demonstrating how to easily override existing components or add new ones to your theme.
 
-We also suggest you to check out the [theme overview](/docs/development/theme/theme-overview) document to learn more about the structure of EverShop theme.
+Before proceeding, we recommend familiarizing yourself with:
 
-## EverShop template system
+- [Pages](/docs/development/knowledge-base/pages) documentation to understand page structure
+- [Module Structure](/docs/development/module/module-overview) documentation to understand how modules are organized
+- [Theme Overview](/docs/development/theme/theme-overview) documentation to understand the EverShop theme architecture
 
-EverShop uses React component to render the pages. Every single page in EverShop is a set of React component. Those components are designed to work independently so you can slit your page to small components instead of having only one component for everything. You can override the existing component or add your own component to provide a unique look and feel to your store.
+## EverShop Template System
 
-### Master level components
+EverShop uses React components to render pages. Every page in EverShop consists of a set of React components designed to work independently, allowing you to split your pages into smaller, manageable components rather than having a single monolithic component. This modular approach gives you the flexibility to override existing components or add your own to customize your store's appearance.
 
-Let's take a look at the catalog module. The catalog module has a `pages` folder that contains the React components for each page.
+### Master Level Components
+
+Master level components are the primary building blocks of each page. Let's examine the catalog module structure:
 
 ```bash
 catalog
@@ -32,25 +39,26 @@ catalog
     │   └── attributeEdit
     ├── frontStore
     │   ├── productView
-    │   │   ├── General.jsx
-    │   │   └── Media.jsx
+    │   │   ├── General.tsx
+    │   │   └── Media.tsx
     │   ├── categoryView
-    │   │   ├── General.jsx
-    │   │   └── Products.jsx
+    │   │   ├── General.tsx
+    │   │   └── Products.tsx
 ```
-In the above example, the `General.js`, `Media.js` and `Products.js` are the master level components. They are located directly in the page folder. There is no limitation on the number of master level components in a page. You can have as many as you want.
+
+In this example, `General.tsx`, `Media.tsx`, and `Products.tsx` are master level components located directly in their respective page folders. There is no limit to the number of master level components a page can have.
 
 :::warning
-Since the master level components will be loaded automatically, you must provide the `export default` statement in the master level components.
+Since master level components are loaded automatically, you must include the `export default` statement in each master level component.
 :::
 
-### Shared components
+### Shared Components
 
-Shared components are the components that are used in multiple pages. Those components will not be used unless you import them in the master level components. By default, EverShop has a `components` folder in the `src` folder.
+Shared components are reusable components that can be used across multiple pages. These components are not loaded automatically; you must import them into your master level components. By default, EverShop has a `components` folder in the `src` directory:
 
 ```bash
-@evershop/evershop
-└── src
+node_modules/@evershop/evershop
+└── dist
     └── components
         ├── admin
         ├── common
@@ -60,75 +68,84 @@ Shared components are the components that are used in multiple pages. Those comp
         └── frontStore
 ```
 
-### Component path alias
+## Component Path Aliases
 
-There are 3 path alias that you should know:
+EverShop provides three important path aliases to simplify component imports:
 
-- `@components` - This path alias will point to the `components` folder in the `src` folder. The below screenshot shows how does EverShop resolve the `@components` path alias.
+### 1. @components
 
-![@components/*](./img/components-alias.png "EverShop component alias").
+This alias points to the `components` folder in the `src` directory. The following diagram illustrates how EverShop resolves the `@components` path alias:
 
-So, if you want to overwrite the 'Area' component using your theme. You can create a component with same name `Area.js` in `<your-theme>/components/common`.
+![@components/*](./img/components-alias.png "EverShop component alias")
 
+To override the 'Area' component in your theme, create a component with the same name `Area.jsx` in `<your-theme>/components/common`.
 
-- `@components-origin` - This path alias will also point to the `components` folder in the `src` folder just like the `@components` path alias. The only different is this alias always resolve to "@evershop/evershop/src/components/". It is useful when you want to overwrite some component for adding something instead of rewrite the entire original one.
+### 2. @components-origin
 
+This alias also points to the `components` folder in the `node_modules/@evershop/evershop/dist/components/` directory, similar to `@components`. However, it always resolves to `node_modules/@evershop/evershop/dist/components/`. This is useful when you want to extend a component rather than completely rewrite it:
 
-```js title="themes/your-theme-folder/components/common/Area.jsx"
-import Area from '@components-origin/common/Area';
+```jsx title="themes/your-theme-folder/src/components/common/Area.jsx"
+import Area from "@components-origin/common/Area";
 
-export default NewArea(props) {
+export default function NewArea(props) {
   return (
     <div>
       <Area {...props} />
-      <div>My extra code</div>
+      <div>My extra content</div>
     </div>
   );
 }
 ```
 
-- `@default-theme` -  This path alias will point to `pages` folder in each module. Use this path when you want to overwrite the existing and still want to use the original component.
+### 3. @default-theme
 
+This alias points to the `pages` folder in each module. Use this alias when you want to extend an existing component:
 
-```js title="themes/your-theme-folder/pages/productView/General.jsx"
-import General from '@default-theme/catalog/frontStore/productView/General';
+```jsx title="themes/your-theme-folder/src/pages/productView/General.jsx"
+import General from "@default-theme/catalog/frontStore/productView/General";
 
 export default function NewGeneral(props) {
   return (
     <div>
       <General {...props} />
-      <div>My extra code</div>
+      <div>My additional content</div>
     </div>
   );
 }
 ```
 
-## Overwriting the existing blocks
+## Overriding Existing Components
 
-When you want to overwrite the existing component, first thing you need to do is to identify the component that you want to overwrite. It can be a master level component or a shared component.
+To override an existing component, first identify whether it's a master level component or a shared component.
 
-### Overwriting the existing master level component
+### Overriding Master Level Components
 
-Let's take a look the default `Layout.jsx` component from the `cms` core module:
+Let's examine the default `Layout.jsx` component from the `cms` core module:
 
-```js title="modules/pages/all/Layout.jsx"
-
-import React from 'react';
-import Area from '@components/common/Area';
-import './Layout.scss';
-import './tailwind.scss';
+```jsx title="modules/pages/all/Layout.jsx"
+import React from "react";
+import Area from "@components/common/Area";
+import "./Layout.scss";
+import "./tailwind.scss";
 
 export default function Layout() {
   return (
     <>
       <div className="header flex justify-between">
-        <Area id="header" noOuter coreComponents={[
-          {
-            component: { default: Area },
-            props: { id: "icon-wrapper", className: "icon-wrapper flex justify-between space-x-1" },
-            sortOrder: 20
-          }
-        ]} />
+        <Area
+          id="header"
+          noOuter
+          coreComponents={[
+            {
+              component: { default: Area },
+              props: {
+                id: "icon-wrapper",
+                className: "icon-wrapper flex justify-between space-x-1",
+              },
+              sortOrder: 20,
+            },
+          ]}
+        />
       </div>
       <main className="content">
         <Area id="content" className="" noOuter />
@@ -142,67 +159,66 @@ export default function Layout() {
 
 export const layout = {
   areaId: "body",
-  sortOrder: 1
+  sortOrder: 1,
 };
 ```
 
-This master component is located in the `modules/cms/pages/frontStore/all` folder. In order to overwrite this component, you need to create a new file at `themes/your-theme-folder/pages/all/Layout.jsx`.
+To override this component, create a new file at `themes/your-theme-folder/src/pages/all/Layout.jsx`:
 
-```js title="themes/your-theme-folder/pages/all/Layout.jsx"
-
+```jsx title="themes/your-theme-folder/src/pages/all/Layout.jsx"
 import React from 'react';
 import Area from '@components/common/Area';
 import './Layout.scss';
 import './tailwind.scss';
 
-// Your component code goes here
+export default function Layout() {
+  // Your custom layout implementation
+  return (
+    // Your JSX here
+  );
+}
 
 export const layout = {
   areaId: "body",
   sortOrder: 1
 };
-
 ```
 
-Now, EverShop will use your component instead of the default one.
+### Overriding Shared Components
 
-### Overwriting the existing shared component
+Let's look at the default `Area.jsx` component from the `common` folder:
 
-Let's take a look the default `Area.jsx` component from the `common` folder:
-
-```js title="src/components/common/Area.jsx"
-import React from 'react';
-import PropTypes from 'prop-types';
+```jsx title="src/components/common/Area.jsx"
+import React from "react";
+import PropTypes from "prop-types";
 
 // component code
 
 export default Area;
 ```
 
-This shared component is located in the `src/components/common` folder. In order to overwrite this component, you need to create a new file at `themes/your-theme-folder/components/common/Area.jsx`.
+To override this component, create a new file at `themes/your-theme-folder/src/components/common/Area.jsx`:
 
-```js title="themes/your-theme-folder/components/common/Area.jsx"
-import React from 'react';
-import PropTypes from 'prop-types';
+```jsx title="themes/your-theme-folder/src/components/common/Area.jsx"
+import React from "react";
+import PropTypes from "prop-types";
 
-// Your component code goes here
+// Your custom implementation
 
 export default Area;
 ```
 
-Now, EverShop will use your component instead of the default one.
-
 :::note
-In case you want to use the default component, you can import the component from the `@components-origin` path alias.
+If you want to use the default component's functionality while adding your own, you can import the original component using the `@components-origin` path alias.
 :::
 
-## Adding new components
+## Adding New Components
 
-### Adding a new master level component
+### Adding New Master Level Components
 
-To add a new master level component to the page, first thing you need to do is to identify the page that you want to add the component. In the following example, we will add a new component to the `productView` page.
+#### For a Single Page
 
-**Single page**
+To add a new master level component to a specific page, first identify the target page. For example, to add a new component to the `productView` page:
 
 ```bash
 <your-theme-folder>
@@ -210,104 +226,92 @@ To add a new master level component to the page, first thing you need to do is t
     └── productView
         └── NewComponent.jsx
 ```
-The `NewComponent.js` file will be automatically loaded when the `productView` page is rendered.
 
-**All pages**
+The `NewComponent.jsx` file will be automatically loaded when the `productView` page renders.
 
-If you want to add a new master level component that will be used in all pages, you can create a new file in the `all` folder.
+#### For All Pages
 
-```bash
-<your-theme-folder>
-└── pages
-    └── all
-        └── NewComponent.js
-```
-
-The `NewComponent.jsx` file will be automatically loaded when any page is rendered.
-
-**Multiple pages**
-
-And, if you have a component that will be used in multiple pages, you can create a new folder with special name `pageA+pageB+pageC` and put the component in that folder.
+To add a component that will appear on all pages:
 
 ```bash
 <your-theme-folder>
-└── pages
-    └── productView+categoryView
-        └── NewComponent.jsx
+└── src
+    └── pages
+        └── all
+            └── NewComponent.jsx
 ```
 
-The `NewComponent.js` file will be automatically loaded when the `productView` and `categoryView` page is rendered.
+This component will be loaded on every page.
 
-### Adding a new shared component
+#### For Multiple Specific Pages
 
-To add a new shared component, you can create a new file in the `components` folder.
+For components that should appear on multiple specific pages, create a folder with the name pattern `pageA+pageB+pageC`:
 
 ```bash
 <your-theme-folder>
-└── components
-    └── common
-        └── NewComponent.jsx
+└── src
+    └── pages
+        └── productView+categoryView
+            └── NewComponent.jsx
 ```
 
-Now you can import the new component in any master level component.
+This component will be loaded on both the `productView` and `categoryView` pages.
 
-```js
-import NewComponent from '@components/common/NewComponent';
+### Adding New Shared Components
+
+To create a new shared component:
+
+```bash
+<your-theme-folder>
+└── src
+    └── components
+        └── common
+            └── NewComponent.jsx
 ```
 
-## The `jsconfig.json` file for path alias
+You can then import this component in any master level component:
 
-In order to make the import path shorter, you can create a `jsconfig.json` file in the root folder of your theme. The content of the file should be like this:
-
-```json title="jsconfig.json"
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": [
-        "./themes/<yourtheme>/components/*",
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@components-origin/*": [
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@default-theme/*" : [
-        "./node_modules/@evershop/evershop/src/modules/*/pages/*"
-      ]
-    }
-  }
-}
+```jsx
+import NewComponent from "@components/common/NewComponent";
 ```
 
-## Make your theme translatable
+## Making Your Theme Translatable
 
-In order to make your theme translatable, every string that you want to translate should be wrapped with the `_` function.
+To ensure your theme supports multiple languages, wrap all user-facing text strings with the `_` translation function:
 
-```js
-import React from 'react';
-import { _ } from '@evershop/evershop/src/lib/locale/translate';
+```jsx
+import React from "react";
+import { _ } from "@evershop/evershop/src/lib/locale/translate";
 
 export default function Component() {
   return (
     <div>
-      <h1>{_('Hello World')}</h1>
+      <h1>{_("Hello World")}</h1>
     </div>
   );
 }
 ```
 
-In case your text is dynamic, you can use a second argument to pass the variables.
+For dynamic text that includes variables:
 
-```js
-import React from 'react';
-import { _ } from '@evershop/evershop/src/lib/locale/translate';
+```jsx
+import React from "react";
+import { _ } from "@evershop/evershop/src/lib/locale/translate";
 
 export default function Component() {
-  const name = 'John';
+  const name = "John";
   return (
     <div>
-      <h1>{_('Hello ${name}', {name})}</h1>
+      <h1>{_("Hello ${name}", { name })}</h1>
     </div>
   );
 }
 ```
+
+## Best Practices
+
+1. **Component Naming**: Use descriptive names for your components that clearly indicate their purpose.
+2. **Code Organization**: Keep your component structure clean and organized following React best practices.
+3. **Performance**: Avoid unnecessary re-renders by using React's optimization techniques like memoization.
+4. **Consistent Styling**: Maintain consistent styling approaches throughout your theme.
+5. **Documentation**: Document your custom components for easier maintenance and collaboration.

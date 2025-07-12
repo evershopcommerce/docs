@@ -1,96 +1,122 @@
 ---
 sidebar_position: 5
 keywords:
-- Deploy EverShop To Microsoft Azure
-sidebar_label: Deploy EverShop To Azure
-title: Deploy EverShop To Microsoft Azure
-description: This document describes step by step how to deploy EverShop to Microsoft Azure using Azure App Service.
+  - Azure deployment
+  - EverShop cloud hosting
+  - Microsoft Azure App Service
+  - Node.js deployment
+sidebar_label: Deploy to Azure
+title: Deploy EverShop to Microsoft Azure
+description: Follow this comprehensive guide to deploy your EverShop e-commerce platform to Microsoft Azure using Azure App Service with step-by-step instructions.
 ---
 
-# Deploy EverShop To Microsoft Azure
+# Deploy EverShop to Microsoft Azure
 
-This document describes step by step how to deploy EverShop to Microsoft Azure using Azure App Service.
+This comprehensive guide walks you through the process of deploying your EverShop e-commerce platform to Microsoft Azure using Azure App Service and Azure Database for PostgreSQL.
 
-## Prerequisites:
+## Prerequisites
 
-1. An active Microsoft Azure account.
-2. An EverShop project installed on your local machine.
-3. Git installed (for version control if your app is in a Git repository).
+Before beginning the deployment process, ensure you have:
+
+1. An active Microsoft Azure account with subscription access
+2. An EverShop project installed and running on your local machine
+3. Git installed on your local machine (for version control and deployment)
 
 ## Step 1: Create a New Azure Web App
 
-1. Log in to the Azure portal (https://portal.azure.com).
+1. Log in to the Azure portal at [https://portal.azure.com](https://portal.azure.com).
 <p align="center">
 
-  ![Azure Create A Resource](./img/azure-create-resource.png "Azure Create A Resource")
-</p>
-2. Click on the "+ Create a resource" button.
-3. Search for "Web App & Database" and select "Web App & Database" from the results.
-![Azure Select Web And Database](./img/azure-select-web-database.png "Azure Select Web And Database")
-4. Click the "Create" button to start configuring your web app.
-5. Fill out the necessary information, including the App name, subscription, resource group, OS (Linux or Windows), and other settings.
+![Azure Create A Resource](./img/azure-create-resource.png "Azure Create A Resource")
 
-For the app, let's use the following settings:
+</p>
+
+2. Click the "+ Create a resource" button in the Azure portal dashboard.
+
+3. Search for "Web App & Database" and select it from the search results.
+   ![Azure Select Web And Database](./img/azure-select-web-database.png "Azure Select Web And Database")
+
+4. Click the "Create" button to begin configuring your web application.
+
+5. Configure your web application with the following settings:
 
 <p align="center">
 
-  ![Azure Configure Web App](./img/azure-configure-app.png "Azure Configure Web App")
+![Azure Configure Web App](./img/azure-configure-app.png "Azure Configure Web App")
+
 </p>
 
-And for the database, let's use the following settings:
+6. Configure your database with appropriate settings for your EverShop deployment:
 
 <p align="center">
 
 ![Azure Configure Database](./img/azure-configure-database.png "Azure Configure Database")
+
 </p>
 
-6. Click "Review + create" and then "Create" to create the web app. This is how it looks like when the web app is created:
+7. Click "Review + create" and then "Create" to provision your web application and database. Once completed, you'll see your resources in the Azure portal:
 
 <p align="center">
 
 ![Azure Resource List](./img/azure-resouce-list.png "Azure Resource List")
+
 </p>
 
 ## Step 2: Configure Deployment Options
 
-Azure supports several deployment options, including FTP, local Git, GitHub, Bitbucket, and Azure Repos. In this guide, we will use the local Git option.
+Azure supports multiple deployment methods. For this guide, we'll use the local Git deployment approach:
 
-1. Once the web app is created, go to the "Deployment Center" in the Azure portal.
-2. Choose `local Git` as the deployment option.
-3. Click the "Save" button to save the configuration.
+1. Navigate to your newly created web app in the Azure portal.
+
+2. In the left menu, select "Deployment Center."
+
+3. Choose `Local Git` as your deployment option.
+
+4. Click the "Save" button to confirm your deployment configuration.
 
 <p align="center">
 
 ![Azure Configure Deployment Option](./img/azure-local-git-option.png "Azure Configure Deployment Option")
+
 </p>
 
-## Step 3: Add Git Remote To Your Local Project
+## Step 3: Add Git Remote to Your Local Project
 
-After saving the deployment configuration, Azure will generate a Git URL for you. You can find the Git URL in the "Deployment Center" page.
+After configuring the deployment options, Azure will generate a Git URL for your repository:
 
 <p align="center">
 
 ![Azure Git Remote Url](./img/azure-local-git-url.png "Azure Git Remote Url")
+
 </p>
 
-Now, let's add the Git remote to your local project.
+Add this Git remote to your local EverShop project:
 
 ```bash
 git remote add azure <your-git-url>
 ```
 
 :::caution
-If your local project is not in a Git repository, you need to initialize a Git repository first by running the following command:
+If your local project is not already a Git repository, initialize one first by running:
 
 ```bash
 git init
 ```
+
+Then add and commit your files before proceeding to the next step:
+
+```bash
+git add .
+git commit -m "Initial commit for Azure deployment"
+```
+
 :::
 
 ## Step 4: Configure Your Local Project
 
-### Configure Your Npm Scripts
-During the deployment process, Azure will run the `npm install` command to install the dependencies and then run the `npm run build` command to build the project. Let's configure the `package.json` file to make sure that Azure can run these commands.
+### Configure NPM Scripts
+
+Azure's deployment process automatically runs `npm install` followed by `npm run build`. Ensure your `package.json` file includes these scripts:
 
 ```json title="package.json"
 {
@@ -99,14 +125,12 @@ During the deployment process, Azure will run the `npm install` command to insta
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "evershop build --skip-minify", // Skip the minification process, if you want to minify the code, remove the --skip-minify flag
+    "build": "evershop build --skip-minify", // For faster builds, omit --skip-minify to enable full minification
     "start": "evershop start",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
   },
-  "workspaces": [
-    "extensions/*"
-  ],
+  "workspaces": ["extensions/*"],
   "author": "EverShop",
   "license": "ISC",
   "dependencies": {
@@ -117,10 +141,9 @@ During the deployment process, Azure will run the `npm install` command to insta
 
 ### Add PM2 Configuration File
 
-Azure uses PM2 to run the Node.js application by default. What we need to do is to add a PM2 configuration file to the root folder of the project. Let's go ahead and create a `ecosystem.config.js` file with the following content:
+Azure App Service uses PM2 as its Node.js process manager. Create a PM2 configuration file in your project root:
 
-
-```json title="ecosystem.config.js"
+```javascript title="ecosystem.config.js"
 module.exports = {
   apps: [
     {
@@ -135,9 +158,9 @@ module.exports = {
 };
 ```
 
-### Adding The Git Ignore File
+### Create a .gitignore File
 
-You local project will look like this:
+Your local project structure should look similar to this:
 
 ```bash
 ├── .evershop
@@ -154,7 +177,7 @@ You local project will look like this:
 └── README.md
 ```
 
-We will need to add a `.gitignore` file to the root folder of the project. This file will tell Git to ignore some files/folders when we push the code to the Azure remote.
+Create a `.gitignore` file to exclude unnecessary files from deployment:
 
 ```bash title=".gitignore"
 .evershop
@@ -165,90 +188,117 @@ node_modules
 
 ## Step 5: Configure Environment Variables
 
-EverShop will get the database connection information from the environment variables. So we need to configure the environment variables in the Azure portal.
+EverShop requires specific environment variables for database connectivity. Configure these in the Azure portal:
 
-1. Go to the "Configuration" page in the Azure portal.
+1. Go to your web app in the Azure portal and navigate to the "Configuration" section.
 
 <p align="center">
 
 ![Azure Environment Variable List](./img/azure-env-list.png "Azure Environment Variable List")
+
 </p>
 
-2. Add/Update the following environment variables:
+2. Rename the following default Azure PostgreSQL environment variables to match EverShop's expected names:
 
-By default, Azure already has some environment variables for the database connection. We need to update the name of these variables to match our database connection information.
+   - `AZURE_POSTGRESQL_DBNAME` → `DB_NAME`
+   - `AZURE_POSTGRESQL_USERNAME` → `DB_USER`
+   - `AZURE_POSTGRESQL_PASSWORD` → `DB_PASSWORD`
+   - `AZURE_POSTGRESQL_HOST` → `DB_HOST`
+   - `AZURE_POSTGRESQL_PORT` → `DB_PORT`
 
-Here is the list of environment variables that we need to update the name:
-- `AZURE_POSTGRESQL_DBNAME` => `DB_NAME`
-- `AZURE_POSTGRESQL_USERNAME` => `DB_USER`
-- `AZURE_POSTGRESQL_PASSWORD` => `DB_PASSWORD`
-- `AZURE_POSTGRESQL_HOST` => `DB_HOST`
-- `AZURE_POSTGRESQL_PORT` => `DB_PORT`
+3. Add these additional required environment variables:
 
-We also need to add 2 more environment variables:
-
-- `DB_SSLMODE`: Set the value to `require`.
-- `PORT`: Set the value to 3000. This is the port that EverShop will use to start the server.
+   - `DB_SSLMODE`: Set to `require` to enable SSL connections to the database
+   - `PORT`: Set to `3000` to specify the port EverShop will use
 
 <p align="center">
 
 ![Azure Configure Environment Variables](./img/azure-adding-ssl-mode.png "Azure Configure Environment Variables")
+
 </p>
 
 <p align="center">
 
 ![Azure Configure Environment Variables](./img/azure-adding-port.png "Azure Configure Environment Variables")
+
 </p>
+
+4. Save your configuration changes.
 
 ## Step 6: Deploy Your Project
 
-We almost finish the configuration. Now, let's deploy the project to Azure.
-
-To trigger the deployment process, we need to push the code to the Azure remote.
+With configuration complete, deploy your EverShop application to Azure:
 
 ```bash
 git push azure master
 ```
 
 :::caution
-On the first deployment, Azure will ask you for the Git credentials. You can find the Git credentials in the "Deployment Center" page.
+During your first deployment, Azure will prompt you for Git credentials. You can find these in the "Deployment Center" section of your web app:
 
 <p align="center">
 
 ![Azure Git Credentials](./img/azure-git-credentials.png "Azure Git Credentials")
+
 </p>
 :::
 
-This step will take a few minutes to complete. Once the deployment is completed, you can access your site at the URL that Azure provides.
+The initial deployment may take several minutes. Once completed, your site will be accessible at the URL provided by Azure:
 
 <p align="center">
 
 ![Azure Default Domain](./img/azure-default-domain.png "Azure Default Domain")
+
 </p>
 
+## Step 7: Create an Administrator Account
 
-## Step 7: Create An Admin User
+After deploying your EverShop store, create an administrator account:
 
-Now, let's create an admin user for your store.
-
-Back to the npm scripts section, you can see that we have a `user:create` script. Let's run this script to create an admin user.
-
-In the Azure portal, click `SSH` to terminal into the server.
+1. Connect to your web app using the SSH feature in the Azure portal.
 
 <p align="center">
 
 ![Azure SSH](./img/azure-ssh.png "Azure SSH")
+
 </p>
 
-Normally, our project is located in the `/home/site/wwwroot` folder. Let's go to this folder and run the `user:create` script.
+2. Navigate to your application directory:
 
 ```bash
 cd /home/site/wwwroot
-npm run user:create -- --email "user email" --password "user password" --name "user name"
 ```
 
-Now you can access the admin panel at `https://<your-domain>/admin` and log in with the admin user that you just created.
+3. Create an admin user:
 
-## Step 8: Configure Custom Domain
+```bash
+npm run user:create -- --email "admin@example.com" --password "securePassword" --name "Admin Name"
+```
 
-By default, Azure will assign a domain to your web app. If you want to use your own domain, you can follow the [this document from Azure](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)
+4. Access your admin panel at `https://<your-azure-domain>/admin` and log in using the credentials you just created.
+
+## Step 8: Configure Custom Domain (Optional)
+
+To use your own domain instead of the default Azure domain:
+
+1. Navigate to the "Custom domains" section in your web app's settings.
+
+2. Follow the [Azure Custom Domain Configuration Guide](https://learn.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain) to map your domain to your Azure web app.
+
+## Troubleshooting
+
+If you encounter issues during deployment or while running your EverShop store on Azure:
+
+1. Check the application logs in the Azure portal under "App Service logs"
+2. Verify your environment variables are configured correctly
+3. Ensure your database connection is working properly
+4. Confirm that your PM2 configuration is correct
+
+## Performance Optimization
+
+For optimal performance of your EverShop store on Azure:
+
+1. Enable Azure CDN for faster content delivery
+2. Configure auto-scaling based on your expected traffic patterns
+3. Use the appropriate App Service pricing tier for your needs
+4. Consider adding Redis Cache for improved performance

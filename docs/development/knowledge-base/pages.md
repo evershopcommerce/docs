@@ -1,78 +1,78 @@
 ---
 sidebar_position: 27
 keywords:
-- EverShop Pages
+  - EverShop Pages
 sidebar_label: Pages
 title: Pages
-description: EverShop pages are located in the `pages` folder of each module. Learn how to create a page in your extension.
+description: EverShop pages are located in the `pages` folder of each module. Learn how to create pages in your extension.
 ---
 
 # Pages
 
 :::info
-Check the [module structure](/docs/development/module/module-overview) to learn more about the structure of EverShop modules.
+Refer to the [module structure documentation](/docs/development/module/module-overview) to learn more about the structure of EverShop modules.
 :::
 
-EverShop pages are located in the `pages` folder of each module. Below is an example of a page in the `pages` folder of the `catalog` module:
+EverShop pages are located in the `pages` folder of each module. Below is an example of the page structure in the `catalog` module:
 
 ```bash
 catalog
 ├── pages
     ├── global
-    │   └── auth.js
+    │   └── auth.ts
     ├── admin
     │   └── productEdit
     │       ├── route.json
-    │       ├── index.js
-    │       ├── General.jsx
-    │       ├── Images.jsx
-    │       ├── Price.jsx
+    │       ├── index.ts
+    │       ├── General.tsx
+    │       ├── Images.tsx
+    │       ├── Price.tsx
     └── frontStore
         └── productView
             ├── route.json
-            ├── index.js
-            ├── ProductImages.jsx
-            ├── ProductInfo.jsx
-            ├── ProductOptions.jsx
+            ├── index.ts
+            ├── ProductImages.tsx
+            ├── ProductInfo.tsx
+            ├── ProductOptions.tsx
 
 ```
 
-## `pages` folder structure
+## `pages` Folder Structure
 
 The `pages` folder contains the following subfolders:
 
-- `global` - This folder contains middleware functions that are executed for all pages, both admin panel and front store. For example, you can use this folder to create a middleware that checks if the user is authenticated. This folder does not contain any [React](https://reactjs.org/) components. It only contains middleware functions.
+- `global` - This folder contains middleware functions that are executed for all pages, both in the admin panel and front store. For example, you can use this folder to create a middleware that verifies user authentication. This folder does not contain any [React](https://reactjs.org/) components; it only contains middleware functions.
 
-- `admin` - This folder contains the pages of the admin panel. The `admin` folder contains subfolders for each page. For example, the `productEdit` folder contains the pages for editing a product.
+- `admin` - This folder contains pages for the admin panel. The `admin` folder contains subfolders for each page. For example, the `productEdit` folder contains the page components for editing a product.
 
-- `frontStore` - This folder contains the pages of the front store. The `frontStore` folder contains subfolders for each page. For example, the `productView` folder contains the pages for viewing a product.
+- `frontStore` - This folder contains pages for the front store. The `frontStore` folder contains subfolders for each page. For example, the `productView` folder contains the page components for viewing a product.
 
-## The `admin` and `frontStore` folders
+## The `admin` and `frontStore` Folders
 
 The `admin` and `frontStore` folders contain the following subfolders:
 
-- `all` - This folder contains React components that are used in all pages.
+- `all` - This folder contains React components that are used across all pages within their respective sections (admin or front store).
 
-- Other subfolders - Each subfolder represents a page. For example, the `productEdit` folder is the page for editing a product.
+- Other subfolders - Each subfolder represents a specific page. For example, the `productEdit` folder contains all components and middleware for the product editing page.
 
-## The single page folder
+## The Single Page Folder
 
-Each page folder contains the middleware functions, React components and the route definition for the page.
+Each page folder contains middleware functions, React components, and the route definition for that specific page.
 
-Below is an example of a page folder:
+Below is an example of a page folder structure:
 
 ```bash
 productEdit
-├── route.json #This is route definition for the page
-├── index.js #This is a middleware function
-├── General.jsx #This is a React component 
-├── Images.jsx #This is a React component
-└── Price.jsx #This is a React component
+├── route.json # Route definition for the page
+├── index.ts   # Middleware function
+├── General.tsx # React component
+├── Images.tsx  # React component
+└── Price.tsx   # React component
 ```
 
-### The page route
+### The Page Route
 
-In each page folder, there is a `route.json` file. This file contains the route definition for the page. For example, the `route.json` file of the `productEdit` page is:
+Each page folder must contain a `route.json` file that defines the route for that page. For example, the `route.json` file for the `productEdit` page might look like this:
 
 ```bash
 {
@@ -84,42 +84,41 @@ In each page folder, there is a `route.json` file. This file contains the route 
 ```
 
 :::warning
-The folder name will be used as the routeId, so make sure the folder name is unique and does not contain any special characters.
+The folder name will be used as the routeId, so ensure the folder name is unique and does not contain any special characters.
 :::
 
 :::info
-Check the [routing system document](/docs/development/knowledge-base/routing-system) to learn more about the routing system.
+Refer to the [routing system documentation](/docs/development/knowledge-base/routing-system) to learn more about EverShop's routing system.
 :::
 
-### The page middleware
+### Page Middleware
 
-EverShop allows you to create middleware functions for each page. For example, you can create a middleware to check for the page availability before rendering the page. You can create many middleware functions as you need.
+EverShop allows you to create middleware functions for each page. For example, you can create middleware to check page availability before rendering the content. You can create as many middleware functions as needed for each page.
 
-To differentiate between the middleware functions and the React components, the middleware function files should be all lowercase. For example, the `index.js` file is a middleware function.
+To differentiate between middleware functions and React components, middleware function files should use all lowercase naming. For example, `index.js` is a middleware function.
 
 :::info
-Check the [middleware system document](/docs/development/knowledge-base/middleware-system) to learn more about the middleware system.
+Refer to the [middleware system documentation](/docs/development/knowledge-base/middleware-system) to learn more about EverShop's middleware system.
 :::
 
-### Shared middleware functions
+### Shared Middleware Functions
 
-In some cases, you may need to use the same middleware functions in multiple pages. For example, you may need to use the same middleware function for the `productEdit` and `productCreate` pages. In this case, you can create a special folder `productEdit+productCreate` in the `pages/admin` folder and put the middleware function in this folder. All middleware function in this folder will be executed in both pages.
+Sometimes you may need to use the same middleware functions across multiple pages. For example, you might need identical middleware for both the `productEdit` and `productCreate` pages. In this case, you can create a special folder named `productEdit+productCreate` in the `pages/admin` directory and place the shared middleware functions there. All middleware functions in this folder will be executed for both pages.
 
-This special folder does not contain any `route` file. It only contains React components and middleware functions.
+This special shared folder does not contain any `route` file; it only contains React components and middleware functions.
 
-If you have a middleware function that required for all pages (both frontStore and admin panel), you can put it in the `pages/global`.
+If you have middleware functions required for all pages (both front store and admin panel), place them in the `pages/global` directory.
 
-If you have a middleware function that required for all pages in the admin panel, you can put it in the `pages/admin/all`. The same for the front store.
+If you have middleware functions required for all admin panel pages, place them in the `pages/admin/all` directory. The same approach applies for front store pages with `pages/frontStore/all`.
 
-### The page template (Master components)
+### Page Templates (Master Components)
 
-The Master components are located in the page folder. For example, the `General.jsx`, `Images.jsx` and `Price.jsx` files are React components for the `productEdit` page.
+Master components are React components located in the page folder. For example, `General.tsx`, `Images.tsx`, and `Price.tsx` are React components for the `productEdit` page.
 
-You must provide a default export for each React component. For example, the `General.jsx` file is:
+Each React component must provide a default export. Here's an example from the `General.tsx` file:
 
 ```js
-
-import React from 'react';
+import React from "react";
 
 const General = () => {
   return (
@@ -132,27 +131,30 @@ const General = () => {
 export default General;
 
 export const layout = {
-  areaId: 'content',
-  sortOrder: 10
-}
+  areaId: "content",
+  sortOrder: 10,
+};
 ```
 
 :::info
-Check the [view system document](/docs/development/theme/view-system) to learn more about the layout and block system.
+Refer to the [view system documentation](/docs/development/theme/view-system) to learn more about the layout and block system.
 :::
 
 :::info
-Check the [data loading document](/docs/development/knowledge-base/data-fetching) to learn how to load data in a React component.
+Refer to the [data loading documentation](/docs/development/knowledge-base/data-fetching) to learn how to load data in React components.
 :::
 
 :::warning
-A page folder can contain both middlewares and React components. To help EverShop to identify the React Component and middleware, you must name the React component with the first letter in uppercase and the file extension is `jsx`. For example, `General.jsx` is a React component while `general.js` is a middleware.
-:::
+A page folder can contain both middleware and React components. To help EverShop identify React components and middleware correctly, follow these naming conventions:
 
-### Shared React components
+- React components: First letter uppercase, file extension `.jsx` or `.tsx` (e.g., `General.jsx`)
+- Middleware functions: All lowercase, file extension `.js` or `.ts` (e.g., `general.js`)
+  :::
 
-In some cases, you may need to use the same React component in multiple pages. For example, you may need to use the same React component for the `productEdit` and `productCreate` pages. In this case, you can create a special folder `productEdit+productCreate` in the `pages/admin` folder and put the React component in this folder. All components in this folder will be used in both pages.
+### Shared React Components
 
-This special folder does not contain any `route` file. It only contains React components and middleware functions.
+Sometimes you may need to use the same React component across multiple pages. For example, you might need identical components for both the `productEdit` and `productCreate` pages. In this case, you can create a special folder named `productEdit+productCreate` in the `pages/admin` directory and place the shared React components there. All components in this folder will be available to both pages.
 
-If you have a component that required for all pages, you can put it in the `admin/all` or `storeFront/all` folder. For example, CMS module use this folder to store the Layout component.
+This special shared folder does not contain any `route` file; it only contains React components and middleware functions.
+
+If you have components required for all pages within a section, you can place them in the `admin/all` or `frontStore/all` folder. For example, the CMS module uses these folders to store Layout components that are used across multiple pages.

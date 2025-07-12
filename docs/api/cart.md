@@ -2,69 +2,84 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
+  - EverShop API
+  - Shopping Cart
+  - E-commerce API
+  - REST API
+  - Checkout Process
 sidebar_label: Cart
 title: Cart REST API
-description: Use the REST API to interact with EverShop carts.
+description: Comprehensive guide to managing shopping carts in EverShop using the Cart REST API. Learn how to create carts, add items, manage customer information, and configure checkout options.
 ---
 
 # Cart API
 
-Use the REST API to interact with EverShop carts.
+## Overview
 
-## Create a new cart
+The Cart API provides endpoints for managing shopping carts in your EverShop store. These endpoints allow you to create carts, add or remove items, set customer information, specify shipping and billing addresses, and select shipping and payment methods.
 
-Use this endpoint to create a new cart.
+import Api from '@site/src/components/rest/Api';
+
+## Endpoints
+
+### Create a New Cart
+
+Creates a new shopping cart in the system. You can optionally include customer information and initial cart items.
 
 <Api
-  method="POST"
-  url="/api/carts"
-  requestSchema={{
-  "type": "object",
-  "properties": {
-    "customer_full_name": {
-      "type": "string"
-    },
-    "customer_email": {
-      "type": ["string"],
-      "format": "email",
-      "errorMessage": {
-        "type": "Email is invalid"
-      }
-    },
-    "items": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "sku": {
-            "type": "string"
-          },
-          "qty": {
-            "type": "integer"
-          }
-        },
-        "required": ["sku", "qty"],
-        "additionalProperties": true,
-        "errorMessage": {
-          "properties": {
-            "sku": "Sku is required",
-            "qty": "Qty is invalid"
-          }
-        }
-      }
-    }
-  },
-  "required": ["items"],
-  "errorMessage": {
-    "required": {
-      "items": "Must provide at least one item"
-    }
-  },
-  "additionalProperties": true
+method="POST"
+url="/api/carts"
+requestSchema={{
+"type": "object",
+"properties": {
+"customer_full_name": {
+"type": "string",
+"description": "Full name of the customer"
+},
+"customer_email": {
+"type": ["string"],
+"format": "email",
+"description": "Email address of the customer",
+"errorMessage": {
+"type": "Email is invalid"
+}
+},
+"items": {
+"type": "array",
+"description": "Array of items to add to the cart",
+"items": {
+"type": "object",
+"properties": {
+"sku": {
+"type": "string",
+"description": "Product SKU to add to cart"
+},
+"qty": {
+"type": "integer",
+"description": "Quantity of the product to add"
+}
+},
+"required": ["sku", "qty"],
+"additionalProperties": true,
+"errorMessage": {
+"properties": {
+"sku": "Sku is required",
+"qty": "Qty is invalid"
 }
 }
-  responseSample={`{
+}
+}
+},
+"required": ["items"],
+"errorMessage": {
+"required": {
+"items": "Must provide at least one item"
+}
+},
+"additionalProperties": true
+}
+}
+responseSample={`{
   "data": {
     "items": {
       "cart_item_id": "2sl0ifz1etgldt28vm9",
@@ -94,32 +109,32 @@ Use this endpoint to create a new cart.
     "cartId": "251ca17e754f4473a9bdf97c85509a4a"
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
 <hr />
 
-## Add item to cart
+### Add Item to Cart
 
-Use this endpoint to add item to cart.
-
-import Api from '@site/src/components/rest/Api';
+Adds a product to an existing cart. Specify the product SKU and quantity to add.
 
 <Api
-  method="POST"
-  url="/api/cart/{id}/items"
-  requestSchema={{
+method="POST"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/items"
+requestSchema={{
   "type": "object",
   "properties": {
     "sku": {
-      "type": "string"
+      "type": "string",
+      "description": "Product SKU to add to cart"
     },
     "qty": {
       "type": [
         "string",
         "integer"
       ],
-      "pattern": "^[1-9][0-9]*$"
+      "pattern": "^[1-9][0-9]*$",
+      "description": "Quantity of the product to add (must be positive)"
     }
   },
   "required": [
@@ -134,7 +149,7 @@ import Api from '@site/src/components/rest/Api';
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "item": [
       {
@@ -166,23 +181,23 @@ import Api from '@site/src/components/rest/Api';
     "cartId": "251ca17e754f4473a9bdf97c85509a4a"
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
 <hr />
 
-## Remove item from cart
+### Remove Item from Cart
 
-Use this endpoint to remove item from cart.
+Removes a specific item from the cart. Requires the cart ID and the item ID to be removed.
 
 <Api
-  method="DELETE"
-  url="/api/cart/{id}/items/{itemId}"
-  responseSample={`{
+method="DELETE"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/items/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+responseSample={`{
   "data": {
     "item": {
       "cart_item_id": 1138,
-      "uuid": "19fa0c23bbd24edeaa3885940cf59f80",
+      "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
       "product_id": 1,
       "product_sku": "NJC90842-Blue-X",
       "group_id": 1,
@@ -206,24 +221,25 @@ Use this endpoint to remove item from cart.
     }
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
- <hr />
+<hr />
 
- ## Add customer info
+### Add Customer Information
 
-Use this endpoint to add customer email to cart.
+Associates a customer email with the cart. This is a required step in the checkout process before adding addresses.
 
 <Api
-  method="POST"
-  url="/api/cart/{id}/contacts"
-  requestSchema={{
+method="POST"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/contacts"
+requestSchema={{
   "type": "object",
   "properties": {
     "email": {
       "type": "string",
-      "format": "email"
+      "format": "email",
+      "description": "Customer's email address"
     }
   },
   "required": [
@@ -237,53 +253,64 @@ Use this endpoint to add customer email to cart.
     }
   }
 }}
-  responseSample={`{
-    "data":{"email":"paypal@gmail.com"}}
+responseSample={`{
+    "data": {
+      "email": "customer@example.com"
+    }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
- <hr/>
+<hr/>
 
-## Add address
+### Add Address
 
-Use this endpoint to add address (Billing or Shipping) to cart.
+Adds a shipping or billing address to the cart. Both address types are required to complete the checkout process.
 
 <Api
-  method="POST"
-  url="/api/cart/{id}/addresses"
-  requestSchema={{
+method="POST"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/addresses"
+requestSchema={{
   "type": "object",
   "properties": {
     "address": {
       "type": "object",
+      "description": "Address information",
       "properties": {
         "full_name": {
-          "type": "string"
+          "type": "string",
+          "description": "Full name of the recipient"
         },
         "telephone": {
           "type": [
             "string",
             "number"
-          ]
+          ],
+          "description": "Contact telephone number"
         },
         "address_1": {
-          "type": "string"
+          "type": "string",
+          "description": "Street address, line 1"
         },
         "address_2": {
-          "type": "string"
+          "type": "string",
+          "description": "Street address, line 2 (optional)"
         },
         "city": {
-          "type": "string"
+          "type": "string",
+          "description": "City name"
         },
         "province": {
-          "type": "string"
+          "type": "string",
+          "description": "State/Province/Region"
         },
         "country": {
-          "type": "string"
+          "type": "string",
+          "description": "Country code (e.g., US, CA)"
         },
         "postcode": {
-          "type": "string"
+          "type": "string",
+          "description": "Postal or ZIP code"
         }
       },
       "required": [
@@ -302,7 +329,8 @@ Use this endpoint to add address (Billing or Shipping) to cart.
       "enum": [
         "shipping",
         "billing"
-      ]
+      ],
+      "description": "Type of address (shipping or billing)"
     }
   },
   "required": [
@@ -318,7 +346,7 @@ Use this endpoint to add address (Billing or Shipping) to cart.
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "cart_address_id": 461,
     "uuid": "9c79451aa63211edb46b60d819134f39",
@@ -332,26 +360,28 @@ Use this endpoint to add address (Billing or Shipping) to cart.
     "address_2": null
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
- <hr/>
+<hr/>
 
-## Add shipping method
+### Add Shipping Method
 
-Use this endpoint to add shipping method to cart.
+Specifies the shipping method to be used for the order. This step is required after adding a shipping address and before placing the order.
 
 <Api
-  method="POST"
-  url="/api/cart/{id}/shippingMethods"
-  requestSchema={{
+method="POST"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/shippingMethods"
+requestSchema={{
   "type": "object",
   "properties": {
     "method_code": {
-      "type": "string"
+      "type": "string",
+      "description": "Unique code identifying the shipping method"
     },
     "method_name": {
-      "type": "string"
+      "type": "string",
+      "description": "Display name of the shipping method"
     }
   },
   "required": [
@@ -366,7 +396,7 @@ Use this endpoint to add shipping method to cart.
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "method": {
       "code": "free_shipping",
@@ -374,26 +404,28 @@ Use this endpoint to add shipping method to cart.
     }
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
 
- <hr/>
+<hr/>
 
-## Add payment method
+### Add Payment Method
 
-Use this endpoint to add payment method to cart.
+Specifies the payment method to be used for the order. This is the final step required before placing the order.
 
 <Api
-  method="POST"
-  url="/api/cart/{id}/paymentMethods"
-  requestSchema={{
+method="POST"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/paymentMethods"
+requestSchema={{
   "type": "object",
   "properties": {
     "method_code": {
-      "type": "string"
+      "type": "string",
+      "description": "Unique code identifying the payment method"
     },
     "method_name": {
-      "type": "string"
+      "type": "string",
+      "description": "Display name of the payment method"
     }
   },
   "required": [
@@ -408,7 +440,7 @@ Use this endpoint to add payment method to cart.
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "method": {
       "code": "paypal",
@@ -416,5 +448,124 @@ Use this endpoint to add payment method to cart.
     }
   }
 }`}
-  isPrivate={false}
- />
+isPrivate={false}
+/>
+
+<hr/>
+
+### Get Cart
+
+Retrieves detailed information about a specific cart including items, addresses, and selected shipping and payment methods.
+
+<Api
+method="GET"
+url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f"
+responseSample={`{
+  "data": {
+    "cart_id": "251ca17e754f4473a9bdf97c85509a4a",
+    "uuid": "251ca17e754f4473a9bdf97c85509a4a",
+    "currency": "USD",
+    "customer_email": "customer@example.com",
+    "customer_full_name": "John Doe",
+    "user_ip": "192.168.1.1",
+    "status": 1,
+    "total_qty": 3,
+    "total_weight": 16.2,
+    "shipping_fee_excl_tax": 0,
+    "shipping_fee_incl_tax": 0,
+    "discount_amount": 0,
+    "sub_total": 8230,
+    "tax_amount": 0,
+    "grand_total": 8230,
+    "shipping_address_id": 460,
+    "billing_address_id": 461,
+    "shipping_method": "free_shipping",
+    "shipping_method_name": "Free Shipping",
+    "payment_method": "paypal",
+    "payment_method_name": "PayPal",
+    "items": [
+      {
+        "cart_item_id": "2sl0ifz1etgldt28vm9",
+        "uuid": "4a6e5c9e0062489e82a472aeda0211be",
+        "product_id": 2,
+        "product_sku": "NJC90842-Blue-S",
+        "product_name": "Lite racer adapt 3.0 shoes",
+        "thumbnail": "/assets/catalog/7385/1316/plv1138-Blue-thumb.png",
+        "qty": 10,
+        "final_price": 823,
+        "final_price_incl_tax": 823,
+        "tax_percent": 0,
+        "tax_amount": 0,
+        "discount_amount": 0,
+        "total": 8230
+      }
+    ],
+    "shipping_address": {
+      "cart_address_id": 460,
+      "uuid": "9c79451aa63211edb46b60d819134f39",
+      "full_name": "John Doe",
+      "postcode": "5000",
+      "telephone": "123456",
+      "country": "US",
+      "province": "CA",
+      "city": "California",
+      "address_1": "1234 Main St",
+      "address_2": null
+    },
+    "billing_address": {
+      "cart_address_id": 461,
+      "uuid": "9c79451aa63211edb46b60d819134f39",
+      "full_name": "John Doe",
+      "postcode": "5000",
+      "telephone": "123456",
+      "country": "US",
+      "province": "CA",
+      "city": "California",
+      "address_1": "1234 Main St",
+      "address_2": null
+    }
+  }
+}`}
+isPrivate={false}
+/>
+
+## Error Handling
+
+All endpoints may return the following error responses:
+
+| Status Code | Description                            |
+| ----------- | -------------------------------------- |
+| 400         | Bad Request - Invalid parameters       |
+| 401         | Unauthorized - Authentication required |
+| 403         | Forbidden - Insufficient permissions   |
+| 404         | Not Found - Cart or item not found     |
+| 500         | Server Error - Something went wrong    |
+
+Error responses follow this format:
+
+```json
+{
+  "error": {
+    "status": 404,
+    "message": "Cart not found"
+  }
+}
+```
+
+## Checkout Process Flow
+
+The typical checkout process follows these steps:
+
+1. **Create a Cart** - Initialize a new cart for the customer
+2. **Add Items** - Add products to the cart
+3. **Add Customer Information** - Provide customer email
+4. **Add Addresses** - Provide shipping and billing addresses
+5. **Add Shipping Method** - Select a shipping method
+6. **Add Payment Method** - Select a payment method
+7. **Place Order** - Convert the cart to an order (see Order API)
+
+## Best Practices
+
+1. **Error Handling** - Always handle API errors gracefully in your frontend application
+2. **Validation** - Validate customer inputs before submitting to the API
+3. **Security** - Use HTTPS for all API calls to ensure data security
