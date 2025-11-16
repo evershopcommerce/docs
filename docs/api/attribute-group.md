@@ -174,13 +174,36 @@ responseSample={`{
 
 All endpoints may return the following error responses:
 
-| Status Code | Description                               |
-| ----------- | ----------------------------------------- |
-| 400         | Bad Request - Invalid parameters          |
-| 401         | Unauthorized - Authentication required    |
-| 403         | Forbidden - Insufficient permissions      |
-| 404         | Not Found - Attribute group doesn't exist |
-| 500         | Server Error - Something went wrong       |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>400</td>
+      <td>Bad Request - Invalid parameters</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>Unauthorized - Authentication required</td>
+    </tr>
+    <tr>
+      <td>403</td>
+      <td>Forbidden - Insufficient permissions</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>Not Found - Attribute group doesn't exist</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Server Error - Something went wrong</td>
+    </tr>
+  </tbody>
+</table>
 
 Error responses follow this format:
 

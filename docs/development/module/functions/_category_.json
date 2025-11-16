@@ -1,0 +1,16 @@
+{
+  "label": "Function Reference",
+  "position": 25,
+  "collapsible": false,
+  "collapsed": false,
+  "className": "functions-reference",
+  "link": {
+    "type": "generated-index",
+    "slug": "development/module/functions",
+    "title": "Function Reference",
+    "description": "A comprehensive reference of all functions available in the EverShop platform's modules, including their usage and parameters."
+  },
+  "customProps": {
+    "isFunctionReference": true
+  }
+}

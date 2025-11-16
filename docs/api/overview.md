@@ -63,13 +63,13 @@ Content-Type: application/json
 
 ## Authentication
 
-### Cookie-Based Authentication
+### JWT-Based Authentication
 
-EverShop currently implements cookie-based authentication. To authenticate:
+EverShop currently implements JWT-based authentication. To authenticate:
 
-1. Call the [admin login](/docs/api/user) API endpoint
-2. The API returns a session cookie
-3. Include this cookie in all subsequent requests requiring authentication
+1. Call the [admin token](/docs/api/authentication#get-admin-user-access-token) API endpoint
+2. The API returns a JWT access token and a refresh token
+3. Include this token in the `Authorization` Bearer header of all subsequent requests requiring authentication
 
 ### Public Endpoints
 
@@ -79,12 +79,37 @@ Some API endpoints are publicly accessible without authentication. These endpoin
 
 EverShop's REST API uses standard HTTP methods to perform different actions on resources:
 
-| Method | Description                                | Idempotent |
-| ------ | ------------------------------------------ | ---------- |
-| GET    | Retrieves resources without modifying them | Yes        |
-| POST   | Creates new resources                      | No         |
-| PATCH  | Updates resources with partial data        | Yes        |
-| DELETE | Removes resources                          | Yes        |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Description</th>
+      <th>Idempotent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GET</td>
+      <td>Retrieves resources without modifying them</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>POST</td>
+      <td>Creates new resources</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td>PATCH</td>
+      <td>Updates resources with partial data</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>DELETE</td>
+      <td>Removes resources</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Idempotency
 
@@ -96,27 +121,90 @@ EverShop uses standard HTTP status codes to indicate the result of API requests:
 
 ### Success Codes
 
-| Code | Description | Common Use Cases                        |
-| ---- | ----------- | --------------------------------------- |
-| 200  | OK          | Successful GET, PATCH, or DELETE        |
-| 201  | Created     | Successful POST that created a resource |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Common Use Cases</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>200</td>
+      <td>OK</td>
+      <td>Successful GET, PATCH, or DELETE</td>
+    </tr>
+    <tr>
+      <td>201</td>
+      <td>Created</td>
+      <td>Successful POST that created a resource</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Client Error Codes
 
-| Code | Description        | Common Use Cases                           |
-| ---- | ------------------ | ------------------------------------------ |
-| 400  | Bad Request        | Invalid input or missing parameters        |
-| 401  | Unauthorized       | Authentication failure                     |
-| 403  | Forbidden          | Authenticated but insufficient permissions |
-| 404  | Not Found          | Resource doesn't exist                     |
-| 405  | Method Not Allowed | HTTP method not supported for endpoint     |
-| 409  | Conflict           | Resource state conflict (e.g., duplicate)  |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Description</th>
+      <th>Common Use Cases</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>400</td>
+      <td>Bad Request</td>
+      <td>Invalid input or missing parameters</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>Unauthorized</td>
+      <td>Authentication failure</td>
+    </tr>
+    <tr>
+      <td>403</td>
+      <td>Forbidden</td>
+      <td>Authenticated but insufficient permissions</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>Not Found</td>
+      <td>Resource doesn't exist</td>
+    </tr>
+    <tr>
+      <td>405</td>
+      <td>Method Not Allowed</td>
+      <td>HTTP method not supported for endpoint</td>
+    </tr>
+    <tr>
+      <td>409</td>
+      <td>Conflict</td>
+      <td>Resource state conflict (e.g., duplicate)</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Server Error Codes
 
-| Code | Description           | Common Use Cases              |
-| ---- | --------------------- | ----------------------------- |
-| 500  | Internal Server Error | Unexpected server-side errors |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Description</th>
+      <th>Common Use Cases</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>500</td>
+      <td>Internal Server Error</td>
+      <td>Unexpected server-side errors</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Error Handling
 
@@ -163,10 +251,27 @@ For endpoints that return collections of resources, EverShop implements paginati
 
 ### Pagination Parameters
 
-| Parameter | Description              | Default |
-| --------- | ------------------------ | ------- |
-| page      | Page number to retrieve  | 1       |
-| limit     | Number of items per page | 20      |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>page</td>
+      <td>Page number to retrieve</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>limit</td>
+      <td>Number of items per page</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Best Practices
 

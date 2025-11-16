@@ -36,7 +36,7 @@ function HomepageHeader() {
                   height={18}
                 />
               </div>
-              <span>Version 1.2</span>
+              <span>Version 2.1</span>
             </div>
             <div className="flex gap-[5px] items-center justify-center">
               <a
@@ -70,9 +70,9 @@ function HomepageHeader() {
         <div className="flex items-center justify-center">
           <p className="text-lg md:text-xl text-center text-slate-500 mb-10">
             <p className="mb-0 max-w-3xl font-normal">
-              Open-source, built on NodeJS, and designed for flexibility. Easily
-              scale, customize, and manage your online store with powerful
-              commerce features
+              Open-source, built on TypeScript, and designed for flexibility.
+              Easily scale, customize, and manage your online store with
+              powerful commerce features
             </p>
           </p>
         </div>
@@ -905,7 +905,7 @@ function Testimonials() {
 export default function Home() {
   return (
     <Layout
-      title="Open source NodeJS ecommerce platform"
+      title="Open source TypeScript ecommerce platform"
       description="EverShop ecommerce platform provides the best developer experience and rich ecommerce features that help build online stores and start selling online.">
       <HomepageHeader />
       <main>

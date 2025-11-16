@@ -19,6 +19,37 @@ const sidebars = {
     "api/overview",
     {
       type: "category",
+      label: "Authentication",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/authentication",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/authentication#get-admin-user-access-token"><span class="method POST">POST</span><span>Get Admin Token</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/authentication#refresh-admin-user-access-token"><span class="method POST">POST</span><span>Refresh Admin Token</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/authentication#get-customer-access-token"><span class="method POST">POST</span><span>Get Customer Token</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/authentication#refresh-customer-access-token"><span class="method POST">POST</span><span>Refresh Customer Token</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Attribute",
       className: "api-menu-item",
       link: {
@@ -169,7 +200,7 @@ const sidebars = {
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/cart#add-customer-info"><span class="method POST">POST</span><span>Add customer info</span></a>',
+            '<a class="menu__link" href="/docs/api/cart#add-customer-information"><span class="method POST">POST</span><span>Add customer info</span></a>',
         },
         {
           type: "html",
@@ -186,37 +217,10 @@ const sidebars = {
           value:
             '<a class="menu__link" href="/docs/api/cart#add-payment-method"><span class="method POST">POST</span><span>Add payment method</span></a>',
         },
-      ],
-    },
-    {
-      type: "category",
-      label: "Payment Methods",
-      className: "api-menu-item",
-      link: {
-        type: "doc",
-        id: "api/payment-method",
-      },
-      items: [
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/payment-method#get-available-payment-methods"><span class="method GET">GET</span><span>Get payment methods</span></a>',
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "Shipping Methods",
-      className: "api-menu-item",
-      link: {
-        type: "doc",
-        id: "api/shipping-method",
-      },
-      items: [
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/shipping-method#get-available-shipping-methods"><span class="method GET">GET</span><span>Get shipping methods</span></a>',
+            '<a class="menu__link" href="/docs/api/cart#add-shipping-note"><span class="method POST">POST</span><span>Add shipping note</span></a>',
         },
       ],
     },
@@ -275,6 +279,11 @@ const sidebars = {
           value:
             '<a class="menu__link" href="/docs/api/order#update-a-shipment"><span class="method PATCH">PATCH</span><span>Update a shipment</span></a>',
         },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/order#cancel-an-order"><span class="method POST">POST</span><span>Cancel an order</span></a>',
+        },
       ],
     },
     {
@@ -301,37 +310,6 @@ const sidebars = {
           value:
             '<a class="menu__link" href="/docs/api/customer#delete-a-customer"><span class="method DELETE">DELETE</span><span>Delete a customer</span></a>',
         },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/customer#login"><span class="method POST">POST</span><span>Login a customer</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/customer#logout"><span class="method DELETE">DELETE</span><span>Logout a customer</span></a>',
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "User",
-      className: "api-menu-item",
-      link: {
-        type: "doc",
-        id: "api/user",
-      },
-      items: [
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/user#login"><span class="method POST">POST</span><span>Login a user</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/user#logout"><span class="method DELETE">DELETE</span><span>Logout a user</span></a>',
-        },
       ],
     },
     {
@@ -357,6 +335,42 @@ const sidebars = {
           type: "html",
           value:
             '<a class="menu__link" href="/docs/api/cms-page#delete-a-page"><span class="method DELETE">DELETE</span><span>Delete a page</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Tax",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/tax",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/tax#create-a-tax-class"><span class="method POST">POST</span><span>Create a tax class</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/tax#update-a-tax-class"><span class="method PATCH">PATCH</span><span>Update a tax class</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/tax#create-a-tax-rate"><span class="method POST">POST</span><span>Create a tax rate</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/tax#update-a-tax-rate"><span class="method PATCH">PATCH</span><span>Update a tax rate</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/tax#delete-a-tax-rate"><span class="method DELETE">DELETE</span><span>Delete a tax rate</span></a>',
         },
       ],
     },

@@ -2,97 +2,109 @@
 sidebar_position: 10
 keywords:
   - EverShop architecture
+  - Node.js architecture
+  - TypeScript ecommerce
+  - Modular monolith
   - Project structure
   - Module system
   - Directory organization
 sidebar_label: Architecture Overview
-title: EverShop Architecture Overview
-description: A comprehensive overview of the EverShop platform architecture, explaining the project structure including modules, configuration, extensions, themes, and media management.
+title: 'Architecture Deep Dive: The EverShop Platform'
+description: A deep dive into the EverShop platform architecture. Learn about our modular monolith design, request lifecycle, module system, and the distinction between the source code and project folder structures.
 ---
 
-# Architecture Overview
+# Architecture Deep Dive
 
-EverShop is developed using Node.js and PostgreSQL, combining backend and frontend components in a unified monolithic architecture. This design approach keeps both backend and frontend code within the same project, streamlining development and deployment.
+Welcome to the architectural overview of EverShop. This document provides a deep dive into the core concepts, design patterns, and structure that make EverShop a flexible and powerful ecommerce platform.
 
-The platform provides both RESTful API and [GraphQL API](https://graphql.org/) interfaces, allowing flexible communication between the frontend and backend systems.
+EverShop is designed as a **modular monolith**. It combines the simplicity of a single, deployable application with the flexibility and separation of concerns of a modular system. Built with Node.js, TypeScript, React, and GraphQL, it provides a robust foundation for developers.
 
-![Architecture Overview](./img/evershop-architecture-overview.svg "Architecture Overview")
+## Core Architectural Concepts
 
-## Module System
+EverShop's architecture is built on a few key principles:
 
-EverShop is built on a modular architecture that promotes separation of concerns and code reusability. All functionality is implemented and delivered through components known as Modules.
+-   **Modular Monolith**: EverShop is a single application, but its internal structure is composed of decoupled modules. This design simplifies development and deployment while still allowing for clean separation of features.
+-   **API-Driven**: All communication, whether from the frontend to the backend or between internal components, occurs through well-defined APIs. EverShop provides both GraphQL and RESTful endpoints.
+-   **Everything is a Module**: All business logic in EverShop is organized into modules. This includes core features like `catalog` and `checkout`, as well as custom extensions you create.
+-   **Extensibility by Default**: The system is designed to be extended. You can add new features, override existing components, and tap into the event system without modifying core files.
 
-A module represents a logical group—a directory containing controllers, services, and views—related to a specific business feature. In alignment with EverShop's commitment to optimal modularity, each module encapsulates one distinct feature and maintains minimal dependencies on other modules.
+## The Module System
 
-![Module Architecture Overview](./img/evershop-module-architecture.png "Module Architecture Overview")
+The module is the fundamental building block of EverShop. Each module is a self-contained package that encapsulates a specific business feature. It includes all the necessary components for that feature, such as API endpoints, services, and UI components.
 
-## Project Folder Structure
+This modular approach ensures that features are decoupled, making the system easier to maintain, scale, and extend.
 
-An EverShop project consists of several key directories that manage dependencies, caching, configuration, media assets, and extensions. Here's a breakdown of the directory structure:
+![Module Architecture Overview](./img/evershop-module-architecture.png 'Module Architecture Overview')
+
+## Request Lifecycle
+
+Understanding the request lifecycle is key to understanding how EverShop works. When a request enters the system, it flows through a series of layers before a response is sent back.
+
+![Request Lifecycle](./img/evershop-architecture-overview.svg 'Request Lifecycle')
+
+1.  **HTTP Request**: A request is received by the web server.
+2.  **Middleware Pipeline**: The request passes through a pipeline of middleware functions. This includes core middleware (for sessions, authentication, etc.) and middleware added by modules.
+3.  **Routing**: The router directs the request to the appropriate controller or GraphQL resolver within a specific module based on the URL and HTTP method.
+4.  **Controller/Resolver**: The controller or resolver processes the request, validates input, and calls the necessary services.
+5.  **Service Layer**: Services contain the core business logic. They interact with the database and other resources to perform operations.
+6.  **Database**: Data is persisted and retrieved from the PostgreSQL database.
+7.  **Response**: The controller or resolver generates a response. This can be a JSON response for an API request or an HTML page rendered using React for a web page request.
+
+## Folder Structure
+
+It's important to distinguish between the **source code structure** (how EverShop itself is organized) and the **project structure** (the layout of a deployed EverShop instance).
+
+### Project Structure (Your Store)
+
+When you create a new EverShop project, it will have a simplified structure designed for you to build upon. This is the structure you will work with for your own store.
 
 ```bash
-├── .evershop
-├── .log
+├── .evershop # Built files and cache
 ├── config
-│     ├ default.json
-├── extensions
-├── media
-├── node_modules
-├── themes
-├── package-lock.json
+│     ├ default.json # Your custom configuration
+├── extensions # Your custom modules
+├── media # Uploaded files (images, etc.)
+├── public # Static assets (CSS, JS, images)
+├── node_modules # Project dependencies
+├── themes # Your custom themes
 └── package.json
 ```
 
-### The `.evershop` Directory
+-   **`.evershop` Directory**: Contains built files optimized for production, including compiled React components and other assets. This directory is generated by the `build` command.
+-   **`config` Directory**: Houses your custom configuration files. You can override default settings here. See the [Configuration Guide](./configuration-guide) for more details.
+-   **`extensions` Directory**: This is where you place your custom modules to extend EverShop's functionality.
+-   **`media` Directory**: Stores all uploaded files, such as product images and other media assets.
+-   **`public` Directory**: Contains static assets like CSS, JavaScript, and images that are served directly to clients.
+-   **`node_modules` Directory**: Contains all project dependencies, including the core `evershop` package.
+-   **`themes` Directory**: This directory holds your custom themes, which control the look and feel of your storefront. See the [Theme Overview](../theme/theme-overview) for more information.
 
-This directory contains built files optimized for production use. [ReactJS components](https://reactjs.org/) and asset files are automatically generated here by the [build command](/docs/development/knowledge-base/command-lines) during the build process.
+### Managing Dependencies with NPM Workspaces
 
-### The `.log` Directory
+For advanced development, both the `extensions` and `themes` directories can be managed as [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces). This allows each extension or theme to have its own `package.json` file and manage its own dependencies.
 
-The log directory stores application logging information, recording events and activities that occur within your application. These logs are invaluable for debugging, monitoring, and auditing purposes.
+To enable this, add the `workspaces` property to your root `package.json`:
 
-### The `config` Directory
+```json
+{
+  "name": "my-evershop-store",
+  "version": "1.0.0",
+  "workspaces": [
+    "extensions/*",
+    "themes/*"
+  ]
+}
+```
 
-This directory houses configuration files that control various aspects of your EverShop installation. For detailed information about configuration options and management, refer to the [configuration guide](/docs/development/knowledge-base/configuration-guide).
+With this configuration, you can structure your extensions like this:
 
-:::info
-The `config` directory is not created automatically when setting up a new project. You'll need to create it manually when you're ready to customize your configuration.
-:::
+```bash
+├── extensions
+│   ├── my-custom-extension
+│   │   ├── package.json
+│   │   └── index.js
+│   └── another-extension
+│       ├── package.json
+│       └── index.js
+```
 
-### The `extensions` Directory
-
-Extensions are modules developed by third-party developers or your own team that extend EverShop's core functionality. This directory contains these custom modules. For a deeper understanding of module structure and development, see the [extension development documentation](../module/extension-development).
-
-:::info
-The `extensions` directory is not created automatically when setting up a new project. You'll need to create it manually when you want to add extensions.
-:::
-
-### The `media` Directory
-
-The media directory stores all uploaded files, including product images, category images, and other media assets used throughout your store. This directory is automatically managed by EverShop when media files are uploaded through the admin interface.
-
-### The `node_modules` Directory
-
-This is the standard Node.js modules directory containing packages from npm and other vendors. The EverShop core package is also located in this directory, along with all its dependencies.
-
-### The `themes` Directory
-
-Themes control the visual appearance and layout of your store. This directory contains themes developed by third parties or your own team. For more information about theme development and customization, see the [theme overview documentation](../theme/theme-overview).
-
-:::info
-The `themes` directory is not created automatically when setting up a new project. You'll need to create it manually when you're ready to customize the appearance of your store.
-:::
-
-## Architectural Principles
-
-EverShop's architecture is guided by several key principles:
-
-1. **Modularity**: Each module is self-contained and focuses on a specific business function.
-
-2. **Extensibility**: The system is designed to be easily extended through additional modules.
-
-3. **Separation of Concerns**: Frontend and backend code are organized to maintain clear boundaries between different responsibilities.
-
-4. **API-First Approach**: All frontend-backend communication happens through well-defined API interfaces.
-
-5. **Performance Optimization**: Server-side rendering combined with client-side hydration provides optimal performance and SEO benefits.
+When you run `npm install` in the project root, NPM will install the dependencies for all your extensions and themes and symlink them in the root `node_modules` directory. This is a powerful way to manage complex projects with multiple custom modules.

@@ -12,9 +12,11 @@ description: Use the REST API to interact with EverShop orders.
 
 Use the REST API to interact with EverShop orders.
 
-## Create an order
+## Endpoints
 
-Use this endpoint to create an order.
+### Create An Order
+
+Use this endpoint to create an order from a shopping cart.
 
 import Api from '@site/src/components/rest/Api';
 
@@ -138,7 +140,7 @@ responseSample={`{
 
 <hr />
 
-## Create a shipment
+### Create A Shipment
 
 Use this endpoint to create a shipment for an order.
 
@@ -148,7 +150,7 @@ url="/api/orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments"
 requestSchema={{
   "type": "object",
   "properties": {
-    "carrier_name": {
+    "carrier": {
       "type": "string"
     },
     "tracking_number": {
@@ -172,17 +174,17 @@ responseSample={`{
 
  <hr />
 
-## Update a shipment
+### Update A Shipment
 
 Use this endpoint to update a shipment.
 
 <Api
 method="PATCH"
-url="/api//orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments/23de497f-8be7-4be9-be3f-a9f341f2b89f"
+url="/api/orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments/23de497f-8be7-4be9-be3f-a9f341f2b89f"
 requestSchema={{
   "type": "object",
   "properties": {
-    "carrier_name": {
+    "carrier": {
       "type": "string"
     },
     "tracking_number": {
@@ -201,5 +203,34 @@ responseSample={`{
     "created_at": "2023-02-06 09:13:35",
     "updated_at": "2023-02-06 09:13:35"
   }
+}`}
+/>
+
+<hr />
+
+### Cancel An Order
+
+Use this endpoint to cancel an order.
+
+<Api
+method="POST"
+url="/orders/:id/cancel"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": ["reason"],
+  "additionalProperties": true,
+  "errorMessage": {
+    "properties": {
+      "reason": "Reason is mandatory"
+    }
+  }
+}}
+responseSample={`{
+"data": {}
 }`}
 />

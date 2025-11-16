@@ -34,84 +34,168 @@ requestSchema={{
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the category displayed to customers"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Category name must be a string",
+        "minLength": "Category name is required and cannot be empty"
+      }
     },
     "description": {
-      "type": "string",
-      "description": "Detailed description of the category"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "errorMessage": {
+              "type": "Description block ID must be a string"
+            }
+          },
+          "size": {
+            "type": "number",
+            "errorMessage": {
+              "type": "Description block size must be a number"
+            }
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "errorMessage": {
+                    "type": "Column ID must be a string"
+                  }
+                },
+                "size": {
+                  "type": "number",
+                  "errorMessage": {
+                    "type": "Column size must be a number"
+                  }
+                },
+                "data": {
+                  "type": "object",
+                  "errorMessage": {
+                    "type": "Column data must be an object"
+                  }
+                }
+              },
+              "required": ["id", "size", "data"],
+              "errorMessage": {
+                "required": {
+                  "id": "Column ID is required",
+                  "size": "Column size is required",
+                  "data": "Column data is required"
+                }
+              }
+            },
+            "errorMessage": {
+              "type": "Columns must be an array"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"],
+        "errorMessage": {
+          "required": {
+            "id": "Description block ID is required",
+            "size": "Description block size is required",
+            "columns": "Description block columns are required"
+          }
+        }
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "image": {
       "type": "string",
-      "description": "URL or path to the category image"
+      "errorMessage": {
+        "type": "Image path must be a string"
+      }
     },
     "meta_title": {
       "type": "string",
-      "description": "Meta title for SEO purposes"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta title must be a string",
+        "minLength": "Meta title is required and cannot be empty"
+      }
     },
     "meta_description": {
       "type": "string",
-      "description": "Meta description for SEO purposes"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta description must be a string",
+        "minLength": "Meta description is required and cannot be empty"
+      }
     },
     "meta_keywords": {
       "type": "string",
-      "description": "Meta keywords for SEO purposes"
+      "errorMessage": {
+        "type": "Meta keywords must be a string"
+      }
     },
     "url_key": {
       "type": "string",
-      "description": "URL-friendly identifier for the category"
+      "pattern": "^\\S+$",
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key cannot contain spaces"
+      }
     },
     "status": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Category status: 1 for enabled, 0 for disabled"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Status must be a number or string",
+        "enum": "Status must be either 0, 1, '0', or '1'"
+      }
     },
     "include_in_nav": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Whether to include this category in navigation menus: 1 for yes, 0 for no"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Include in navigation must be a number or string",
+        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
+      }
     },
     "parent_id": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$",
-      "description": "ID of the parent category (if this is a subcategory)"
+      "type": ["string", "number", "null"],
+      "pattern": "^[0-9]+$",
+      "default": null,
+      "errorMessage": {
+        "type": "Parent ID must be a string, number, or null",
+        "pattern": "Parent ID must be a valid numeric ID"
+      }
     },
     "position": {
-      "type": [
-        "string",
-        "integer"
-      ],
+      "type": ["string", "integer"],
       "pattern": "^[0-9]*$",
-      "description": "Position for sorting categories in listings"
+      "errorMessage": {
+        "type": "Position must be a string or number",
+        "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
+      }
     }
   },
   "required": [
     "name",
     "description",
     "status",
-    "url_key",
     "meta_title",
     "meta_description"
   ],
-  "additionalProperties": true
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "name": "Category name is required",
+      "description": "Category description is required",
+      "status": "Category status is required",
+      "meta_title": "Meta title is required",
+      "meta_description": "Meta description is required"
+    }
+  }
 }}
 responseSample={`{
   "data": {
@@ -177,76 +261,168 @@ requestSchema={{
   "properties": {
     "name": {
       "type": "string",
-      "description": "The name of the category displayed to customers"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Category name must be a string",
+        "minLength": "Category name is required and cannot be empty"
+      }
     },
     "description": {
-      "type": "string",
-      "description": "Detailed description of the category"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "errorMessage": {
+              "type": "Description block ID must be a string"
+            }
+          },
+          "size": {
+            "type": "number",
+            "errorMessage": {
+              "type": "Description block size must be a number"
+            }
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "errorMessage": {
+                    "type": "Column ID must be a string"
+                  }
+                },
+                "size": {
+                  "type": "number",
+                  "errorMessage": {
+                    "type": "Column size must be a number"
+                  }
+                },
+                "data": {
+                  "type": "object",
+                  "errorMessage": {
+                    "type": "Column data must be an object"
+                  }
+                }
+              },
+              "required": ["id", "size", "data"],
+              "errorMessage": {
+                "required": {
+                  "id": "Column ID is required",
+                  "size": "Column size is required",
+                  "data": "Column data is required"
+                }
+              }
+            },
+            "errorMessage": {
+              "type": "Columns must be an array"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"],
+        "errorMessage": {
+          "required": {
+            "id": "Description block ID is required",
+            "size": "Description block size is required",
+            "columns": "Description block columns are required"
+          }
+        }
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "image": {
       "type": "string",
-      "description": "URL or path to the category image"
+      "errorMessage": {
+        "type": "Image path must be a string"
+      }
     },
     "meta_title": {
       "type": "string",
-      "description": "Meta title for SEO purposes"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta title must be a string",
+        "minLength": "Meta title is required and cannot be empty"
+      }
     },
     "meta_description": {
       "type": "string",
-      "description": "Meta description for SEO purposes"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta description must be a string",
+        "minLength": "Meta description is required and cannot be empty"
+      }
     },
     "meta_keywords": {
       "type": "string",
-      "description": "Meta keywords for SEO purposes"
+      "errorMessage": {
+        "type": "Meta keywords must be a string"
+      }
     },
     "url_key": {
       "type": "string",
-      "description": "URL-friendly identifier for the category"
+      "pattern": "^\\S+$",
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key cannot contain spaces"
+      }
     },
     "status": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Category status: 1 for enabled, 0 for disabled"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Status must be a number or string",
+        "enum": "Status must be either 0, 1, '0', or '1'"
+      }
     },
     "include_in_nav": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Whether to include this category in navigation menus: 1 for yes, 0 for no"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Include in navigation must be a number or string",
+        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
+      }
     },
     "parent_id": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$",
-      "description": "ID of the parent category (if this is a subcategory)"
+      "type": ["string", "number", "null"],
+      "pattern": "^[0-9]+$",
+      "default": null,
+      "errorMessage": {
+        "type": "Parent ID must be a string, number, or null",
+        "pattern": "Parent ID must be a valid numeric ID"
+      }
     },
     "position": {
-      "type": [
-        "string",
-        "integer"
-      ],
+      "type": ["string", "integer"],
       "pattern": "^[0-9]*$",
-      "description": "Position for sorting categories in listings"
+      "errorMessage": {
+        "type": "Position must be a string or number",
+        "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
+      }
     }
   },
-  "additionalProperties": true
+  "required": [
+    "name",
+    "description",
+    "status",
+    "meta_title",
+    "meta_description"
+  ],
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "name": "Category name is required",
+      "description": "Category description is required",
+      "status": "Category status is required",
+      "meta_title": "Meta title is required",
+      "meta_description": "Meta description is required"
+    }
+  }
 }}
 responseSample={`{
   "data": {
@@ -333,146 +509,6 @@ responseSample={`{
 
 <hr />
 
-### Get a Category
+### Get Category Data with GraphQL
 
-Retrieves detailed information about a specific product category.
-
-<Api
-method="GET"
-url="/api/categories/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
-responseSample={`{
-  "data": {
-    "category_id": 103,
-    "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
-    "status": 1,
-    "parent_id": 16,
-    "include_in_nav": 1,
-    "position": 22,
-    "created_at": "2023-02-07 00:01:47",
-    "updated_at": "2023-02-07 00:01:47",
-    "category_description_id": 82,
-    "category_description_category_id": 103,
-    "name": "Athletic Shoes",
-    "short_description": null,
-    "description": "High-performance athletic shoes for sports and training",
-    "image": "/assets/catalog/categories/athletic-shoes.jpg",
-    "meta_title": "Athletic Shoes | Performance Footwear",
-    "meta_keywords": "athletic shoes, running shoes, training footwear",
-    "meta_description": "Shop our selection of high-performance athletic shoes for all your training needs",
-    "url_key": "athletic-shoes",
-    "path": [
-      {
-        "category_id": 16,
-        "name": "Shoes",
-        "url_key": "shoes"
-      },
-      {
-        "category_id": 103,
-        "name": "Athletic Shoes",
-        "url_key": "athletic-shoes"
-      }
-    ]
-  }
-}`}
-/>
-
-<hr />
-
-### List All Categories
-
-Retrieves a paginated list of all product categories in the system.
-
-<Api
-method="GET"
-url="/api/categories"
-responseSample={`{
-  "data": [
-    {
-      "category_id": 16,
-      "uuid": "7ab75946a63211edb46b60d819134f39",
-      "status": 1,
-      "parent_id": null,
-      "include_in_nav": 1,
-      "position": 1,
-      "created_at": "2023-02-06 10:01:47",
-      "updated_at": "2023-02-06 10:01:47",
-      "name": "Shoes",
-      "description": "All types of footwear",
-      "image": "/assets/catalog/categories/shoes.jpg",
-      "url_key": "shoes",
-      "children": [
-        {
-          "category_id": 103,
-          "name": "Athletic Shoes",
-          "url_key": "athletic-shoes"
-        },
-        {
-          "category_id": 104,
-          "name": "Casual Shoes",
-          "url_key": "casual-shoes"
-        }
-      ]
-    },
-    {
-      "category_id": 17,
-      "uuid": "8ab75946a63211edb46b60d819134f39",
-      "status": 1,
-      "parent_id": null,
-      "include_in_nav": 1,
-      "position": 2,
-      "created_at": "2023-02-06 10:02:47",
-      "updated_at": "2023-02-06 10:02:47",
-      "name": "Clothing",
-      "description": "Apparel for all occasions",
-      "image": "/assets/catalog/categories/clothing.jpg",
-      "url_key": "clothing"
-    }
-  ],
-  "links": {
-    "first": "/api/categories?page=1",
-    "last": "/api/categories?page=1",
-    "prev": null,
-    "next": null
-  },
-  "meta": {
-    "current_page": 1,
-    "from": 1,
-    "last_page": 1,
-    "path": "/api/categories",
-    "per_page": 20,
-    "to": 2,
-    "total": 2
-  }
-}`}
-/>
-
-## Error Handling
-
-All endpoints may return the following error responses:
-
-| Status Code | Description                            |
-| ----------- | -------------------------------------- |
-| 400         | Bad Request - Invalid parameters       |
-| 401         | Unauthorized - Authentication required |
-| 403         | Forbidden - Insufficient permissions   |
-| 404         | Not Found - Category doesn't exist     |
-| 500         | Server Error - Something went wrong    |
-
-Error responses follow this format:
-
-```json
-{
-  "error": {
-    "status": 404,
-    "message": "Category not found"
-  }
-}
-```
-
-## Best Practices
-
-1. **Hierarchical Structure**: Create a logical category hierarchy that helps customers find products easily
-2. **SEO Optimization**: Use descriptive, keyword-rich values for meta titles, descriptions, and URL keys
-3. **URL Keys**: Create unique, short, and descriptive URL keys for better SEO and user experience
-4. **Navigation**: Use the include_in_nav field strategically to keep navigation menus clean and focused
-5. **Category Images**: Use high-quality, consistent images for categories to enhance visual appeal
+EverShop uses GraphQL for querying category data. For detailed information on how to query categories, refer to the [GraphQL API documentation](/docs/development/knowledge-base/data-fetching).

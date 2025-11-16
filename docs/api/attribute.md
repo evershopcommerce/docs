@@ -22,7 +22,7 @@ import Api from '@site/src/components/rest/Api';
 
 ## Endpoints
 
-### Create an Attribute
+### Create An Attribute
 
 Creates a new product attribute in the system. Attributes can be assigned to attribute groups and may include multiple options depending on the attribute type.
 
@@ -34,69 +34,68 @@ requestSchema={{
   "properties": {
     "attribute_name": {
       "type": "string",
-      "description": "Human-readable name of the attribute"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Attribute name must be a string",
+        "minLength": "Attribute name is required and cannot be empty"
+      }
     },
     "attribute_code": {
       "type": "string",
-      "description": "Unique code identifier for the attribute"
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Attribute code must be a string",
+        "minLength": "Attribute code is required and cannot be empty"
+      }
     },
     "is_required": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Whether this attribute is required (1) or optional (0)"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Is required must be a number or string",
+        "enum": "Is required must be either 0, 1, '0', or '1'"
+      }
     },
     "display_on_frontend": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Whether to display this attribute on product pages (1) or not (0)"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Display on frontend must be a number or string",
+        "enum": "Display on frontend must be either 0, 1, '0', or '1'"
+      }
     },
     "sort_order": {
-      "type": [
-        "string",
-        "integer"
-      ],
+      "type": ["string", "integer"],
       "pattern": "^[0-9]*$",
-      "description": "Position for sorting attributes in listings"
+      "errorMessage": {
+        "type": "Sort order must be a string or number",
+        "pattern": "Sort order must be a valid number (e.g., 0, 1, 10)"
+      }
     },
     "is_filterable": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ],
-      "description": "Whether this attribute can be used as a filter in product search (1) or not (0)"
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Is filterable must be a number or string",
+        "enum": "Is filterable must be either 0, 1, '0', or '1'"
+      }
     },
     "groups": {
       "type": "array",
+      "minItems": 1,
       "items": {
-        "type": [
-          "string",
-          "integer"
-        ],
-        "pattern": "^[0-9]*$"
-      },
-      "description": "Array of attribute group IDs this attribute belongs to"
+          "type": ["string", "integer"],
+          "pattern": "^[1-9][0-9]*$",
+          "default": 100000,
+          "errorMessage": {
+            "type": "Group ID must be a string or number",
+            "pattern": "Group ID must be a valid positive number (e.g., 1, 10, 100)"
+          }
+        },
+      "errorMessage": {
+        "type": "Groups must be an array",
+        "minItems": "At least one group is required"
+      }
     },
     "options": {
       "type": "array",
@@ -105,22 +104,32 @@ requestSchema={{
         "properties": {
           "option_text": {
             "type": "string",
-            "description": "Display text for the option"
+            "minLength": 1,
+            "errorMessage": {
+              "type": "Option text must be a string",
+              "minLength": "Option text is required and cannot be empty"
+            }
           },
           "option_id": {
-            "type": [
-              "string",
-              "integer"
-            ],
+            "type": ["string", "integer"],
             "pattern": "^[1-9][0-9]*$",
-            "description": "Unique identifier for the option (only required for updates)"
+            "errorMessage": {
+              "type": "Option ID must be a string or number",
+              "pattern": "Option ID must be a valid positive number (e.g., 1, 10, 100)"
+            }
           }
         },
-        "required": [
-          "option_text"
-        ]
+        "required": ["option_text"],
+        "errorMessage": {
+          "type": "Option must be an object",
+          "required": {
+            "option_text": "Option text is required"
+          }
+        }
       },
-      "description": "Array of options for select/multiselect attribute types"
+      "errorMessage": {
+        "type": "Options must be an array"
+      }
     }
   },
   "required": [
@@ -131,7 +140,17 @@ requestSchema={{
     "display_on_frontend",
     "groups"
   ],
-  "additionalProperties": true
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "attribute_code": "Attribute code is required",
+      "attribute_name": "Attribute name is required",
+      "type": "Attribute type is required",
+      "is_required": "Is required field is required",
+      "display_on_frontend": "Display on frontend field is required",
+      "groups": "At least one group must be assigned"
+    }
+  }
 }}
 responseSample={`{
   "data": {
@@ -440,13 +459,36 @@ responseSample={`{
 
 All endpoints may return the following error responses:
 
-| Status Code | Description                            |
-| ----------- | -------------------------------------- |
-| 400         | Bad Request - Invalid parameters       |
-| 401         | Unauthorized - Authentication required |
-| 403         | Forbidden - Insufficient permissions   |
-| 404         | Not Found - Attribute doesn't exist    |
-| 500         | Server Error - Something went wrong    |
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>400</td>
+      <td>Bad Request - Invalid parameters</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>Unauthorized - Authentication required</td>
+    </tr>
+    <tr>
+      <td>403</td>
+      <td>Forbidden - Insufficient permissions</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>Not Found - Attribute doesn't exist</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Server Error - Something went wrong</td>
+    </tr>
+  </tbody>
+</table>
 
 Error responses follow this format:
 

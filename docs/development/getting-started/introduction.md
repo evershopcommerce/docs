@@ -2,24 +2,46 @@
 sidebar_position: 1
 keywords:
   - EverShop introduction
+  - Node ecommerce
+  - React ecommerce
+  - GraphQL ecommerce
+  - TypeScript ecommerce
+  - open-source ecommerce
+  - e-commerce platform
 sidebar_label: Introduction
-title: Free open-source Node Ecommerce Platform
-description: EverShop is a full stack Node Ecommerce platform that helps developing an e-commerce store. EverShop is a flexible with both admin panel and front store are extensible.
+title: 'EverShop: Open-Source Node.js & TypeScript Ecommerce Platform'
+description: Discover EverShop, a free, open-source ecommerce platform built with Node.js, TypeScript, React, and GraphQL. Create flexible, high-performance online stores with an extensible admin panel and customizable storefront.
 ---
 
-# EverShop – An Open-Source Node Ecommerce Platform Introduction
+# EverShop: An Open-Source TypeScript Ecommerce Platform
 
-Welcome to the EverShop. A Node Ecommerce Platform!
+Welcome to EverShop, a modern, open-source Node.js ecommerce platform built with **TypeScript**, React, and GraphQL.
 
-EverShop is an open-source [Node ecommerce platform](/) that helps developers developing their e-commerce store. EverShop is a flexible platform built on a module system, with extensible options for both the admin panel and the front store.
+EverShop is designed to help developers create powerful and flexible e-commerce stores. It features a modular architecture that allows for extensive customization of both the admin panel and the front store, giving you complete control over your application.
 
-EverShop also offers rich functionality, enabling merchants to develop a web store that meets their business requirements.
+EverShop is free and open-source. The source code is available on [GitHub](https://github.com/evershopcommerce/evershop).
 
-EverShop is free and open-source. The source code is available on [GitHub](https://github.com/evershopcommerce/evershop)
+## Core Philosophy
 
-## Technology stack
+- **Developer-Centric**: Built by developers, for developers. EverShop provides a flexible and powerful foundation to build upon.
+- **Open Source**: We believe in the power of community. EverShop is free, open-source, and ready for you to make it your own.
+- **Performance**: With server-side rendering and a modern stack, EverShop is designed for speed and a great user experience.
+
+## Key Features
+
+- **Modern Tech Stack**: Built with Node.js, TypeScript, React, and GraphQL for a powerful and scalable foundation.
+- **Modular Architecture**: Extend and customize your store with a flexible module system. Add new features without touching the core code.
+- **Extensible Admin Panel**: A fully-featured admin panel, inspired by leading platforms, that you can easily customize.
+- **Customizable Storefront**: The frontend is designed for deep customization through a powerful theme system.
+- **GraphQL API**: A flexible and powerful GraphQL API for both admin and storefront operations.
+
+## Technology Stack
 
 EverShop's highly modular structure is a result of several open source technologies embedded into a stack. These open source technologies are composed of the following components:
+
+### TypeScript
+
+EverShop is written in [TypeScript](https://www.typescriptlang.org/), a statically typed superset of JavaScript. This provides better tooling, scalability, and code quality.
 
 ### NodeJS
 
@@ -42,15 +64,15 @@ EverShop's highly modular structure is a result of several open source technolog
 Check [this document](/docs/development/getting-started/system-requirements) for more detail about system requirement of EverShop.
 :::
 
-## Backend - React Ecommerce Dashboard
+## Extensible Admin Panel
 
 ![EverShop admin panel](./img/backend.png "EverShop admin panel")
 
-Heavy inspired by Shopify, we have a fully-featured admin panel using React that allows you to manage your store.
+Inspired by leading ecommerce platforms, EverShop includes a fully-featured admin panel built with React. It provides all the tools you need to manage your products, orders, and customers.
 
 The admin panel is also designed to be extensible and customizable. Developers can easily add new features to the admin panel without modifying the core source code.
 
-## Front store view - React Graphql Ecommerce
+## Customizable Storefront
 
 ![EverShop front store](./img/evershop-product-detail.png "EverShop front store")
 
@@ -60,24 +82,25 @@ The EverShop frontend is designed to optimize storefront customization, with hig
 Check out the theme documentation [here](/docs/development/theme/theme-overview).
 :::
 
-## Demo store
+## Demo Store
 
 Explore our demo store.
 
 import Link from '@docusaurus/Link';
 
-<div className="flex justify-center gap-5">
+<div className="flex justify-center gap-5 pb-6">
 <Link
-            className="button button--primary button--lg"
+            className="button button--primary button--md"
             to="https://demo.evershop.io/admin/">
-            Admin panel
+            Admin Panel
           </Link>
 <Link
-            className="button button--primary button--lg"
+            className="button button--primary button--md"
             to="https://demo.evershop.io/">
-            Front store
+            Front Store
           </Link>
 </div>
+
 
 :::info
 The demo admin account email is `demo@evershop.io` and the password is `123456`

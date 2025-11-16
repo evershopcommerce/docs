@@ -26,12 +26,12 @@ From your extension folder, create a new subfolder called `jobs`. Inside the `jo
 ```bash
 ├── your-extension
 │   ├── jobs
-│   │   ├── myCronJob.js
+│   │   ├── myCronJob.ts
 ```
 
-The file `myCronJob.js` should provide a default export function that will be executed when the cron job runs. Here is an example of a simple cron job:
+The file `myCronJob.ts` should provide a default export function that will be executed when the cron job runs. Here is an example of a simple cron job:
 
-```js title="myCronJob.js"
+```ts title="myCronJob.ts"
 export default function myCronJob() {
   console.log("Hello, this is my cron job!");
 }

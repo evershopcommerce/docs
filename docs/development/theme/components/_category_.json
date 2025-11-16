@@ -1,0 +1,16 @@
+{
+  "label": "Components Reference",
+  "position": 35,
+  "collapsible": false,
+  "collapsed": false,
+  "className": "functions-reference",
+  "link": {
+    "type": "generated-index",
+    "slug": "development/theme/components",
+    "title": "Components Reference",
+    "description": "A comprehensive reference of all components available in the EverShop platform's modules, including their usage and parameters."
+  },
+  "customProps": {
+    "isFunctionReference": true
+  }
+}

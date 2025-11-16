@@ -143,6 +143,20 @@ EverShop will take care of the database migration for you.
 Upgrading EverShop requires running the `build` command again.
 :::
 
+## Demo Data Seeding
+
+After installation, you can populate your store with demo data using the seed command. This is useful for development and testing.
+
+```bash
+npm run seed
+```
+
+This command will populate your store with sample products, categories, and other data.
+
+:::info
+Demo data seeding is intended for development and testing environments only. Do not use it in production.
+:::
+
 ## For developer
 
 If you are a developer and want to start the project in the development mode, there are some additional steps you need to follow.

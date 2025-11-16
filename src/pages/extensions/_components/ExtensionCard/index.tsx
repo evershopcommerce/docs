@@ -79,7 +79,8 @@ function ExtensionCard({extension}: {extension: Extension}) {
             <div className='w-8 h-8 bg-primary-02 flex justify-center items-center rounded-full'><img src='/img/logo.svg' alt='EverShop' width={15} height={15} /></div>
             <span className='text-Neutrals-04 text-base'>{extension.author}</span>
           </div>
-          <a href={extension.npm} target='_blank' className='font-semibold'>Download</a>
+          {extension.npm && (<a href={extension.npm} target='_blank' className='font-semibold'>Download</a>)}
+          {extension.demo && (<a href={extension.demo} target='_blank' className='font-semibold'>Live Demo</a>)}
         </div>
       </div>
     </div>
