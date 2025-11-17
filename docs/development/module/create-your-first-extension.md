@@ -17,7 +17,7 @@ Before starting this tutorial, please ensure you have:
 
 - EverShop version 2.0.1 or newer installed on your machine. If you haven't installed EverShop yet, please follow the [installation guide](/docs/development/getting-started/installation-guide).
 
-- A basic understanding of EverShop's module system. If you're unfamiliar with modules, please review the [module overview documentation](/docs/development/module/module-overview).
+- A basic understanding of EverShop's module system. If you're unfamiliar with modules, please review the [extension overview documentation](/docs/development/module/extension-overview).
 
 - Knowledge of EverShop's extension architecture. If you need to learn about extensions, please read the [extension development guide](/docs/development/module/extension-development).
 

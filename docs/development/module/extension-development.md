@@ -12,7 +12,7 @@ description: Learn how to develop custom extensions for EverShop, from setup to 
 ![EverShop extension development](./img/evershop-extension-development.jpg "EverShop extension development")
 
 :::info
-Before you start writing code for your EverShop extension, we recommend reading the [EverShop Module Overview documentation](./module-overview) to understand the basics of EverShop's modular architecture.
+Before you start writing code for your EverShop extension, we recommend reading the [EverShop Extension Overview documentation](./extension-overview) to understand the basics of EverShop's modular architecture.
 :::
 
 This guide will walk you through the process of setting up and developing extensions for EverShop. Extensions allow you to add new features or modify existing functionality without altering the core codebase.

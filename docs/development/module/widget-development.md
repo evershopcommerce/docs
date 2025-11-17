@@ -38,7 +38,7 @@ Custom widgets offer significant benefits for EverShop stores:
 ## How to Develop a Widget
 
 :::info
-Before beginning widget development, we recommend reviewing the [EverShop Module Overview](./module-overview) and [Create Your First Extension](./create-your-first-extension) documentation to understand module structure and extension development.
+Before beginning widget development, we recommend reviewing the [EverShop Extension Overview](./extension-overview) and [Create Your First Extension](./create-your-first-extension) documentation to understand extension structure and extension development.
 :::
 
 This guide will walk you through the process of developing a custom widget for EverShop. We'll create a simple greeting widget that displays a customizable welcome message on your storefront.

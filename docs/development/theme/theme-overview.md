@@ -13,7 +13,7 @@ A theme is a component of the EverShop application that provides a consistent lo
 
 In EverShop, themes are designed to override or customize the view layer that is initially provided by modules or libraries.
 
-Similar to [modules](/docs/development/module/module-overview), [themes](./theme-overview) are implemented by different vendors (frontend developers) and are intended to be distributed as additional packages for the EverShop system.
+Similar to [extensions](/docs/development/module/extension-overview), [themes](./theme-overview) are implemented by different vendors (frontend developers) and are intended to be distributed as additional packages for the EverShop system.
 
 Out-of-the-box, the [EverShop](https://evershop.io/) application provides a default theme for demonstration purposes. This theme is fully customizable, allowing you to develop your own theme based on it.
 
@@ -27,7 +27,7 @@ You can check out the [Eve Theme repository](https://github.com/evershopcommerce
 
 ### The Default Theme
 
-If you've already read the [module overview document](../module/module-overview), you know that EverShop is a modular application where all functionality is implemented and delivered in components known as Modules. Themes are also implemented and delivered through modules.
+If you've already read the [extension overview document](../module/extension-overview), you know that EverShop is a modular application where all functionality is implemented and delivered in components known as Modules. Themes are also implemented and delivered through modules.
 
 This means that every module has its own `view` part to handle the UI/UX. This `view` part is designed to be easily customizable without modifying the core files.
 

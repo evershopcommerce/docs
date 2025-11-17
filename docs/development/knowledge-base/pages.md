@@ -10,7 +10,7 @@ description: EverShop pages are located in the `pages` folder of each module. Le
 # Pages
 
 :::info
-Refer to the [module structure documentation](/docs/development/module/module-overview) to learn more about the structure of EverShop modules.
+Refer to the [module structure documentation](/docs/development/module/extension-overview) to learn more about the structure of EverShop modules.
 :::
 
 EverShop pages are located in the `pages` folder of each module. Below is an example of the page structure in the `catalog` module:

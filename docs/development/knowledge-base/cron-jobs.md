@@ -17,7 +17,7 @@ This document explains the cron job system in EverShop. EverShop provides a powe
 
 ## How to Create a Cron Job in EverShop
 
-This section assumes that you have an extension installed in your EverShop store. If you don't have an extension or want to learn how to create your own extension, please refer to [this document](/docs/development/module/module-overview.md).
+This section assumes that you have an extension installed in your EverShop store. If you don't have an extension or want to learn how to create your own extension, please refer to [this document](/docs/development/module/extension-overview.md).
 
 ### Step 1: Create a New Cron Job
 

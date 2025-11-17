@@ -15,7 +15,7 @@ description: Learn how to build and manage RESTful API endpoints in EverShop to 
 EverShop provides a comprehensive system for building RESTful API endpoints that power your store's backend functionality. This document explains how to create, structure, and secure these endpoints.
 
 :::info
-Before diving into API routes, it's recommended to familiarize yourself with the [module structure](/docs/development/module/module-overview) to understand how modules are organized in EverShop.
+Before diving into API routes, it's recommended to familiarize yourself with the [extension structure](/docs/development/module/extension-overview) to understand how extensions are organized in EverShop.
 :::
 
 ## API Organization

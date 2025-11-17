@@ -46,7 +46,7 @@ EverShop implements [Fast Refresh](../knowledge-base/fast-refresh) to improve th
 ## The Module View Structure
 
 :::info
-Please refer to [this document](../module/module-overview) to understand the overall structure of EverShop modules.
+Please refer to [this document](../module/extension-overview) to understand the overall structure of EverShop extensions.
 :::
 
 Every module in EverShop has a `pages` folder containing all React components used to render pages. Let's examine the structure using the `catalog` module as an example:

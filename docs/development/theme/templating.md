@@ -19,7 +19,7 @@ Developing a theme in EverShop involves customizing the default templates or add
 Before proceeding, we recommend familiarizing yourself with:
 
 - [Pages](/docs/development/knowledge-base/pages) documentation to understand page structure
-- [Module Structure](/docs/development/module/module-overview) documentation to understand how modules are organized
+- [Extension Structure](/docs/development/module/extension-overview) documentation to understand how modules are organized
 - [Theme Overview](/docs/development/theme/theme-overview) documentation to understand the EverShop theme architecture
 
 ## EverShop Template System

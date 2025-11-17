@@ -32,7 +32,6 @@ function FunctionList({items}: {items: PropSidebarItem[]}) {
 
   const groupSet = {};
   items.forEach((item) => {
-    console.log('item', item);
     if (item.type === 'link' && item.customProps?.frontMatter?.groups) {
       const itemGroups = item.customProps.frontMatter.groups as string[];
       itemGroups.forEach((tag) => {
@@ -137,7 +136,6 @@ function DocCategoryGeneratedIndexPageContent({
   categoryGeneratedIndex,
 }: Props): JSX.Element {
   const category = useCurrentSidebarCategory();
-  console.log('category', category);
   return (
     <div className={styles.generatedIndexPage}>
       <DocVersionBanner />
