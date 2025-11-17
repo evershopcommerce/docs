@@ -6,7 +6,7 @@ keywords:
 - modification
 - override
 groups:
-- core
+- widgets
 sidebar_label: updateWidget
 title: updateWidget
 description: Update properties of an existing widget.

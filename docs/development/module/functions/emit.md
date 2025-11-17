@@ -5,7 +5,7 @@ keywords:
 - event
 - event emitter
 groups:
-- core
+- events
 sidebar_label: emit
 title: emit
 description: Emit an event to trigger registered subscribers.

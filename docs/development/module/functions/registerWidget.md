@@ -6,7 +6,7 @@ keywords:
 - registration
 - component
 groups:
-- core
+- widgets
 sidebar_label: registerWidget
 title: registerWidget
 description: Register a new widget in the widget manager.

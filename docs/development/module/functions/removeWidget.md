@@ -6,7 +6,7 @@ keywords:
 - unregister
 - delete
 groups:
-- core
+- widgets
 sidebar_label: removeWidget
 title: removeWidget
 description: Remove a widget from the widget manager.
