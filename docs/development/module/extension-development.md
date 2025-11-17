@@ -102,7 +102,74 @@ extensions
     └── package.json         # Extension dependencies
 ```
 
-For more detailed information about module structure, refer to the [module overview documentation](./module-overview).
+## The `tsconfig.json` File
+
+Each extension should include its own `tsconfig.json` file to configure TypeScript compilation settings. Below is an example configuration:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowArbitraryExtensions": true,
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "paths": {
+      "@components/*": [
+        "./src/components/*",
+        "../../node_modules/@evershop/evershop/dist/components/*"
+      ],
+      "*": ["node_modules/*"]
+    }
+  },
+  "include": ["src"]
+}
+```
+
+And add a script to compile TypeScript in your `package.json`:
+
+```json title="package.json"
+{
+  ...
+  "scripts": {
+    "build": "tsc"
+  }
+  ...
+}
+```
+
+:::info
+In development mode, EverShop takes care of compiling TypeScript files on the fly, so you typically don't need to manually compile them. However, each extension must be compiled to JavaScript before it can be used by EverShop in the production environment. Meaning the `dist` folder must exist and contain the compiled JavaScript files for the extension to function correctly in production.
+:::
+
+:::warning
+Do not change the name of the `dist` folder, as EverShop expects compiled extension code to be located there.
+:::
+
+## `module` type in `package.json`
+
+To ensure proper module resolution, each extension's `package.json` file should specify the module type. Add the following field to your extension's `package.json`:
+
+```json title="package.json"
+{
+  ...
+  "type": "module",
+  ...
+}
+```
 
 ## Activating and Deactivating Extensions
 
@@ -139,6 +206,18 @@ While extensions can be used directly from the `extensions` directory, you can a
 1. Prepare your extension for publishing:
 
    - Ensure your `package.json` includes all necessary metadata
+   - Compile your TypeScript code to JavaScript, ensuring the `dist` folder is up to date. Make sure to include the `dist` folder in your package by adding it to the `files` array in `package.json`:
+
+   ```json title="package.json"
+   {
+     ...
+     "files": [
+       "dist",
+       "src"
+     ],
+     ...
+   }
+   ```
    - Add appropriate documentation
    - Test your extension thoroughly
 

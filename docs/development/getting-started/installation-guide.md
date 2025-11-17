@@ -223,9 +223,29 @@ npm run start:debug
 The debug mode is enabled by default when you run the `dev` command.
 :::
 
-### Dockerize your project - Build your own Docker image
+### Dockerize Your Project
 
-You can build your own Docker image by using the following `Dockerfile`:
+Dockerizing your EverShop project allows you to create a portable, self-contained environment for your application. Below is a guide to creating your own Docker image and managing persistent data like media files.
+
+#### Handling Persistent Media Files
+
+When you dockerize your application, it's crucial to handle the `media` directory correctly. This directory contains user-uploaded files (like product images) and should **not** be copied directly into the Docker image. If you do, any uploaded files will be lost whenever the container is rebuilt.
+
+There are two primary approaches for managing media files:
+
+1.  **Docker Volumes**: This approach mounts a directory from your host machine into the container. Files are stored on the host, so they persist even if the container is removed. This is suitable for single-server deployments or local development.
+
+2.  **Cloud Storage**: This approach uses a cloud storage service like Amazon S3 or Azure Blob Storage. This decouples file storage from your application container entirely, which is essential for auto-scaling environments and provides better durability and performance.
+
+:::caution Production Recommendation
+For any production environment, we **strongly recommend using cloud storage** (like AWS S3 or Azure Blob Storage). This approach is more scalable, reliable, and secure than using local volumes. It prevents data loss, simplifies backups, and is essential if you ever plan to run your application across multiple servers.
+
+EverShop provides official extensions for [AWS S3](https://evershop.io/extensions/s3-file-storage) and [Azure Blob Storage](https://evershop.io/extensions/azure-file-storage) to make this integration seamless.
+:::
+
+#### 1. Building Your Docker Image
+
+Here is an example `Dockerfile`. Note that we have removed the `COPY media ./media` line.
 
 ```dockerfile title="Dockerfile"
 FROM node:18-alpine
@@ -241,13 +261,12 @@ COPY extensions ./extensions
 # Copy your config.
 COPY config ./config
 
-# Copy your media.
-COPY media ./media
+# DO NOT copy the media folder. It will be handled by a volume.
 
 # Copy your public files.
 COPY public ./public
 
-# Copy your translations.
+# We must copy translations to the image as they are required for the build.
 COPY translations ./translations
 
 # Run npm install.
@@ -260,7 +279,9 @@ EXPOSE 80
 CMD ["npm", "run", "start"]
 ```
 
-And this is the `docker-compose.yml` file:
+#### 2. Using Docker Compose with a Volume
+
+This `docker-compose.yml` file demonstrates how to build the image and attach a volume for the `media` directory.
 
 ```yml title="docker-compose.yml"
 version: "3.8"
@@ -271,6 +292,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    volumes:
+      - ./media:/app/media # Mounts the host's media folder to the container
     environment:
       DB_HOST: database
       DB_PORT: 5432
@@ -307,6 +330,8 @@ networks:
 volumes:
   postgres-data:
 ```
+
+With this configuration, any files uploaded to your application will be saved in the `media` folder on your host machine, ensuring they are not lost.
 
 import Sponsors from '@site/src/components/Sponsor';
 
