@@ -19,11 +19,11 @@ The following scripts are available in the `package.json` file. You can run any 
 
 ```json
 {
-  "scripts": {
-    "dev": "node ./packages/evershop/dist/bin/dev/index.js",
-    "start": "node ./packages/evershop/dist/bin/start/index.js",
-    "start:debug": "node ./packages/evershop/dist/bin/start/index.js --debug",
-    "build": "node ./packages/evershop/dist/bin/build/index.js",
+   "scripts": {
+    "dev": "evershop dev",
+    "start": "evershop start",
+    "start:debug": "evershop start --debug",
+    "build": "evershop build",
     "setup": "evershop install",
     "seed": "evershop seed",
     "theme:active": "evershop theme:active",
