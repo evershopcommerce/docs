@@ -225,9 +225,9 @@ isPrivate={false}
 Associates a customer email with the cart. This is a required step in the checkout process before adding addresses.
 
 <Api
-method="POST"
-url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/contacts"
-requestSchema={{
+  method="POST"
+  url="/api/carts/{id}/contacts"
+  requestSchema={{
   "type": "object",
   "properties": {
     "email": {
@@ -262,9 +262,9 @@ isPrivate={false}
 Adds a shipping or billing address to the cart. Both address types are required to complete the checkout process.
 
 <Api
-method="POST"
-url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/addresses"
-requestSchema={{
+  method="POST"
+  url="/api/carts/{id}/addresses"
+  requestSchema={{
   "type": "object",
   "properties": {
     "address": {
@@ -365,7 +365,7 @@ Specifies the shipping method to be used for the order. This step is required af
 
 <Api
 method="POST"
-url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/shippingMethods"
+url="/api/carts/363ba97f-8be7-4be9-be3f-a9f341f2b89f/shippingMethods"
 requestSchema={{
 "type": "object",
 "properties": {
@@ -401,7 +401,7 @@ Specifies the payment method to be used for the order. This is the final step re
 
 <Api
 method="POST"
-url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/paymentMethods"
+url="/api/carts/363ba97f-8be7-4be9-be3f-a9f341f2b89f/paymentMethods"
 requestSchema={{
   "type": "object",
   "properties": {
@@ -429,8 +429,8 @@ responseSample={`{
     }
   }
 }`}
-isPrivate={false}
-/>
+  isPrivate={false}
+ />
 
 <hr/>
 
