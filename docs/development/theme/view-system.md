@@ -58,17 +58,17 @@ catalog
     ├── admin
     │   └── productEdit
     │       ├── route.json
-    │       ├── index.js
-    │       ├── General.jsx
-    │       ├── Images.jsx
-    │       ├── Price.jsx
+    │       ├── index.ts
+    │       ├── General.tsx
+    │       ├── Images.tsx
+    │       ├── Price.tsx
     └── frontStore
         └── productView
             ├── route.json
-            ├── index.js
-            ├── ProductImages.jsx
-            ├── ProductInfo.jsx
-            ├── ProductOptions.jsx
+            ├── index.ts
+            ├── ProductImages.tsx
+            ├── ProductInfo.tsx
+            ├── ProductOptions.tsx
 ```
 
 The `pages` folder has three sub-folders: `admin`, `frontStore`, and `global`. The `admin` folder contains all admin panel pages. The `frontStore` folder contains pages for your storefront. The `global` folder contains _middleware functions_ used in both the admin panel and storefront.
@@ -84,22 +84,22 @@ catalog
     ├── admin
     │   └── productEdit
     │       ├── route.json
-    │       ├── index.js
-    │       ├── General.jsx
-    │       ├── Images.jsx
-    │       └── Price.jsx
+    │       ├── index.ts
+    │       ├── General.tsx
+    │       ├── Images.tsx
+    │       └── Price.tsx
     └── frontStore
         ├── categoryView
         │   ├── route.json
-        │   ├── index.js
-        │   ├── CategoryInfo.jsx
-        │   └── CategoryProducts.jsx
+        │   ├── index.ts
+        │   ├── CategoryInfo.tsx
+        │   └── CategoryProducts.tsx
         └── productView
             ├── route.json
-            ├── index.js
-            ├── ProductImages.jsx
-            ├── ProductInfo.jsx
-            └── ProductOptions.jsx
+            ├── index.ts
+            ├── ProductImages.tsx
+            ├── ProductInfo.tsx
+            └── ProductOptions.tsx
 
 ```
 
@@ -110,9 +110,9 @@ The `productEdit` is an admin panel page used to edit a product. The `categoryVi
 `productEdit`, `categoryView`, and `productView` are route IDs of the corresponding pages. The details of the route (HTTP method, path) are defined in the `route.json` file. Check [this document](../knowledge-base/routing-system) for more information.
 :::
 
-The `index.js` file contains a middleware function that will be called when the page is requested. You can add as many middleware functions as needed to the page folder. The middleware functions will be executed in the order they are defined. Check [this document](../knowledge-base/middleware-system) for more information.
+The `index.ts` file contains a middleware function that will be called when the page is requested. You can add as many middleware functions as needed to the page folder. The middleware functions will be executed in the order they are defined. Check [this document](../knowledge-base/middleware-system) for more information.
 
-To distinguish between a component and middleware, component file names must start with a capital letter (e.g., `General.jsx`), while middleware file names must start with a lowercase letter (e.g., `index.js`).
+To distinguish between a component and middleware, component file names must start with a capital letter (e.g., `General.tsx`), while middleware file names must start with a lowercase letter (e.g., `index.ts`).
 
 :::warning
 Every master component must be provided as a default export.
@@ -120,14 +120,14 @@ Every master component must be provided as a default export.
 
 ### Shared Master Components
 
-Sometimes, you may want to share components between multiple pages. For example, if you have a `ProductInfo` component used in both `productNew` and `productEdit` pages, you can create a folder named `productNew + productEdit` in the `admin` folder and place the `ProductInfo.jsx` component in it. This shared folder makes the `ProductInfo.jsx` component available in both pages.
+Sometimes, you may want to share components between multiple pages. For example, if you have a `ProductInfo` component used in both `productNew` and `productEdit` pages, you can create a folder named `productNew + productEdit` in the `admin` folder and place the `ProductInfo.tsx` component in it. This shared folder makes the `ProductInfo.tsx` component available in both pages.
 
 ```bash
 catalog
 ├── pages
     ├── admin
     │   └── productNew+productEdit
-    │       └── ProductInfo.jsx
+    │       └── ProductInfo.tsx
     └── frontStore
 ```
 
@@ -150,7 +150,7 @@ When a block is rendered by an Area component, third-party developers can insert
 
 Let's examine the following code:
 
-```js title="src/components/Layout.jsx"
+```tsx title="src/components/Layout.tsx"
 import React from "react";
 import Area from "@evershop/evershop/components/common";
 
@@ -167,7 +167,7 @@ In this code, we declare an `Area` with the ID `blockId`. The `Area` will render
 
 You can also provide a list of pre-defined components to the `Area` component:
 
-```js title="src/components/Layout.jsx"
+```tsx title="src/components/Layout.tsx"
 import React from "react";
 import Area from "@evershop/evershop/components/common";
 import Top from "./Top";
@@ -206,7 +206,7 @@ The `Area` component renders its child components in order of their `sortOrder` 
 
 Let's say we have a 'productView' page with the following layout component:
 
-```js title="src/modules/catalog/pages/frontStore/productView/Layout.jsx"
+```tsx title="src/modules/catalog/pages/frontStore/productView/Layout.tsx"
 import React from "react";
 import Area from "@evershop/evershop/components/common";
 
@@ -220,9 +220,9 @@ export default function Layout() {
 }
 ```
 
-If we want to insert a component into the left side of the product view page to show product ratings, we can create a new component named `ProductRating.jsx`:
+If we want to insert a component into the left side of the product view page to show product ratings, we can create a new component named `ProductRating.tsx`:
 
-```js title="src/modules/catalog/pages/frontStore/productView/ProductRating.jsx"
+```tsx title="src/modules/catalog/pages/frontStore/productView/ProductRating.tsx"
 import React from "react";
 import Area from "@evershop/evershop/components/common";
 
@@ -243,7 +243,7 @@ export const layout = {
 // highlight-end
 ```
 
-We then export a `layout` object from the `ProductRating.jsx` component. This object tells the system where to insert the component within the page.
+We then export a `layout` object from the `ProductRating.tsx` component. This object tells the system where to insert the component within the page.
 
 In the code above, we export a `layout` object with `areaId` and `sortOrder` properties. The `areaId` specifies which `Area` component should include this component, and the `sortOrder` determines the component's position within that Area.
 

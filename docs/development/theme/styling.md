@@ -42,17 +42,6 @@ EverShop integrates [TailwindCSS](https://tailwindcss.com/) for utility-first st
 
 By default, EverShop themes include TailwindCSS so you can start using it immediately.
 
-### Removing TailwindCSS
-
-If you prefer not to use TailwindCSS in your theme, you can override the default layout template from the CMS module and remove the TailwindCSS imports.
-
-To do this, create a new layout file in your theme:
-
-```js title="themes/yourtheme/src/pages/all/Layout.jsx"
-import React from "react";
-import "./custom-layout.scss"; // Your custom styles
-```
-
 :::info
 For more information on customizing layout templates, refer to the [templating documentation](./templating).
 :::
@@ -161,10 +150,6 @@ You can add external CSS files to your theme by modifying the `themeConfig` sect
         {
           "rel": "stylesheet",
           "href": "/custom.css"
-        },
-        {
-          "rel": "stylesheet",
-          "href": "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"
         }
       ]
     }

@@ -91,8 +91,8 @@ The structure of an EverShop theme directory typically looks like the following:
 /themes/
     <themeName>/
     ├── public     # Public assets for storing images, fonts, etc.
-    ├── dist       # Compiled theme files.
-    ├── src        # Source code of the theme.
+    ├── dist       # Compiled code of the theme.
+    ├── src        # Source code of the theme in TypeScript.
     │    ├── components # React components. Contains shared components that can be used in multiple pages.
     │    └── pages      # Every sub-folder represents a page.
     │       ├── all       # Components located in this folder will be used in all pages.
@@ -120,7 +120,7 @@ Here's an example of a `package.json` file for a theme:
   "description": "A custom theme for EverShop",
   "type": "module",
   "scripts": {
-    "compile": "tsc && copyfiles -u 1 \"src/**/*.{graphql,scss,json}\" dist"
+    "compile": "tsc" // Compiles TypeScript files to JavaScript.
   },
   "dependencies": {
     "@evershop/evershop": "^1.0.0"
@@ -132,11 +132,51 @@ Here's an example of a `package.json` file for a theme:
 }
 ```
 
-So make sure to add the `themes` folder to the workspace in your root `package.json` file:
+:::warning
+Since EverShop is built on ESM modules, ensure that your theme’s package.json file has the type field set to "module".
+:::
+
+Add the themes directory to the workspaces section of your root package.json. This enables each theme to function as an independent package with its own dependencies.
 
 ```json title="package.json"
 {
   "workspaces": ["themes/*"]
+}
+```
+
+### The `tsconfig.json` File
+
+The `tsconfig.json` file is used to configure the TypeScript compiler options for your theme. It should be located in the root directory of your theme. Here's an example of a `tsconfig.json` file for a theme:
+
+```json title="themes/yourtheme/tsconfig.json"
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "ES2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "react",
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowArbitraryExtensions": true,
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "paths": {
+      "@components/*": [
+        "./src/components/*",
+        "../../node_modules/@evershop/evershop/dist/components/*"
+      ],
+      "*": ["node_modules/*"]
+    }
+  }
 }
 ```
 
@@ -150,11 +190,32 @@ You can access a file like `public/images/logo.png` using the following code:
 <img src="/images/logo.png" alt="Logo" />
 ```
 
+Or with the [StaticImage](../theme/components/StaticImage.md) component:
+
+```jsx
+import { StaticImage } from '@components/common/StaticImage';
+
+function Logo() {
+  return (
+    <StaticImage
+      subPath="images/logo.png"
+      width={200}
+      height={60}
+      alt="Company Logo"
+    />
+  );
+}
+```
+
 #### The `pages` Folder
 
-The `pages` folder is used to add new components to existing pages. For example, if you want to add a new component to the homepage, you can create a new file in the `pages/homepage` folder.
+The `pages` folder is used to add new components or overrides the core components of existing pages. For example, if you want to add a new component to the homepage, you can create a new file in the `pages/homepage` folder.
 
-In the example structure above, we have a file named `HomepageOnly.jsx` in the `pages/homepage` folder. This file will be used to add a new component that appears only on the homepage.
+In the example structure above, we have a file named `HomepageOnly.tsx` in the `pages/homepage` folder. This file will be used to add a new component that appears only on the homepage. 
+
+:::info
+Check out the [Templating system](./templating.md) document to learn how to add a component to a specific page and specify its position.
+:::
 
 ### The `components` Folder
 
@@ -177,6 +238,14 @@ You can configure your theme in the `config/default.js` file located in the root
 After changing a theme, you need to run the `build` command again for the changes to take effect.
 :::
 
-## Example Theme
+## Theming Utilities Commands
 
-For a practical example of an EverShop theme, check out the [Eve Theme repository](https://github.com/evershopcommerce/evetheme). This simple theme serves as a helpful reference to understand how to create custom themes for EverShop.
+Follow the tutorial to learn how to use theming utilities commands to speed up your theme development:
+
+<div className="block md:hidden">
+<iframe width="100%" height="300" src="https://www.youtube.com/embed/_4tGVybBkYs?si=PnUc2vRjOsGqFS0u" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
+<div className="hidden md:block">
+<iframe width="100%" height="600" src="https://www.youtube.com/embed/_4tGVybBkYs?si=PnUc2vRjOsGqFS0u" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
