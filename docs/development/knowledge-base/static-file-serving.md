@@ -1,49 +1,107 @@
 ---
 sidebar_position: 37
 keywords:
-- Static File Serving
+  - Static File Serving
 sidebar_label: Static File Serving
 title: Static File Serving
-description: EverShop allows you to serve static files, like images, in the public directory. You can learn how it works here.
+description: Learn how EverShop serves static files like images from the public directory and how to properly reference them in your code.
 ---
 
 # Static File Serving
 
 :::warning
-For product images, category images we suggest to use the cloud storage. It is recommended for production use. Please check the available extensions in the [EverShop Marketplace](https://evershop.io/extensions).
+For product images and category images, we recommend using cloud storage for production environments. This approach offers better scalability and performance. Please check the available extensions in the [EverShop Marketplace](https://evershop.io/extensions) for cloud storage solutions.
 :::
 
-EverShop can serve static files, like images, under a folder called public in the root directory. Files inside public can then be referenced by your code starting from the base URL (/).
+EverShop provides a simple way to serve static files such as images, stylesheets, and JavaScript files through a directory called `public` in the root of your project. Files placed in this directory can be referenced in your code starting from the base URL (/).
 
-For example, if you add an image to public/banner.png, the following code will access the image:
+For example, if you add an image at `public/banner.png`, you can access it in your code like this:
 
 ```js
-<img src="/banner.png" />
+<img src="/banner.png" alt="Banner" />
 ```
 
-This folder is also useful for robots.txt, favicon.ico, Google Site Verification, and any other static files (including .html)!
+The `public` directory is ideal for storing:
+
+- Favicon files (favicon.ico)
+- Robots.txt
+- Google Site Verification files
+- Site manifests
+- Static HTML files
+- Images and other media files
 
 :::info
-After the fresh installation of EverShop, you will have to create the public folder in the root directory of your project.
+After a fresh installation of EverShop, you'll need to manually create the `public` folder in the root directory of your project.
 :::
 
 :::info
-The folder name must be `public`, not `publics` or anything else.
+The directory must be named exactly as `public` (not `publics`, `static`, etc.) to be properly recognized by EverShop.
 :::
 
 ## Serving Static Files From Your Theme
 
-If you have a theme, you can also serve static files from the theme's public folder. For example, if you have a theme called my-theme, you can add a public folder to it and put your static files in there. Then, you can access them from the base URL of your theme:
+In addition to the root `public` directory, EverShop also supports serving static files from individual themes. Each theme can have its own `public` folder for theme-specific static assets.
+
+For example, if you have a theme named `my-theme`, you can create a `public` folder within it and place your static files there:
 
 ```bash
 themes
 └── my-theme
     ├── public
     │   └── banner.png
+    └── other theme files...
 ```
 
-And you can access the image from the following URL:
+You can then access these theme-specific static files using the same base URL pattern:
 
 ```js
-<img src="/banner.png" />
+<img src="/banner.png" alt="Theme Banner" />
 ```
+
+This approach allows you to:
+
+- Organize theme-specific assets within your theme directory
+- Keep your project structure clean and modular
+- Easily package and distribute themes with their required assets
+
+:::info
+If the same file exists in both the root `public` directory and a theme's `public` directory, the file from the theme takes precedence.
+:::
+
+## Best Practices for Static Files
+
+When working with static files in EverShop, consider the following best practices:
+
+### File Organization
+
+Keep your static files organized in subdirectories based on their type:
+
+```bash
+public/
+├── images/
+│   ├── logo.png
+│   └── banners/
+├── js/
+│   └── custom-scripts.js
+├── css/
+│   └── custom-styles.css
+├── fonts/
+└── favicon.ico
+```
+
+This structure makes it easier to manage assets as your project grows.
+
+### Performance Considerations
+
+- Optimize image files before adding them to the `public` directory
+- Use appropriate image formats (WebP for better compression, SVG for graphics)
+- Consider adding cache headers to your web server configuration for static files
+- For large applications with many assets, consider using a Content Delivery Network (CDN)
+
+### Security
+
+- Never store sensitive information in files placed in the `public` directory
+- Be cautious with user-uploaded files; validate and sanitize all user input
+- Consider implementing a separate upload directory with proper access controls for user-generated content
+
+By following these practices, you can maintain an organized, performant, and secure static file structure in your EverShop application.

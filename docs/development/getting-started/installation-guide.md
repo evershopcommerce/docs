@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 keywords:
-- EverShop installation
+  - EverShop installation
 sidebar_label: Installation guide
 title: Evershop installation guide.
 description: This document will guide you through the installation process of EverShop. The quick installation guide is also available to help you install EverShop template quickly.
@@ -16,13 +16,14 @@ The following installation guides will guide you step-by-step to create a new Ev
 Please check [this document](/docs/development/getting-started/system-requirements) for the system requirements list.
 
 :::
+
 ## Install EverShop Using `create-evershop-app` command
 
 ```bash
-npx create-evershop-app my-app
+npx create-evershop-app my-evershop-app
 ```
 
-The `create-evershop-app` command will create a new folder named `my-app` and install all of the dependencies for you.
+The `create-evershop-app` command will create a new folder named `my-evershop-app` and install all of the dependencies for you.
 
 ## Install EverShop Using Docker
 
@@ -41,6 +42,7 @@ To create a new admin user, terminal into the Docker app container and run the f
 ```bash
 npm run user:create -- --email "your email" --password "your password" --name "your name"
 ```
+
 :::
 
 :::caution
@@ -61,9 +63,8 @@ The public Docker image is for installing EverShop in your local environment onl
 
 `@evershop/evershop` is the core of the EverShop platform. It contains all of the core modules like `catalog`, `checkout`, `order`.
 
-
 ```js title="Install the @evershop/evershop Npm package"
-npm init;
+npm init -y;
 npm install @evershop/evershop;
 ```
 
@@ -77,7 +78,6 @@ Open the package.json file and add the following scripts:
     "build": "evershop build",
     "start": "evershop start",
     "start:debug": "evershop start --debug",
-    "dev": "evershop dev",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
 }
@@ -143,19 +143,38 @@ EverShop will take care of the database migration for you.
 Upgrading EverShop requires running the `build` command again.
 :::
 
+## Demo Data Seeding
+
+After installation, you can populate your store with demo data using the seed command. This is useful for development and testing.
+
+```bash
+npm run seed
+```
+
+This command will populate your store with sample products, categories, and other data.
+
+:::info
+Demo data seeding is intended for development and testing environments only. Do not use it in production.
+:::
+
 ## For developer
 
 If you are a developer and want to start the project in the development mode, there are some additional steps you need to follow.
 
-### Adding the `dev` script
+### Install some additional dependencies for development
+
+To run the project in development mode, you need to install some additional dependencies. These dependencies are not required for production but are essential for development.
+
+```bash
+npm install --save-dev @types/node typescript @parcel/watcher @types/config @types/express @types/pg @types/react execa
+```
+
+### Adding the `dev` script to the package.json file.
 
 Open the package.json and add the following script:
 
 ```js title="Add the core dev script"
 "scripts": {
-    "setup": "evershop install",
-    "build": "evershop build",
-    "start": "evershop start",
     "dev": "evershop dev"
 }
 ```
@@ -166,7 +185,8 @@ Open the package.json and add the following configuration:
 
 ```js title="Adding the workspace configuration"
  "workspaces": [
-    "extensions/*" #This is where you put your extensions
+    "extensions/*", #This is where you put your extensions
+    "themes/*", #This is where you put your themes
   ],
 ```
 
@@ -174,30 +194,6 @@ Open the package.json and add the following configuration:
 
 ```js title="Start the site in development mode"
 npm run dev
-```
-
-### Adding `jsconfig.json` file
-
-Open the `jsconfig.json` file and add the following content:
-
-```js title="Add the jsconfig.json file"
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": [
-        "./themes/<Your Theme Folder>/components/*",
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@components-origin/*": [
-        "./node_modules/@evershop/evershop/src/components/*"
-      ],
-      "@default-theme/*" : [
-        "./node_modules/@evershop/evershop/src/modules/*/pages/*"
-      ]
-    }
-  }
-}
 ```
 
 ### The debug mode
@@ -217,13 +213,39 @@ And then you can run the project in debug mode by running the following commands
 npm run start:debug
 ```
 
+And then you can run the project in debug mode by running the following commands:
+
+```js title="Start the site in debug mode"
+npm run start:debug
+```
+
 :::info
 The debug mode is enabled by default when you run the `dev` command.
 :::
 
-### Dockerize your project - Build your own Docker image
+### Dockerize Your Project
 
-You can build your own Docker image by using the following `Dockerfile`:
+Dockerizing your EverShop project allows you to create a portable, self-contained environment for your application. Below is a guide to creating your own Docker image and managing persistent data like media files.
+
+#### Handling Persistent Media Files
+
+When you dockerize your application, it's crucial to handle the `media` directory correctly. This directory contains user-uploaded files (like product images) and should **not** be copied directly into the Docker image. If you do, any uploaded files will be lost whenever the container is rebuilt.
+
+There are two primary approaches for managing media files:
+
+1.  **Docker Volumes**: This approach mounts a directory from your host machine into the container. Files are stored on the host, so they persist even if the container is removed. This is suitable for single-server deployments or local development.
+
+2.  **Cloud Storage**: This approach uses a cloud storage service like Amazon S3 or Azure Blob Storage. This decouples file storage from your application container entirely, which is essential for auto-scaling environments and provides better durability and performance.
+
+:::caution Production Recommendation
+For any production environment, we **strongly recommend using cloud storage** (like AWS S3 or Azure Blob Storage). This approach is more scalable, reliable, and secure than using local volumes. It prevents data loss, simplifies backups, and is essential if you ever plan to run your application across multiple servers.
+
+EverShop provides official extensions for [AWS S3](https://evershop.io/extensions/s3-file-storage) and [Azure Blob Storage](https://evershop.io/extensions/azure-file-storage) to make this integration seamless.
+:::
+
+#### 1. Building Your Docker Image
+
+Here is an example `Dockerfile`. Note that we have removed the `COPY media ./media` line.
 
 ```dockerfile title="Dockerfile"
 FROM node:18-alpine
@@ -239,13 +261,12 @@ COPY extensions ./extensions
 # Copy your config.
 COPY config ./config
 
-# Copy your media.
-COPY media ./media
+# DO NOT copy the media folder. It will be handled by a volume.
 
 # Copy your public files.
 COPY public ./public
 
-# Copy your translations.
+# We must copy translations to the image as they are required for the build.
 COPY translations ./translations
 
 # Run npm install.
@@ -258,17 +279,21 @@ EXPOSE 80
 CMD ["npm", "run", "start"]
 ```
 
-And this is the `docker-compose.yml` file:
+#### 2. Using Docker Compose with a Volume
+
+This `docker-compose.yml` file demonstrates how to build the image and attach a volume for the `media` directory.
 
 ```yml title="docker-compose.yml"
-version: '3.8'
+version: "3.8"
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     restart: always
+    volumes:
+      - ./media:/app/media # Mounts the host's media folder to the container
     environment:
       DB_HOST: database
       DB_PORT: 5432
@@ -281,8 +306,8 @@ services:
       - database
     ports:
       - 3000:3000
-  
-  #The postgres database: 
+
+  #The postgres database:
   database:
     image: postgres:16
     restart: unless-stopped
@@ -305,6 +330,8 @@ networks:
 volumes:
   postgres-data:
 ```
+
+With this configuration, any files uploaded to your application will be saved in the `media` folder on your host machine, ensuring they are not lost.
 
 import Sponsors from '@site/src/components/Sponsor';
 

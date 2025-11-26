@@ -1,7 +1,7 @@
 ---
 sidebar_position: 32
 keywords:
-- event
+  - event
 sidebar_label: Events and Subscribers
 title: Events and Subscribers
 description: EverShop provides a powerful event system that allows you to subscribe to the event and execute your code when the event is triggered.
@@ -9,38 +9,37 @@ description: EverShop provides a powerful event system that allows you to subscr
 
 ![Event and Subscribers In EverShop](./img/event-subscriber.png "Event and Subscribers In EverShop")
 
-
 ## Overview
 
-In this document, we will learn about the event system in EverShop. EverShop provides a powerful event system that allows you to subscribe to the event and execute your code when the event is triggered.
+This document explains the event system in EverShop. EverShop provides a powerful event system that allows you to subscribe to events and execute your code when those events are triggered.
 
-Events are a way for your application to react to a specific action that occurs. For example, when a product is created, you may want to send an email to the customer. In EverShop, you can subscribe to the `product_created` event and send an email to the customer.
+Events are a way for your application to react to specific actions that occur. For example, when a product is created, you may want to send an email to the customer. In EverShop, you can subscribe to the `product_created` event and send an email to the customer.
 
-EverShop core can trigger events at different points in the application and your extensions can subscribe to these events and execute your code asynchronously when the event is triggered.
+EverShop core can trigger events at different points in the application, and your extensions can subscribe to these events and execute your code asynchronously when the event is triggered.
 
-For example, when a product is created, EverShop core will trigger the `product_created` event and your extension can subscribe to this event and execute your code.
+For example, when a product is created, EverShop core triggers the `product_created` event, and your extension can subscribe to this event and execute your code.
 
 ## Emitting Events
 
-And event has a name and a data object. This name is used to identify the event and the data object contains the data that will be passed to the event subscribers.
+An event has a name and a data object. The name is used to identify the event, and the data object contains the data that will be passed to the event subscribers.
 
-To emit an event, you can use the `event` helper function. This function accepts two parameters: the event name and the data object.
+To emit an event, you can use the `emitter` helper function. This function accepts two parameters: the event name and the data object.
 
-```js title="Emit an event"
-import { emitter } from '@evershop/src/lib/event/emitter';
+```ts title="Emit an event"
+import { emit } from "@evershop/evershop/lib/event";
 
-await emitter('product_created', {
-    product: {
-        id: 1,
-        name: 'Product 1'
-    }
+await emit("product_created", {
+  product: {
+    id: 1,
+    name: "Product 1",
+  },
 });
 ```
 
-Under the hood, an event is stored in the database and the subscribers will be executed asynchronously.
+Under the hood, an event is stored in the database, and the subscribers will be executed asynchronously.
 
 :::info
-And event will be removed from the pool when all subscribers are executed regardless of the result of the execution.
+An event will be removed from the pool when all subscribers are executed, regardless of the result of the execution.
 :::
 
 ## Subscribe to an Event
@@ -53,7 +52,7 @@ To subscribe to an event, the first thing you need to do is create a `subscriber
 │   ├── subscribers
 ```
 
-Next, create a sub folder with the name of the event you want to subscribe to. For example, if you want to subscribe to the `product_created` event, you need to create a folder with the name `product_created`.
+Next, create a subfolder with the name of the event you want to subscribe to. For example, if you want to subscribe to the `product_created` event, you need to create a folder named `product_created`.
 
 ```bash
 ├── your-extension
@@ -61,19 +60,19 @@ Next, create a sub folder with the name of the event you want to subscribe to. F
 │   │   ├── product_created
 ```
 
-Next, create a `js` file. This file will contain the code that will be executed when the event is triggered. You can have multiple subscribers for the same event.
+Next, create a TS file. This file will contain the code that will be executed when the event is triggered. You can have multiple subscribers for the same event.
 
 ```bash
 ├── your-extension
 │   ├── subscribers
 │   │   ├── product_created
-│   │   │   ├── sendEmail.js
+│   │   │   ├── sendEmail.ts
 ```
 
 Here is an example of a subscriber:
 
-```js title="your-extension/subscribers/product_created/sendEmail.js"
-module.exports = async function sendMail(data) {
+```ts title="your-extension/subscribers/product_created/sendEmail.ts"
+export default async function sendMail(data) {
   // Send email to the customer
 }
 ```
@@ -86,11 +85,11 @@ The subscriber function must be a default export.
 
 ## List of Events
 
-### A new product created
+### A New Product Created
 
 This event is triggered when a product is created.
-  
-```js
+
+```ts
 // Event name: product_created
 // Data object:
 {
@@ -111,15 +110,15 @@ This event is triggered when a product is created.
 }
 
 // Example subscriber
-// module.exports = async function syncData(data) {
+// export default async function syncData(data) {
 //     const productSku = data.sku;
 // }
 ```
 
-### A product updated
+### A Product Updated
 
 This event is triggered when a product is updated.
-  
+
 ```js
 // Event name: product_updated
 // Data object:
@@ -141,15 +140,15 @@ This event is triggered when a product is updated.
 }
 
 // Example subscriber
-// module.exports = async function syncData(data) {
+// export default async function syncData(data) {
 //     const productSku = data.sku;
 // }
 ```
 
-### A new category created
+### A New Category Created
 
 This event is triggered when a category is created.
-  
+
 ```js
 // Event name: category_created
 // Data object:
@@ -165,15 +164,15 @@ This event is triggered when a category is created.
 }
 
 // Example subscriber
-// module.exports = async function syncData(data) {
+// export default async function syncData(data) {
 //     const categoryId = data.category_id;
 // }
 ```
 
-### A category updated
+### A Category Updated
 
 This event is triggered when a category is updated.
-  
+
 ```js
 // Event name: category_updated
 // Data object:
@@ -189,15 +188,15 @@ This event is triggered when a category is updated.
 }
 
 // Example subscriber
-// module.exports = async function syncData(data) {
+// export default async function syncData(data) {
 //     const categoryId = data.category_id;
 // }
 ```
 
-### An order created
+### An Order Created
 
 This event is triggered when an order is created.
-  
+
 ```js
 // Event name: order_created
 // Data object:
@@ -238,17 +237,17 @@ This event is triggered when an order is created.
 }
 
 // Example subscriber
-// module.exports = async function sendMail(data) {
+// export default async function sendMail(data) {
 //     const customerEmail = data.customer_email;
 // }
 ```
 
-### An order placed
+### An Order Placed
 
-This event is triggered when a product is placed. This event is triggered by the payment gateway. 
-For example with the offline payment method like COD, this event will be triggered when the order is created.
-With online payment gateway like Stripe or Paypal, this event will be triggered when the payment is successful.
-  
+This event is triggered when an order is placed. This event is triggered by the payment gateway.
+For example, with offline payment methods like COD, this event will be triggered when the order is created.
+With online payment gateways like Stripe or PayPal, this event will be triggered when the payment is successful.
+
 ```js
 // Event name: order_placed
 // Data object:
@@ -294,10 +293,10 @@ With online payment gateway like Stripe or Paypal, this event will be triggered 
 // }
 ```
 
-### Inventory updated
+### Inventory Updated
 
 This event is triggered when the inventory of a product is updated.
-  
+
 ```js
 // Event name: inventory_updated
 // Data object:
@@ -319,16 +318,16 @@ This event is triggered when the inventory of a product is updated.
 }
 
 // Example subscriber
-// module.exports = async function syncInventory(data) {
+// export default async function syncInventory(data) {
 //     const productID = data.old.product_inventory_product_id;
 //     const newStock = data.new.qty;
 // }
 ```
 
-### A new customer created
+### A New Customer Created
 
 This event is triggered when a customer is created.
-  
+
 ```js
 // Event name: customer_registered
 // Data object:
@@ -344,7 +343,7 @@ This event is triggered when a customer is created.
 }
 
 // Example subscriber
-// module.exports = async function sendWelcomeEmail(data) {
+// export default async function sendWelcomeEmail(data) {
 //     const customerEmail = data.email;
 // }
 ```

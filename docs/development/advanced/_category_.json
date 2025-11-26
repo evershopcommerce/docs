@@ -1,8 +1,9 @@
 {
   "label": "Advanced guides",
-  "position": 12,
+  "position": 30,
   "collapsible": false,
   "collapsed": false,
+  "className": "hidden",
   "link": {
     "type": "generated-index",
     "slug": "development/advanced",

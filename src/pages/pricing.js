@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "@theme/Layout";
 import Label from "../components/Label";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 function FakeSelect({ selected, setSelected }) {
   const [show, setShow] = React.useState(false);
@@ -131,7 +132,9 @@ const Price = ({ plan, selected }) => {
 
 function Pricing() {
   const [selected, setSelected] = React.useState("monthly");
-
+  const {
+    siteConfig: { customFields },
+  } = useDocusaurusContext();
   return (
     <header>
       <div className="container text-left pt-1">
@@ -183,15 +186,18 @@ function Pricing() {
               <p>Perfect for startups and growing online stores.</p>
 
               <Price plan="personal" selected={selected} />
-              {/* <a
-                className="button button--primary w-full p-3 text-base"
-                href={`http://localhost:3000?plan=personal&billing=${selected}`}>
-                Get Personal
-              </a> */}
               <a
                 className="button button--primary w-full p-3 text-base"
-                href={`#`}>
-                Coming soon
+                href={
+                  customFields?.where_is_this === "local"
+                    ? `http://localhost:3000?plan=personal&billing=${selected}`
+                    : customFields?.where_is_this === "acc"
+                    ? `http://marketplace-acc.evershop.io?plan=personal&billing=${selected}`
+                    : `#`
+                }>
+                {customFields?.where_is_this === "production"
+                  ? "Coming Soon"
+                  : "Get Personal"}
               </a>
             </div>
             <div className="mt-4">
@@ -227,8 +233,16 @@ function Pricing() {
               </a> */}
               <a
                 className="button button--primary w-full p-3 text-base"
-                href={`#`}>
-                Coming soon
+                href={
+                  customFields?.where_is_this === "local"
+                    ? `http://localhost:3000?plan=personal&billing=${selected}`
+                    : customFields?.where_is_this === "acc"
+                    ? `http://marketplace-acc.evershop.io?plan=personal&billing=${selected}`
+                    : `#`
+                }>
+                {customFields?.where_is_this === "production"
+                  ? "Coming Soon"
+                  : "Get Professional"}
               </a>
             </div>
             <div className="mt-4">

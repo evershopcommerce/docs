@@ -1,30 +1,29 @@
 :root {
-  --ifm-h1-font-size: 3.75rem;
-  --ifm-h2-font-size: 2.5rem;
-  --ifm-h3-font-size: 1.875rem;
-  --ifm-h4-font-size: 1.5rem;
-  --ifm-h5-font-size: 1.25rem;
+  --ifm-h1-font-size: 3.5rem;
+  --ifm-h2-font-size: 2.25rem;
+  --ifm-h3-font-size: 1.75rem;
+  --ifm-h4-font-size: 1.25rem;
+  --ifm-h5-font-size: 1.125rem;
   --ifm-h6-font-size: 1rem;
 }
 body {
   .h1,
-    .h2,
-    .h3,
-    .h4,
-    .h5,
-    .h6,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      color: var(--heading-font-color);
-      font-weight: 600;
-      font-style: normal;
-      line-height: normal;
-    }
-  
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--heading-font-color);
+    font-weight: 600;
+    font-style: normal;
+    line-height: normal;
+  }
 }
 
 .hero__title {

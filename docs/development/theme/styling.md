@@ -1,157 +1,118 @@
 ---
 sidebar_position: 20
 keywords:
-- Styling
+  - Styling
+  - CSS
+  - TailwindCSS
+  - SCSS
+  - Sass
 sidebar_label: Styling
-title: Styling
-description: EverShop supports including CSS files as Global CSS or TailwindCss. This document will guide you through the process of styling your component and page.
+title: Styling Your EverShop Theme
+description: Learn how to style your EverShop themes using CSS, SCSS, and TailwindCSS. This guide explains different styling approaches and how to implement them in your components and pages.
 ---
 
-# Styling
+# Styling Your EverShop Theme
 
-EverShop supports including importing CSS files. It also support Sass or TailwindCss out of the box. This document will guide you through the process of styling your component and page.
+EverShop provides multiple options for styling your storefront, including standard CSS, Sass/SCSS, and TailwindCSS. This flexibility allows you to choose the approach that best fits your workflow and project requirements. This document explains how to implement different styling methods in your EverShop themes.
 
-## Scss file
+## Using SCSS Files
 
-By default, EverShop supports importing SCSS files. You can import SCSS files from any component or page in your application.
+EverShop supports SCSS (Sassy CSS) out of the box, allowing you to use variables, nesting, mixins, and other Sass features to make your styles more maintainable.
+
+To use SCSS in a component or page:
 
 ```js
-import React from 'react';
-import './style.scss';
+import React from "react";
+import "./style.scss";
+
+export default function MyComponent() {
+  return <div className="my-component">Hello World</div>;
+}
 ```
 
 :::warning
-Note that the file extension must be `.scss` (NOT `.css`).
+Note that the file extension must be `.scss` (NOT `.css`) to be properly processed by EverShop's build system.
 :::
 
-## TailwindCss
+## Using TailwindCSS
 
-EverShop supports [TailwindCss](https://tailwindcss.com/) out of the box. The default EverShop theme uses TailwindCss for styling. 
+EverShop integrates [TailwindCSS](https://tailwindcss.com/) for utility-first styling. The default EverShop theme is built using TailwindCSS, making it easy to customize and extend.
 
-If you do not want to use TailwindCss, you create a Layout template to override the default one from the CMS module and remove the `tailwind.scss` file.
+### Using TailwindCSS in Your Theme
+
+By default, EverShop themes include TailwindCSS so you can start using it immediately.
 
 :::info
-Check out the [templating document](./templating) to learn more about customizing the layout template.
+For more information on customizing layout templates, refer to the [templating documentation](./templating).
 :::
 
-If you override the default layout template from the cms core module, and keep using TailwindCss, you need to add the `tailwind.scss` file to your layout template.
+### Customizing TailwindCSS Configuration
 
-```html title="tailwind.scss"
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
+You can customize TailwindCSS by creating a `tailwind.config.js` file in your theme directory. This allows you to:
 
-and then import the `tailwind.scss` file in your component.
+- Enable or disable specific plugins
+- Customize colors, fonts, and spacing
+- Define custom variants
+- Add plugins
 
-```js title="<yourtheme>/pages/all/Layout.js"
-import React from 'react';
-import './tailwind.scss';
-```
+Here's an example configuration:
 
-That is all. Now you can use TailwindCss in your components.
-
-### Overwrite the TailwindCss configuration from your theme
-
-You can overwrite the default TailwindCss configuration by creating a `tailwind.config.js` file in your theme folder.
-
-```js title="themes/friday/tailwind.config.js"
+```js title="themes/src/yourtheme/tailwind.config.js"
 module.exports = {
   corePlugins: {
-    // ...
+    // Disable unused plugins to reduce bundle size
     lineHeight: false,
-    placeholder: false,
-    placeholderOpacity: false,
-    textOpacity: false,
-    backgroundOpacity: false,
-    backgroundPosition: false,
-    backgroundImage: false,
-    gradientColorStops: false,
-    borderOpacity: false,
-    divideColor: false,
-    divideOpacity: false,
-    ringOpacity: false,
-    ringOffsetColor: false,
-    mixBlendMode: false,
-    backgroundBlendMode: false,
-    brightness: false,
-    contrast: false,
-    dropShadow: false,
-    hueRotate: false,
-    invert: false,
-    saturate: false,
-    sepia: false,
-    backdropFilter: false,
-    backdropBlur: false,
-    backdropBrightness: false,
-    backdropContrast: false,
-    backdropGrayscale: false,
-    backdropHueRotate: false,
-    backdropInvert: false,
-    backdropOpacity: false,
-    backdropSaturate: false,
-    backdropSepia: false,
-    transitionDelay: false,
-    transform: false,
-    transformOrigin: false,
-    scale: false,
-    rotate: false,
-    translate: false,
-    skew: false
+    ... // other plugins you want to disable
   },
   theme: {
+    // Customize theme settings
     fontFamily: {
-      sans: 'Helvetica,Helvetica Neue,Arial,Lucida Grande,sans-serif'
+      sans: "Helvetica,Helvetica Neue,Arial,Lucida Grande,sans-serif",
     },
     fontSize: {
-      base: '.875rem'
+      base: ".875rem",
     },
     colors: {
-      white: '#ffffff',
-      primary: '#3a3a3a',
-      secondary: '#111213'
+      white: "#ffffff",
+      primary: "#3a3a3a",
+      secondary: "#111213",
     },
     spacing: {
-      0: '0px'
+      0: "0px",
     },
     margin: {
-      0: '0px'
+      0: "0px",
     },
     borderRadius: {
-      DEFAULT: '0.25rem',
-      100: '100%'
+      DEFAULT: "0.25rem",
+      100: "100%",
     },
     borderWidth: {
-      0: '0px',
-      DEFAULT: '1px'
-    },
-    opacity: {
-
+      0: "0px",
+      DEFAULT: "1px",
     },
     boxShadow: {
-      DEFAULT: '0 0 0 1px rgba(63,63,68,.05),0 1px 3px 0 rgba(63,63,68,.15)'
-    }
+      DEFAULT: "0 0 0 1px rgba(63,63,68,.05),0 1px 3px 0 rgba(63,63,68,.15)",
+    },
   },
   variants: {
     extend: {
-      borderWidth: ['first', 'last'],
-      margin: ['first', 'last'],
-      padding: ['first', 'last']
-    }
+      borderWidth: ["first", "last"],
+      margin: ["first", "last"],
+      padding: ["first", "last"],
+    },
   },
-  plugins: []
+  plugins: [],
 };
 ```
 
-:::warning
-Adding the `tailwind.config.js` file requires you to restart the development server.
-:::
+## Using Sass
 
-## Sass
+In addition to SCSS, EverShop supports the indented syntax of [Sass](https://sass-lang.com/). This provides a more concise way to write your styles with meaningful whitespace.
 
-EverShop supports [Sass](https://sass-lang.com/) out of the box. You can use Sass in your components and pages.
+Example of SCSS syntax:
 
-```css
+```scss
 nav {
   ul {
     margin: 0;
@@ -159,59 +120,79 @@ nav {
     list-style: none;
   }
 
-  li { display: inline-block; }
+  li {
+    display: inline-block;
+  }
 
   a {
     display: block;
     padding: 6px 12px;
     text-decoration: none;
   }
-}
 ```
 
-## Global CSS
+You can import these files into your components just as you would with SCSS files.
 
-There are two ways to include global CSS files in your application. 
+## Adding Global CSS
 
-### Using configuration file
+There are two approaches to include global CSS that will be applied across your entire storefront:
 
-You can add the CSS files to the `css` array in the `config/default.json` file.
+### 1. Using Configuration Files
+
+You can add external CSS files to your theme by modifying the `themeConfig` section in your configuration file. This approach is useful for third-party libraries or fonts that need to be loaded across your entire site.
 
 ```js title="config/default.json"
 {
-  ...,
+  // Other configuration settings
   "themeConfig": {
-        "headTags": {
-            "links": [
-                {
-                    "rel": "stylesheet",
-                    "href": "/custom.css"
-                }
-            ]
+    "headTags": {
+      "links": [
+        {
+          "rel": "stylesheet",
+          "href": "/custom.css"
         }
+      ]
     }
+  }
 }
 ```
 
-
 :::info
-Please check the [configuration guide](../knowledge-base/configuration-guide) for more information about the `themeConfig` configuration.
+For more information about theme configuration options, refer to the [configuration guide](../knowledge-base/configuration-guide).
 :::
 
-### Import css file from your custom component
+### 2. Importing CSS in Global Components
 
-You can import the CSS files from your custom component. You need to make sure this component is used in all pages of your storefront.
+Another approach is to import CSS files directly in a component that appears on every page of your storefront. This method provides more control over the loading order of your styles.
 
-```js title="themes/mytheme/pages/all/Global.jsx"
-import React from 'react';
-import './bootstrap.css';
+Create a global component that will be included in your layout:
+
+```ts title="themes/yourtheme/src/pages/all/Global.tsx"
+import React from "react";
+import { ComponentLayout } from "@evershop/evershop";
+import "./global-styles.scss"; // Your global styles
 
 export default function Global() {
+  // This component doesn't need to render anything visible
   return <></>;
 }
 
-export const layout = {
-  areaId: 'head',
-  sortOrder: 1
-}
+export const layout: ComponentLayout = {
+  areaId: "head", // This will include the component in the head section
+  sortOrder: 1, // Lower numbers load first
+};
 ```
+
+## Best Practices for Styling in EverShop
+
+When styling your EverShop theme, consider these recommendations:
+
+1. **Choose a consistent approach**: Decide whether to use TailwindCSS, SCSS, or standard CSS throughout your theme for better maintainability.
+
+2. **Leverage component-scoped styles**: Keep styles related to specific components in their own files to improve modularity.
+
+3. **Minimize global styles**: Use global styles sparingly to avoid specificity issues and unintended side effects.
+
+4. **Optimize for performance**: Be mindful of CSS bundle size, especially when using utility frameworks like TailwindCSS.
+
+5. **Use variables for consistency**: Whether through SCSS variables or TailwindCSS configuration, use variables for colors, spacing, and other repeated values.

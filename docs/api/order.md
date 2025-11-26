@@ -2,7 +2,7 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
+  - EverShop api
 sidebar_label: Order
 title: Order REST API
 description: Use the REST API to interact with EverShop orders.
@@ -12,16 +12,18 @@ description: Use the REST API to interact with EverShop orders.
 
 Use the REST API to interact with EverShop orders.
 
-## Create an order
+## Endpoints
 
-Use this endpoint to create an order.
+### Create An Order
+
+Use this endpoint to create an order from a shopping cart.
 
 import Api from '@site/src/components/rest/Api';
 
 <Api
-  method="POST"
-  url="/api/orders"
-  requestSchema={{
+method="POST"
+url="/api/orders"
+requestSchema={{
   "type": "object",
   "properties": {
     "cart_id": {
@@ -38,7 +40,7 @@ import Api from '@site/src/components/rest/Api';
     }
   }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "order_id": 274,
     "uuid": "fd0b4f0fd6704ed0b53fa0c64ae7df3c",
@@ -134,21 +136,21 @@ import Api from '@site/src/components/rest/Api';
     ]
   }
 }`}
- />
+/>
 
 <hr />
 
-## Create a shipment
+### Create A Shipment
 
 Use this endpoint to create a shipment for an order.
 
 <Api
-  method="POST"
-  url="/api/orders/{id}/shipments"
-  requestSchema={{
+method="POST"
+url="/api/orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments"
+requestSchema={{
   "type": "object",
   "properties": {
-    "carrier_name": {
+    "carrier": {
       "type": "string"
     },
     "tracking_number": {
@@ -157,7 +159,7 @@ Use this endpoint to create a shipment for an order.
   },
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "shipment_id": 50,
     "shipment_order_id": 12,
@@ -168,21 +170,21 @@ Use this endpoint to create a shipment for an order.
     "updated_at": "2023-02-06 09:13:35"
   }
 }`}
- />
+/>
 
  <hr />
 
- ## Update a shipment
+### Update A Shipment
 
 Use this endpoint to update a shipment.
 
 <Api
-  method="PATCH"
-  url="/api//orders/{order_id}/shipments/{shipment_id}"
-  requestSchema={{
+method="PATCH"
+url="/api/orders/433ba97f-8be7-4be9-be3f-a9f341f2b89f/shipments/23de497f-8be7-4be9-be3f-a9f341f2b89f"
+requestSchema={{
   "type": "object",
   "properties": {
-    "carrier_name": {
+    "carrier": {
       "type": "string"
     },
     "tracking_number": {
@@ -191,7 +193,7 @@ Use this endpoint to update a shipment.
   },
   "additionalProperties": true
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "shipment_id": 50,
     "shipment_order_id": 12,
@@ -202,4 +204,33 @@ Use this endpoint to update a shipment.
     "updated_at": "2023-02-06 09:13:35"
   }
 }`}
- />
+/>
+
+<hr />
+
+### Cancel An Order
+
+Use this endpoint to cancel an order.
+
+<Api
+method="POST"
+url="/orders/:id/cancel"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": ["reason"],
+  "additionalProperties": true,
+  "errorMessage": {
+    "properties": {
+      "reason": "Reason is mandatory"
+    }
+  }
+}}
+responseSample={`{
+"data": {}
+}`}
+/>

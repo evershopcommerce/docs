@@ -1,187 +1,132 @@
 ---
 sidebar_position: 15
 keywords:
-- Routing system
+  - EverShop routing
+  - Express.js routing
+  - API routes
+  - Page routes
+  - Route declaration
 sidebar_label: The Routing System
-title: Evershop routing system
-description: The document explains how does EverShop routing system work, how to define a route and generate a URL base on route ID.
+title: 'Routing Deep Dive: How EverShop Handles Requests'
+description: A deep dive into the EverShop routing system. Learn how routes are defined for API endpoints and pages, how the folder structure works, and how to generate URLs.
 ---
 
-![Routing system](./img/routing.jpg "Routing system")
+# Routing Deep Dive
 
-# Routing system
+Routing is the mechanism that directs incoming requests to the appropriate handler based on the URL and HTTP method. EverShop's routing system is built on top of [Express.js](https://expressjs.com/), providing a powerful and familiar foundation for defining how your application responds to requests.
 
-Routing refers to determining how an application responds to a client request to a particular endpoint, which is a URI (or path) and a specific HTTP request method (GET, POST, and so on).
+This guide will walk you through the core concepts of routing in EverShop, from the folder structure to generating URLs in your code.
 
-In EverShop we make use of [ExpressJs](https://expressjs.com/) for routing.
+![Routing system](./img/routing.jpg 'Routing system')
 
-Before we dive into the routing system, we suggest you checkout the module structure document to understand more about the way a module is organized.
+## File-Based Routing
 
-:::info
-Check [this document](/docs/development/knowledge-base/architecture-overview) to understand more about EverShop project folder structure.
-:::
+EverShop uses a **file-based routing** system. Instead of a central routing file, routes are defined within the modules themselves, right next to the code that handles them. This co-location makes the codebase easier to navigate and understand.
 
-## The fundamental
+Routes are organized into two main categories within a module:
 
-Let’s take a look a module structure
+1.  **API Routes**: For handling RESTful API requests.
+2.  **Page Routes**: For rendering HTML pages for the admin panel or the storefront.
+
+Let's look at a typical module structure:
 
 ```bash
-./
 ├── api
-│   ├── createProduct
-│   │   ├── route.json
-│   ├── updateProduct
-│   │   ├── route.json
-│   ├── deleteProduct
-│   │   ├── route.json
-├── graphql
-├── migration
+│   ├── createProduct
+│   │   ├── route.json
+│   │   └── index.js
+│   └── updateProduct
+│       ├── route.json
+│       └── index.js
 ├── pages
-│   ├── admin
-│   │   ├── attributeEdit
-│   │   │   └── route.json
-│   │   ├── attributeGrid
-│   │   │   └── route.json
-│   │   ├── attributeNew
-│   │   │   └── route.json
-│   │   ├── categoryEdit
-│   │   │   └── route.json
-│   │   ├── categoryEdit+categoryNew
-│   │   │   └── route.json
-│   │   ├── categoryGrid
-│   │   │   └── route.json
-│   │   ├── categoryNew
-│   │   │   └── route.json
-│   │   ├── components.js
-│   │   ├── productEdit
-│   │   │   └── route.json
-│   │   ├── productGrid
-│   │   │   └── route.json
-│   │   └── productNew
-│   │       └── route.json
-│   └── frontStore
-│       ├── categoryView
-│       │   └── route.json
-│       └── productView
-│           └── route.json
-├── services
-└── tests
+│   ├── admin
+│   │   ├── productEdit
+│   │   │   ├── route.json
+│   │   │   └── index.js
+│   │   └── productGrid
+│   │       ├── route.json
+│   │       └── index.js
+│   └── frontStore
+│       ├── categoryView
+│       │   ├── route.json
+│       │   └── index.js
+│       └── productView
+│           ├── route.json
+│           └── index.js
+└── ...
 ```
 
-In the picture above, there are 3 important things that we need to understand:
+### The `api` Folder
 
-### 1: The `api` folder
+The `api` folder is where you define all your RESTful API endpoints. Each sub-folder inside `api` corresponds to a single API endpoint and contains:
 
-You can see there is a folder named `api` in the above example. This folder is where we organize our RESTful api controller.
+-   `route.json`: A file that defines the route's path and HTTP method.
+-   `index.js`: The controller that handles the request.
 
-Each of sub-folder in the `api` folder is a RESTful api controller. For example, the `createProduct` folder is a RESTful api controller that handles the `POST` request to the `/api/products` endpoint. This folder contains a file named “route.json” that defines the detail (HTTP method, path) for this RESTful api controller.
+This structure keeps your API logic organized and self-contained.
 
-:::info
-  Check this [document](/docs/development/knowledge-base/api-routes) to understand more about a RESTful api.
+### The `pages` Folder
+
+The `pages` folder is for routes that render a user interface. It is further divided into `admin` and `frontStore` to separate backend and frontend pages.
+
+-   **`admin`**: Routes for the admin panel. These routes automatically have authentication and authorization middleware applied.
+-   **`frontStore`**: Routes for the customer-facing storefront.
+
+Each sub-folder inside `admin` or `frontStore` represents a page and contains the same `route.json` and `index.js` files.
+
+## The Route ID
+
+The name of the route's folder serves as its unique **Route ID**. For example, the route defined in `pages/admin/productEdit` has a Route ID of `productEdit`.
+
+This ID is crucial for two reasons:
+
+1.  It must be unique across the entire application.
+2.  It is used to generate URLs programmatically.
+
+:::warning
+Route IDs must be unique and should not contain spaces or special characters.
 :::
 
-### 2: The `pages` folders
+## Route Declaration (`route.json`)
 
-You can see there is a folder named `pages` in the above example. This folder is where we organize our pages.
+The `route.json` file is the heart of the routing system. It specifies the path, HTTP methods, and access level for the route.
 
-Each of sub-folder in the `pages` folder is a page controller. Those folders contain a file named `route.json` that defines the detail (HTTP method, path) for this RESTful api controller.
-
-### 2: The `admin` and `frontStore` folders
-
-Those folders are used for scoping. All routes located under the `frontStore` folder are used for front-page routing.
-
-And all routes located under the `admin` folder will be used for the admin panel and therefore several authentication [middleware functions](/docs/development/knowledge-base/middleware-system) will be added to those routes.
-
-### 3: The route folders
-
-They are folders located under either the `admin` or `frontStore` folder.
-
-Basically, they contain 2 important things
-
-The middleware functions will be executed when the route is triggered. You can learn more about how does middleware system works in [this document](/docs/development/knowledge-base/middleware-system)
-The declaration of the route
-And the folder name will be used as a `route ID`. Typically, the route folder name has to be unique and we do not accept white space in the route ID.
-
-:::info
-Since the route folder name will be used as a `route ID`.So it has to be unique and basically, we do not accept special characters or whitespace.
-:::
-
-## The declaration of the route
-
-In the above picture, in each route folder, there is a file named `route.json`. It is where we define our route specification.
-
-Let’s take a look at one example:
-
-```bash
+```json
 {
-  "methods": [
-    "GET"
-  ],
-  "path": "/category/:url_key"
+  "methods": ["POST"],
+  "path": "/user/tokens",
+  "access": "public"
 }
 ```
 
-In the above example, the route file has 2 lines:
+-   **`methods`**: An array of accepted HTTP methods (e.g., `GET`, `POST`, `PUT`, `DELETE`).
+-   **`path`**: The URL path pattern. EverShop uses `path-to-regexp` for matching, so you can include dynamic parameters like `:id`.
+-   **`access`** (optional): Defines the access control for the route.
+    -   `"public"`: The route is accessible to everyone, without authentication.
+    -   `"private"`: The route requires authentication. This is the default behavior if the `access` property is not specified. If this access property is not set, the route will be treated as private.
 
-1. `methods`: This is the list of accepted HTTP methods for the route.
-2. `path`: This is the URL path of the route. We make use of Path-to-RegExp for route path. You can find more information route path [here](https://www.npmjs.com/package/path-to-regexp).
+## Generating URLs
 
-That is how we define our route specification.
-
-## Generate a URL of a specific route
-
-When you are developing a module or a theme, there are many times that you need to generate a URL of a specific route.
-
-EverShop has a function that helps you to general a URL of a route base on its ID.
-
-Let’s take a look at an example
+Hardcoding URLs is a bad practice. EverShop provides a `buildUrl()` helper function to generate URLs dynamically using the Route ID. This ensures that your URLs will always be correct, even if you change the path in `route.json`.
 
 ```js
-const { commit, rollback } = require('@evershop/postgres-query-builder');
-const { buildUrl } = require('@evershop/evershop/src/lib/router/buildUrl');
+import { buildUrl } from '@evershop/evershop/lib/router';
 
-// eslint-disable-next-line no-unused-vars
-module.exports = async (request, response, stack, next) => {
-  const promises = [];
-  Object.keys(stack).forEach((id) => {
-    // Check if middleware is async
-    if (stack[id] instanceof Promise) {
-      promises.push(stack[id]);
-    }
-  });
-  const connection = await stack.getConnection;
-  const results = await Promise.allSettled(promises);
-  if (results.findIndex((r) => r.status === 'rejected') === -1) {
-    await commit(connection);
-    // Store success message to session
-    request.session.notifications = request.session.notifications || [];
-    request.session.notifications.push({
-      type: 'success',
-      message: request.body.product_id ? 'Product was updated successfully' : 'Product was created successfully'
-    });
-    request.session.save();
-    response.json({
-      data: { redirectUrl: buildUrl('productGrid') },
-      success: true,
-      message: request.body.product_id ? 'Product was updated successfully' : 'Product was created successfully'
-    });
-  } else {
-    await rollback(connection);
-  }
-};
+// Generates a URL for the 'categoryView' route
+const categoryUrl = buildUrl('categoryView', { url_key: 'my-category' });
+// Result: /category/my-category
+
+// Generates a URL for the 'productEdit' route
+const productEditUrl = buildUrl('productEdit', { id: 123 });
+// Result: /admin/product/edit/123 (depending on the route's path)
 ```
 
-In the above example, we use function `buildUrl` to generate a URL.
+The `buildUrl()` function takes two arguments:
 
-This function takes 2 arguments:
+1.  `routeId`: The unique ID of the route.
+2.  `params` (optional): An object containing values for any dynamic parameters in the route's path.
 
-1. The `route ID`. This is the ID of the route that you want to generate a URL.
-2. Param list. A ‘key-value’ pare of route params in case your route has some dynamic params.
-And it returns a final URL.
-
-```js
-buildUrl('productEdit', { id: 1 });
-```
+By using `buildUrl()`, you decouple your code from the specific URL structure, making your application more robust and easier to maintain.
 
 import Sponsors from '@site/src/components/Sponsor';
 

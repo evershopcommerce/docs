@@ -1,7 +1,7 @@
 ---
 sidebar_position: 35
 keywords:
-- Evershop database
+  - Evershop database
 sidebar_label: The Database
 title: Database
 description: Learn what a database is and how to work with database in EverShop. Create and modify PostgreSQL database by following this tutorial.
@@ -63,20 +63,20 @@ If what you are doing is just loading some data from the database or doing some 
 You let the pool object manage the connection for you rather than creating and managing connections one by one.
 
 ```js
-const {
-  pool
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
-const {
-  select
-} = require('@evershop/postgres-query-builder');
+import { pool } from "@evershop/evershop/lib/postgres";
+import { select } from "@evershop/postgres-query-builder";
 
 const query = select();
-query.from('cms_page')
-.leftJoin('cms_page_description')
-.on('cms_page.cms_page_id', '=', 'cms_page_description.cms_page_description_cms_page_id');
-query.where('status', '=', 1);
-query.where('cms_page_description.url_key', '=', request.params.url_key);
+query
+  .from("cms_page")
+  .leftJoin("cms_page_description")
+  .on(
+    "cms_page.cms_page_id",
+    "=",
+    "cms_page_description.cms_page_description_cms_page_id"
+  );
+query.where("status", "=", 1);
+query.where("cms_page_description.url_key", "=", request.params.url_key);
 
 const cmsPage = await query.load(pool);
 ```
@@ -86,27 +86,23 @@ const cmsPage = await query.load(pool);
 Sometimes you want to do some complex query and you want to control the transaction commit or rollback by yourself based on your logic, then you can create a single connection.
 
 ```js
-const {
+import {
   rollback,
   insert,
   commit,
   select,
   update,
-  startTransaction
-} = require('@evershop/postgres-query-builder');
-
-const {
-  getConnection
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
+  startTransaction,
+} from "@evershop/postgres-query-builder";
+import { getConnection } from "@evershop/evershop/lib/postgres";
 const connection = await getConnection();
 await startTransaction(connection);
 
 try {
-// Doing some insert/update queries here
-    await commit(connection);
+  // Doing some insert/update queries here
+  await commit(connection);
 } catch (e) {
-    await rollback(connection);
+  await rollback(connection);
 }
 ```
 
@@ -115,70 +111,70 @@ try {
 #### Running Select Statements
 
 ```js
-const {
-  pool
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
-const {
-  select
-} = require('@evershop/postgres-query-builder');
+import { pool } from "@evershop/evershop/lib/postgres";
+import { select } from "@evershop/postgres-query-builder";
 
 const order = await select()
-.from('order')
-.where('order_id', '=', orderId)
-.load(pool);
+  .from("order")
+  .where("order_id", "=", orderId)
+  .load(pool);
 ```
 
 It is also possible to perform a complex query by using a query builder.
 
 ```js
-const {
-  pool
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
-const {
-  select
-} = require('@nodejscart/postgres-query-builder');
+import { pool } from "@evershop/evershop/lib/postgres";
+import { select } from "@evershop/postgres-query-builder";
 
 const query = select();
-query.from('cms_page')
-.leftJoin('cms_page_description')
-.on('cms_page.cms_page_id', '=', 'cms_page_description.cms_page_description_cms_page_id');
-query.where('status', '=', 1);
-query.andWhere('cms_page_description.url_key', '=', request.params.url_key);
+query
+  .from("cms_page")
+  .leftJoin("cms_page_description")
+  .on(
+    "cms_page.cms_page_id",
+    "=",
+    "cms_page_description.cms_page_description_cms_page_id"
+  );
+query.where("status", "=", 1);
+query.andWhere("cms_page_description.url_key", "=", request.params.url_key);
 
 const cmsPage = await query.load(pool);
 ```
 
 #### Running Insert Statements
 
-```js
-const {
+```ts
+import { EvershopRequest, EvershopResponse } from "@evershop/evershop";
+import {
   rollback,
   insert,
   commit,
-  startTransaction
-} = require('@evershop/postgres-query-builder');
+  startTransaction,
+} from "@evershop/postgres-query-builder";
+import { getConnection } from "@evershop/evershop/lib/postgres";
 
-const {
-  getConnection
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
-module.exports = async (request, response, stack, next) => {
+export default async (
+  request: EvershopRequest,
+  response: EvershopResponse,
+  next
+) => {
   const connection = await getConnection();
   await startTransaction(connection);
   try {
-    await insert('shipment').given({
-      shipment_order_id: orderId,
-      carrier_name: carrierName,
-      tracking_number: trackingNumber
-    }).execute(connection);
+    await insert("shipment")
+      .given({
+        shipment_order_id: orderId,
+        carrier_name: carrierName,
+        tracking_number: trackingNumber,
+      })
+      .execute(connection);
     await commit(connection);
   } catch (e) {
     await rollback(connection);
   }
 };
 ```
+
 In the above example, the data is passed to the insert statement is a ‘key-value’ pair object with the key is the table column name.
 
 If the key provided does not exist, it will just be ignored and the query still being proceeded.
@@ -187,28 +183,31 @@ If the key provided does not exist, it will just be ignored and the query still 
 
 Updating rows in the database is equally intuitive, the following example will update the order with id 10:
 
-```js
-const {
+```ts
+import { EvershopRequest, EvershopResponse } from "@evershop/evershop";
+import {
   rollback,
   update,
   commit,
-  startTransaction
-} = require('@evershop/postgres-query-builder');
+  startTransaction,
+} from "@evershop/postgres-query-builder";
 
-const {
-  getConnection
-} = require('@evershop/evershop/src/lib/postgres/connection');
+import { getConnection } from "@evershop/evershop/lib/postgres";
 
-module.exports = async (request, response, stack, next) => {
+export default async (
+  request: EvershopRequest,
+  response: EvershopResponse,
+  next
+) => {
   const connection = await getConnection();
   await startTransaction(connection);
   try {
-    await update('order')
-    .given({
-        shipment_status: 'fullfilled'
+    await update("order")
+      .given({
+        shipment_status: "fullfilled",
       })
-    .where('order_id', '=', 10)
-    .execute(connection);
+      .where("order_id", "=", 10)
+      .execute(connection);
     await commit(connection);
   } catch (e) {
     await rollback(connection);
@@ -221,24 +220,19 @@ module.exports = async (request, response, stack, next) => {
 Similarly, the `del()` method is used to delete rows from the database, the following example deletes the order with id 10:
 
 ```js
-const {
+import {
   rollback,
   del,
   commit,
-  startTransaction
-} = require('@evershop/postgres-query-builder');
+  startTransaction,
+} from "@evershop/postgres-query-builder";
+import { getConnection } from "@evershop/evershop/lib/postgres";
 
-const {
-  getConnection
-} = require('@evershop/evershop/src/lib/postgres/connection');
-
-module.exports = async (request, response, stack, next) => {
+export default async (request, response, next) => {
   const connection = await getConnection();
   await startTransaction(connection);
   try {
-    await del('order')
-    .where('order_id', '=', 10)
-    .execute(connection);
+    await del("order").where("order_id", "=", 10).execute(connection);
     await commit(connection);
   } catch (e) {
     await rollback(connection);

@@ -12,6 +12,9 @@ const RequestSchema = ({ schema, indentLevel = 0 }) => {
     display: "table",
     maxWidth: "100%",
   };
+  if (indentLevel > 0) {
+    style.marginBottom = "0px";
+  }
 
   const getType = (field) => {
     if (Array.isArray(properties[field].type)) {
@@ -48,7 +51,7 @@ const RequestSchema = ({ schema, indentLevel = 0 }) => {
     }
   }
   return (
-    <table style={style}>
+    <table style={style} className="not-prose table-auto">
       <thead>
         <tr>
           <th className="text-left">Field Name</th>
@@ -114,7 +117,7 @@ export default function Api({
         </div>
       </div>
       <div className="w-full">
-        <div className="border rounded-md border-gray-400 p-3 w-full">
+        <div className="border rounded-md border-gray-300 p-3 w-full">
           <div className=" pb-2 flex gap-2 justify-start items-center">
             <span className={`method ${method}`}>{method}</span>
             <span className="url">{url}</span>
@@ -125,14 +128,22 @@ export default function Api({
                 <CodeBlock language="jsx" showLineNumbers>
                   {`curl
   -H "Accept: application/json"
-  -H "Cookie: asid=<your admin cookie>"
+  -H "Authorization: Bearer <admin JWT token>"${
+    method.toUpperCase() === "POST" || method.toUpperCase() === "PATCH"
+      ? "\n  --data-raw '<JSON DATA>'"
+      : ""
+  }
   https://<your domain>${url}
 `}
                 </CodeBlock>
               ) : (
                 <CodeBlock language="jsx" showLineNumbers>
                   {`curl
-  -H "Accept: application/json"
+  -H "Accept: application/json"${
+    method.toUpperCase() === "POST" || method.toUpperCase() === "PATCH"
+      ? '\n  --data-raw "<JSON DATA>"'
+      : ""
+  }
   https://<your domain>${url}
 `}
                 </CodeBlock>
@@ -144,7 +155,11 @@ export default function Api({
                   {`fetch('https://<your domain>${url}', {
   headers: {
     'Accept': 'application/json',
-    'Cookie': 'asid=<your admin cookie>'
+    'Authorization': 'Bearer <admin JWT token>'
+  }${
+    method.toUpperCase() === "POST" || method.toUpperCase() === "PATCH"
+      ? ",\n  body: <JSON DATA>"
+      : ""
   }
 })
   .then(response => response.json())
@@ -165,6 +180,10 @@ export default function Api({
                   {`fetch('https://<your domain>${url}', {
   headers: {
     'Accept': 'application/json',
+  }${
+    method.toUpperCase() === "POST" || method.toUpperCase() === "PATCH"
+      ? ",\n  body: <JSON DATA>"
+      : ""
   }
 })
   .then(response => response.json())

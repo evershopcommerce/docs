@@ -2,100 +2,202 @@
 sidebar_position: 1
 hide_table_of_contents: true
 keywords:
-- EverShop api
+  - EverShop API
+  - Product Categories
+  - Catalog Management
+  - E-commerce API
+  - REST API
 sidebar_label: Category
 title: Category REST API
-description: Use the REST API to interact with EverShop categories. Create, update, delete, and get categories.
+description: Comprehensive guide to managing product categories in EverShop. Learn how to create, update, retrieve, and delete categories using the REST API.
 ---
-
 
 # Category API
 
-Use the REST API to interact with EverShop categories.
+## Overview
 
-## Create a category
-
-Use this endpoint to create a category.
+The Category API provides endpoints for managing product categories in your EverShop store. Categories help organize your product catalog into a hierarchical structure, improving navigation and product discoverability for your customers.
 
 import Api from '@site/src/components/rest/Api';
 
+## Endpoints
+
+### Create a Category
+
+Creates a new product category in the system. Categories can be organized in a hierarchical structure by specifying a parent category.
+
 <Api
-  method="POST"
-  url="/api/categories"
-  requestSchema={{
+method="POST"
+url="/api/categories"
+requestSchema={{
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Category name must be a string",
+        "minLength": "Category name is required and cannot be empty"
+      }
     },
     "description": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "errorMessage": {
+              "type": "Description block ID must be a string"
+            }
+          },
+          "size": {
+            "type": "number",
+            "errorMessage": {
+              "type": "Description block size must be a number"
+            }
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "errorMessage": {
+                    "type": "Column ID must be a string"
+                  }
+                },
+                "size": {
+                  "type": "number",
+                  "errorMessage": {
+                    "type": "Column size must be a number"
+                  }
+                },
+                "data": {
+                  "type": "object",
+                  "errorMessage": {
+                    "type": "Column data must be an object"
+                  }
+                }
+              },
+              "required": ["id", "size", "data"],
+              "errorMessage": {
+                "required": {
+                  "id": "Column ID is required",
+                  "size": "Column size is required",
+                  "data": "Column data is required"
+                }
+              }
+            },
+            "errorMessage": {
+              "type": "Columns must be an array"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"],
+        "errorMessage": {
+          "required": {
+            "id": "Description block ID is required",
+            "size": "Description block size is required",
+            "columns": "Description block columns are required"
+          }
+        }
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "image": {
-      "type": "string"
+      "type": "string",
+      "errorMessage": {
+        "type": "Image path must be a string"
+      }
     },
     "meta_title": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta title must be a string",
+        "minLength": "Meta title is required and cannot be empty"
+      }
     },
     "meta_description": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta description must be a string",
+        "minLength": "Meta description is required and cannot be empty"
+      }
     },
     "meta_keywords": {
-      "type": "string"
+      "type": "string",
+      "errorMessage": {
+        "type": "Meta keywords must be a string"
+      }
     },
     "url_key": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^\\S+$",
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key cannot contain spaces"
+      }
     },
     "status": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Status must be a number or string",
+        "enum": "Status must be either 0, 1, '0', or '1'"
+      }
     },
     "include_in_nav": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Include in navigation must be a number or string",
+        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
+      }
     },
     "parent_id": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$"
+      "type": ["string", "number", "null"],
+      "pattern": "^[0-9]+$",
+      "default": null,
+      "errorMessage": {
+        "type": "Parent ID must be a string, number, or null",
+        "pattern": "Parent ID must be a valid numeric ID"
+      }
     },
     "position": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$"
+      "type": ["string", "integer"],
+      "pattern": "^[0-9]*$",
+      "errorMessage": {
+        "type": "Position must be a string or number",
+        "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
+      }
     }
   },
   "required": [
     "name",
     "description",
     "status",
-    "url_key",
     "meta_title",
     "meta_description"
   ],
-  "additionalProperties": true
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "name": "Category name is required",
+      "description": "Category description is required",
+      "status": "Category status is required",
+      "meta_title": "Meta title is required",
+      "meta_description": "Meta description is required"
+    }
+  }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "category_id": 103,
     "uuid": "9ab75946a63211edb46b60d819134f39",
@@ -107,14 +209,14 @@ import Api from '@site/src/components/rest/Api';
     "updated_at": "2023-02-07 00:01:47",
     "category_description_id": 82,
     "category_description_category_id": 103,
-    "name": "2sl0ifz1declc91p67h",
+    "name": "Athletic Shoes",
     "short_description": null,
-    "description": "2sl0ifz1declc91p67i",
-    "image": "2sl0ifz1declc91p67j",
-    "meta_title": "2sl0ifz1declc91p67k",
-    "meta_keywords": "2sl0ifz1declc91p67m",
-    "meta_description": "2sl0ifz1declc91p67l",
-    "url_key": "2sl0ifz1declc91p67n",
+    "description": "High-performance athletic shoes for sports and training",
+    "image": "/assets/catalog/categories/athletic-shoes.jpg",
+    "meta_title": "Athletic Shoes | Performance Footwear",
+    "meta_keywords": "athletic shoes, running shoes, training footwear",
+    "meta_description": "Shop our selection of high-performance athletic shoes for all your training needs",
+    "url_key": "athletic-shoes",
     "links": [
       {
         "rel": "categoryGrid",
@@ -126,7 +228,7 @@ import Api from '@site/src/components/rest/Api';
       },
       {
         "rel": "view",
-        "href": "/category/2sl0ifz1declc91p67n",
+        "href": "/category/athletic-shoes",
         "action": "GET",
         "types": [
           "text/xml"
@@ -143,102 +245,205 @@ import Api from '@site/src/components/rest/Api';
     ]
   }
 }`}
- />
+/>
 
 <hr />
 
-## Update a category
+### Update a Category
 
-Use this endpoint to update a category.
+Modifies an existing product category. You can update any of the category attributes, including its hierarchical position in the catalog.
 
 <Api
-  method="PATCH"
-  url="/api/categories/{id}"
-  requestSchema={{
+method="PATCH"
+url="/api/categories/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+requestSchema={{
   "type": "object",
   "properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Category name must be a string",
+        "minLength": "Category name is required and cannot be empty"
+      }
     },
     "description": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "errorMessage": {
+              "type": "Description block ID must be a string"
+            }
+          },
+          "size": {
+            "type": "number",
+            "errorMessage": {
+              "type": "Description block size must be a number"
+            }
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "errorMessage": {
+                    "type": "Column ID must be a string"
+                  }
+                },
+                "size": {
+                  "type": "number",
+                  "errorMessage": {
+                    "type": "Column size must be a number"
+                  }
+                },
+                "data": {
+                  "type": "object",
+                  "errorMessage": {
+                    "type": "Column data must be an object"
+                  }
+                }
+              },
+              "required": ["id", "size", "data"],
+              "errorMessage": {
+                "required": {
+                  "id": "Column ID is required",
+                  "size": "Column size is required",
+                  "data": "Column data is required"
+                }
+              }
+            },
+            "errorMessage": {
+              "type": "Columns must be an array"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"],
+        "errorMessage": {
+          "required": {
+            "id": "Description block ID is required",
+            "size": "Description block size is required",
+            "columns": "Description block columns are required"
+          }
+        }
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "image": {
-      "type": "string"
+      "type": "string",
+      "errorMessage": {
+        "type": "Image path must be a string"
+      }
     },
     "meta_title": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta title must be a string",
+        "minLength": "Meta title is required and cannot be empty"
+      }
     },
     "meta_description": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "errorMessage": {
+        "type": "Meta description must be a string",
+        "minLength": "Meta description is required and cannot be empty"
+      }
     },
     "meta_keywords": {
-      "type": "string"
+      "type": "string",
+      "errorMessage": {
+        "type": "Meta keywords must be a string"
+      }
     },
     "url_key": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^\\S+$",
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key cannot contain spaces"
+      }
     },
     "status": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Status must be a number or string",
+        "enum": "Status must be either 0, 1, '0', or '1'"
+      }
     },
     "include_in_nav": {
-      "type": [
-        "integer",
-        "string"
-      ],
-      "enum": [
-        0,
-        1,
-        "0",
-        "1"
-      ]
+      "type": ["integer", "string"],
+      "enum": [0, 1, "0", "1"],
+      "errorMessage": {
+        "type": "Include in navigation must be a number or string",
+        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
+      }
     },
     "parent_id": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$"
+      "type": ["string", "number", "null"],
+      "pattern": "^[0-9]+$",
+      "default": null,
+      "errorMessage": {
+        "type": "Parent ID must be a string, number, or null",
+        "pattern": "Parent ID must be a valid numeric ID"
+      }
     },
     "position": {
-      "type": [
-        "string",
-        "integer"
-      ],
-      "pattern": "^[0-9]*$"
+      "type": ["string", "integer"],
+      "pattern": "^[0-9]*$",
+      "errorMessage": {
+        "type": "Position must be a string or number",
+        "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
+      }
     }
   },
-  "additionalProperties": true
+  "required": [
+    "name",
+    "description",
+    "status",
+    "meta_title",
+    "meta_description"
+  ],
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "name": "Category name is required",
+      "description": "Category description is required",
+      "status": "Category status is required",
+      "meta_title": "Meta title is required",
+      "meta_description": "Meta description is required"
+    }
+  }
 }}
-  responseSample={`{
+responseSample={`{
   "data": {
     "category_id": 103,
     "uuid": "9ab75946a63211edb46b60d819134f39",
     "status": 1,
     "parent_id": 16,
-    "include_in_nav": 0,
+    "include_in_nav": 1,
     "position": 22,
     "created_at": "2023-02-07 00:01:47",
     "updated_at": "2023-02-07 00:01:47",
     "category_description_id": 82,
     "category_description_category_id": 103,
-    "name": "2sl0ifz1declc91p67h",
+    "name": "Athletic Shoes",
     "short_description": null,
-    "description": "2sl0ifz1declc91p67i",
-    "image": "2sl0ifz1declc91p67j",
-    "meta_title": "2sl0ifz1declc91p67k",
-    "meta_keywords": "2sl0ifz1declc91p67m",
-    "meta_description": "2sl0ifz1declc91p67l",
-    "url_key": "2sl0ifz1declc91p67n",
+    "description": "High-performance athletic shoes for sports and training",
+    "image": "/assets/catalog/categories/athletic-shoes.jpg",
+    "meta_title": "Athletic Shoes | Performance Footwear",
+    "meta_keywords": "athletic shoes, running shoes, training footwear",
+    "meta_description": "Shop our selection of high-performance athletic shoes for all your training needs",
+    "url_key": "athletic-shoes",
     "links": [
       {
         "rel": "categoryGrid",
@@ -250,7 +455,7 @@ Use this endpoint to update a category.
       },
       {
         "rel": "view",
-        "href": "/category/2sl0ifz1declc91p67n",
+        "href": "/category/athletic-shoes",
         "action": "GET",
         "types": [
           "text/xml"
@@ -258,7 +463,7 @@ Use this endpoint to update a category.
       },
       {
         "rel": "edit",
-        "href": "/admin/categories/edit/9ab75946a63211edb46b60d819134f39",
+        "href": "/admin/categories/edit/433ba97f-8be7-4be9-be3f-a9f341f2b89f",
         "action": "GET",
         "types": [
           "text/xml"
@@ -267,21 +472,21 @@ Use this endpoint to update a category.
     ]
   }
 }`}
- />
+/>
 
- <hr />
+<hr />
 
- ## Delete a category
+### Delete a Category
 
-Use this endpoint to delete a category.
+Permanently removes a product category from the system. Note that this does not automatically delete associated products.
 
 <Api
-  method="DELETE"
-  url="/api/categories/{id}"
-  responseSample={`{
+method="DELETE"
+url="/api/categories/433ba97f-8be7-4be9-be3f-a9f341f2b89f"
+responseSample={`{
   "data": {
     "category_id": 103,
-    "uuid": "9ab75946a63211edb46b60d819134f39",
+    "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
     "status": 0,
     "parent_id": 16,
     "include_in_nav": 0,
@@ -300,4 +505,10 @@ Use this endpoint to delete a category.
     "url_key": null
   }
 }`}
- />
+/>
+
+<hr />
+
+### Get Category Data with GraphQL
+
+EverShop uses GraphQL for querying category data. For detailed information on how to query categories, refer to the [GraphQL API documentation](/docs/development/knowledge-base/data-fetching).

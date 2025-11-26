@@ -55,6 +55,7 @@ export type TagType =
   | 'meta'
   | 'personal'
   | 'cms'
+  | 'theme'
   // Right-to-left direction.
   | 'rtl';
 
@@ -137,6 +138,16 @@ const Users: Extension[] = [
     source: 'https://github.com/huangj1e/evershop_extended',
     tags: ['notification'],
     author: "huangj1e"
+  },
+  {
+    title: 'SweetDream Bakery',
+    description:
+      'A SweetDream Bakery theme for EverShop e-commerce platform.',
+    preview: require('./extension/sweetdreambakery.png'),
+    demo: 'https://arcturus1235.evershop.app/',
+    source: 'https://github.com/evershopcommerce/evershop',
+    tags: ['theme'],
+    author: "EverShop"
   }
 ];
 
@@ -147,7 +158,8 @@ export type Extension = {
   npm: string;
   source: string | null;
   tags: TagType[];
-  price: number | null;
+  price?: number | null;
+  demo?: string;
   author: string;
 };
 
@@ -196,6 +208,11 @@ export const Tags: {[type in TagType]: Tag} = {
     label: translate({message: 'CMS'}),
     description: '',
     color: '#fe6829',
+  },
+  theme: {
+    label: translate({message: 'Theme'}),
+    description: '',
+    color: '#964B00',
   },
 };
 

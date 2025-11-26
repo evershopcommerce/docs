@@ -61,7 +61,7 @@ router.post("/contact", async (req, res) => {
 			<p style="font-size:18px;line-height:1.4;margin:16px 0;color:#484848;padding:24px;background-color:#f2f3f3;border-radius:4px">“${escapedMessage}”</p>
             <p style="font-size:16px;line-height:26px;margin:16px 0">Best,<br />The EverShop team</p>
             <hr style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#cccccc;margin:20px 0" />
-            <p style="font-size:12px;line-height:24px;margin:16px 0;color:#8898aa">470 Noor Ave STE B #1148, South San Francisco, CA 94080</p>
+            <p style="font-size:12px;line-height:24px;margin:16px 0;color:#8898aa">1111B S Governors Ave STE 28897, Dover, DE 19904</p>
           </td>
         </tr>
       </tbody>

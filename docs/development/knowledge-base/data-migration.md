@@ -1,7 +1,7 @@
 ---
 sidebar_position: 36
 keywords:
-- database migration, database schema migration, upgrade schema
+  - database migration, database schema migration, upgrade schema
 sidebar_label: Database Migration
 title: Database Schema Migration
 description: Learn how to use migration scripts to upgrade your database schema
@@ -11,20 +11,21 @@ description: Learn how to use migration scripts to upgrade your database schema
 
 # Database Schema Migration
 
-If you are writing an EverShop extension, you will almost certainly find that you need to store some information in the EverShop database.
+If you are writing an EverShop extension, you will likely need to store some information in the EverShop database.
 
-This documentations will help you to understand how to use migration scripts to upgrade your database schema.
+This documentation will help you understand how to use migration scripts to upgrade your database schema.
 
-## What is a migration script?
+## What is a Migration Script?
 
-Every extension can have its own database schema migration scripts. When you install an extension, those migration scripts are executed automatically and the database schema is upgraded.
+Every extension can have its own database schema migration scripts. When you install an extension, these migration scripts are executed automatically, and the database schema is upgraded.
 
-The migration scripts are located in the `migrations` directory of your extension. One migration script is a single file providing a single function that is executed when the migration script is executed. 
+The migration scripts are located in the `migrations` directory of your extension. Each migration script is a single file that provides a function executed during the migration process.
 
-```js 
-module.exports = async function (connection) {
+```ts
+import { PoolClient } from "pg";
+export default async function (connection: PoolClient) {
   // Your migration script goes here
-};
+}
 ```
 
-This function is passed a connection object that you can use to execute queries.
+This function receives a `connection` object that you can use to execute queries.

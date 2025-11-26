@@ -1,520 +1,391 @@
 ---
 sidebar_position: 11
 keywords:
-- Configuration
-sidebar_label: Configuration
-title: Configuration
-description: Configure the EverShop application. Setup your shop information and configure the database connection. Extend configuration for different deployment environments
+  - EverShop configuration
+  - Node.js config
+  - Environment variables
+  - Database configuration
+sidebar_label: Configuration Guide
+title: 'Configuration Deep Dive'
+description: A comprehensive guide to configuring an EverShop application. Learn about configuration layers, environment variables, and all the key settings for your store.
 ---
 
-# Configuration guide
+# Configuration Deep Dive
 
-In EverShop, some of the configurations can be done from the admin panel like Payment method, Shipment method, Taxes… We will learn more about these items in our user guide document.
+EverShop uses a powerful and flexible configuration system based on the [node-config](https://www.npmjs.com/package/config) package. This guide will walk you through how to set up and manage your store's configuration effectively.
 
-In this section, we will focus on the configuration from the `config/` directory. This directory contains the configuration files for the application.
+While many settings (like payment and shipping methods) are managed through the admin panel, the file-based configuration gives you low-level control over your application's core settings.
+
+## Configuration Layers
+
+EverShop loads configuration in a layered hierarchy. The `node-config` package starts by loading `config/default.json` and then **deep-merges** subsequent configuration files on top of it. This means settings from more specific layers will override the settings from more general ones, while any unspecified settings will be inherited from the base file.
+
+This allows you to define a complete base configuration and then selectively override just the parts that change for different environments.
+
+The loading order is as follows:
+
+1.  `config/default.json` - The base configuration for your application. This file should be in your version control.
+2.  `config/[NODE_ENV].json` - Environment-specific configuration (e.g., `config/production.json` or `config/development.json`).
+3.  `config/local.json` - For local overrides on your development machine. **This file should not be committed to version control.**
+4.  **Environment Variables** - The highest priority, allowing you to override any setting dynamically.
 
 :::info
-By default, EverShop does not create the `config/` directory after the installation. You need to create the `config/` directory and add the configuration files manually.
+By default, EverShop does not create the `config/` directory. You need to create it manually to add your custom configuration files.
 :::
 
-Under the hood, EverShop makes use of [config package](https://www.npmjs.com/package/config) to handle the configuration.
+### 1. Base Configuration (`default.json`)
 
-## Configuration file location
-
-Configurations are JSON files stored in configuration files within a directory named `config` located at the root level of your application.
-
-Let’s take a look at an example
+This file should contain all the default settings for your application.
 
 ```json
+// config/default.json
 {
-    "shop" : {
-        "currency": "USD",
-        "language": "cn",
-        "weightUnit": "kg"
-    },   
-    "catalog": {
-        "product": {
-            "image": {
-                "thumbnail": {
-                    "width": 100,
-                    "height": 100
-                },
-                "listing": {
-                    "width": 300,
-                    "height": 300
-                },
-                "single": {
-                    "width": 500,
-                    "height": 500
-                }
-            }
-        },
-        "showOutOfStockProduct": false
-    },
-    "system": {
-        "theme": "friday",
-        "extensions": [
-            {
-                "name": "productComment",
-                "resolve": "extensions/productComment",
-                "enabled": true,
-                "priority": 10 
-            }
-        ]
-    }
-}
-```
-
-## Configuration and deployment environment
-
-Configuration files can be overridden and extended by [environment variables](https://github.com/node-config/node-config/wiki/Environment-Variables).
-
-For example, you can overwrite the configuration for your production store by below steps
-
-- Create a new configuration file named `production.json` in the `config` directory.
-- Add your configuration for production
-
-```json
-{
-    "shop" : {
-        "currency": "USD",
-        "language": "cn",
-        "weightUnit": "kg"
-    },   
-    "catalog": {
-        "product": {
-            "image": {
-                "thumbnail": {
-                    "width": 100,
-                    "height": 100
-                },
-                "listing": {
-                    "width": 300,
-                    "height": 300
-                },
-                "single": {
-                    "width": 500,
-                    "height": 500
-                }
-            }
-        },
-        "showOutOfStockProduct": false
-    },
-    "system": {
-        "theme": "friday",
-        "extensions": [
-            {
-                "name": "productComment",
-                "resolve": "extensions/productComment",
-                "enabled": true,
-                "priority": 10 
-            }
-        ]
-    }
-}
-```
-
-## Working with configuration in your code
-
-Let's take a look at the below code:
-
-```js
-const config = require('config');
-//...
-const language = config.get('shop.language');
-
-if (config.has('shop.language')) {
-  const language = config.get('shop.language');
-  //...
-}
-```
-
-The above example shows us how to get the configurable variables from the configuration file.
-
-`config.get()` will throw an exception for undefined keys to help catch typos and missing values. You can use `config.has()` to test if a configuration value is defined.
-
-You also can use the below method to get the configuration and provide a default value in case the configuration does not exist:
-
-```js
-const {
-  getConfig
-} = require('@evershop/evershop/lib/util/getConfig');
-
-let shopTitle = getConfig('shop.language', 'en'),
-```
-
-## What goes into a configuration file?
-
-A configuration file is a JSON file that contains the configuration for the application. The configuration file is divided into sections, each section contains a group of configuration items.
-
-The high-level overview of the configuration file can be categorized into:
-
-- Shop configuration
-- Extension configuration
-- Catalog configuration
-- Pricing configuration
-- Order status configuration
-- Theming configuration
-- Customer address schema
-
-### Shop configuration
-
-The shop configuration contains the information about the shop. This information is used to display on the storefront.
-
-```json
-{
-    "shop" : {
-        "currency": "USD",
-        "language": "cn",
-        "weightUnit": "kg",
-        "homeUrl": "http://localhost:3000" // This is the URL to your storefront, it is used for integration with third-party services
-    }
-}
-```
-
-### Extension configuration
-
-The extension configuration contains the list of extensions that are enabled for the application. The extension configuration is used to enable/disable the extension and set the priority for the extension.
-
-```json
-{
+  "shop": {
+    "currency": "USD",
+    "language": "en"
+  },
   "system": {
-    "extensions": [
-      {
-        "name": "productComment",
-        "resolve": "extensions/productComment", #This is the path to the extension folder
-        "enabled": true,
-        "priority": 10
-      }
-    ]
+    "theme": "default"
   }
 }
 ```
 
-### Catalog configuration
+### 2. Environment-Specific Configuration
 
-The catalog configuration contains the configuration for the catalog module. You can configure the image size for the product image, the product listing behavior, and the placeholder image for the product.
+You can create separate files for each deployment environment. For example, to override the theme for production, you would create `config/production.json`:
 
 ```json
+// config/production.json
 {
-    "catalog": {
-        "product": {
-            "image": {
-                "thumbnail": {
-                    "width": 100,
-                    "height": 100
-                },
-                "listing": {
-                    "width": 300,
-                    "height": 300
-                },
-                "single": {
-                    "width": 500,
-                    "height": 500
-                }
-            }
-        },
-        "showOutOfStockProduct": false
-    }
+  "system": {
+    "theme": "my-production-theme"
+  }
 }
 ```
 
-### Pricing configuration
+When you run your application with `NODE_ENV=production`, the theme will be `my-production-theme`, but the currency will still be `USD` from `default.json`.
 
-The pricing configuration contains the configuration for the pricing calculation. You can configure the rounding behavior and the precision for the pricing calculation.
+### 3. Local Overrides (`local.json`)
 
-```bash
+For settings specific to your local machine, like database credentials, use `config/local.json`. This file is perfect for sensitive information that should not be in Git.
+
+```json
+// config/local.json
 {
-    "pricing": {
-        "rounding": "round",
-        "precision": 2
-    }
+  "db": {
+    "user": "local_user",
+    "password": "local_password"
+  }
 }
 ```
 
-### Tax calculation configuration
+## Accessing Configuration in Code
 
-The tax calculation configuration contains the configuration for the tax calculation. You can configure the rounding behavior and the precision for the tax calculation.
+EverShop provides two ways to access configuration values.
 
-```json
-{
-    "pricing": {
-        "tax": {
-            "rounding": "round",
-            "precision": 2,
-            "round_level": "unit",
-            "price_including_tax": true
-        }
-    }
+### Using `node-config`
+
+You can use the `config` package directly. This is useful in modules and extensions.
+
+```typescript
+const config = require('config');
+
+// Throws an error if the key is not found
+const currency = config.get('shop.currency');
+
+// Check if a key exists
+if (config.has('shop.language')) {
+  const language = config.get('shop.language');
 }
 ```
 
-### Order status configuration
+### Using `getConfig()` Utility
 
-The order status configuration contains the configuration for the order status, payment status, and shipment status. Below is the default configuration for the order status.
+EverShop includes a utility function that allows you to provide a default value if a configuration key doesn't exist.
+
+```js
+const { getConfig } = require('@evershop/evershop/lib/util/getConfig');
+
+// Returns 'en' if 'shop.language' is not defined
+const language = getConfig('shop.language', 'en');
+```
+
+## Core Configuration Reference
+
+Here is a reference for the most important configuration sections.
+
+### Shop Configuration
+
+This section contains general information about your shop.
 
 ```json
 {
+  "shop": {
+    "name": "EverShop",
+    "language": "en",
+    "timezone": "America/New_York",
+    "currency": "USD",
+    "weightUnit": "kg",
+    "homeUrl": "http://localhost:3000" // Used for integrations
+  }
+}
+```
+
+### System Configuration
+
+This section controls core system settings, such as the active theme, file storage, and enabled extensions.
+
+```json
+{
+  "system": {
+    "file_storage": "local",
+    "upload_allowed_mime_types": [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/avif"
+    ],
+    "theme": "mytheme",
+    "extensions": [
+      {
+        "name": "my-custom-extension",
+        "resolve": "extensions/my-custom-extension",
+        "enabled": true
+      }
+    ],
+    "session": {
+      "maxAge": 86400000,
+      "resave": false,
+      "saveUninitialized": false,
+      "cookieSecret": "keyboard cat",
+      "cookieName": "sid"
+    }
+  }
+}
+```
+
+### Catalog Configuration
+
+Configure product image sizes, stock visibility, and other catalog-related settings.
+
+```json
+{
+  "catalog": {
+    "product": {
+      "image": {
+        "width": 1200,
+        "height": 1200
+      }
+    },
+    "showOutOfStockProduct": false,
+    "collectionPageSize": 20
+  }
+}
+```
+
+### Checkout Configuration
+
+Configure settings related to the checkout process.
+
+```json
+{
+  "checkout": {
+    "showShippingNote": true
+  }
+}
+```
+
+### Pricing Configuration
+
+Configure rounding behavior and precision for pricing and tax calculations.
+
+```json
+{
+  "pricing": {
+    "rounding": "round",
+    "precision": 2,
+    "tax": {
+      "rounding": "round",
+      "precision": 2,
+      "round_level": "total",
+      "price_including_tax": true
+    }
+  }
+}
+```
+
+### Theme Configuration
+
+Configure theme-specific settings like your logo, copyright notice, and custom scripts or styles.
+
+```json
+{
+  "themeConfig": {
+    "logo": {
+      "alt": "My Shop Logo",
+      "src": "/logo.png",
+      "width": 200,
+      "height": 50
+    },
+    "headTags": {
+      "links": [
+        { "rel": "icon", "href": "/favicon.ico", "type": "image/x-icon" }
+      ],
+      "metas": [
+        { "name": "viewport", "content": "width=device-width, initial-scale=1" }
+      ],
+      "scripts": [
+        { "src": "/custom.js", "async": true }
+      ],
+      "bases": [
+        { "href": "/" }
+      ]
+    },
+    "copyRight": "© 2025 My Shop. All Rights Reserved."
+  }
+}
+```
+
+### Order Management (OMS) Configuration
+
+The `oms` section contains all configurations related to order processing, including statuses and carriers.
+
+#### Order Status
+
+Define the main order statuses, their appearance, and transition logic.
+
+```json
+{
+  "oms": {
     "order": {
-        {
-            "new": { // The object key is the status code
-                "name": "New",
-                "badge": "default", // This will be used for displaying the badge on the order list. Possible values are new, info, success, attention, warning, critical
-                "progress": "incomplete", // Possible values are incomplete, complete, partiallycomplete
-                "isDefault": true, // Indicate that this is the default status, This status will be used for the new order
-                "next": [ // This will be used to determine the next status for the order when either the payment or shipment is updated
-                    "processing",
-                    "canceled"
-                ]
-            },
-            "processing": {
-                "name": "Processing",
-                "badge": "default",
-                "progress": "incomplete",
-                "next": [
-                    "completed",
-                    "canceled"
-                ]
-            },
-            "completed": {
-                "name": "Completed",
-                "badge": "success",
-                "progress": "complete",
-                "next": [
-                    "closed"
-                ]
-            },
-            "canceled": {
-                "name": "Canceled",
-                "badge": "critical",
-                "progress": "complete",
-                "next": []
-            },
-            "closed": {
-                "name": "Closed",
-                "badge": "default",
-                "progress": "complete",
-                "next": []
-            }
-        }
-    }
-}
-```
-
-Example of shipment status configuration:
-
-```json
-{
-    "order": {
-        "shipmentStatus": {
-            "pending": {
-                "name": "Pending",
-                "badge": "default",
-                "progress": "incomplete",
-                "isDefault": true // Indicate that this is the default shipment status, This status will be used for the new order
-            },
-            "processing": {
-                "name": "Processing",
-                "badge": "default",
-                "progress": "incomplete",
-                "isDefault": false
-            },
-            "shipped": {
-                "name": "Shipped",
-                "badge": "attention",
-                "progress": "complete"
-            },
-            "delivered": {
-                "name": "Delivered",
-                "badge": "success",
-                "progress": "complete",
-                "isCancelable": false // Indicate that if the shipment has this status, the order cannot be canceled
-            },
-            "canceled": {
-                "name": "Canceled",
-                "badge": "critical",
-                "progress": "complete",
-                "isCancelable": false
-            }
-        }
-    }
-}
-```
-
-Example of payment status configuration:
-
-```json
-{
-    "order": {
-        "paymentStatus": {
-            "pending": {
-                "name": "Pending",
-                "badge": "default",
-                "progress": "incomplete",
-                "isDefault": true // Indicate that this is the default payment status, This status will be used for the new order
-            },
-            "processing": {
-                "name": "Processing",
-                "badge": "default",
-                "progress": "incomplete",
-                "isCancelable": false, // Indicate that if the payment has this status, the order cannot be canceled
-                "isDefault": false
-            },
-            "paid": {
-                "name": "Paid",
-                "badge": "success",
-                "progress": "complete"
-            },
-            "failed": {
-                "name": "Failed",
-                "badge": "critical",
-                "progress": "complete"
-            }
-        }
-    }
-}
-```
-
-### Theming configuration
-
-Theming configuration contains the configuration for the theme. You can configure the logo, favicon, and the meta tag for the storefront.
-
-```json
-{
-    "themeConfig": {
-        "logo": {
-            "alt": "You amazing shop logo",
-            "src": "/logo.png",
-            "width": 100,
-            "height": 100
+      "status": {
+        "new": {
+          "name": "New",
+          "badge": "default",
+          "progress": "incomplete",
+          "isDefault": true,
+          "next": ["processing", "canceled"]
         },
-        "headTags": {
-            "links": [],
-            "metas": [],
-            "scripts": []
+        "processing": {
+          "name": "Processing",
+          "badge": "default",
+          "progress": "incomplete",
+          "next": ["completed", "canceled"]
         },
-        "copyRight": "© 2022 Evershop. All Rights Reserved."
+        "completed": {
+          "name": "Completed",
+          "badge": "success",
+          "progress": "complete",
+          "next": ["closed"]
+        },
+        "canceled": {
+          "name": "Canceled",
+          "badge": "critical",
+          "progress": "complete",
+          "next": []
+        },
+        "closed": {
+          "name": "Closed",
+          "badge": "default",
+          "progress": "complete",
+          "next": []
+        }
+      }
     }
+  }
 }
 ```
 
-#### Logo
+#### Payment Status
 
-From the above example, you can see that the logo configuration contains the alt, src, width, and height of the logo. The logo is used to display on the storefront. You can have your logo in the `public` directory and set the path to the logo in the configuration file.
-
-:::info
-In above example, the logo is located at `public/logo.png`
-:::
-
-#### Favicon
-
-To add your custom favicon, you can use the `themeConfig` and add a `link` tag for the favicon.
+Define the possible statuses for order payments.
 
 ```json
 {
-    "themeConfig": {
-        "headTags": {
-            "links": [
-                {
-                    "rel": "icon",
-                    "href": "/favicon.ico"
-                }
-            ]
+  "oms": {
+    "order": {
+      "paymentStatus": {
+        "pending": {
+          "name": "Pending",
+          "badge": "default",
+          "progress": "incomplete",
+          "isDefault": true
+        },
+        "paid": {
+          "name": "Paid",
+          "badge": "success",
+          "progress": "complete"
+        },
+        "failed": {
+          "name": "Failed",
+          "badge": "critical",
+          "progress": "failed"
         }
+      }
     }
+  }
 }
 ```
 
-You can use this method to add social banners, social icons, and other meta tags to the storefront.
+#### Shipment Status
 
-### Custom CSS and Javascript
-
-To add your custom CSS and Javascript, you can use the `themeConfig` and add a `script` tag for the CSS and JS.
+Define the possible statuses for order shipments.
 
 ```json
 {
-    "themeConfig": {
-        "headTags": {
-            "scripts": [
-                {
-                    "src": "/custom.js",
-                    "async": true
-                }
-            ],
-            "links": [
-                {
-                    "rel": "stylesheet",
-                    "href": "/custom.css"
-                }
-            ]
+  "oms": {
+    "order": {
+      "shipmentStatus": {
+        "pending": {
+          "name": "Pending",
+          "badge": "default",
+          "progress": "incomplete",
+          "isDefault": true
+        },
+        "shipped": {
+          "name": "Shipped",
+          "badge": "attention",
+          "progress": "complete"
+        },
+        "delivered": {
+          "name": "Delivered",
+          "badge": "success",
+          "progress": "complete"
         }
+      }
     }
+  }
 }
 ```
 
-### Customer address schema
+#### Carriers
 
-The customer address schema contains the configuration for the customer address. You can configure the address fields for the customer address 
+Define shipping carriers and their tracking URLs.
 
 ```json
 {
-    ..., #Other configuration
-    "customer": {
-        "addressSchema": {
-            type: 'object',
-            properties: {
-                full_name: {
-                    type: 'string'
-                },
-                telephone: {
-                    type: ['string', 'number']
-                },
-                address_1: {
-                    type: 'string'
-                },
-                address_2: {
-                    type: 'string'
-                },
-                city: {
-                    type: 'string'
-                },
-                province: {
-                    type: 'string'
-                },
-                country: {
-                    type: 'string',
-                    pattern: '^[A-Z]{2}$'
-                },
-                postcode: {
-                    type: ['string', 'number']
-                }
-            },
-            required: [
-                'full_name',
-                'telephone',
-                'address_1',
-                'city',
-                'country',
-                'province',
-                'postcode'
-            ],
-            errorMessage: {
-                properties: {
-                    full_name: translate('Full name is required'),
-                    telephone: translate('Telephone is missing or invalid'),
-                    address_1: translate('Address is missing or invalid'),
-                    province: translate('Province is missing or invalid'),
-                    postcode: translate('Postcode is missing or invalid'),
-                    country: translate('Country is missing or invalid')
-                }
-            },
-            additionalProperties: true
-        }
+  "oms": {
+    "carriers": {
+      "default": {
+        "name": "Default"
+      },
+      "fedex": {
+        "name": "FedEx",
+        "trackingUrl": "https://www.fedex.com/fedextrack/?trknbr={trackingNumber}"
+      },
+      "usps": {
+        "name": "USPS",
+        "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1={trackingNumber}"
+      },
+      "ups": {
+        "name": "UPS",
+        "trackingUrl": "https://www.ups.com/track?loc=en_US&tracknum={trackingNumber}"
+      }
     }
+  }
 }
 ```
-
-EverShop will use this schema to validate the customer address. This json schema is based on [ajv](https://ajv.js.org/) library.
 
 import Sponsors from '@site/src/components/Sponsor';
 
