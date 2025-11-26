@@ -77,6 +77,7 @@ Open the package.json file and add the following scripts:
     "setup": "evershop install",
     "build": "evershop build",
     "start": "evershop start",
+    "seed": "evershop seed",
     "start:debug": "evershop start --debug",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
@@ -96,7 +97,7 @@ This installation script will do the following tasks:
 - Create a default configuration file.
 - Create your administrator user.
 
-```js title="Installation script"
+```bash title="Installation script"
 npm run setup
 ```
 
@@ -115,13 +116,13 @@ EverShop needs to write some files to the disk. So you need to make sure that th
 
 ### Step 5: Run the `build` command to build the site
 
-```js title="Build the site"
+```bash title="Build the site"
 npm run build
 ```
 
 ### Step 6: Run the `start` command to start your store in production mode
 
-```js title="Start the site"
+```bash title="Start the site"
 npm run start
 ```
 
@@ -129,11 +130,15 @@ Your site will start at `http://localhost:3000`.
 
 Admin panel can be accessed at `http://localhost:3000/admin`.
 
+:::info
+By default EverShop will start at port 3000. You can change the port by setting the `PORT` environment variable.
+:::
+
 ## Upgrade EverShop
 
 To upgrade EverShop version, you can run the following command:
 
-```js title="Upgrade EverShop"
+```bash title="Upgrade EverShop"
 npm install @evershop/evershop@latest
 ```
 
