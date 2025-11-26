@@ -27,11 +27,12 @@ router.post("/contact", async (req, res) => {
       });
       return;
     }
-    // Check if the API key is set
-    const apiKey = process.env.SENDGRID_API_KEY;
-    const from = process.env.SENDGRID_FROM_EMAIL;
+    // Check if the API keys are set
+    const apiKey = process.env.MAILJET_API_KEY;
+    const apiSecret = process.env.MAILJET_API_SECRET;
+    const from = process.env.MAILJET_FROM_EMAIL;
 
-    if (!apiKey || !from) {
+    if (!apiKey || !apiSecret || !from) {
       res.json({
         status: "error",
         message: "Internal server error. Please try again later..",
@@ -70,43 +71,39 @@ router.post("/contact", async (req, res) => {
 
 </html>`;
     const msg = {
-      personalizations: [
+      Messages: [
         {
-          to: [
+          From: {
+            Email: from,
+            Name: "The EverShop Team",
+          },
+          To: [
             {
-              email: "support@evershop.io",
-              name: "The EverShop Team",
+              Email: "support@evershop.io",
+              Name: "The EverShop Team",
             },
           ],
-          subject: `New contact message from ${escapedName}`,
-        },
-      ],
-      from: {
-        email: "support@evershop.io",
-        name: "The EverShop Team",
-      },
-      reply_to: {
-        email: email,
-        name: escapedName,
-      },
-      content: [
-        {
-          type: "text/html",
-          value: html,
+          ReplyTo: {
+            Email: email,
+            Name: escapedName,
+          },
+          Subject: `New contact message from ${escapedName}`,
+          HTMLPart: html,
         },
       ],
     };
-    // Using navtive fetch from Node.js call sendgrid API
-    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    // Using native fetch from Node.js to call Mailjet API
+    const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+    const response = await fetch("https://api.mailjet.com/v3.1/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Basic ${credentials}`,
       },
       body: JSON.stringify(msg),
     });
     // Check if the response is successful
-    if (response.status === 202) {
+    if (response.status === 200) {
       res.json({
         status: "success",
         message: "Message sent successfully.",
