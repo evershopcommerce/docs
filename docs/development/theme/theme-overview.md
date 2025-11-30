@@ -19,10 +19,6 @@ Out-of-the-box, the [EverShop](https://evershop.io/) application provides a defa
 
 You can use the default theme for a live store, but if you want to customize the default design, it's recommended to create a new theme. We strongly recommend against modifying the default theme directly, as your changes could be overwritten during upgrades when new versions of the default files are installed.
 
-:::info
-You can check out the [Eve Theme repository](https://github.com/evershopcommerce/evetheme) for an example theme. It's a simple theme that helps you understand how to create a custom theme for EverShop.
-:::
-
 ## Where Are Themes Located?
 
 ### The Default Theme
@@ -193,7 +189,7 @@ You can access a file like `public/images/logo.png` using the following code:
 Or with the [StaticImage](../theme/components/StaticImage.md) component:
 
 ```jsx
-import { StaticImage } from '@components/common/StaticImage';
+import { StaticImage } from "@components/common/StaticImage";
 
 function Logo() {
   return (
@@ -211,7 +207,7 @@ function Logo() {
 
 The `pages` folder is used to add new components or overrides the core components of existing pages. For example, if you want to add a new component to the homepage, you can create a new file in the `pages/homepage` folder.
 
-In the example structure above, we have a file named `HomepageOnly.tsx` in the `pages/homepage` folder. This file will be used to add a new component that appears only on the homepage. 
+In the example structure above, we have a file named `HomepageOnly.tsx` in the `pages/homepage` folder. This file will be used to add a new component that appears only on the homepage.
 
 :::info
 Check out the [Templating system](./templating.md) document to learn how to add a component to a specific page and specify its position.
