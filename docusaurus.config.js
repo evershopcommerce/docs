@@ -51,7 +51,7 @@ const config = {
             const inject = (itemsList) =>
               itemsList.map((item) => {
                 // recurse categories
-                if (item.type === 'category' && Array.isArray(item.items)) {
+                if (item.type === "category" && Array.isArray(item.items)) {
                   return {
                     ...item,
                     items: inject(item.items),
@@ -64,7 +64,8 @@ const config = {
                 if (docId) {
                   // find the doc metadata from ctxArgs.docs (docs available in args)
                   const doc =
-                    (ctxArgs.docs && ctxArgs.docs.find((d) => d.id === docId)) ||
+                    (ctxArgs.docs &&
+                      ctxArgs.docs.find((d) => d.id === docId)) ||
                     null;
 
                   if (doc) {
@@ -104,15 +105,18 @@ const config = {
           customCss: require.resolve("./src/css/custom.scss"),
         },
         googleAnalytics: {
-          trackingID: "G-NL5DS5R8SM",
+          trackingID: "G-54D6B5061F",
           // Optional fields.
           anonymizeIP: true, // Should IPs be anonymized?
         },
       }),
     ],
-    ["@docusaurus/plugin-sitemap", {
-        ignorePatterns: ['/docs/tags/**'], // Adjust path if your tags are elsewhere
-      }]
+    [
+      "@docusaurus/plugin-sitemap",
+      {
+        ignorePatterns: ["/docs/tags/**"], // Adjust path if your tags are elsewhere
+      },
+    ],
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
