@@ -30,7 +30,17 @@ const config = {
     defaultLocale: "en",
     locales: ["en"],
   },
-  plugins: ["docusaurus-plugin-sass", "@docusaurus/plugin-ideal-image"],
+  plugins: [
+    "docusaurus-plugin-sass",
+    "@docusaurus/plugin-ideal-image",
+    [
+      "@docusaurus/plugin-google-gtag",
+      {
+        trackingID: "G-54D6B5061F",
+        anonymizeIP: true,
+      },
+    ],
+  ],
   presets: [
     [
       "classic",
@@ -103,11 +113,6 @@ const config = {
         },
         theme: {
           customCss: require.resolve("./src/css/custom.scss"),
-        },
-        googleAnalytics: {
-          trackingID: "G-54D6B5061F",
-          // Optional fields.
-          anonymizeIP: true, // Should IPs be anonymized?
         },
       }),
     ],
