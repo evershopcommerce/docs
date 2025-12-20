@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 
@@ -7,85 +6,124 @@ function SupportUs() {
   return (
     <header className="hero--primary justify-center">
       <div className="container text-left" style={{ maxWidth: "1000px" }}>
-        <h1 className="text-center">Support Us</h1>
+        <h1 className="text-center">Support EverShop</h1>
         <br />
         <p>
-          Thank you for using and supporting{" "}
-          <a href="https://evershop.io/">EverShop</a>! Your contributions and
-          support are crucial for the continued development and improvement of
-          our project. There are several ways you can support us:
+          Thank you for being part of the EverShop journey! Your support is what
+          fuels our mission to build the most modern, developer-friendly Node.js
+          commerce platform in the world.
         </p>
+        <p>There are three ways you can help us grow:</p>
         <br />
-        <h2 className=" mb-4">
-          <p>Financial Contributions</p>
-        </h2>
+        <h2 className=" mb-4">1. Community Support (Free & Powerful)</h2>
         <p>
-          EverShop is an open source project with its ongoing development made
-          possible thanks to the support by the community. We appreciate any
-          financial support to help cover the costs of development, hosting, and
-          other expenses. You can make a one-time or recurring donation through
-          the following platforms:
+          The easiest way to help us is to spread the word. This helps us reach
+          more developers and improves the ecosystem for everyone.
         </p>
         <ul>
           <li>
-            <a href="https://opencollective.com/evershopcommerce">
-              Open Collective
+            <b>Star our GitHub:</b> It helps increase our visibility and
+            attracts more contributors.{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/evershopcommerce/evershop">
+              ⭐ Star on GitHub
             </a>
+          </li>
+          <li>
+            <b>Join our Discord:</b> Help other developers, share your projects,
+            or just say hi.{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://discord.gg/GSzt7dt7RM">
+              💬 Join Discord
+            </a>
+          </li>
+          <li>
+            <b>Share your story:</b> Tweet about EverShop or write a blog post
+            about your experience.
           </li>
         </ul>
         <br />
-        <h2 className=" mb-4">
-          <p>Contributing Code</p>
-        </h2>
-        <h3>
-          <p>Join the Development</p>
-        </h3>
+        <h2 className=" mb-4">2. Financial Contributions</h2>
         <p>
-          We welcome contributions from developers of all skill levels. To get
-          started, visit our{" "}
-          <a href="https://github.com/evershopcommerce/evershop">
-            GitHub repository
-          </a>{" "}
-          and check out the{" "}
-          <a href="https://github.com/evershopcommerce/evershop/blob/main/CONTRIBUTING.md">
-            Contributing Guide
+          EverShop is an open-source project. Donations help us cover the daily
+          costs of hosting, maintenance, and documentation.
+        </p>
+        <p>
+          {" "}
+          <b>Open Collective</b>
+        </p>
+        <p>
+          Support our open-source core through recurring or one-time donations.
+          Every dollar goes directly back into maintaining the project.{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://opencollective.com/evershopcommerce">
+            👉 Support on Open Collective
           </a>
-          . You can help by:
+        </p>
+        <br />
+        <h2 className=" mb-4">3. Strategic Investment 🚀</h2>
+        <p>
+          We are currently scaling EverShop from a popular open-source tool into
+          a global commerce ecosystem. We are building EverShop Cloud and an
+          integrated Marketplace to serve the next generation of online
+          merchants.
+        </p>
+        <p>
+          We are open to conversations with VCs and Angel Investors who are
+          passionate about:
         </p>
         <ul>
-          <li>Reporting bugs and issues</li>
-          <li>Improving documentation</li>
-          <li>Submitting pull requests</li>
+          <li>The future of Node.js and React in eCommerce.</li>
+          <li>Open-core business models.</li>
+          <li>
+            Building the modern alternative to legacy platforms like Magento and
+            Shopify.
+          </li>
         </ul>
+        <p>
+          If you are interested in our Seed round, vision, and roadmap, we would
+          love to connect.
+        </p>
+        <p>
+          📩 Direct Contact:{" "}
+          <a
+            href="mailto:support@evershop.io?subject=Strategic%20Investment%20Inquiry"
+            target="_blank"
+            rel="noopener noreferrer">
+            Email us about Strategic Investment
+          </a>
+        </p>
         <br />
-        <h2 className=" mb-4">
-          <p>Spread the Word</p>
-        </h2>
-        <h3>
-          <p>Share Our Project</p>
-        </h3>
+        <h2 className=" mb-4">4. Contributing Code</h2>
         <p>
-          Help us grow our community by sharing EverShop with your friends,
-          colleagues, and followers. You can share our website, GitHub
-          repository, or specific features you find useful.
+          We welcome contributions from developers of all skill levels. Whether
+          it's fixing a bug, improving documentation, or building a new
+          extension, your help is valued.
         </p>
-        <h3>
-          <p>Write About Us</p>
-        </h3>
+        <ul>
+          <li>
+            Check our{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/evershopcommerce/evershop/blob/main/CONTRIBUTING.md">
+              Contributing Guide
+            </a>{" "}
+            on GitHub.
+          </li>
+          <li>Submit a Pull Request or report an issue.</li>
+        </ul>
         <p>
-          If you have a blog or website, consider writing about EverShop. You
-          can write a review, tutorial, or share your experience using our
-          project.
-        </p>
-        <h2 className=" mb-4">
-          <p>Thank you!</p>
-        </h2>
-        <p>
-          We are incredibly grateful for your support in any form. Together, we
-          can continue to build and improve EverShop. Thank you for being a part
-          of our community!
+          <b>Thank you for helping us build the future of commerce!</b>
         </p>
       </div>
+      <br />
     </header>
   );
 }
