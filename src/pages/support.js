@@ -15,10 +15,12 @@ function SupportUs() {
         </p>
         <p>There are three ways you can help us grow:</p>
         <br />
-        <h2 className=" mb-4">1. Community Support (Free & Powerful)</h2>
+        <h2 className=" mb-4">
+          1. Contribute to the Ecosystem (Community & Code)
+        </h2>
         <p>
-          The easiest way to help us is to spread the word. This helps us reach
-          more developers and improves the ecosystem for everyone.
+          The strength of EverShop lies in its community. Whether you are a
+          developer or an enthusiast, your involvement matters.
         </p>
         <ul>
           <li>
@@ -32,13 +34,13 @@ function SupportUs() {
             </a>
           </li>
           <li>
-            <b>Join our Discord:</b> Help other developers, share your projects,
-            or just say hi.{" "}
+            <b>Join the Development:</b> Help us fix bugs or build new features.
+            Check our{" "}
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://discord.gg/GSzt7dt7RM">
-              💬 Join Discord
+              href="https://github.com/evershopcommerce/evershop/blob/main/CONTRIBUTING.md">
+              Contributing Guide
             </a>
           </li>
           <li>
@@ -47,18 +49,20 @@ function SupportUs() {
           </li>
         </ul>
         <br />
-        <h2 className=" mb-4">2. Financial Contributions</h2>
+        <h2 className=" mb-4">2. Project Sponsorship (Donations)</h2>
         <p>
-          EverShop is an open-source project. Donations help us cover the daily
-          costs of hosting, maintenance, and documentation.
+          EverShop is an open-source project. Financial contributions help us
+          cover the daily costs of hosting, maintenance, and keeping the core
+          engine free for everyone.
         </p>
         <p>
           {" "}
           <b>Open Collective</b>
         </p>
         <p>
-          Support our open-source core through recurring or one-time donations.
-          Every dollar goes directly back into maintaining the project.{" "}
+          Support our open-source mission through recurring or one-time
+          donations. Every contribution goes directly into the project's
+          sustainability.{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -100,25 +104,6 @@ function SupportUs() {
           </a>
         </p>
         <br />
-        <h2 className=" mb-4">4. Contributing Code</h2>
-        <p>
-          We welcome contributions from developers of all skill levels. Whether
-          it's fixing a bug, improving documentation, or building a new
-          extension, your help is valued.
-        </p>
-        <ul>
-          <li>
-            Check our{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://github.com/evershopcommerce/evershop/blob/main/CONTRIBUTING.md">
-              Contributing Guide
-            </a>{" "}
-            on GitHub.
-          </li>
-          <li>Submit a Pull Request or report an issue.</li>
-        </ul>
         <p>
           <b>Thank you for helping us build the future of commerce!</b>
         </p>
