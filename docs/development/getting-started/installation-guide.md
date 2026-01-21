@@ -86,7 +86,7 @@ Open the package.json file and add the following scripts:
 
 ### Step 3: Run the installation script
 
-Before running this script, make sure that you have an empty Postgres database ready for EverShop.
+Before running this script, make sure that you have an empty Postgres database ready for EverShop. If you need help setting up a PostgreSQL database, please refer to the [PostgreSQL setup guide](/docs/development/knowledge-base/database.md) for detailed instructions
 
 :::info
 Please check [this document](/docs/development/getting-started/system-requirements) for the system requirements list.
