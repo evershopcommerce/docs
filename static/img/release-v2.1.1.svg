@@ -1,0 +1,32 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <rect width="1200" height="630" fill="url(#paint0_linear)"/>
+  
+  <!-- Abstract decoration circles -->
+  <circle cx="100" cy="100" r="300" fill="#E5FFF9" fill-opacity="0.1"/>
+  <circle cx="1100" cy="530" r="200" fill="#E5FFF9" fill-opacity="0.1"/>
+  
+  <!-- Release Tag -->
+  <rect x="100" y="180" width="160" height="40" rx="20" fill="#E5FFF9" fill-opacity="0.2"/>
+  <text x="180" y="208" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#E5FFF9" text-anchor="middle">RELEASE</text>
+
+  <!-- Main Title -->
+  <text x="100" y="300" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="white">Evershop v2.1.1</text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="380" font-family="Arial, sans-serif" font-size="40" fill="#E5FFF9">Shadcn UI &amp; Digital Products</text>
+  
+  <!-- Feature list dots -->
+  <circle cx="110" cy="460" r="6" fill="#008060"/>
+  <text x="130" y="466" font-family="Arial, sans-serif" font-size="24" fill="#E5FFF9">Tailwind CSS v4</text>
+  
+  <circle cx="400" cy="460" r="6" fill="#008060"/>
+  <text x="420" y="466" font-family="Arial, sans-serif" font-size="24" fill="#E5FFF9">Better DX</text>
+
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101828"/>
+      <stop offset="1" stop-color="#008060"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -107,6 +107,8 @@ const config = {
         },
         blog: {
           showReadingTime: true,
+          blogSidebarCount: 0,
+          blogSidebarTitle: "All posts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/evershopcommerce/docs/tree/main/",
@@ -180,6 +182,10 @@ const config = {
         links: [
           {
             items: [
+              {
+                to: "/blog",
+                label: "Blog",
+              },
               {
                 label: "Support Us",
                 to: "/support",
