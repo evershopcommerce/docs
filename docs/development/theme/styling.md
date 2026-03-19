@@ -30,9 +30,7 @@ export default function MyComponent() {
 }
 ```
 
-:::warning
-Note that the file extension must be `.scss` (NOT `.css`) to be properly processed by EverShop's build system.
-:::
+In this example, the `style.scss` file is imported directly into the component. You can write your SCSS styles in that file, and they will be applied to the component.
 
 ## Using TailwindCSS
 
@@ -40,7 +38,7 @@ EverShop integrates [TailwindCSS](https://tailwindcss.com/) for utility-first st
 
 ### Using TailwindCSS in Your Theme
 
-By default, EverShop themes include TailwindCSS so you can start using it immediately.
+By default, EverShop themes include TailwindCSS v4 so you can start using it immediately.
 
 :::info
 For more information on customizing layout templates, refer to the [templating documentation](./templating).
@@ -48,62 +46,137 @@ For more information on customizing layout templates, refer to the [templating d
 
 ### Customizing TailwindCSS Configuration
 
-You can customize TailwindCSS by creating a `tailwind.config.js` file in your theme directory. This allows you to:
+You can customize TailwindCSS by overriding the default `TailwindCss.tsx` component.
 
-- Enable or disable specific plugins
-- Customize colors, fonts, and spacing
-- Define custom variants
-- Add plugins
+:::info
+You can use the `theme:twizz` command to create component overrides for your theme. This tool will automatically copy the selected component and its dependencies to your active theme directory, maintaining the correct file structure for theme overrides. For more details, refer to the [theme development tool documentation](../knowledge-base/command-lines#theme-development-tool).
+:::
 
-Here's an example configuration:
+The `TailwindCss.tsx` component imports the `tailwind.css` file and return `null` since it doesn't render any visible content. After you create an override of this component, you can modify the `tailwind.css` file to customize your TailwindCSS 4 configuration.
 
-```js title="themes/src/yourtheme/tailwind.config.js"
-module.exports = {
-  corePlugins: {
-    // Disable unused plugins to reduce bundle size
-    lineHeight: false,
-    ... // other plugins you want to disable
-  },
-  theme: {
-    // Customize theme settings
-    fontFamily: {
-      sans: "Helvetica,Helvetica Neue,Arial,Lucida Grande,sans-serif",
-    },
-    fontSize: {
-      base: ".875rem",
-    },
-    colors: {
-      white: "#ffffff",
-      primary: "#3a3a3a",
-      secondary: "#111213",
-    },
-    spacing: {
-      0: "0px",
-    },
-    margin: {
-      0: "0px",
-    },
-    borderRadius: {
-      DEFAULT: "0.25rem",
-      100: "100%",
-    },
-    borderWidth: {
-      0: "0px",
-      DEFAULT: "1px",
-    },
-    boxShadow: {
-      DEFAULT: "0 0 0 1px rgba(63,63,68,.05),0 1px 3px 0 rgba(63,63,68,.15)",
-    },
-  },
-  variants: {
-    extend: {
-      borderWidth: ["first", "last"],
-      margin: ["first", "last"],
-      padding: ["first", "last"],
-    },
-  },
-  plugins: [],
-};
+Here's the default `tailwind.css` file included in the default theme:
+
+```css title="modules/base/pages/frontStore/all/tailwind.css"
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "tw-animate-css";
+@import "./shadcn.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.325rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --divider: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
 ```
 
 ## Using Sass
@@ -161,26 +234,37 @@ You can add external CSS files to your theme by modifying the `themeConfig` sect
 For more information about theme configuration options, refer to the [configuration guide](../knowledge-base/configuration-guide).
 :::
 
+:::info
+For more information about how to serve static assets in your theme, refer to the [static assets documentation](../knowledge-base/static-file-serving).
+:::
+
 ### 2. Importing CSS in Global Components
 
 Another approach is to import CSS files directly in a component that appears on every page of your storefront. This method provides more control over the loading order of your styles.
 
-Create a global component that will be included in your layout:
+You can do it by overriding the `GlobalCss.tsx` component that will be included in your layout:
 
-```ts title="themes/yourtheme/src/pages/all/Global.tsx"
+```ts title="themes/yourtheme/src/pages/all/GlobalCss.tsx"
 import React from "react";
-import { ComponentLayout } from "@evershop/evershop";
-import "./global-styles.scss"; // Your global styles
+import "./global.scss";
 
-export default function Global() {
-  // This component doesn't need to render anything visible
-  return <></>;
+export default function GlobalCss() {
+  return null;
 }
 
-export const layout: ComponentLayout = {
-  areaId: "head", // This will include the component in the head section
-  sortOrder: 1, // Lower numbers load first
+export const layout = {
+  areaId: "head",
+  sortOrder: 5,
 };
+```
+
+And then you can add your global styles in the `global.scss` file:
+
+```scss title="themes/yourtheme/src/pages/all/global.scss"
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
 ```
 
 ## Best Practices for Styling in EverShop

@@ -77,8 +77,8 @@ EverShop provides the `@components` path alias as a convenient way to import sha
 Instead of using relative paths like `../../../components/common/Area`, you can use:
 
 ```jsx
-import Area from '@components/common/Area';
-import Form from '@components/common/form/Form';
+import Area from "@components/common/Area";
+import Form from "@components/common/form/Form";
 ```
 
 ### Component Resolution Order
@@ -87,7 +87,7 @@ When you use the `@components` alias, EverShop follows this resolution order:
 
 1. **Your theme's components folder**: `themes/your-theme/dist/components/`
 2. **Extensions(s) components folder(s)**: `node_modules/@evershop/<extension-name>/dist/components/`
-2. **Core components folder**: `node_modules/@evershop/evershop/dist/components/`
+3. **Core components folder**: `node_modules/@evershop/evershop/dist/components/`
 
 This means if you create a component at `themes/your-theme/<src>/components/common/Area.tsx`, it will automatically override the core `Area` component whenever `@components/common/Area` is imported anywhere in your application.
 
@@ -99,7 +99,6 @@ Let's examine the default `Layout.tsx` component from the `cms` core module:
 import React from "react";
 import Area from "@components/common/Area";
 import "./Layout.scss";
-import "./tailwind.scss";
 
 export default function Layout() {
   return (
@@ -142,7 +141,6 @@ To override this component, create a new file at `themes/your-theme-folder/src/p
 import React from 'react';
 import Area from '@components/common/Area';
 import './Layout.scss';
-import './tailwind.scss';
 
 export default function Layout() {
   // Your custom layout implementation
@@ -167,7 +165,6 @@ Let's look at the default `Area.jsx` component from the `common` folder:
 
 ```jsx title="src/components/common/Area.jsx"
 import React from "react";
-import PropTypes from "prop-types";
 
 // component code
 
