@@ -427,7 +427,7 @@ function CheckoutManagement() {
                 </div>
                 <div>
                   Connect with a wide variety of payment providers for a smooth,
-                  secure checkout experiencet.
+                  secure checkout experience.
                 </div>
               </div>
             </Card>
@@ -571,7 +571,7 @@ function ElevateYourStore() {
                 performance and adapt to your unique needs.
               </div>
               <span className="text-primary flex items-center gap-2 font-semibold">
-                Comming Soon
+                Coming Soon
               </span>
             </div>
           </BorderBlock>
