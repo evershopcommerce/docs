@@ -47,18 +47,18 @@ This structure allows EverShop to automatically locate translation files for eac
 
 ### 3. Create Translation CSV Files
 
-Within your language folder, create CSV files containing your translations. Each file should have two columns:
+Within your language folder, create CSV files containing your translations. Each line has two values separated by a comma:
 
-- First column: The original English text
-- Second column: The translated text in your target language
+- First value: The original English text
+- Second value: The translated text in your target language
 
-Start with a `general.csv` file for common phrases:
+There is **no header row**. Start with a `general.csv` file for common phrases:
 
 ```csv
-en,fr
-"Hello, world!","Bonjour le monde!"
-"Welcome to our store","Bienvenue dans notre boutique"
-"Add to cart","Ajouter au panier"
+Hello world!, Bonjour le monde!
+Welcome to our store, Bienvenue dans notre boutique
+Add to cart, Ajouter au panier
+Please select, Veuillez sélectionner
 ```
 
 For better organization, you can create multiple CSV files grouped by functionality:
@@ -76,28 +76,43 @@ This organization makes it easier to manage translations as your store grows.
 
 ### 4. Translate Text in Your code
 
-From the server-side code, you can use the `translate` function to retrieve translated strings. For example:
+From the server-side code (middleware, services), use the `translate` function to look up translated strings:
 
 ```ts title="Using translate in server-side code"
-import { _, translate } from "@evershop/evershop/lib/locale/index";
-const greeting = translate("Hello, world!");
+import { translate } from "@evershop/evershop/lib/locale/translate/translate";
+
+const greeting = translate("Hello world!");
 console.log(greeting); // Outputs: "Bonjour le monde!" if the language is set to French
 ```
 
-From the client-side code, you can use the `_` function to access translations in your React components:
+The `translate()` function looks up the English text in the loaded CSV data and returns the translation. If no translation is found, it returns the original English text.
 
-```jsx title="Using useTranslation in React"
-import { _ } from "@evershop/evershop/lib/locale/index";
+For dynamic content with variables:
+
+```ts title="Using translate with variables"
+import { translate } from "@evershop/evershop/lib/locale/translate/translate";
+
+const message = translate("Discount ${discount} For All Orders Over ${price}", {
+  discount: "10%",
+  price: "$50"
+});
+```
+
+From the client-side code (React components), use the `_` function for template string variable replacement:
+
+```jsx title="Using _ in React components"
+import { _ } from "@evershop/evershop/lib/locale/translate/_";
 
 const MyComponent = () => {
-  return <div>{_("Hello, world!")}</div>;
+  return <div>{_("Hello world!")}</div>;
 };
 ```
 
-with dynamic content:
+With dynamic content:
 
-```jsx title="Using useTranslation with dynamic content"
-import { _ } from "@evershop/evershop/lib/locale/index";
+```jsx title="Using _ with dynamic content"
+import { _ } from "@evershop/evershop/lib/locale/translate/_";
+
 const MyComponent = ({ name }) => {
   return <div>{_("Hello, ${name}!", { name })}</div>;
 };
@@ -131,7 +146,6 @@ Use consistent translations for key terms across your entire store. For example,
 Some languages have different forms for singular and plural. Consider this when translating phrases like "1 item" vs "2 items" - you may need context-specific translations.
 
 ```csv
-en,fr
 Search results for "${keyword}", Résultats de recherche pour "${keyword}"
 ${count} item, ${count} article
 ```

@@ -48,6 +48,31 @@ function NavigationLink({ href, children }) {
 
 ## Methods
 
+### setData
+
+Directly sets the application state. This is a React state setter function that allows you to update the global state without making a server request.
+
+```typescript
+setData: React.Dispatch<React.SetStateAction<AppStateContextValue>>
+```
+
+```tsx
+import { useAppDispatch } from '@components/common/context/app';
+
+function CartCounter({ count }) {
+  const { setData } = useAppDispatch();
+
+  const updateCartCount = () => {
+    setData((prevState) => ({
+      ...prevState,
+      cartCount: count
+    }));
+  };
+
+  return <button onClick={updateCartCount}>Update Cart</button>;
+}
+```
+
 ### fetchPageData
 
 Fetches page data from the server and updates the application context. The URL should include `ajax=true` parameter to get JSON response instead of full HTML.

@@ -54,18 +54,23 @@ Since master level components are loaded automatically, you must include the `ex
 
 ### Shared Components
 
-Shared components are reusable components that can be used across multiple pages. These components are not loaded automatically; you must import them into your master level components. By default, EverShop has a `components` folder in the `src` directory:
+Shared components are reusable components that can be used across multiple pages. These components are not loaded automatically; you must import them into your master level components. EverShop provides shared components organized by scope:
 
 ```bash
-node_modules/@evershop/evershop
-└── src
-    └── components
-        ├── admin
-        ├── common
-        │   ├── Area.tsx
-        │   └── form
-        │       ├── Form.tsx
-        └── frontStore
+node_modules/@evershop/evershop/dist/components/
+├── admin/           # Admin-only shared components
+├── common/          # Components used in both admin and storefront
+│   ├── Area.js
+│   ├── form/
+│   │   ├── Form.js
+│   │   ├── InputField.js
+│   │   └── ...
+│   └── context/
+│       └── app.js
+└── frontStore/      # Storefront-only shared components
+    ├── cart/
+    ├── catalog/
+    └── checkout/
 ```
 
 ## The `@components` Aliases
@@ -83,15 +88,25 @@ import Form from "@components/common/form/Form";
 
 ### Component Resolution Order
 
-When you use the `@components` alias, EverShop follows this resolution order:
+When you use the `@components` alias, EverShop resolves the component by checking these paths in order (first match wins):
 
 1. **Your theme's components folder**: `themes/your-theme/dist/components/`
-2. **Extensions(s) components folder(s)**: `node_modules/@evershop/<extension-name>/dist/components/`
+2. **Extension(s) components folder(s)**: `{extension-path}/dist/components/` (each enabled extension, in priority order)
 3. **Core components folder**: `node_modules/@evershop/evershop/dist/components/`
 
-This means if you create a component at `themes/your-theme/<src>/components/common/Area.tsx`, it will automatically override the core `Area` component whenever `@components/common/Area` is imported anywhere in your application.
+This means if you create a component at `themes/your-theme/src/components/common/Area.tsx`, it will automatically override the core `Area` component whenever `@components/common/Area` is imported anywhere in your application.
+
+:::info
+In your source code, you write components in `src/components/`. The TypeScript compiler outputs them to `dist/components/`, which is where the runtime resolves them from.
+:::
 
 ### Overriding Master Level Components
+
+To override a master-level component, create a file in your theme with the **same filename** in the **same route folder**. EverShop uses the combination of route folder name and filename (e.g., `all/Layout.js`) as a key — when your theme provides a file with the same key, it replaces the core component.
+
+:::warning
+Theme overrides only apply to **storefront** (`frontStore`) pages. Admin panel components **cannot** be overridden by themes. To customize admin pages, use an [extension](/docs/development/module/extension-development) instead.
+:::
 
 Let's examine the default `Layout.tsx` component from the `cms` core module:
 
@@ -161,26 +176,29 @@ Make sure the file path and name in your theme match exactly with the original c
 
 ### Overriding Shared Components
 
-Let's look at the default `Area.jsx` component from the `common` folder:
+Shared components (imported via `@components`) are overridden through the alias resolution order described above. Simply create a file with the same path in your theme's `components` folder.
 
-```jsx title="src/components/common/Area.jsx"
+For example, to override the core `Area` component:
+
+```tsx title="src/components/common/Area.tsx (core)"
 import React from "react";
 
-// component code
+// Core implementation
 
 export default Area;
 ```
 
-To override this component, create a new file at `themes/your-theme-folder/src/components/common/Area.jsx`:
+Create your override at `themes/your-theme-folder/src/components/common/Area.tsx`:
 
-```jsx title="themes/your-theme-folder/src/components/common/Area.jsx"
+```tsx title="themes/your-theme-folder/src/components/common/Area.tsx"
 import React from "react";
-import PropTypes from "prop-types";
 
 // Your custom implementation
 
 export default Area;
 ```
+
+Since the theme's components folder is checked first in the resolution order, your version will be used everywhere `@components/common/Area` is imported — including inside core modules.
 
 ### The `theme:twizz` Command
 
@@ -190,6 +208,25 @@ The `theme:twizz` command solves this. It will automatically create the override
 ## Adding New Components
 
 ### Adding New Master Level Components
+
+Every new master-level component needs two things:
+1. A **default export** — the React component function
+2. A **`layout` export** — an object specifying which Area to render in and the sort order
+
+```tsx
+import React from "react";
+
+export default function NewComponent() {
+  return <div>My new component</div>;
+}
+
+export const layout = {
+  areaId: "content",   // The Area ID to render this component in
+  sortOrder: 50,       // Lower numbers appear first within the Area
+};
+```
+
+The `areaId` must match an existing `<Area id="...">` on the page. See the [View System](/docs/development/theme/view-system) documentation for details on how Areas work.
 
 #### For a Single Page
 

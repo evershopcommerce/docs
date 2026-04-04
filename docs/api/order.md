@@ -214,7 +214,7 @@ Use this endpoint to cancel an order.
 
 <Api
 method="POST"
-url="/orders/:id/cancel"
+url="/api/orders/:id/cancel"
 requestSchema={{
   "type": "object",
   "properties": {
@@ -232,5 +232,27 @@ requestSchema={{
 }}
 responseSample={`{
 "data": {}
+}`}
+/>
+
+<hr/>
+
+### Mark Order as Delivered
+
+Marks an order's shipment as delivered.
+
+<Api
+method="POST"
+url="/api/deliveries"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    }
+  }
+}}
+responseSample={`{
+  "data": {}
 }`}
 />

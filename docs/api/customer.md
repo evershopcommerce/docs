@@ -203,6 +203,156 @@ responseSample={`{
 
 <hr />
 
+## Customer Addresses
+
+### Create Customer Address
+
+Creates a new address for a customer.
+
+<Api
+method="POST"
+url="/api/customers/{customer_id}/addresses"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "full_name": { "type": "string" },
+    "telephone": { "type": "string" },
+    "address_1": { "type": "string" },
+    "address_2": { "type": "string" },
+    "city": { "type": "string" },
+    "province": { "type": "string" },
+    "country": { "type": "string" },
+    "postcode": { "type": "string" },
+    "is_default": { "type": ["boolean", "integer"] }
+  }
+}}
+responseSample={`{
+  "data": {
+    "customer_address_id": 42,
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "customer_id": 21,
+    "full_name": "John Smith",
+    "address_1": "123 Main St",
+    "city": "New York",
+    "province": "NY",
+    "country": "US",
+    "postcode": "10001"
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Update Customer Address
+
+Updates an existing customer address.
+
+<Api
+method="PATCH"
+url="/api/customers/{customer_id}/addresses/{address_id}"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "full_name": { "type": "string" },
+    "telephone": { "type": "string" },
+    "address_1": { "type": "string" },
+    "address_2": { "type": "string" },
+    "city": { "type": "string" },
+    "province": { "type": "string" },
+    "country": { "type": "string" },
+    "postcode": { "type": "string" }
+  }
+}}
+responseSample={`{
+  "data": {
+    "customer_address_id": 42,
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "full_name": "John A. Smith",
+    "address_1": "456 Oak Ave"
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Delete Customer Address
+
+Removes a customer address.
+
+<Api
+method="DELETE"
+url="/api/customers/{customer_id}/addresses/{address_id}"
+responseSample={`{
+  "data": {
+    "customer_address_id": 42,
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+## Password Management
+
+### Reset Password
+
+Sends a password reset email to the customer.
+
+<Api
+method="POST"
+url="/api/customers/reset-password"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email"
+    }
+  },
+  "required": ["email"]
+}}
+responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Update Password
+
+Updates a customer's password using a reset token received via email.
+
+<Api
+method="POST"
+url="/api/customers/password"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "password": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    }
+  },
+  "required": ["password", "token"]
+}}
+responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
 ### Get Customer Data with GraphQL
 
 EverShop uses GraphQL for querying customer data. For detailed information on how to query customers, refer to the [GraphQL API documentation](/docs/development/knowledge-base/data-fetching).

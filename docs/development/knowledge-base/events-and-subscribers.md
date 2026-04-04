@@ -288,7 +288,7 @@ With online payment gateways like Stripe or PayPal, this event will be triggered
 }
 
 // Example subscriber
-// module.exports = async function sendMail(data) {
+// export default async function sendMail(data) {
 //     const customerName = data.customer_full_name;
 // }
 ```
@@ -324,9 +324,9 @@ This event is triggered when the inventory of a product is updated.
 // }
 ```
 
-### A New Customer Created
+### A New Customer Registered
 
-This event is triggered when a customer is created.
+This event is triggered when a customer is registered and their account is active (status = 1).
 
 ```js
 // Event name: customer_registered
@@ -346,6 +346,193 @@ This event is triggered when a customer is created.
 // export default async function sendWelcomeEmail(data) {
 //     const customerEmail = data.email;
 // }
+```
+
+### A New Customer Created
+
+This event is triggered when a new customer record is added to the database, regardless of the account status.
+
+```js
+// Event name: customer_created
+// Data object: Same shape as customer_registered
+{
+  "customer_id": 12670,
+  "uuid": "7db52ab1-30a0-4477-9a56-8b681ac31f39",
+  "status": 0,
+  "group_id": 1,
+  "email": "david@evershop.io",
+  "full_name": "David Nguyen",
+  "created_at": "2024-05-14T02:11:25.917Z",
+  "updated_at": "2024-05-14T02:11:25.917Z"
+}
+```
+
+### A Customer Updated
+
+This event is triggered when a customer record is updated.
+
+```js
+// Event name: customer_updated
+// Data object: Same shape as customer_registered
+{
+  "customer_id": 12670,
+  "uuid": "7db52ab1-30a0-4477-9a56-8b681ac31f39",
+  "status": 1,
+  "group_id": 1,
+  "email": "david@evershop.io",
+  "full_name": "David Nguyen Updated",
+  "created_at": "2024-05-14T02:11:25.917Z",
+  "updated_at": "2024-06-01T10:00:00.000Z"
+}
+```
+
+### A Customer Deleted
+
+This event is triggered when a customer record is deleted.
+
+```js
+// Event name: customer_deleted
+// Data object: The customer row that was deleted
+{
+  "customer_id": 12670,
+  "uuid": "7db52ab1-30a0-4477-9a56-8b681ac31f39",
+  "status": 1,
+  "group_id": 1,
+  "email": "david@evershop.io",
+  "full_name": "David Nguyen",
+  "created_at": "2024-05-14T02:11:25.917Z",
+  "updated_at": "2024-05-14T02:11:25.917Z"
+}
+```
+
+### A Product Deleted
+
+This event is triggered when a product is deleted.
+
+```js
+// Event name: product_deleted
+// Data object: The product row that was deleted
+{
+  "product_id": 214,
+  "uuid": "217fb454-797b-493e-8b33-0daf7c767e1d",
+  "type": "simple",
+  "variant_group_id": null,
+  "visibility": true,
+  "group_id": 1,
+  "sku": "deleted-product",
+  "price": 120,
+  "weight": 12,
+  "tax_class": null,
+  "status": true,
+  "created_at": "2024-05-14T02:19:08.371545+00:00",
+  "updated_at": "2024-05-14T02:19:08.371545+00:00",
+  "category_id": null
+}
+```
+
+### A Product Image Added
+
+This event is triggered when an image is added to a product.
+
+```js
+// Event name: product_image_added
+// Data object:
+{
+  "product_image_id": 42,
+  "product_image_product_id": 214,
+  "origin_image": "/media/product/image.jpg",
+  "thumb_image": "/media/product/image_thumb.jpg",
+  "listing_image": "/media/product/image_listing.jpg",
+  "single_image": "/media/product/image_single.jpg",
+  "is_main": true
+}
+```
+
+### A Category Deleted
+
+This event is triggered when a category is deleted.
+
+```js
+// Event name: category_deleted
+// Data object: The category row that was deleted
+{
+  "category_id": 18,
+  "uuid": "d5111391-d1ea-4ea0-9e21-1bfcffe23f48",
+  "status": true,
+  "parent_id": null,
+  "include_in_nav": true,
+  "position": null,
+  "created_at": "2022-11-24T14:05:19+00:00",
+  "updated_at": "2022-11-24T14:05:19+00:00"
+}
+```
+
+### Order Status Updated
+
+This event is triggered when an order's status changes.
+
+```js
+// Event name: order_status_updated
+// Data object:
+{
+  "orderId": 2070,
+  "before": "processing",
+  "after": "completed"
+}
+
+// Example subscriber
+// export default async function notifyStatusChange(data) {
+//     console.log(`Order ${data.orderId} changed from ${data.before} to ${data.after}`);
+// }
+```
+
+## Type-Safe Subscribers
+
+EverShop provides TypeScript utilities for writing type-safe event subscribers:
+
+### Using the `EventSubscriber` Type
+
+```ts title="your-extension/subscribers/order_placed/sendConfirmation.ts"
+import type { EventSubscriber } from '@evershop/evershop/lib/event/subscriber';
+
+const handler: EventSubscriber<'order_placed'> = async (data) => {
+  // TypeScript knows the shape of 'data' based on the event name
+  const email = data.customer_email;
+  const total = data.grand_total;
+  // Send confirmation email...
+};
+
+export default handler;
+```
+
+### Using the `createSubscriber` Helper
+
+The `createSubscriber` helper provides better IDE autocomplete:
+
+```ts title="your-extension/subscribers/product_created/syncCatalog.ts"
+import { createSubscriber } from '@evershop/evershop/lib/event/subscriber';
+
+export default createSubscriber('product_created', async (data) => {
+  // 'data' is automatically typed as ProductRow
+  const sku = data.sku;
+  const price = data.price;
+  // Sync to external catalog...
+});
+```
+
+### Registering Custom Events
+
+If your extension emits custom events, you can extend the `EventDataRegistry` interface for type safety:
+
+```ts title="your-extension/types/event.d.ts"
+declare module '@evershop/evershop/types/event' {
+  interface EventDataRegistry {
+    my_custom_event: {
+      entityId: number;
+      action: string;
+    };
+  }
+}
 ```
 
 import Sponsors from '@site/src/components/Sponsor';

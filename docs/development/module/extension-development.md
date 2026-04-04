@@ -53,53 +53,59 @@ With this configuration in place, running `npm install` will install all depende
 
 ## Extension Naming Conventions
 
-EverShop enforces specific naming conventions for extensions to ensure compatibility and avoid conflicts:
+Extension names must be unique across your entire EverShop installation — they cannot conflict with core module names (`catalog`, `checkout`, `customer`, `oms`, etc.). We recommend:
 
-- Use only lowercase letters `[a-z]` and underscores `_` in extension names
-- Each extension name must be unique within your EverShop installation
-- Consider using a vendor prefix (like `Vendor_ExtensionName`) to prevent name collisions with other extensions
+- Use lowercase letters and underscores for extension names
+- Use a vendor prefix to avoid collisions with other extensions (e.g., `acme_freeshipping`)
 
 ### Examples of Valid Extension Names
 
 - `freeshipping`
-- `vendor_freeshipping`
+- `acme_freeshipping`
 - `my_custom_payment_method`
 
 ## Extension Structure
 
-Extensions follow a structure similar to EverShop modules. A typical extension includes:
+Extensions follow a structure similar to EverShop core modules. A typical extension includes:
 
 ```bash
-extensions
-└── Vendor_ExtensionName
-    ├── dist                     # This folder contains the compiled code for the extension
-    ├── src                      # React components used in the extension
-    │   ├── api                  # RESTful API endpoints and middleware
-    │   │   └── postCreate
+extensions/
+└── my_extension/
+    ├── dist/                        # Compiled JavaScript (required for production)
+    ├── src/                         # TypeScript source code
+    │   ├── api/                     # RESTful API endpoints and middleware
+    │   │   └── createPost/
     │   │       ├── route.json
-    │   │       ├── validatePostMiddleware.ts
-    │   │       └── [validatePostMiddleware]savePostMiddleware.ts
-    │   ├── graphql              # GraphQL schema definitions and resolvers
-    │   │   └── types
-    │   ├── migration            # Database migration scripts
-    │   │   └── Version_1.0.0.ts
-    │   ├── pages
-    │   │   ├── admin            # Admin panel pages
-    │   │   │   └── postCreate
+    │   │       ├── validatePost.ts
+    │   │       └── [validatePost]savePost.ts
+    │   ├── graphql/                 # GraphQL schema definitions and resolvers
+    │   │   └── types/
+    │   │       └── Post/
+    │   │           ├── Post.graphql
+    │   │           └── Post.resolvers.ts
+    │   ├── subscribers/             # Event subscribers
+    │   │   └── post_created/
+    │   │       └── notify.ts
+    │   ├── migration/               # Database migration scripts
+    │   │   └── Version-1.0.0.ts
+    │   ├── pages/
+    │   │   ├── admin/               # Admin panel pages
+    │   │   │   └── postCreate/
     │   │   │       ├── route.json
     │   │   │       ├── index.ts
     │   │   │       ├── GeneralComponent.tsx
     │   │   │       └── FormComponent.tsx
-    │   │   └── frontend        # Frontend pages and components
-    │   │       └── postView
+    │   │   └── frontStore/          # Storefront pages and components
+    │   │       └── postView/
     │   │           ├── route.json
     │   │           ├── index.ts
-    │   │           ├── TitleComponent.tsx
-    │   │           ├── PriceComponent.tsx
-    │   │           └── VariantsComponent.tsx
-    │   └── bootstrap.ts
+    │   │           └── PostInfo.tsx
+    │   ├── services/                # Business logic
+    │   ├── components/              # Shared components (widgets)
+    │   ├── jobs/                    # Cron jobs
+    │   └── bootstrap.ts             # Extension initialization
     ├── tsconfig.json
-    └── package.json         # Extension dependencies
+    └── package.json
 ```
 
 ## The `tsconfig.json` File
@@ -175,19 +181,18 @@ To ensure proper module resolution, each extension's `package.json` file should 
 
 After developing an extension, you need to enable it in your EverShop configuration. For example, if you've created an extension named `myExtension`, add the following configuration to your EverShop config file:
 
-```js title="./config/production.json"
+```json title="config/default.json"
 {
-  ...
   "system": {
-        "extensions": [
-            {
-                "name": "myExtension",
-                "resolve": "extensions/myExtension",
-                "enabled": true,
-                "priority": 10  // Lower numbers indicate higher priority
-            }
-        ]
-    }
+    "extensions": [
+      {
+        "name": "myExtension",
+        "resolve": "extensions/myExtension",
+        "enabled": true,
+        "priority": 10
+      }
+    ]
+  }
 }
 ```
 
@@ -235,24 +240,86 @@ While extensions can be used directly from the `extensions` directory, you can a
 
 4. Configure the extension in your EverShop project:
 
-```js title="./config/production.json"
+```json title="config/default.json"
 {
-  ...
   "system": {
-        "extensions": [
-            {
-                "name": "yourExtensionName",
-                "resolve": "node_modules/@yournamespace/your-extension-name",
-                "enabled": true,
-                "priority": 10
-            }
-        ]
-    }
+    "extensions": [
+      {
+        "name": "yourExtensionName",
+        "resolve": "node_modules/@yournamespace/your-extension-name",
+        "enabled": true,
+        "priority": 10
+      }
+    ]
+  }
 }
 ```
 
 :::info
 For a hands-on tutorial on creating your first extension, check out our [Create Your First Extension guide](./create-your-first-extension).
+:::
+
+## The Bootstrap Function
+
+Every extension can include a `bootstrap.ts` file in its `src/` directory. This function runs during application startup and is where you register processors, hooks, widgets, and cron jobs.
+
+The bootstrap function receives a context parameter with information about the current process:
+
+```ts title="extensions/my-extension/src/bootstrap.ts"
+import { addProcessor } from '@evershop/evershop/lib/util/registry';
+import { hookBefore } from '@evershop/evershop/lib/util/hookable';
+
+export default function (context) {
+  // context.command — 'build', 'dev', 'start', or 'seed'
+  // context.env — 'production', 'development', or 'test'
+  // context.process — 'main', 'cronjob', or 'event'
+
+  // Register processors (runs in all processes)
+  addProcessor('cartFields', myCartFieldProcessor, 15);
+
+  // Only register hooks in the main process
+  if (context.process === 'main') {
+    hookBefore('createProduct', validateProduct, 5);
+  }
+}
+```
+
+The `context.process` field is particularly useful:
+- `'main'` — The web server process handling HTTP requests.
+- `'cronjob'` — The child process running scheduled jobs.
+- `'event'` — The child process handling event subscribers.
+
+:::warning
+After all bootstrap scripts run, the hook and registry systems are **locked**. You cannot register new processors or hooks after this point (e.g., from within a middleware function).
+:::
+
+## Sharing Data Between Middleware
+
+EverShop provides a **delegate system** for passing data between middleware functions within the same request. Delegates are write-once: once set, a delegate cannot be overwritten, preventing accidental data corruption.
+
+```ts title="Set a delegate in one middleware"
+import { setDelegate } from '@evershop/evershop/lib/middleware/delegate';
+
+export default async (request, response, next) => {
+  const product = await loadProduct(request.params.id);
+  setDelegate('product', product, request);
+  next();
+};
+```
+
+```ts title="Read the delegate in a later middleware"
+import { getDelegate, hasDelegate } from '@evershop/evershop/lib/middleware/delegate';
+
+export default async (request, response) => {
+  if (hasDelegate('product', request)) {
+    const product = getDelegate('product', request);
+    // Use the product data...
+  }
+};
+```
+
+:::info
+Delegate values are cloned when read, so modifying the returned value does not affect the stored delegate.
 :::
 
 ## Extension Development Best Practices

@@ -128,6 +128,54 @@ The `buildUrl()` function takes two arguments:
 
 By using `buildUrl()`, you decouple your code from the specific URL structure, making your application more robust and easier to maintain.
 
+### Absolute URLs
+
+For cases where you need the full URL (e.g., in emails or external integrations), use `buildAbsoluteUrl()`:
+
+```js
+import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
+
+const fullUrl = buildAbsoluteUrl('productView', { url_key: 'my-product' });
+// Result: https://yourstore.com/product/my-product
+```
+
+This prepends the `shop.homeUrl` configuration value to the relative URL.
+
+### Query Parameters
+
+`buildUrl()` also accepts a third argument for query parameters:
+
+```js
+import { buildUrl } from '@evershop/evershop/lib/router';
+
+const url = buildUrl('productGrid', {}, { page: 2, sortBy: 'price' });
+// Result: /admin/products?page=2&sortBy=price
+```
+
+## Admin Route Prefix
+
+All routes defined under `pages/admin/` automatically receive an `/admin` prefix. For example, if your route.json defines `"path": "/products/edit/:id"`, the final URL becomes `/admin/products/edit/:id`.
+
+This happens during route registration and is transparent to your code — `buildUrl()` handles the prefix automatically.
+
+## Route Matching Order
+
+When multiple routes could match an incoming request, EverShop uses a **specificity-based sorting** algorithm:
+
+1. Routes without dynamic parameters (`:id`) are matched first.
+2. Routes with more static path segments take priority.
+3. Routes with fewer dynamic parameters take priority.
+
+This means a route like `/products/featured` will always be matched before `/products/:id`, regardless of the order they were registered.
+
+## URL Rewrites
+
+EverShop includes a URL rewrite system that maps user-friendly URLs to internal routes. For example, instead of `/product/123`, a customer sees `/awesome-running-shoes`.
+
+URL rewrites are stored in the `url_rewrite` database table and are checked automatically when no standard route matches the incoming request. The rewrite system extracts the internal route and its parameters, then processes the request as if the internal URL had been used.
+
+URL rewrites are typically created automatically by event subscribers when products and categories are created or updated (e.g., the `product_created` subscriber generates a URL rewrite based on the product's `url_key`).
+
 import Sponsors from '@site/src/components/Sponsor';
 
 <Sponsors/>

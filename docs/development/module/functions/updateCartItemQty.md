@@ -17,13 +17,13 @@ Updates the quantity of a cart item. This function supports both increasing and 
 ## Import
 
 ```typescript
-import { updateCartItemQty } from '@evershop/evershop/src/modules/checkout/services';
+import { updateCartItemQty } from '@evershop/evershop/checkout/services';
 ```
 
 ## Usage
 
 ```typescript
-import { updateCartItemQty } from '@evershop/evershop/src/modules/checkout/services';
+import { updateCartItemQty } from '@evershop/evershop/checkout/services';
 
 const updatedItem = await updateCartItemQty(cart, itemUuid, '2', 'increase', context);
 ```
@@ -74,7 +74,7 @@ Returns a Promise that resolves to the updated `Item` object.
 ## Example
 
 ```typescript
-import { updateCartItemQty } from '@evershop/evershop/src/modules/checkout/services';
+import { updateCartItemQty } from '@evershop/evershop/checkout/services';
 
 // Increase quantity by 1
 async function increaseItemQty(cart, itemUuid) {
@@ -110,8 +110,8 @@ async function decreaseItemQty(cart, itemUuid) {
 This function is hookable. Extensions can register hooks to execute before or after the quantity update:
 
 ```typescript
-import { hookBefore } from '@evershop/evershop/src/lib/util/hookable';
-import { updateCartItemQty } from '@evershop/evershop/src/modules/checkout/services';
+import { hookBefore } from '@evershop/evershop/lib/util/hookable';
+import { updateCartItemQty } from '@evershop/evershop/checkout/services';
 
 hookBefore(updateCartItemQty, async (cart, uuid, qty, action, context) => {
   // Validate maximum quantity before update

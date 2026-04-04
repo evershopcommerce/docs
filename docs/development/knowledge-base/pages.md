@@ -158,3 +158,32 @@ Sometimes you may need to use the same React component across multiple pages. Fo
 This special shared folder does not contain any `route` file; it only contains React components and middleware functions.
 
 If you have components required for all pages within a section, you can place them in the `admin/all` or `frontStore/all` folder. For example, the CMS module uses these folders to store Layout components that are used across multiple pages.
+
+## URL Rewrites and Friendly URLs
+
+EverShop uses a URL rewrite system to map user-friendly URLs to internal routes. For example, instead of visiting `/product/123`, a customer sees `/awesome-running-shoes`.
+
+URL rewrites are stored in the `url_rewrite` database table. When no standard route matches an incoming request, EverShop checks this table for a matching `request_path` and internally redirects to the corresponding `target_path`.
+
+URL rewrites are typically created automatically by event subscribers when products and categories are created or updated, based on the entity's `url_key` field.
+
+## File Naming Convention Summary
+
+EverShop uses file naming to distinguish between React components and middleware:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Naming Rule</th>
+      <th>Example</th>
+      <th>Loaded As</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>React Component</td><td>First letter <strong>uppercase</strong>, extension <code>.tsx</code> or <code>.jsx</code></td><td><code>General.tsx</code>, <code>ProductInfo.tsx</code></td><td>Master-level component (auto-loaded into the page layout)</td></tr>
+    <tr><td>Middleware</td><td>First letter <strong>lowercase</strong>, extension <code>.ts</code> or <code>.js</code></td><td><code>index.ts</code>, <code>loadProduct.ts</code></td><td>Middleware function (executed during request lifecycle)</td></tr>
+  </tbody>
+</table>
+
+This convention is enforced by the component scanner, which filters files based on the first character of the filename.

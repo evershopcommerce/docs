@@ -19,13 +19,13 @@ Adds an item to the cart. If an item with the same SKU already exists in the car
 ## Import
 
 ```typescript
-import { addCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { addCartItem } from '@evershop/evershop/checkout/services';
 ```
 
 ## Usage
 
 ```typescript
-import { addCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { addCartItem } from '@evershop/evershop/checkout/services';
 
 const addedItem = await addCartItem(cart, productId, 2, context);
 ```
@@ -71,7 +71,7 @@ Returns a Promise that resolves to the added or updated `Item` object.
 ## Example
 
 ```typescript
-import { addCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { addCartItem } from '@evershop/evershop/checkout/services';
 
 async function addProductToCart(cart, productId, quantity) {
   try {
@@ -95,8 +95,8 @@ async function addProductToCart(cart, productId, quantity) {
 This function is hookable. Extensions can register hooks to execute before or after adding items:
 
 ```typescript
-import { hookAfter } from '@evershop/evershop/src/lib/util/hookable';
-import { addCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { hookAfter } from '@evershop/evershop/lib/util/hookable';
+import { addCartItem } from '@evershop/evershop/checkout/services';
 
 hookAfter(addCartItem, async (addedItem, cart, productID, qty, context) => {
   // Track add-to-cart event for analytics

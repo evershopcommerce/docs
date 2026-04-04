@@ -103,8 +103,8 @@ if (config.has('shop.language')) {
 
 EverShop includes a utility function that allows you to provide a default value if a configuration key doesn't exist.
 
-```js
-const { getConfig } = require('@evershop/evershop/lib/util/getConfig');
+```ts
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
 // Returns 'en' if 'shop.language' is not defined
 const language = getConfig('shop.language', 'en');

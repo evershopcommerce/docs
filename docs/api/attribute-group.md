@@ -110,7 +110,11 @@ responseSample={`{
 
 ### Get an Attribute Group
 
-Retrieves detailed information about a specific attribute group.
+:::info
+Retrieving attribute group data is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute group information. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::
+
+The following shows the expected response format when querying attribute group data:
 
 <Api
 method="GET"
@@ -130,7 +134,11 @@ responseSample={`{
 
 ### List All Attribute Groups
 
-Retrieves a paginated list of all attribute groups in the system.
+:::info
+Listing attribute groups is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute group lists. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::
+
+The following shows the expected response format when querying attribute group lists:
 
 <Api
 method="GET"

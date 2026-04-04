@@ -188,3 +188,31 @@ In this example:
 A middleware function will never execute if its dependency doesn't exist or has been removed.
 
 :::
+
+## Auto-Injected Dependencies
+
+When EverShop loads middleware files, it automatically injects default dependencies if you haven't explicitly specified them. This ensures your middleware runs at the right point in the pipeline without requiring you to declare common dependencies.
+
+### For API Middleware
+
+If your middleware is not `context` or `apiErrorHandler`, EverShop automatically adds:
+- **`after: ['escapeHtml', 'auth']`** — Your middleware runs after input sanitization and authentication.
+- **`before: ['apiResponse']`** — Your middleware runs before the final API response is sent.
+
+### For Page Middleware
+
+If your middleware is not `context` or `errorHandler`, EverShop automatically adds:
+- **`after: ['auth']`** — Your middleware runs after authentication.
+- **`before: ['notFound']`** — Your middleware runs before the 404 handler.
+
+### Overriding Defaults
+
+These defaults only apply when you **haven't** specified your own `before` or `after` dependencies. If you explicitly declare dependencies using the bracket syntax (e.g., `[myDep]myMiddleware.js`), EverShop uses your declarations instead.
+
+For example, `[context]bodyParser[auth].js` explicitly sets `after: ['context']` and `before: ['auth']`, so no defaults are injected.
+
+## TypeScript and File Extensions
+
+EverShop source code is written in TypeScript (`.ts` files in the `src/` folder). During the build process, TypeScript files are compiled to JavaScript (`.js` files in the `dist/` folder). At runtime, EverShop loads the compiled `.js` files.
+
+When developing, you write middleware as `.ts` files. The naming conventions for ordering (bracket syntax) apply to the final `.js` filename, but since the build preserves the base filename, you can use the bracket syntax directly in your `.ts` files.

@@ -9,61 +9,39 @@ description: EverShop theme overview document. Learn what themes are, where they
 
 # Theme Overview
 
-A theme is a component of the EverShop application that provides a consistent look and feel (visual design) for an entire application area (such as the storefront or admin panel) using a combination of custom templates, styles, and images.
+A theme controls the look and feel of your EverShop **storefront**. It allows you to override React components, add new page components, customize styles, and serve your own static assets — all without modifying the core codebase.
 
-In EverShop, themes are designed to override or customize the view layer that is initially provided by modules or libraries.
+:::warning
+Themes only affect **storefront** (`frontStore`) pages. The admin panel cannot be customized through themes. To modify admin pages, use an [extension](/docs/development/module/extension-development) instead.
+:::
 
-Similar to [extensions](/docs/development/module/extension-overview), [themes](./theme-overview) are implemented by different vendors (frontend developers) and are intended to be distributed as additional packages for the EverShop system.
+Out-of-the-box, EverShop renders the storefront using components from its core modules. A theme provides an overlay that can override any of these components or add new ones. When EverShop builds a page, it checks the theme first — if a matching component exists in the theme, it takes precedence over the core version.
 
-Out-of-the-box, the [EverShop](https://evershop.io/) application provides a default theme for demonstration purposes. This theme is fully customizable, allowing you to develop your own theme based on it.
-
-You can use the default theme for a live store, but if you want to customize the default design, it's recommended to create a new theme. We strongly recommend against modifying the default theme directly, as your changes could be overwritten during upgrades when new versions of the default files are installed.
+We recommend creating a new theme rather than modifying core files directly, as core changes are overwritten during upgrades.
 
 ## Where Are Themes Located?
 
-### The Default Theme
+### The Default Storefront (No Theme)
 
-If you've already read the [extension overview document](../module/extension-overview), you know that EverShop is a modular application where all functionality is implemented and delivered in components known as Modules. Themes are also implemented and delivered through modules.
-
-This means that every module has its own `view` part to handle the UI/UX. This `view` part is designed to be easily customizable without modifying the core files.
-
-In each module, you can find a `pages` folder containing all files related to the UI/UX of the module. This folder contains the following sub-folders:
-
-- `admin` folder: Contains all pages related to the admin panel.
-- `storefront` folder: Contains all pages related to the storefront.
-- `global` folder: A special folder containing middlewares that are used in both admin and storefront areas.
-
-```bash
-catalog
-├── pages
-    ├── global
-    ├── admin
-    │   ├── all
-    │   ├── attributeEdit
-    │   ├── attributeEdit+attributeNew
-    │   ├── attributeGrid
-    │   ├── attributeNew
-    │   ├── categoryEdit
-    │   ├── categoryEdit+categoryNew
-    │   ├── categoryGrid
-    │   ├── categoryNew
-    │   ├── productEdit
-    │   ├── productEdit+productNew
-    │   ├── productGrid
-    │   └── productNew
-    └── frontStore
-        ├── categoryView
-        ├── homepage
-        └── productView
-```
+When no theme is configured, EverShop renders the storefront using components from its core modules. Each core module (catalog, checkout, customer, etc.) has a `pages/frontStore/` folder with React components that define the default UI. You can think of this as the "built-in theme."
 
 :::info
-You can learn more about the `view` part of modules in the [module view system](../theme/view-system.md) documentation.
+Learn more about how module pages work in the [View System](../theme/view-system.md) documentation.
 :::
 
-### The Vendor Themes
+### Custom Themes
 
-Themes provided by vendors/developers are located in a folder named 'themes'. This folder is located at the [root level of your project](/docs/development/knowledge-base/architecture-overview).
+Custom themes are located in the `themes/` folder at the root of your project:
+
+```bash
+your-project/
+├── themes/
+│   ├── my-theme/
+│   └── another-theme/
+├── extensions/
+├── config/
+└── package.json
+```
 
 Each theme must be stored in a separate directory:
 
@@ -74,6 +52,31 @@ Each theme must be stored in a separate directory:
 ├── <theme3>
 ├── ...
 ```
+
+## Creating a Theme
+
+The fastest way to create a new theme is with the CLI:
+
+```bash
+npx evershop theme:create --name my-theme
+```
+
+This generates a theme scaffold in `themes/my-theme/` with the required `package.json`, `tsconfig.json`, and folder structure.
+
+After creating the theme, add `themes/*` to your root `package.json` workspaces (if not already there) and install dependencies:
+
+```bash
+npm install
+```
+
+Then activate the theme and start developing:
+
+```bash
+npx evershop theme:active
+npm run dev
+```
+
+For a detailed guide on customizing components and styles, see the [Templating](./templating) and [Styling](./styling) docs.
 
 ## Theme Structure
 
@@ -116,17 +119,15 @@ Here's an example of a `package.json` file for a theme:
   "description": "A custom theme for EverShop",
   "type": "module",
   "scripts": {
-    "compile": "tsc" // Compiles TypeScript files to JavaScript.
-  },
-  "dependencies": {
-    "@evershop/evershop": "^1.0.0"
+    "compile": "tsc"
   },
   "devDependencies": {
-    "postcss-cli": "^8.3.1",
-    "webpack": "^5.64.4"
+    "typescript": "^5.0.0"
   }
 }
 ```
+
+The `compile` script compiles TypeScript source files from `src/` to JavaScript in `dist/`. You don't need to install EverShop, PostCSS, or Webpack as theme dependencies — the main EverShop project handles the build pipeline.
 
 :::warning
 Since EverShop is built on ESM modules, ensure that your theme’s package.json file has the type field set to "module".
@@ -172,7 +173,8 @@ The `tsconfig.json` file is used to configure the TypeScript compiler options fo
       ],
       "*": ["node_modules/*"]
     }
-  }
+  },
+  "include": ["src"]
 }
 ```
 
@@ -219,19 +221,31 @@ The `components` folder stores shared components that can be used across multipl
 
 ## Activating a Theme
 
-You can configure your theme in the `config/default.js` file located in the root directory of your project:
+To activate a theme, set the `system.theme` value in your configuration file to the theme's folder name:
 
-```json
+```json title="config/default.json"
 {
   "system": {
-    ..., // other configurations
-    "theme": "themeName"
+    "theme": "yourtheme"
   }
 }
 ```
 
+Alternatively, use the CLI command:
+
+```bash
+npx evershop theme:active
+```
+
+This command prompts you to select a theme from the `themes/` directory and updates the configuration automatically.
+
+### `src` vs `dist` Requirements
+
+- **Development mode** (`npm run dev`): EverShop compiles TypeScript on the fly. Your theme must have a `src/` directory.
+- **Production mode** (`npm run start`): EverShop loads pre-compiled JavaScript. Your theme must have a `dist/` directory. Run `npm run compile` in your theme directory before building for production.
+
 :::warning
-After changing a theme, you need to run the `build` command again for the changes to take effect.
+After changing or updating a theme, you must rebuild your project (`npm run build`) for the changes to take effect.
 :::
 
 ## Theming Utilities Commands

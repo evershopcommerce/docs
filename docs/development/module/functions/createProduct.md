@@ -63,7 +63,7 @@ Context object passed to hooks for extensibility.
 
 ## Return Value
 
-Returns a `Promise<Product>` with the created product data including generated IDs.
+Returns a `Promise` that resolves with the created product row data from the database, including the generated `insertId` (the new `product_id`), all product table fields, and product description fields.
 
 ## Examples
 

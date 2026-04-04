@@ -19,13 +19,13 @@ Removes an item from the cart by its UUID. This function is a hookable service t
 ## Import
 
 ```typescript
-import { removeCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { removeCartItem } from '@evershop/evershop/checkout/services';
 ```
 
 ## Usage
 
 ```typescript
-import { removeCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { removeCartItem } from '@evershop/evershop/checkout/services';
 
 const removedItem = await removeCartItem(cart, itemUuid, context);
 ```
@@ -66,7 +66,7 @@ Returns a Promise that resolves to the removed `Item` object.
 ## Example
 
 ```typescript
-import { removeCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { removeCartItem } from '@evershop/evershop/checkout/services';
 
 async function handleRemoveItem(cart, itemUuid) {
   try {
@@ -89,8 +89,8 @@ async function handleRemoveItem(cart, itemUuid) {
 This function is hookable. Extensions can register hooks to execute before or after the item removal:
 
 ```typescript
-import { hookAfter } from '@evershop/evershop/src/lib/util/hookable';
-import { removeCartItem } from '@evershop/evershop/src/modules/checkout/services';
+import { hookAfter } from '@evershop/evershop/lib/util/hookable';
+import { removeCartItem } from '@evershop/evershop/checkout/services';
 
 hookAfter(removeCartItem, async (removedItem, cart, uuid, context) => {
   // Log the removal for analytics

@@ -187,13 +187,13 @@ We're using EverShop's `Form` and `Field` components to create a simple comment 
 
 To position our form in the left column of the product page, we need to update the `CommentForm.tsx` file to include layout information:
 
-```js title="CommentForm.tsx"
+```tsx title="CommentForm.tsx"
 import React from "react";
-import { ComponentLayout } from "@evershop/evershop";
+import type { ComponentLayout } from "@evershop/evershop/types/componentLayout";
 import { Form } from "@components/common/form/Form";
 import { Field } from "@components/common/form/Field";
 
-export default function ComponentForm() {
+export default function CommentForm() {
   return (
     <div className="product-comment-form">
       <h3>Your comment</h3>
@@ -237,43 +237,45 @@ With this layout configuration, your product page should now display the comment
 
 To store user comments, we need to create a database table. EverShop provides a migration system that makes this process straightforward.
 
-Create a new folder named `migration` in your extension directory:
+Create a `migration` folder **inside the `src` directory** of your extension:
 
 ```bash
 ./extensions
     └── productComment
-        ├── src
-        │   └── pages
-        │       └── frontStore
-        │           └── productView
-        │               └── CommentForm.tsx
-        └── migration
-            └── Version-1.0.0.js
+        └── src
+            ├── migration
+            │   └── Version-1.0.0.ts
+            └── pages
+                └── frontStore
+                    └── productView
+                        └── CommentForm.tsx
 ```
 
-In the `migration` folder, create a file named `Version-1.0.0.js`:
+:::warning
+The `migration` folder must be inside `src/`, not at the root of the extension. The TypeScript compiler will compile it to `dist/migration/`, where EverShop looks for migration files at runtime.
+:::
 
-```ts title="migration/Version-1.0.0.js"
+In the `migration` folder, create a file named `Version-1.0.0.ts`:
+
+```ts title="src/migration/Version-1.0.0.ts"
 import { execute } from "@evershop/postgres-query-builder";
 
 export default async (connection) => {
   await execute(
     connection,
-    `CREATE TABLE \`product_comment\` (
-  \`comment_id\` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  \`product_id\` int(10) unsigned NOT NULL,
-  \`user_name\` varchar(255) NOT NULL,
-  \`comment\` text DEFAULT NULL,
-  \`created_at\` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (\`comment_id\`),
-  CONSTRAINT \`FK_PRODUCT_COMMENT\` FOREIGN KEY (\`product_id\`) REFERENCES \`product\` (\`product_id\`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-`
+    `CREATE TABLE IF NOT EXISTS "product_comment" (
+      "comment_id" INT GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+      "product_id" INT NOT NULL,
+      "user_name" VARCHAR(255) NOT NULL,
+      "comment" TEXT DEFAULT NULL,
+      "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+      CONSTRAINT "FK_PRODUCT_COMMENT" FOREIGN KEY ("product_id") REFERENCES "product" ("product_id") ON DELETE CASCADE
+    );`
   );
 };
 ```
 
-Each migration file exports a function that receives a PostgreSQL connection parameter provided by the EverShop core. This migration creates a `product_comment` table with the necessary fields.
+Each migration file exports a default function that receives a PostgreSQL connection. This migration creates a `product_comment` table with the necessary fields. The connection is already inside a transaction — if the migration fails, all changes are rolled back automatically.
 
 For simplicity, we're using just four columns: `comment_id`, `product_id`, `user_name`, and `comment`. In a production environment, you might want to add more fields such as `email`, `rating`, `status` (for moderation), `updated_at`, etc.
 
@@ -286,21 +288,19 @@ Create an `api` folder in your extension directory:
 ```bash
 ./extensions
     └── productComment
-        ├── src
+        └── src
             └── api
                 └── addComment
                     ├── route.json
-                    ├── bodyParser.ts
-                    ├── [bodyParser]validateComment.ts
+                    ├── validateComment.ts
                     └── [validateComment]saveComment.ts
-
 ```
 
 ### API Route Definition
 
 In the `addComment` folder, create a file named `route.json`:
 
-```js title="api/addComment/route.json"
+```json title="src/api/addComment/route.json"
 {
   "methods": [
     "POST"
@@ -314,30 +314,22 @@ This creates an API endpoint at `/api/comments` that accepts POST requests and i
 
 ### API Middleware Functions
 
-For our API endpoint, we need several middleware functions to process requests:
+For our API endpoint, we need middleware functions to validate and save the comment data.
 
-#### 1. Parse the Request Body
+:::info
+You don't need to create a body parser middleware — EverShop automatically parses JSON request bodies for API routes.
+:::
 
-Create a file named `bodyParser.ts` to handle request parsing:
+#### 1. Validate the Comment Data
 
-```ts title="api/addComment/bodyParser.ts"
-import bodyParser from "body-parser";
+Create a file named `validateComment.ts` to validate incoming data:
 
-export default (request, response, next) => {
-  bodyParser.json({ inflate: false })(request, response, next);
-};
-```
+```ts title="src/api/addComment/validateComment.ts"
+import type { EvershopRequest } from "@evershop/evershop/types/request";
+import type { EvershopResponse } from "@evershop/evershop/types/response";
 
-#### 2. Validate the Comment Data
-
-Create a file named `[bodyParser]validateComment.ts` to validate incoming data:
-
-```ts title="api/addComment/[bodyParser]validateComment.ts"
-import { Request, Response } from "express";
-
-export default (request: Request, response: Response) => {
+export default (request: EvershopRequest, response: EvershopResponse) => {
   const { body } = request;
-  // Validate the comment data
   if (!body.product_id) {
     throw new Error("Product ID is required");
   }
@@ -354,28 +346,34 @@ export default (request: Request, response: Response) => {
 
 This middleware ensures all required fields are present. In a production environment, you might implement more sophisticated validation, such as checking for logged-in users or filtering inappropriate content.
 
-#### 3. Save the Comment
+#### 2. Save the Comment
 
-Create a file named `[validateComment]saveComment.ts` to save validated comments:
+Create a file named `[validateComment]saveComment.ts` to save validated comments. The `[validateComment]` prefix ensures this middleware runs after validation:
 
-```ts title="api/addComment/[validateComment]saveComment.ts"
+```ts title="src/api/addComment/[validateComment]saveComment.ts"
+import type { EvershopRequest } from "@evershop/evershop/types/request";
+import type { EvershopResponse } from "@evershop/evershop/types/response";
 import { pool } from "@evershop/evershop/lib/postgres";
-import { insert } from "@evershop/postgres-query-builder";
+import { insert } from "@evershop/evershop/lib/postgres/query";
 
-export default async function graphql(request, response, next) {
+export default async function saveComment(
+  request: EvershopRequest,
+  response: EvershopResponse,
+  next: Function
+) {
   try {
     const {
       body: { product_id, user_name, comment },
     } = request;
     // Insert the comment into the database
-    const comment = await insert("product_comment")
+    const result = await insert("product_comment")
       .given({
         product_id,
         user_name,
         comment,
       })
       .execute(pool);
-    response.json({ success: true, data: { comment } });
+    response.json({ success: true, data: { comment: result } });
   } catch (error) {
     next(error);
   }
@@ -415,13 +413,13 @@ If successful, you should receive:
 
 Now, let's update our `CommentForm` component to use this API endpoint:
 
-```ts title="pages/frontStore/productView/CommentForm.tsx"
+```tsx title="src/pages/frontStore/productView/CommentForm.tsx"
 import React from "react";
-import { ComponentLayout } from "@evershop/evershop";
+import type { ComponentLayout } from "@evershop/evershop/types/componentLayout";
 import { Field } from "@components/common/form/Field";
 import { Form } from "@components/common/form/Form";
 
-export default function ComponentForm({ action, product }) {
+export default function CommentForm({ action, product }) {
   const [error, setError] = React.useState(null);
 
   const onSuccess = (response) => {
@@ -468,7 +466,7 @@ export const layout: ComponentLayout = {
 
 export const query = `
   query {
-    action: url(routeId: "productComment"),
+    action: url(routeId: "addComment")
     product: product(id: getContextValue("productId")) {
       productId
     }
@@ -550,9 +548,9 @@ Finally, let's create a component to display comments. Create a file named `Comm
 
 Add the following code to `Comments.tsx`:
 
-```tsx title="pages/frontStore/productView/Comments.tsx"
+```tsx title="src/pages/frontStore/productView/Comments.tsx"
 import React from "react";
-import { ComponentLayout } from "@evershop/evershop";
+import type { ComponentLayout } from "@evershop/evershop/types/componentLayout";
 import "./Component.scss";
 
 export default function Comments({ comments = [] }) {
@@ -616,9 +614,9 @@ Let's add some basic styling for the comments. Create a file named `Component.sc
 
 Update the `Comments.tsx` file to import the styles:
 
-```tsx title="pages/frontStore/productView/Comments.tsx"
+```tsx title="src/pages/frontStore/productView/Comments.tsx"
 import React from "react";
-import { ComponentLayout } from "@evershop/evershop";
+import type { ComponentLayout } from "@evershop/evershop/types/componentLayout";
 import "./Component.scss";
 
 export default function Comments({ comments = [] }) {
@@ -679,18 +677,22 @@ Now, start the server and navigate to a product page. You should see both the co
 npm run dev
 ```
 
-## Step 10: Build and Test Your Extension in production mode
+## Step 10: Build and Test Your Extension in Production Mode
 
-Navigate to your EverShop root directory and run the following command to build your extension:
+First, compile your extension's TypeScript to JavaScript. Navigate to your **extension directory** and run:
 
 ```bash
+cd extensions/productComment
 npm run compile
 ```
 
-This command compiles your TypeScript files into JavaScript, making them ready for production.
-After compiling, you can test your extension in production mode by running:
+This compiles the `src/` directory to `dist/`, making the extension ready for production.
+
+Then, from your **EverShop root directory**, build and start the production server:
 
 ```bash
+cd ../..
+npm run build
 npm run start
 ```
 

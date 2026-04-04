@@ -81,7 +81,7 @@ Creates a new tax rate in the system. You can specify the rate amount, associate
 
 <Api
 method="POST"
-url="/tax/classes/:class_id/rates"
+url="/api/tax/classes/:class_id/rates"
 requestSchema={{
 "type": "object",
 "properties": {
@@ -137,7 +137,7 @@ Updates an existing tax rate in the system. You can specify the new rate amount,
 
 <Api
 method="PATCH"
-url="/tax/rates/:id"
+url="/api/tax/rates/:id"
 requestSchema={{
 "type": "object",
 "properties": {
@@ -193,7 +193,7 @@ Deletes an existing tax rate from the system.
 
 <Api
 method="DELETE"
-url="/tax/rates/:id"
+url="/api/tax/rates/:id"
 responseSample={`{
   "data": {
     "tax_rate_id": 1,

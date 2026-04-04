@@ -35,6 +35,31 @@ EverShop is free and open-source. The source code is available on [GitHub](https
 - **Customizable Storefront**: The frontend is designed for deep customization through a powerful theme system.
 - **GraphQL API**: A flexible and powerful GraphQL API for both admin and storefront operations.
 
+## What's Included
+
+EverShop ships with a complete set of core modules out of the box:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Module</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Catalog</strong></td><td>Products, categories, attributes, collections, and product search</td></tr>
+    <tr><td><strong>Checkout</strong></td><td>Shopping cart, shipping zones/methods, payment method registration</td></tr>
+    <tr><td><strong>Customer</strong></td><td>Customer accounts, addresses, authentication (JWT)</td></tr>
+    <tr><td><strong>OMS</strong></td><td>Order management, shipments, payment/shipment status tracking</td></tr>
+    <tr><td><strong>Promotion</strong></td><td>Coupon codes and discount rules</td></tr>
+    <tr><td><strong>CMS</strong></td><td>Custom pages and widgets</td></tr>
+    <tr><td><strong>Tax</strong></td><td>Tax classes, rates, and calculation</td></tr>
+    <tr><td><strong>Setting</strong></td><td>Store configuration management</td></tr>
+  </tbody>
+</table>
+
+Payment gateways (**Stripe**, **PayPal**, **Cash on Delivery**) are included as built-in modules and can be enabled through configuration.
+
 ## Technology Stack
 
 EverShop's highly modular structure is a result of several open source technologies embedded into a stack. These open source technologies are composed of the following components:
@@ -105,6 +130,16 @@ import Link from '@docusaurus/Link';
 :::info
 The demo admin account email is `demo@evershop.io` and the password is `123456`
 :::
+
+## Next Steps
+
+Ready to get started? Here's the recommended path:
+
+1. **[System Requirements](/docs/development/getting-started/system-requirements)** — Ensure your system is ready
+2. **[Installation Guide](/docs/development/getting-started/installation-guide)** — Install and run your store
+3. **[Architecture Overview](/docs/development/knowledge-base/architecture-overview)** — Understand how EverShop works
+4. **[Extension Development](/docs/development/module/extension-development)** — Build your first extension
+5. **[Theme Overview](/docs/development/theme/theme-overview)** — Customize the storefront
 
 ## Community
 

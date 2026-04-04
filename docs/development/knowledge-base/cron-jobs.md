@@ -61,10 +61,28 @@ In the configuration above, we define a new cron job called `myCronJob`. The `re
 
 Once you have registered the cron job, EverShop will automatically run it at the specified schedule. You can view the logs for the cron job in the EverShop admin panel.
 
-:::warning
-The cron job will run in the main thread of the application. Make sure your cron job is optimized and does not block the main thread.
-We strongly recommend using asynchronous code in your cron job and carefully scheduling it to avoid performance issues.
+:::info
+Cron jobs run in a **dedicated child process**, separate from the main application process. This means a long-running cron job will not block your web server or affect request handling. The same applies to event subscribers, which also run in their own child process.
+
+Even though cron jobs are isolated, we still recommend using asynchronous code and keeping execution times reasonable to avoid overlapping runs.
 :::
+
+### About `import.meta.dirname`
+
+In ESM modules, the traditional `__dirname` is not available. Use `import.meta.dirname` instead, which serves the same purpose — it returns the directory path of the current module file.
+
+## Bootstrap Context for Cron Jobs
+
+The cron job child process runs its own bootstrap phase. Your `bootstrap.ts` receives a context where `context.process === 'cronjob'`. You can use this to conditionally register hooks or processors that should only apply during cron execution:
+
+```ts title="bootstrap.ts"
+export default function (context) {
+  if (context.process === 'cronjob') {
+    // Only register this processor in the cron process
+    addProcessor('inventorySync', myCronSpecificProcessor);
+  }
+}
+```
 
 ## Cron Job Schedule
 
@@ -114,8 +132,8 @@ Cron jobs are useful for automating tasks that need to run at specific intervals
 
 When creating cron jobs in EverShop, consider the following best practices:
 
-1. **Keep Cron Jobs Short**: Ensure that your cron jobs complete quickly to avoid blocking the main thread.
-2. **Use Asynchronous Code**: Use asynchronous code in your cron jobs to prevent blocking the main thread.
+1. **Keep Cron Jobs Short**: Ensure that your cron jobs complete quickly to avoid overlapping with the next scheduled run.
+2. **Use Asynchronous Code**: Use asynchronous code in your cron jobs to keep the event loop responsive.
 3. **Error Handling**: Implement proper error handling in your cron jobs to avoid unexpected failures.
 4. **Logging**: Use logging to track the execution of your cron jobs and to help with debugging.
 5. **Testing**: Test your cron jobs thoroughly before deploying them to production to ensure they work as expected.

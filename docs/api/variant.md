@@ -114,3 +114,19 @@ Use this endpoint to add a product to a variant group.
   }
 }`}
  />
+
+<hr />
+
+## Unlink Variant
+
+Removes a product from its variant group. The product is not deleted, but it will no longer be associated with the variant group.
+
+<Api
+  method="DELETE"
+  url="/api/variants/{id}"
+  responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+ />

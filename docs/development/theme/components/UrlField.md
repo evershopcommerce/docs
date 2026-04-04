@@ -152,7 +152,7 @@ function SocialLinksForm() {
 ## Example: With Icon
 
 ```tsx
-import { Form } from '@components/common/form/UrlField';
+import { Form } from '@components/common/form/Form';
 import { UrlField } from '@components/common/form/UrlField';
 import { Link } from 'lucide-react';
 

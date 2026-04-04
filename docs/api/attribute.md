@@ -354,7 +354,11 @@ responseSample={`{
 
 ### Get an Attribute
 
-Retrieves detailed information about a specific product attribute.
+:::info
+Retrieving attribute data is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute information. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::
+
+The following shows the expected response format when querying attribute data:
 
 <Api
 method="GET"
@@ -379,7 +383,11 @@ responseSample={`{
 
 ### List All Attributes
 
-Retrieves a paginated list of all product attributes in the system.
+:::info
+Listing attributes is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute lists. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::
+
+The following shows the expected response format when querying attribute lists:
 
 <Api
 method="GET"

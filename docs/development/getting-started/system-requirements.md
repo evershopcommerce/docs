@@ -109,22 +109,13 @@ For developers working on EverShop customization or extension development:
 
 ### Additional Dependencies
 
-When running EverShop in development mode, you'll need:
+When running EverShop in development mode, you'll need to install additional dev dependencies manually:
 
-```json
-{
-  "@types/node": "^20.x",
-  "typescript": "^5.x",
-  "@parcel/watcher": "^2.x",
-  "@types/config": "^3.x",
-  "@types/express": "^4.x",
-  "@types/pg": "^8.x",
-  "@types/react": "^18.x",
-  "execa": "^8.x"
-}
+```bash
+npm install --save-dev @types/node typescript @parcel/watcher @types/config @types/express @types/pg @types/react execa
 ```
 
-These will be installed automatically when running `npm install` with the `--save-dev` flag.
+See the [Installation Guide](/docs/development/getting-started/installation-guide#for-developer) for the complete development setup steps.
 
 ## Network and Security Requirements
 
@@ -179,7 +170,10 @@ EverShop can be deployed on various cloud platforms:
 - **DigitalOcean** (Droplets, App Platform)
 - **Heroku**
 - **Railway**
-- **Vercel** (with serverless PostgreSQL)
+
+:::info
+EverShop requires a persistent Node.js server process with PostgreSQL access. It is not compatible with serverless platforms (e.g., Vercel, Netlify Functions) that don't support long-running processes or sessions.
+:::
 
 ## Checking Your System
 

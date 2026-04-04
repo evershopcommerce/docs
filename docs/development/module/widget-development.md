@@ -84,9 +84,7 @@ Create a `package.json` file with the following content:
 Next, create a `bootstrap.ts` file to register your widget with EverShop. This file runs when your extension initializes:
 
 ```ts title="extensions/greeting_widget/src/bootstrap.ts"
-import config from "config";
 import path from "path";
-import { CONSTANTS } from "@evershop/evershop/lib/helpers";
 import { registerWidget } from "@evershop/evershop/lib/widget";
 
 export default () => {
@@ -96,11 +94,11 @@ export default () => {
     name: "Greeting Widget",
     description: "Display a greeting message",
     settingComponent: path.resolve(
-      CONSTANTS.LIBPATH,
+      import.meta.dirname,
       "components/widgets/GreetingWidgetSetting.js"
     ),
     component: path.resolve(
-      CONSTANTS.LIBPATH,
+      import.meta.dirname,
       "components/widgets/GreetingWidget.js"
     ),
     enabled: true,
@@ -134,7 +132,7 @@ The setting component provides the configuration interface for your widget in th
 
 Create a file called `GreetingWidgetSetting.tsx`:
 
-```javascript title="extensions/greeting_widget/components/widget/GreetingWidgetSetting.tsx"
+```javascript title="extensions/greeting_widget/src/components/widgets/GreetingWidgetSetting.tsx"
 import React from "react";
 import PropTypes from "prop-types";
 import { Field } from "@components/common/form/Field";
@@ -215,8 +213,8 @@ extensions/
     │   │       ├── GreetingWidgetSetting.tsx
     │   │       └── GreetingWidget.tsx
     │   ├── graphql/
-    │   └── types/
-    │       └── GreetingWidget/
+    │       └── types/
+    │           └── GreetingWidget/
     │           ├── GreetingWidget.graphql
     │           └── GreetingWidget.resolvers.ts
 ```
@@ -227,7 +225,7 @@ To learn more about GraphQL in EverShop, refer to the [GraphQL documentation](..
 
 First, let's define the GraphQL type for our Greeting widget:
 
-```graphql title="extensions/greeting_widget/graphql/types/GreetingWidget/GreetingWidget.graphql"
+```graphql title="extensions/greeting_widget/src/graphql/types/GreetingWidget/GreetingWidget.graphql"
 """
 A widget that displays a greeting message
 """
@@ -268,7 +266,7 @@ The resolver is straightforward in this example, but for more complex widgets, y
 
 Now, let's create the component that will render your widget on the storefront:
 
-```javascript title="extensions/greeting_widget/src/components/widget/GreetingWidget.jsx"
+```javascript title="extensions/greeting_widget/src/components/widgets/GreetingWidget.tsx"
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -381,20 +379,18 @@ EverShop allows you to override widget components to customize their appearance 
 To override a widget component, update your configuration file to specify a custom component path:
 
 ```ts title="extensions/greeting_widget/src/bootstrap.ts"
-import config from "config";
 import path from "path";
-import { CONSTANTS } from "@evershop/evershop/lib/helpers";
 import { updateWidget } from "@evershop/evershop/lib/widget";
 
 export default () => {
-  // Register our greeting widget
+  // Override the greeting widget with custom components
   updateWidget("greeting_widget", {
     settingComponent: path.resolve(
-      CONSTANTS.LIBPATH,
+      import.meta.dirname,
       "components/widgets/GreetingWidgetSettingNew.js"
     ),
     component: path.resolve(
-      CONSTANTS.LIBPATH,
+      import.meta.dirname,
       "components/widgets/GreetingWidgetNew.js"
     ),
   });

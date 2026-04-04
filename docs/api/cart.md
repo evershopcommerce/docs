@@ -440,7 +440,7 @@ Specifies the shipping note to be added to the order.
 
 <Api
 method="POST"
-url="/api/cart/363ba97f-8be7-4be9-be3f-a9f341f2b89f/shippingNotes"
+url="/api/carts/363ba97f-8be7-4be9-be3f-a9f341f2b89f/shippingNotes"
 requestSchema={{
 "type": "object",
 "properties": {
@@ -461,6 +461,159 @@ responseSample={`{
     "data": {
       "note": "Please deliver between 5 PM and 7 PM"
     }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Update Cart Item Quantity
+
+Updates the quantity of an item in the cart. Supports both increasing and decreasing quantities.
+
+<Api
+method="PATCH"
+url="/api/cart/{cart_id}/items/{item_id}"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "qty": {
+      "type": ["string", "integer"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["increase", "decrease"]
+    }
+  },
+  "required": ["qty", "action"]
+}}
+responseSample={`{
+  "data": {
+    "item": {
+      "cart_item_id": 1138,
+      "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
+      "qty": 3,
+      "final_price": 823,
+      "total": 2469
+    }
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Add Item to My Cart
+
+Adds an item to the currently authenticated customer's cart. This is a convenience endpoint that automatically resolves the customer's active cart.
+
+<Api
+method="POST"
+url="/api/cart/mine/items"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "sku": {
+      "type": "string"
+    },
+    "qty": {
+      "type": ["string", "integer"]
+    }
+  },
+  "required": ["sku", "qty"]
+}}
+responseSample={`{
+  "data": {
+    "item": {
+      "cart_item_id": 1139,
+      "uuid": "553ba97f-8be7-4be9-be3f-a9f341f2b89f",
+      "product_sku": "PROD-001",
+      "qty": 1,
+      "final_price": 49.99
+    }
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Remove Item from My Cart
+
+Removes a specific item from the currently authenticated customer's cart.
+
+<Api
+method="DELETE"
+url="/api/cart/mine/items/{item_id}"
+responseSample={`{
+  "data": {
+    "item": {
+      "cart_item_id": 1139,
+      "uuid": "553ba97f-8be7-4be9-be3f-a9f341f2b89f"
+    }
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Update Item Quantity in My Cart
+
+Updates the quantity of an item in the currently authenticated customer's cart.
+
+<Api
+method="PATCH"
+url="/api/cart/mine/items/{item_id}"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "qty": {
+      "type": ["string", "integer"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["increase", "decrease"]
+    }
+  },
+  "required": ["qty", "action"]
+}}
+responseSample={`{
+  "data": {
+    "item": {
+      "cart_item_id": 1139,
+      "uuid": "553ba97f-8be7-4be9-be3f-a9f341f2b89f",
+      "qty": 2
+    }
+  }
+}`}
+isPrivate={false}
+/>
+
+<hr/>
+
+### Checkout Cart
+
+Initiates the checkout process for a cart, creating an order.
+
+<Api
+method="POST"
+url="/api/carts/{cart_id}/checkout"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "cart_id": {
+      "type": "string"
+    }
+  },
+  "required": ["cart_id"]
+}}
+responseSample={`{
+  "data": {
+    "order_id": 2070,
+    "uuid": "7afebbbd-69f6-4e2c-84c5-5b899173b867",
+    "order_number": "12070"
+  }
 }`}
 isPrivate={false}
 />

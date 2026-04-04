@@ -45,20 +45,20 @@ After creating and connecting to your EC2 instance via SSH, install the necessar
 
 #### 1. Install Node.js and NPM
 
-EverShop requires Node.js version 14 or higher and NPM version 8 or higher:
+EverShop requires Node.js version 20.x or higher and NPM version 9.x or higher:
 
 ```bash
 sudo apt update
 sudo apt install -y curl
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 ```
 
 Verify the installation:
 
 ```bash
-node -v  # Should show v18.x.x
-npm -v   # Should show 8.x.x or higher
+node -v  # Should show v20.x.x or higher
+npm -v   # Should show 9.x.x or higher
 ```
 
 #### 2. Install PM2 Process Manager

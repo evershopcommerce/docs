@@ -92,17 +92,34 @@ Before running this script, make sure that you have an empty Postgres database r
 Please check [this document](/docs/development/getting-started/system-requirements) for the system requirements list.
 :::
 
-This installation script will do the following tasks:
+The interactive setup wizard will prompt you for:
 
-- Create a default configuration file.
-- Create your administrator user.
+1. **Database connection details** — host, port, database name, user, and password
+2. **Admin user details** — full name, email, and password (minimum 8 characters, must contain at least one letter and one digit)
+
+Once you provide this information, the setup script will:
+
+- Create a `.env` file in your project root with the database connection settings
+- Create the `media` and `public` directories
+- Set up the database schema (create all required tables)
+- Run all database migrations
+- Create your administrator account
 
 ```bash title="Installation script"
 npm run setup
 ```
 
-:::caution
-During the installation process, you will be asked for some information like database connection, your shop information…
+:::info
+The `.env` file created by the setup script contains your database credentials:
+```bash
+DB_HOST="localhost"
+DB_PORT="5432"
+DB_NAME="evershop"
+DB_USER="postgres"
+DB_PASSWORD="your_password"
+DB_SSLMODE="disable"
+```
+You can edit this file later to change your database connection settings. See the [Database documentation](/docs/development/knowledge-base/database) for more options including SSL configuration.
 :::
 
 ### Step 4: Folder permission
@@ -136,17 +153,21 @@ By default EverShop will start at port 3000. You can change the port by setting 
 
 ## Upgrade EverShop
 
-To upgrade EverShop version, you can run the following command:
+To upgrade EverShop to the latest version:
 
-```bash title="Upgrade EverShop"
+```bash title="Step 1: Install the latest version"
 npm install @evershop/evershop@latest
 ```
 
-EverShop will take care of the database migration for you.
+```bash title="Step 2: Rebuild your store"
+npm run build
+```
 
-:::caution
-Upgrading EverShop requires running the `build` command again.
-:::
+```bash title="Step 3: Restart your store"
+npm run start
+```
+
+Database migrations are run automatically when the application starts, so any schema changes in the new version are applied for you.
 
 ## Demo Data Seeding
 
@@ -188,12 +209,16 @@ Open the package.json and add the following script:
 
 Open the package.json and add the following configuration:
 
-```js title="Adding the workspace configuration"
- "workspaces": [
-    "extensions/*", #This is where you put your extensions
-    "themes/*", #This is where you put your themes
-  ],
+```json title="Adding the workspace configuration"
+{
+  "workspaces": [
+    "extensions/*",
+    "themes/*"
+  ]
+}
 ```
+
+This allows each extension and theme to function as an independent package with its own dependencies.
 
 ### Start the project in development mode
 
@@ -203,29 +228,16 @@ npm run dev
 
 ### The debug mode
 
-To run the project in debug mode, you are required to add the debugging script to the `package.json` file.
+The `start:debug` script (already added in Step 2) starts the production server with debug logging enabled:
 
-```js title="Add the debugging scripts"
-"scripts": {
-    ...,
-    "start:debug": "evershop start --debug",
-}
-```
-
-And then you can run the project in debug mode by running the following commands:
-
-```js title="Start the site in debug mode"
+```bash title="Start the site in debug mode"
 npm run start:debug
 ```
 
-And then you can run the project in debug mode by running the following commands:
-
-```js title="Start the site in debug mode"
-npm run start:debug
-```
+This outputs detailed middleware execution timings and request processing information.
 
 :::info
-The debug mode is enabled by default when you run the `dev` command.
+Debug mode is enabled by default when you run the `dev` command, so you don't need to use `start:debug` during development.
 :::
 
 ### Dockerize Your Project
@@ -253,9 +265,9 @@ EverShop provides official extensions for [AWS S3](https://evershop.io/extension
 Here is an example `Dockerfile`. Note that we have removed the `COPY media ./media` line.
 
 ```dockerfile title="Dockerfile"
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
-RUN npm install -g npm@9
+RUN npm install -g npm@10
 COPY package*.json .
 # Copy your custom theme.
 COPY themes ./themes
@@ -280,7 +292,7 @@ RUN npm install
 # Build assets.
 RUN npm run build
 
-EXPOSE 80
+EXPOSE 3000
 CMD ["npm", "run", "start"]
 ```
 

@@ -25,7 +25,7 @@ import { createOrder } from "@evershop/evershop/checkout/services";
 ## Syntax
 
 ```typescript
-createOrder(cart: Cart, context?: Record<string, any>): Promise<OrderCreateResult>
+createOrder(cart: Cart): Promise<OrderCreateResult>
 ```
 
 ### Parameters
@@ -35,12 +35,6 @@ createOrder(cart: Cart, context?: Record<string, any>): Promise<OrderCreateResul
 **Type:** `Cart`
 
 Cart instance to convert to order.
-
-**`context`**
-
-**Type:** `Record<string, any>` (optional)
-
-Context object for hooks.
 
 ## Return Value
 

@@ -20,73 +20,130 @@ Extensions and themes are the primary customization units in EverShop. Extension
 The purpose of an extension is to provide specific product features by implementing new functionality or extending existing capabilities of other extensions. Each extension is designed to function independently, so the inclusion or exclusion of a particular extension typically doesn't affect the functionality of others.
 
 ## Extension Folder Structure
-A typical an extension has the following folder structure:
+
+A typical extension has the following folder structure:
 
 ```bash
-extensions
-└── myExtension
-    ├── dist
-    └── src
-      ├── api
-      │   ├── global
-      │   │   └── authMiddleware.ts
-      │   └── createProduct
-      │       ├── route.json
-      │       ├── validateProductMiddleware.ts
-      │       └── [validateProductMiddleware]saveProductMiddleware.ts
-      ├── pages
-      │   ├── admin
-      │   │   └── postCreate
-      │   │       ├── route.json
-      │   │       ├── Form.tsx
-      │   │       ├── General.tsx
-      │   │       ├── Variants.tsx
-      │   │       └── index.ts
-      │   ├── global
-      │   │   └── authMiddleware.ts
-      │   └── frontStore
-      │       └── postView
-      │           ├── route.json
-      │           ├── GeneralInformation.tsx
-      │           ├── Price.tsx
-      │           ├── Media.tsx
-      │           └── index.ts
-      ├── migration
-      │   └── Version_1.0.0.ts
-      ├── services
-      │   └── ProductValidator.ts
-      ├── jobs
-      │   └── myCronJob.ts
-      │
-      └── bootstrap.ts
-    └── package.json
+extensions/
+└── myExtension/
+    ├── dist/                          # Compiled JavaScript (required for production)
+    ├── src/                           # TypeScript source code (required for development)
+    │   ├── api/                       # RESTful API endpoints
+    │   │   ├── global/                # Middleware for all API routes
+    │   │   │   └── authMiddleware.ts
+    │   │   └── createPost/            # A specific API endpoint
+    │   │       ├── route.json
+    │   │       ├── validatePost.ts
+    │   │       └── [validatePost]savePost.ts
+    │   ├── pages/                     # Page routes and UI components
+    │   │   ├── admin/                 # Admin panel pages
+    │   │   │   └── postCreate/
+    │   │   │       ├── route.json
+    │   │   │       ├── Form.tsx       # React component (uppercase = auto-loaded)
+    │   │   │       └── index.ts       # Middleware (lowercase = auto-loaded)
+    │   │   ├── frontStore/            # Storefront pages
+    │   │   │   └── postView/
+    │   │   │       ├── route.json
+    │   │   │       ├── PostInfo.tsx
+    │   │   │       └── index.ts
+    │   │   └── global/                # Middleware for all page routes
+    │   ├── graphql/                   # GraphQL types and resolvers
+    │   │   └── types/
+    │   │       └── Post/
+    │   │           ├── Post.graphql
+    │   │           └── Post.resolvers.ts
+    │   ├── subscribers/               # Event subscribers
+    │   │   └── post_created/
+    │   │       └── sendNotification.ts
+    │   ├── migration/                 # Database migration scripts
+    │   │   └── Version-1.0.0.ts
+    │   ├── services/                  # Business logic
+    │   │   └── createPost.ts
+    │   ├── components/                # Shared React components (widgets, etc.)
+    │   │   └── PostWidget.tsx
+    │   ├── jobs/                      # Cron jobs
+    │   │   └── syncPosts.ts
+    │   └── bootstrap.ts               # Extension initialization
+    ├── package.json
     └── tsconfig.json
-  
 ```
 
-An extension consists of seven main components:
+An extension can include any combination of these directories — none are required except `bootstrap.ts` for extensions that need to register hooks, processors, or other extension points:
 
-1. **Api**: The `api` directory contains RESTful API endpoints, middleware functions, and route definitions. For more information about middleware functions, refer to [the middleware system documentation](./../knowledge-base/middleware-system).
+1. **`api/`** — RESTful API endpoints with middleware and route definitions. See [Middleware System](/docs/development/knowledge-base/middleware-system) and [API Routes](/docs/development/knowledge-base/api-routes).
 
-2. **Pages**: The `pages` folder contains frontend pages for both admin and customer interfaces. Each page includes route definitions, middleware functions, and React components for UI rendering.
+2. **`pages/`** — Page routes split into `admin/`, `frontStore/`, and `global/`. Each page folder contains a `route.json`, middleware files (lowercase), and React components (uppercase). See [Pages](/docs/development/knowledge-base/pages).
 
-3. **Migration**: The `migration` folder contains database migration files used for module installation and upgrades. These files are necessary when a module needs to create new database tables or modify existing ones.
+3. **`graphql/`** — GraphQL type definitions (`.graphql`) and resolvers (`.resolvers.ts`). These are automatically discovered and merged into the application schema at startup. See [GraphQL](/docs/development/knowledge-base/graphql).
 
-4. **Services**: The `services` folder contains TypeScript classes and functions that provide specific functionality for the module.
+4. **`subscribers/`** — Event subscriber functions organized by event name. Each subfolder name matches an event (e.g., `product_created/`) and contains handler files. See [Events and Subscribers](/docs/development/knowledge-base/events-and-subscribers).
 
-5. **Jobs**: The `jobs` directory contains scheduled tasks (cron jobs) that the module needs to run at specified intervals. These jobs are registered and managed by EverShop's job scheduling system. Check out the [job scheduling documentation](./../knowledge-base/cron-jobs) for more details.
+5. **`migration/`** — Database migration scripts named `Version-X.Y.Z.ts` (note the **hyphen**, not underscore). Run automatically during startup to create or alter database tables. See [Database Migration](/docs/development/knowledge-base/data-migration).
 
-6. **bootstrap.ts**: This file is executed when the application starts, allowing modules to perform initialization tasks.
+6. **`services/`** — Business logic functions (e.g., `createPost`, `updatePost`). These are typically hookable and wrapped in database transactions.
 
-7. **package.json**: An extension can have its own dependencies. EverShop uses NPM workspaces to manage these dependencies. More details can be found in the [extension development documentation](./extension-development).
+7. **`components/`** — Shared React components, including widget components that can be registered with the [widget system](/docs/development/module/widget-development).
+
+8. **`jobs/`** — Cron job files registered via `registerJob()` in bootstrap. See [Cron Jobs](/docs/development/knowledge-base/cron-jobs).
+
+9. **`bootstrap.ts`** — Executed during startup. This is where you register [processors](/docs/development/knowledge-base/registry-and-processors), [hooks](/docs/development/module/functions/hookable), [widgets](/docs/development/module/widget-development), [cron jobs](/docs/development/knowledge-base/cron-jobs), [payment methods](/docs/development/knowledge-base/payment-method-development), and [custom statuses](/docs/development/knowledge-base/order-status-management). Receives a context parameter:
+
+    ```ts
+    export default function (context) {
+      // context.command — 'build', 'dev', 'start', or 'seed'
+      // context.env — 'production', 'development', or 'test'
+      // context.process — 'main', 'cronjob', or 'event'
+    }
+    ```
+
+10. **`package.json`** — Extension metadata and dependencies. Must include `"type": "module"`. Managed as an NPM workspace. See [Extension Development](./extension-development).
 
 ## Extension Locations
 
 ![EverShop extension location](./img/modules-location.png "EverShop extension location")
 
-1. **Core Modules**: These are developed and maintained by the EverShop team. They are located in the `node_modules/@evershop/evershop/dist/modules` directory and provide the fundamental functionality of the platform.
+1. **Core Modules**: Developed and maintained by the EverShop team. Located in `node_modules/@evershop/evershop/dist/modules`. These provide fundamental functionality (catalog, checkout, customer, etc.).
 
-2. **Extensions**: These are extensions developed by third parties or custom developers. They are located in the `extensions` folder at the root level of your EverShop installation. Extensions allow you to add new features or modify existing functionality without changing the core code. We will explore extensions in greater detail in subsequent sections.
+2. **Custom Extensions**: Developed by third parties or your own team. Located in the `extensions/` folder at your project root (or installed via NPM to `node_modules/`).
+
+### Enabling Extensions
+
+Extensions must be registered in your configuration to be loaded. Add them to the `system.extensions` array:
+
+```json title="config/default.json"
+{
+  "system": {
+    "extensions": [
+      {
+        "name": "myExtension",
+        "resolve": "extensions/myExtension",
+        "enabled": true,
+        "priority": 10
+      }
+    ]
+  }
+}
+```
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td><code>string</code></td><td>Unique extension name (must not conflict with core module names)</td></tr>
+    <tr><td><code>resolve</code></td><td><code>string</code></td><td>Path to the extension directory (relative to project root or in <code>node_modules/</code>)</td></tr>
+    <tr><td><code>enabled</code></td><td><code>boolean</code></td><td>Set to <code>false</code> to disable the extension without removing it</td></tr>
+    <tr><td><code>priority</code></td><td><code>number</code></td><td>Loading order — lower numbers load first (affects component override precedence)</td></tr>
+  </tbody>
+</table>
+
+:::info
+After enabling or disabling an extension, you must rebuild your project (`npm run build`) for the changes to take effect.
+:::
 
 ## Typescript configuration
 
@@ -131,42 +188,48 @@ The below is an example of a typical `tsconfig.json` file for an extension:
 }
 ```
 
-## Module Development Best Practices
-
-When developing modules for EverShop, consider the following best practices:
+## Extension Development Best Practices
 
 ### 1. Single Responsibility Principle
 
-Each module should focus on a single business domain or feature. This makes modules easier to maintain, test, and reuse. For example, a "catalog" module should handle product-related functionality, while a separate "customer" module should manage customer accounts.
+Each extension should focus on a single business domain or feature. This makes extensions easier to maintain, test, and reuse.
 
-### 2. Minimize Dependencies
+### 2. Minimize Core Overrides
 
-While modules can interact with each other, it's best to minimize dependencies between modules. When a module needs functionality from another module, use service contracts or events rather than direct dependencies when possible.
+Avoid directly overriding core files. Instead, use EverShop's extension points — [processors](/docs/development/knowledge-base/registry-and-processors), [hooks](/docs/development/module/functions/hookable), [events](/docs/development/knowledge-base/events-and-subscribers), and [middleware](/docs/development/knowledge-base/middleware-system) — to modify behavior.
 
-### 3. Proper Namespacing
+### 3. Unique Naming
 
-Ensure all components within your module are properly namespaced to avoid conflicts with other modules. This is especially important for extensions that may be used alongside other third-party extensions.
+Extension names must be unique across the entire application. Use a vendor prefix (e.g., `vendor_extensionName`) to avoid conflicts with other extensions.
 
-### 4. Complete Documentation
+### 4. Use `bootstrap.ts` for Registration
 
-Document your module's functionality, configuration options, and any events it dispatches or listens for. Good documentation makes it easier for other developers to use and extend your module.
+All processors, hooks, widgets, cron jobs, and payment methods must be registered in your `bootstrap.ts`. These systems are locked after bootstrap completes — registration from middleware or request handlers will throw an error.
 
-### 5. Follow Coding Standards
+### 5. Handle Both Development and Production
 
-Adhere to EverShop's coding standards for consistency with the rest of the platform. This includes naming conventions, file structure, and coding practices.
+Ensure your extension works in both modes:
+- **Development**: Source files in `src/` are compiled on the fly.
+- **Production**: You must compile to `dist/` before deployment (`tsc` or your build script).
 
-## Module Lifecycle
+## Extension Lifecycle
 
-Modules in EverShop have a lifecycle that includes:
+Extensions in EverShop go through these phases during application startup:
 
-1. **Installation**: When a module is first added to the system, its migration scripts run to set up necessary database structures.
+1. **Discovery** — EverShop reads the `system.extensions` config, validates that each extension's directory exists, and checks for `src/` (dev) or `dist/` (production).
 
-2. **Initialization**: When EverShop starts, each module's `bootstrap.ts` file is executed to initialize the module.
+2. **Route & Middleware Scanning** — API routes, page routes, and middleware files from the extension are scanned and registered alongside core module routes.
 
-3. **Operation**: During normal operation, the module's components handle requests and provide functionality.
+3. **Bootstrap Execution** — The extension's `bootstrap.ts` is executed. This is where you register processors, hooks, widgets, cron jobs, and payment methods.
 
-4. **Deactivation**: A module can be disabled without being removed, which prevents its code from executing.
+4. **Lock** — After all bootstrap scripts run, the hook and registry systems are locked. No further registration is possible.
 
-5. **Uninstallation**: When a module is removed, cleanup tasks may be performed to remove database tables or other resources.
+5. **Migration** — Pending database migrations from the extension's `migration/` folder are executed within transactions.
 
-Understanding this lifecycle helps when developing modules that integrate smoothly with the EverShop platform.
+6. **Operation** — The extension's middleware, API endpoints, pages, GraphQL resolvers, and event subscribers handle requests during normal operation.
+
+To **disable** an extension, set `"enabled": false` in the configuration and rebuild. The extension's code will not be loaded or executed.
+
+:::info
+For a step-by-step guide to creating your first extension, see [Extension Development](./extension-development) and [Create Your First Extension](./create-your-first-extension).
+:::

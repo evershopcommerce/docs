@@ -27,51 +27,42 @@ import { EvershopResponse } from "@evershop/evershop/types/response";
 ## Syntax
 
 ```typescript
-request.logoutCustomer(callback?: (err: Error | null) => void): void
+request.logoutCustomer(): void
 ```
 
 ### Parameters
 
-**`callback`**
-
-**Type:** `(err: Error | null) => void` (optional)
-
-Optional callback function called after session is saved.
+None.
 
 ## Return Value
 
 Returns `void`.
+
+## Description
+
+Clears the customer session and local customer data. After calling this method:
+- `request.session.customerID` is set to `undefined`
+- `request.locals.customer` is set to `undefined`
+- `request.isCustomerLoggedIn()` will return `false`
 
 ## Examples
 
 ### Basic Logout
 
 ```typescript
-import { EvershopRequest } from "@evershop/evershop/types/request";
-import { EvershopResponse } from "@evershop/evershop/types/response";
+export default async function logoutMiddleware(request, response) {
+  request.logoutCustomer();
+  response.json({ success: true });
+}
+```
 
-### With Redirect
-
-```typescript
-import { EvershopRequest } from "@evershop/evershop/types/request";
-import { EvershopResponse } from "@evershop/evershop/types/response";
-
-### In API Endpoint
+### Logout with Redirect
 
 ```typescript
-import { EvershopRequest } from "@evershop/evershop/types/request";
-import { EvershopResponse } from "@evershop/evershop/types/response";
-
-### With Callback
-
-```typescript
-import { EvershopRequest } from "@evershop/evershop/types/request";
-import { EvershopResponse } from "@evershop/evershop/types/response";
-
-export default async function logoutMiddleware(
-  request: EvershopRequest, 
-  response: EvershopResponse
-) {
+export default async function logoutMiddleware(request, response) {
+  request.logoutCustomer();
+  response.redirect('/');
+}
 ```
 
 ## See Also

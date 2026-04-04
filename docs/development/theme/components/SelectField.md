@@ -87,12 +87,6 @@ function CategoryForm() {
       <td>Placeholder text for empty selection</td>
     </tr>
     <tr>
-      <td>multiple</td>
-      <td>boolean</td>
-      <td>false</td>
-      <td>Allow multiple selections</td>
-    </tr>
-    <tr>
       <td>defaultValue</td>
       <td>string | number</td>
       <td>-</td>

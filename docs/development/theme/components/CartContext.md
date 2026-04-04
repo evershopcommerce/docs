@@ -21,7 +21,7 @@ A React context that manages the shopping cart state and provides methods for ca
 ## Import
 
 ```typescript
-import { CartProvider, useCartState, useCartDispatch } from '@components/frontStore/cart/cartContext';
+import { CartProvider, useCartState, useCartDispatch } from '@components/frontStore/cart/CartContext';
 ```
 
 ## Setup
@@ -29,7 +29,7 @@ import { CartProvider, useCartState, useCartDispatch } from '@components/frontSt
 Wrap your application with the CartProvider:
 
 ```tsx
-import { CartProvider } from '@components/frontStore/cart/cartContext';
+import { CartProvider } from '@components/frontStore/cart/CartContext';
 
 function App({ cart, query, addMineCartItemApi }) {
   return (
@@ -51,7 +51,7 @@ function App({ cart, query, addMineCartItemApi }) {
 Access cart state and data:
 
 ```tsx
-import { useCartState } from '@components/frontStore/cart/cartContext';
+import { useCartState } from '@components/frontStore/cart/CartContext';
 
 function CartSummary() {
   const { data, loading, loadingStates } = useCartState();
@@ -71,7 +71,7 @@ function CartSummary() {
 Access cart operations:
 
 ```tsx
-import { useCartDispatch } from '@components/frontStore/cart/cartContext';
+import { useCartDispatch } from '@components/frontStore/cart/CartContext';
 
 function AddToCartButton({ sku }) {
   const { addItem } = useCartDispatch();
@@ -310,7 +310,7 @@ clearError();
 ## Complete Example
 
 ```tsx
-import { useCartState, useCartDispatch } from '@components/frontStore/cart/cartContext';
+import { useCartState, useCartDispatch } from '@components/frontStore/cart/CartContext';
 
 function CartPage() {
   const { data, loading, loadingStates } = useCartState();

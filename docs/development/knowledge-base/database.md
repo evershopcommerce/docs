@@ -2,32 +2,23 @@
 sidebar_position: 35
 keywords:
   - Evershop database
+  - query builder
+  - PostgreSQL
+  - typed queries
 sidebar_label: The Database
-title: Database
-description: Learn what a database is and how to work with database in EverShop. Create and modify PostgreSQL database by following this tutorial.
+title: Database and Query Builder
+description: Learn how to connect to the database, build type-safe queries, and manage transactions in EverShop.
 ---
 
-# eCommerce platform with PostgreSQL database
+# Database and Query Builder
 
-EverShop uses [PostgreSQL](https://www.postgresql.org/) as a database storage. EverShop requires PostgreSQL 13 or higher.
+EverShop uses [PostgreSQL](https://www.postgresql.org/) (version 13 or higher) as its database. It provides a type-safe query builder that gives you column name autocompletion and typed return values for all known EverShop tables.
 
-## What is PostgreSQL?
+## Connection Setup
 
-PostgreSQL is a powerful and popular open-source relational database management system (RDBMS) that is known for its robustness, scalability, and extensibility. It is one of the most advanced and feature-rich databases available, offering features such as support for complex queries, indexes, transactions, and advanced data types like arrays, JSON, and XML.
+### Environment Variables
 
-PostgreSQL is often used as a backend database for web applications, and it is frequently deployed on Linux, Unix, and Windows servers. It also has a strong reputation for data integrity, and is often the preferred choice for applications that require ACID (Atomicity, Consistency, Isolation, and Durability) compliance.
-
-PostgreSQL is developed and maintained by a global community of open-source developers, and is released under the PostgreSQL License, a permissive free software license.
-
-## Working with PostgreSQL in EverShop
-
-## Database connection setup
-
-### Setup environment variables for database connection
-
-EverShop uses [dotenv](https://www.npmjs.com/package/dotenv) to load environment variables from a `.env` file into `process.env`.
-
-To setup the database connection, you need to create a `.env` file in the root folder of your project and add the following variables:
+Create a `.env` file in your project root with your database credentials:
 
 ```bash
 DB_HOST=localhost
@@ -38,204 +29,339 @@ DB_NAME=evershop
 DB_SSLMODE=disable
 ```
 
-### Connect to PostgreSQL server using SSL
+### SSL Connection
 
-If you want to connect to the PostgreSQL server using SSL, you can change the `DB_SSLMODE` variable to `require`.
+Change `DB_SSLMODE` to enable SSL. Supported modes: `disable`, `require`, `prefer`, `verify-ca`, `verify-full`, `no-verify`.
+
+For certificate verification, provide:
 
 ```bash
-DB_SSLMODE=require
+DB_SSLMODE=verify-full
+DB_SSLROOTCERT=/path/to/ca-certificate.pem
+DB_SSLCERT=/path/to/client-certificate.pem
+DB_SSLKEY=/path/to/client-key.pem
 ```
 
-## Quick Tour
+### Connection Pool
 
-The EverShop database access layer abstracts and provides help with most aspects of dealing with relational databases such as, keeping connections to the server, building queries, preventing SQL injections, inspecting and altering schemas.
+EverShop maintains a connection pool (max 20 concurrent connections). There are two ways to use the database:
 
-The functions described in this document illustrate what is possible to do with the lower-level database access API.
+1. **`pool`** — For simple read queries. The pool automatically manages connection acquisition and release.
+2. **`getConnection()`** — For transactions. You manage the connection lifecycle and must call `commit()` or `rollback()`.
 
-### Create a database connection
+## Import Paths
 
-The below examples show you how to create a connection to the database. This method will return a connection object and can be used for further queries.
+EverShop provides two import paths for database operations:
 
-#### 1: The easiest way is to use the pool object
+```ts
+// Typed query builder (recommended) — provides column autocompletion and typed results
+import { select, insert, update, del, insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
 
-If what you are doing is just loading some data from the database or doing some simple insert/update that you do not care about the transaction, you can just use the pool object.
+// Connection and transaction management
+import { pool, getConnection } from '@evershop/evershop/lib/postgres';
 
-You let the pool object manage the connection for you rather than creating and managing connections one by one.
+// Transaction helpers (re-exported from query module)
+import { startTransaction, commit, rollback, execute } from '@evershop/evershop/lib/postgres/query';
+```
 
-```js
-import { pool } from "@evershop/evershop/lib/postgres";
-import { select } from "@evershop/postgres-query-builder";
+:::info
+The typed query builder in `@evershop/evershop/lib/postgres/query` wraps `@evershop/postgres-query-builder` with TypeScript types for all EverShop tables. When you call `.from('order')`, your IDE will suggest columns like `order_id`, `status`, `grand_total`, etc.
+:::
 
-const query = select();
-query
-  .from("cms_page")
-  .leftJoin("cms_page_description")
+## SELECT Queries
+
+### Basic Select
+
+```ts
+import { select } from '@evershop/evershop/lib/postgres/query';
+import { pool } from '@evershop/evershop/lib/postgres';
+
+// Load a single row (returns the row or null)
+const order = await select()
+  .from('order')
+  .where('order_id', '=', orderId)
+  .load(pool);
+
+// Load multiple rows (returns an array)
+const orders = await select()
+  .from('order')
+  .where('status', '=', 'processing')
+  .execute(pool);
+```
+
+### `.load()` vs `.execute()`
+
+- **`.load(connection)`** — Returns a single row (`RowOf<T> | null`). Use for fetching one record.
+- **`.execute(connection)`** — Returns an array of rows (`RowOf<T>[]`). Use for fetching multiple records.
+
+### Select Specific Columns
+
+```ts
+const products = await select('product_id', 'sku', 'price')
+  .from('product')
+  .where('status', '=', true)
+  .execute(pool);
+```
+
+### Joins
+
+```ts
+const query = select()
+  .from('cms_page')
+  .leftJoin('cms_page_description')
   .on(
-    "cms_page.cms_page_id",
-    "=",
-    "cms_page_description.cms_page_description_cms_page_id"
+    'cms_page.cms_page_id',
+    '=',
+    'cms_page_description.cms_page_description_cms_page_id'
   );
-query.where("status", "=", 1);
-query.where("cms_page_description.url_key", "=", request.params.url_key);
 
-const cmsPage = await query.load(pool);
+query.where('status', '=', 1);
+query.andWhere('cms_page_description.url_key', '=', 'about-us');
+
+const page = await query.load(pool);
 ```
 
-#### 2: Create a connection object
+Supported join types: `.leftJoin()`, `.rightJoin()`, `.innerJoin()`.
 
-Sometimes you want to do some complex query and you want to control the transaction commit or rollback by yourself based on your logic, then you can create a single connection.
+### Ordering, Grouping, and Pagination
 
-```js
-import {
-  rollback,
-  insert,
-  commit,
-  select,
-  update,
-  startTransaction,
-} from "@evershop/postgres-query-builder";
-import { getConnection } from "@evershop/evershop/lib/postgres";
+```ts
+const products = await select()
+  .from('product')
+  .where('status', '=', true)
+  .orderBy('created_at', 'DESC')
+  .limit(0, 20)  // offset, limit
+  .execute(pool);
+```
+
+```ts
+const categoryCounts = await select('category_id')
+  .from('product_category')
+  .groupBy('category_id')
+  .execute(pool);
+```
+
+### Chaining Conditions
+
+```ts
+const query = select().from('order');
+
+query.where('status', '=', 'processing');
+query.andWhere('grand_total', '>', 100);
+query.orWhere('customer_email', '=', 'vip@example.com');
+
+const orders = await query.execute(pool);
+```
+
+### Clone a Query
+
+```ts
+const baseQuery = select().from('product').where('status', '=', true);
+
+// Clone to create variations without modifying the original
+const featuredQuery = baseQuery.clone();
+featuredQuery.andWhere('visibility', '=', true);
+```
+
+## INSERT Queries
+
+```ts
+import { insert } from '@evershop/evershop/lib/postgres/query';
+import { getConnection, startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
+
 const connection = await getConnection();
 await startTransaction(connection);
 
 try {
-  // Doing some insert/update queries here
+  const shipment = await insert('shipment')
+    .given({
+      shipment_order_id: orderId,
+      carrier: 'fedex',
+      tracking_number: '1234567890'
+    })
+    .execute(connection);
+
   await commit(connection);
 } catch (e) {
   await rollback(connection);
+  throw e;
 }
 ```
 
-### Basic CRUD operations
+The `.given()` method accepts an object where keys are column names. Unknown columns are silently ignored.
 
-#### Running Select Statements
-
-```js
-import { pool } from "@evershop/evershop/lib/postgres";
-import { select } from "@evershop/postgres-query-builder";
-
-const order = await select()
-  .from("order")
-  .where("order_id", "=", orderId)
-  .load(pool);
-```
-
-It is also possible to perform a complex query by using a query builder.
-
-```js
-import { pool } from "@evershop/evershop/lib/postgres";
-import { select } from "@evershop/postgres-query-builder";
-
-const query = select();
-query
-  .from("cms_page")
-  .leftJoin("cms_page_description")
-  .on(
-    "cms_page.cms_page_id",
-    "=",
-    "cms_page_description.cms_page_description_cms_page_id"
-  );
-query.where("status", "=", 1);
-query.andWhere("cms_page_description.url_key", "=", request.params.url_key);
-
-const cmsPage = await query.load(pool);
-```
-
-#### Running Insert Statements
+### Set Individual Columns with `.prime()`
 
 ```ts
-import { EvershopRequest, EvershopResponse } from "@evershop/evershop";
-import {
-  rollback,
-  insert,
-  commit,
-  startTransaction,
-} from "@evershop/postgres-query-builder";
-import { getConnection } from "@evershop/evershop/lib/postgres";
-
-export default async (
-  request: EvershopRequest,
-  response: EvershopResponse,
-  next
-) => {
-  const connection = await getConnection();
-  await startTransaction(connection);
-  try {
-    await insert("shipment")
-      .given({
-        shipment_order_id: orderId,
-        carrier_name: carrierName,
-        tracking_number: trackingNumber,
-      })
-      .execute(connection);
-    await commit(connection);
-  } catch (e) {
-    await rollback(connection);
-  }
-};
+const result = await insert('product')
+  .given(productData)
+  .prime('status', true)        // Override or add a specific column
+  .prime('created_at', new Date())
+  .execute(connection);
 ```
 
-In the above example, the data is passed to the insert statement is a ‘key-value’ pair object with the key is the table column name.
-
-If the key provided does not exist, it will just be ignored and the query still being proceeded.
-
-#### Running Update Statements
-
-Updating rows in the database is equally intuitive, the following example will update the order with id 10:
+## UPDATE Queries
 
 ```ts
-import { EvershopRequest, EvershopResponse } from "@evershop/evershop";
-import {
-  rollback,
-  update,
-  commit,
-  startTransaction,
-} from "@evershop/postgres-query-builder";
+import { update } from '@evershop/evershop/lib/postgres/query';
 
-import { getConnection } from "@evershop/evershop/lib/postgres";
-
-export default async (
-  request: EvershopRequest,
-  response: EvershopResponse,
-  next
-) => {
-  const connection = await getConnection();
-  await startTransaction(connection);
-  try {
-    await update("order")
-      .given({
-        shipment_status: "fullfilled",
-      })
-      .where("order_id", "=", 10)
-      .execute(connection);
-    await commit(connection);
-  } catch (e) {
-    await rollback(connection);
-  }
-};
+await update('order')
+  .given({ shipment_status: 'shipped' })
+  .where('order_id', '=', orderId)
+  .execute(connection);
 ```
 
-#### Running Delete Statements
+## DELETE Queries
 
-Similarly, the `del()` method is used to delete rows from the database, the following example deletes the order with id 10:
+```ts
+import { del } from '@evershop/evershop/lib/postgres/query';
 
-```js
-import {
-  rollback,
-  del,
-  commit,
-  startTransaction,
-} from "@evershop/postgres-query-builder";
-import { getConnection } from "@evershop/evershop/lib/postgres";
-
-export default async (request, response, next) => {
-  const connection = await getConnection();
-  await startTransaction(connection);
-  try {
-    await del("order").where("order_id", "=", 10).execute(connection);
-    await commit(connection);
-  } catch (e) {
-    await rollback(connection);
-  }
-};
+await del('order')
+  .where('order_id', '=', orderId)
+  .execute(connection);
 ```
+
+## INSERT ON CONFLICT (Upsert)
+
+Insert a row, or update it if a conflict occurs on the specified columns:
+
+```ts
+import { insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
+
+await insertOnUpdate('setting', ['name'])
+  .given({
+    name: 'storeName',
+    value: 'My Shop'
+  })
+  .execute(connection);
+```
+
+The first argument is the table name, the second is an array of columns that define the uniqueness constraint. If a row with matching values exists, the other columns are updated.
+
+## Raw SQL
+
+For queries that can't be expressed with the query builder, use `execute()`:
+
+```ts
+import { execute } from '@evershop/evershop/lib/postgres/query';
+
+const result = await execute(
+  connection,
+  `SELECT p.*, pd.name
+   FROM product p
+   JOIN product_description pd ON p.product_id = pd.product_description_product_id
+   WHERE p.price > $1`,
+  [100]
+);
+```
+
+## Transactions
+
+Wrap multiple operations in a transaction to ensure atomicity:
+
+```ts
+import { getConnection, startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
+
+const connection = await getConnection();
+await startTransaction(connection);
+
+try {
+  await insert('order').given(orderData).execute(connection);
+  await insert('order_item').given(itemData).execute(connection);
+  await update('product_inventory')
+    .given({ qty: newQty })
+    .where('product_inventory_product_id', '=', productId)
+    .execute(connection);
+
+  await commit(connection);
+} catch (e) {
+  await rollback(connection);
+  throw e;
+}
+```
+
+:::warning
+Always use `try/catch` with `rollback()` in the catch block. If a transaction is left open (no commit or rollback), the connection leaks and will eventually exhaust the pool.
+:::
+
+## Type Safety
+
+The query builder provides TypeScript column autocompletion for all known EverShop tables. When you call `.from('order')`, your IDE suggests only columns from the `order` table:
+
+```ts
+// TypeScript knows 'order_id', 'uuid', 'status', 'grand_total', etc.
+select().from('order').where('order_id', '=', 1)
+
+// .load() returns OrderRow | null
+const order = await select().from('order').where('order_id', '=', 1).load(pool);
+// order.grand_total, order.customer_email, etc. are typed
+```
+
+For write operations, numeric string columns (like `price`, `weight`) accept both `string` and `number`:
+
+```ts
+// Both work — the WriteRow type widens string fields to string | number
+await insert('product').given({ price: '29.99' }).execute(connection);
+await insert('product').given({ price: 29.99 }).execute(connection);
+```
+
+### Known Tables
+
+The following tables have full type support with column autocompletion:
+
+`admin_user`, `attribute`, `attribute_group`, `attribute_group_link`, `attribute_option`, `cart`, `cart_address`, `cart_item`, `category`, `category_description`, `cms_page`, `cms_page_description`, `collection`, `coupon`, `customer`, `customer_address`, `customer_group`, `event`, `migration`, `order`, `order_activity`, `order_address`, `order_item`, `payment_transaction`, `product`, `product_attribute_value_index`, `product_category`, `product_collection`, `product_custom_option`, `product_custom_option_value`, `product_description`, `product_image`, `product_inventory`, `reset_password_token`, `session`, `setting`, `shipment`, `shipping_method`, `shipping_zone`, `shipping_zone_method`, `shipping_zone_province`, `tax_class`, `tax_rate`, `url_rewrite`, `variant_group`, `widget`
+
+Custom tables created by extensions also work — they just won't have column autocompletion (any string is accepted as a column name).
+
+## Query Builder Reference
+
+### SELECT Chain Methods
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.select(column, alias?)</code></td><td>Add a column to the SELECT clause</td></tr>
+    <tr><td><code>.from(table, alias?)</code></td><td>Set the FROM table (narrows column types)</td></tr>
+    <tr><td><code>.where(column, operator, value)</code></td><td>Add a WHERE condition</td></tr>
+    <tr><td><code>.andWhere(column, operator, value)</code></td><td>Add an AND condition</td></tr>
+    <tr><td><code>.orWhere(column, operator, value)</code></td><td>Add an OR condition</td></tr>
+    <tr><td><code>.leftJoin(table, alias?)</code></td><td>Add a LEFT JOIN (call <code>.on()</code> after)</td></tr>
+    <tr><td><code>.rightJoin(table, alias?)</code></td><td>Add a RIGHT JOIN</td></tr>
+    <tr><td><code>.innerJoin(table, alias?)</code></td><td>Add an INNER JOIN</td></tr>
+    <tr><td><code>.orderBy(column, direction?)</code></td><td>Add ORDER BY (<code>'ASC'</code> or <code>'DESC'</code>)</td></tr>
+    <tr><td><code>.groupBy(...columns)</code></td><td>Add GROUP BY</td></tr>
+    <tr><td><code>.having(column, operator, value)</code></td><td>Add HAVING condition</td></tr>
+    <tr><td><code>.limit(offset, limit)</code></td><td>Add LIMIT with offset</td></tr>
+    <tr><td><code>.execute(connection)</code></td><td>Execute and return array of rows</td></tr>
+    <tr><td><code>.load(connection)</code></td><td>Execute and return single row or null</td></tr>
+    <tr><td><code>.clone()</code></td><td>Create a copy of the query</td></tr>
+    <tr><td><code>.sql()</code></td><td>Return the generated SQL string</td></tr>
+  </tbody>
+</table>
+
+### Write Query Methods
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Available On</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.given(data)</code></td><td>INSERT, UPDATE, INSERT ON UPDATE</td><td>Set column values from an object</td></tr>
+    <tr><td><code>.prime(column, value)</code></td><td>INSERT, UPDATE, INSERT ON UPDATE</td><td>Set a single column value</td></tr>
+    <tr><td><code>.where(column, operator, value)</code></td><td>UPDATE, DELETE</td><td>Add WHERE condition</td></tr>
+    <tr><td><code>.execute(connection, releaseConnection?)</code></td><td>All</td><td>Execute the query</td></tr>
+  </tbody>
+</table>
+
+import Sponsors from '@site/src/components/Sponsor';
+
+<Sponsors/>

@@ -155,7 +155,7 @@ function MyForm() {
 ```tsx
 import { Form } from '@components/common/form/Form';
 import { InputField } from '@components/common/form/InputField';
-import { TextAreaField } from '@components/common/form/TextAreaField';
+import { TextareaField } from '@components/common/form/TextareaField';
 
 function ContactForm() {
   return (
@@ -167,7 +167,7 @@ function ContactForm() {
     >
       <InputField name="name" label="Name" required />
       <InputField name="email" type="email" label="Email" required />
-      <TextAreaField name="message" label="Message" required />
+      <TextareaField name="message" label="Message" required />
     </Form>
   );
 }

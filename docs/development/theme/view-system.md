@@ -11,37 +11,37 @@ description: EverShop utilizes React to render views with server-side rendering 
 
 ![EverShop view system](./img/the-view-system.jpg "EverShop view system")
 
-The view is one of the most critical parts of any web application, as it's the interface with which users interact.
+EverShop uses [React](https://reactjs.org/) to render every page. Pages are first rendered on the server (SSR) and sent as HTML to the browser. The browser then hydrates the page, attaching event handlers to make it fully interactive.
 
-EverShop leverages [React](https://reactjs.org/) to render views. Pages are first rendered on the server side and then sent to the client. The client side then performs hydration to make the page fully interactive.
-
-The EverShop view system was designed to be flexible and easily extensible. Third-party developers can insert their own React components into the view system without modifying the core code.
+The view system is designed so that extensions and themes can insert, replace, or reorder React components on any page — without modifying core code. This is made possible by the **Area** component and the **layout export** pattern described below.
 
 ## The View Architecture
 
 ### Multi-Page Application
 
-EverShop is a multi-page application. Each page has its own layout and components. The build process generates a separate bundle file for each page, containing the HTML markup and the JavaScript code necessary to render that page.
+EverShop is a multi-page application (MPA). Each page has its own layout and components, and the build process generates a **separate bundle** for each page. This means a customer loading the product page only downloads the JavaScript for that page, not the entire application.
 
-### Server-Side Rendering And Hydration
+### Server-Side Rendering and Hydration
 
-EverShop follows a server-side rendering (SSR) approach. Pages are rendered on the server and sent to the client along with the necessary JavaScript code. The client side then performs hydration to make the page fully interactive.
+Every page request follows this flow:
 
-### Dynamic Layout
+1. **Middleware** runs on the server (authentication, data loading, context setup)
+2. **GraphQL queries** from all components on the page are merged and executed in a single server-side request
+3. **React SSR** renders the component tree to HTML
+4. The HTML is sent to the browser along with the query results
+5. **Client-side hydration** attaches React event handlers to the existing HTML
 
-EverShop's layout system is designed to be flexible and easily extensible. Third-party developers can insert their own React components into the layout without modifying the core code. Check the [Area Component section](#the-area-component) below to understand more about how to extend layouts.
+This gives you fast time-to-content, good SEO (crawlers see fully rendered pages), and a fully interactive page after hydration.
 
-**Compared to a client-side Single-Page Application (SPA), the advantages of SSR include**:
+### The Dynamic Layout System
 
-- **Faster time-to-content**: This advantage is particularly notable on slow internet connections or devices. Server-rendered markup doesn't need to wait for all JavaScript to be downloaded and executed before being displayed, so users see a fully-rendered page sooner. Additionally, data fetching occurs on the server-side for the initial visit, leveraging the server's typically faster connection to your database. This generally results in improved Core Web Vitals metrics, better user experience, and can be critical for applications where time-to-content directly impacts conversion rates.
+Instead of a fixed page template, EverShop uses a dynamic layout system based on **Areas**. Each Area is a named slot where components can be inserted. Components declare which Area they belong to and their sort order via the `layout` export, and EverShop assembles the page automatically.
 
-- **Unified mental model**: Developers can use the same language and declarative, component-oriented approach for the entire application, instead of switching between a backend templating system and a frontend framework.
-
-- **Better SEO**: Search engine crawlers can directly see the fully rendered page, improving indexing and search visibility.
+This means extensions and themes can add components to any page without editing that page's source code. See the [Area Component section](#the-area-component) below for details.
 
 ### Fast Refresh
 
-EverShop implements [Fast Refresh](../knowledge-base/fast-refresh) to improve the developer experience and performance. This feature is available only in development mode.
+In development mode (`npm run dev`), EverShop supports [Fast Refresh](../knowledge-base/fast-refresh) — editing a React component updates the browser instantly without losing component state.
 
 ## The Module View Structure
 
@@ -133,18 +133,37 @@ catalog
 
 ## The `Area` Component
 
-Let's examine the following layout:
-
 import Layout from '@site/src/components/Layout';
 
 <Layout/>
 <br/>
 
-Each block in the layout above is an `Area` with a unique ID.
+Each block in the diagram above is an `Area` with a unique ID. The `Area` component is the foundation of EverShop's dynamic layout system. It acts as a named slot that renders all components assigned to it, sorted by `sortOrder`.
 
-The `Area` is a React Higher-Order Component (HOC) that accepts components as its children. It renders these child components and passes the `Area`'s props to them.
+### Area Props
 
-When a block is rendered by an Area component, third-party developers can insert their own React components into the block without modifying the core code. This makes the view system flexible and easily extensible.
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Prop</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td><code>string</code></td><td>(required)</td><td>Unique identifier for this Area. Components target this ID via their <code>layout.areaId</code> export.</td></tr>
+    <tr><td><code>className</code></td><td><code>string</code></td><td><code>undefined</code></td><td>CSS class applied to the wrapper element.</td></tr>
+    <tr><td><code>noOuter</code></td><td><code>boolean</code></td><td><code>false</code></td><td>When <code>true</code>, renders children without a wrapper element (uses <code>React.Fragment</code>).</td></tr>
+    <tr><td><code>wrapper</code></td><td><code>string | ReactNode</code></td><td><code>'div'</code></td><td>The HTML tag or React component used as the wrapper.</td></tr>
+    <tr><td><code>wrapperProps</code></td><td><code>object</code></td><td><code>{}</code></td><td>Additional props passed to the wrapper element.</td></tr>
+    <tr><td><code>coreComponents</code></td><td><code>Component[]</code></td><td><code>[]</code></td><td>Pre-defined inline components (see below).</td></tr>
+  </tbody>
+</table>
+
+:::info
+In development mode, EverShop includes an Area debug overlay. Toggle it with the floating debug button to see Area boundaries, IDs, and component sort orders directly in the browser.
+:::
 
 ### Using the Area Component
 
@@ -152,7 +171,7 @@ Let's examine the following code:
 
 ```tsx title="src/components/Layout.tsx"
 import React from "react";
-import Area from "@evershop/evershop/components/common";
+import Area from "@components/common/Area";
 
 export default function Layout() {
   return (
@@ -169,7 +188,7 @@ You can also provide a list of pre-defined components to the `Area` component:
 
 ```tsx title="src/components/Layout.tsx"
 import React from "react";
-import Area from "@evershop/evershop/components/common";
+import Area from "@components/common/Area";
 import Top from "./Top";
 import Bottom from "./Bottom";
 
@@ -187,7 +206,7 @@ export default function Layout() {
             sortOrder: 1,
           },
           {
-            component: { default: () => Bottom },
+            component: { default: () => <Bottom /> },
             props: {
               title: "Bottom",
             },
@@ -208,7 +227,7 @@ Let's say we have a 'productView' page with the following layout component:
 
 ```tsx title="src/modules/catalog/pages/frontStore/productView/Layout.tsx"
 import React from "react";
-import Area from "@evershop/evershop/components/common";
+import Area from "@components/common/Area";
 
 export default function Layout() {
   return (
@@ -224,7 +243,7 @@ If we want to insert a component into the left side of the product view page to 
 
 ```tsx title="src/modules/catalog/pages/frontStore/productView/ProductRating.tsx"
 import React from "react";
-import Area from "@evershop/evershop/components/common";
+import Area from "@components/common/Area";
 
 export default function ProductRating({ stars }) {
   return (
@@ -251,6 +270,53 @@ That's all you need to do to insert the `ProductRating` component into the `prod
 
 ## Component Data Fetching
 
-:::info
-Check [this document](../knowledge-base/data-fetching) for more information about how to fetch data in components.
-:::
+Components can declare a GraphQL query that is automatically executed on the server during SSR. Export a `query` constant alongside your component:
+
+```tsx title="ProductPrice.tsx"
+import React from "react";
+
+export default function ProductPrice({ product }) {
+  return (
+    <div>
+      <span>{product.price.regular.text}</span>
+      {product.price.special && (
+        <span className="text-destructive">{product.price.special.text}</span>
+      )}
+    </div>
+  );
+}
+
+export const layout = {
+  areaId: "productViewInfo",
+  sortOrder: 20,
+};
+
+export const query = `
+  query {
+    product(id: getContextValue("productId")) {
+      price {
+        regular { value text }
+        special { value text }
+      }
+    }
+  }
+`;
+```
+
+During the build process, EverShop extracts all `query` exports from every component on the page, merges them into a single GraphQL request, and executes it on the server. The results are automatically passed to each component as props.
+
+The `getContextValue()` function retrieves values that were set by middleware earlier in the request (e.g., a product ID extracted from the URL). See the [Data Fetching](../knowledge-base/data-fetching) documentation for the complete guide.
+
+## How It All Fits Together
+
+Here's the complete flow for rendering a storefront page:
+
+1. A request arrives and the router matches it to a route (e.g., `productView`)
+2. Middleware runs — loads product data, sets context values
+3. EverShop collects all components for this route from core modules, extensions, and the active theme
+4. All `query` exports are merged into one GraphQL query and executed
+5. The component tree is assembled: each component is placed into its declared Area, sorted by `sortOrder`
+6. React renders the tree to HTML on the server
+7. The browser receives the HTML and hydrates it with the JavaScript bundle for this page
+
+Extensions and themes participate at step 3 — they can add new components, override existing ones (same filename = override), or inject components into any Area on the page.

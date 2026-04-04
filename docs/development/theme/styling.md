@@ -8,20 +8,167 @@ keywords:
   - Sass
 sidebar_label: Styling
 title: Styling Your EverShop Theme
-description: Learn how to style your EverShop themes using CSS, SCSS, and TailwindCSS. This guide explains different styling approaches and how to implement them in your components and pages.
+description: Learn how to style your EverShop themes using CSS, SCSS, and TailwindCSS v4. This guide explains different styling approaches and how to implement them in your components and pages.
 ---
 
 # Styling Your EverShop Theme
 
-EverShop provides multiple options for styling your storefront, including standard CSS, Sass/SCSS, and TailwindCSS. This flexibility allows you to choose the approach that best fits your workflow and project requirements. This document explains how to implement different styling methods in your EverShop themes.
+EverShop supports three styling approaches: **TailwindCSS v4**, **SCSS/Sass**, and **plain CSS**. You can use any combination of these in your theme. This document explains how each approach works and how to customize the default styling.
 
-## Using SCSS Files
+## How Styling Works
 
-EverShop supports SCSS (Sassy CSS) out of the box, allowing you to use variables, nesting, mixins, and other Sass features to make your styles more maintainable.
+EverShop's build system processes stylesheets through this pipeline:
 
-To use SCSS in a component or page:
+1. **SCSS** files (`.scss`) are compiled by `sass-loader`
+2. **CSS** files (`.css`) and compiled SCSS are processed by **PostCSS** with the TailwindCSS v4 plugin
+3. Final CSS is bundled into the page
 
-```js
+This means Tailwind utility classes work in **both** `.css` and `.scss` files — you don't need to choose one approach over the other.
+
+## TailwindCSS v4
+
+EverShop uses [TailwindCSS v4](https://tailwindcss.com/) (`^4.1.x`), which is a major departure from Tailwind v3. In v4, configuration is done entirely in CSS using native directives — there is no `tailwind.config.js` file.
+
+### Using Tailwind Classes
+
+Use Tailwind utility classes directly in your JSX:
+
+```tsx
+export default function ProductBadge({ label }) {
+  return (
+    <span className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium">
+      {label}
+    </span>
+  );
+}
+```
+
+### How Tailwind Is Loaded
+
+EverShop loads Tailwind through a master-level component called `TailwindCss.tsx`, which lives in the `all/` folder and runs on every storefront page:
+
+```tsx title="modules/base/pages/frontStore/all/TailwindCss.tsx"
+import React from 'react';
+import './tailwind.css';
+
+export default function TailwindCss() {
+  return null;
+}
+
+export const layout = {
+  areaId: 'head',
+  sortOrder: 1
+};
+```
+
+The component returns `null` (renders nothing visible) — its purpose is to import the `tailwind.css` file, which contains all the Tailwind configuration and design tokens.
+
+### The `tailwind.css` Configuration
+
+The `tailwind.css` file is the entry point for TailwindCSS v4. Here are the key directives:
+
+```css title="tailwind.css"
+/* Import the Tailwind v4 framework */
+@import 'tailwindcss';
+
+/* Load the typography plugin */
+@plugin "@tailwindcss/typography";
+
+/* Import animation utilities */
+@import 'tw-animate-css';
+
+/* Import design tokens (colors, radius, etc.) */
+@import './shadcn.css';
+
+/* Define dark mode variant */
+@custom-variant dark (&:is(.dark *));
+
+/* Map CSS custom properties to Tailwind theme values */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  /* ... more mappings */
+}
+```
+
+The design tokens (colors, border radius, etc.) are defined as CSS custom properties in `:root` and `.dark` selectors. This provides a consistent design system with built-in dark mode support.
+
+The key Tailwind v4 directives used:
+
+- **`@import 'tailwindcss'`** — Loads the Tailwind framework (replaces the old `@tailwind base/components/utilities` directives from v3)
+- **`@plugin`** — Loads a Tailwind plugin (replaces the `plugins` array in v3's `tailwind.config.js`)
+- **`@theme inline`** — Defines theme values that Tailwind uses for utility class generation (replaces the `theme.extend` object from v3)
+- **`@custom-variant`** — Defines custom variant selectors (replaces `darkMode` config from v3)
+
+### Customizing Tailwind Configuration
+
+To customize the Tailwind configuration for your theme, override the `TailwindCss.tsx` component and its associated CSS files.
+
+**Step 1:** Use the `theme:twizz` command to copy the component to your theme:
+
+```bash
+npx evershop theme:twizz
+```
+
+Select `TailwindCss.tsx` from the list. This copies the component, `tailwind.css`, and `shadcn.css` to your theme's `pages/all/` folder.
+
+**Step 2:** Edit the `tailwind.css` file in your theme to customize the configuration. For example, to add a custom Tailwind plugin or additional theme values:
+
+```css title="themes/my-theme/src/pages/all/tailwind.css"
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@import 'tw-animate-css';
+@import './shadcn.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  /* Add your custom theme values here */
+  --color-brand: var(--brand);
+  --font-heading: 'Playfair Display', serif;
+}
+```
+
+**Step 3:** Modify the CSS custom properties in the same file (or in `shadcn.css`) to change the actual color values, border radius, and other design tokens:
+
+```css title="Customize colors by overriding :root variables"
+:root {
+  --radius: 0.5rem;
+  --primary: oklch(0.55 0.2 250);        /* Custom blue */
+  --primary-foreground: oklch(0.985 0 0); /* White text on primary */
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.15 0 0);
+  --brand: oklch(0.6 0.25 30);           /* Custom brand color */
+}
+
+.dark {
+  --primary: oklch(0.7 0.2 250);
+  --background: oklch(0.12 0 0);
+  --foreground: oklch(0.95 0 0);
+}
+```
+
+After these changes, all Tailwind classes like `bg-primary`, `text-foreground`, `rounded-lg` will use your custom values.
+
+:::info
+For more information about the `theme:twizz` command, see the [Command Line Documentation](../knowledge-base/command-lines#theme-development-tool).
+:::
+
+## Using SCSS
+
+EverShop supports SCSS (Sassy CSS) out of the box, allowing you to use variables, nesting, mixins, and other Sass features.
+
+Import SCSS files directly in your components:
+
+```tsx
 import React from "react";
 import "./style.scss";
 
@@ -30,221 +177,37 @@ export default function MyComponent() {
 }
 ```
 
-In this example, the `style.scss` file is imported directly into the component. You can write your SCSS styles in that file, and they will be applied to the component.
+```scss title="style.scss"
+.my-component {
+  padding: 1rem;
+  border: 1px solid var(--border);
 
-## Using TailwindCSS
+  &:hover {
+    background-color: var(--accent);
+  }
 
-EverShop integrates [TailwindCSS](https://tailwindcss.com/) for utility-first styling. The default EverShop theme is built using TailwindCSS, making it easy to customize and extend.
-
-### Using TailwindCSS in Your Theme
-
-By default, EverShop themes include TailwindCSS v4 so you can start using it immediately.
-
-:::info
-For more information on customizing layout templates, refer to the [templating documentation](./templating).
-:::
-
-### Customizing TailwindCSS Configuration
-
-You can customize TailwindCSS by overriding the default `TailwindCss.tsx` component.
-
-:::info
-You can use the `theme:twizz` command to create component overrides for your theme. This tool will automatically copy the selected component and its dependencies to your active theme directory, maintaining the correct file structure for theme overrides. For more details, refer to the [theme development tool documentation](../knowledge-base/command-lines#theme-development-tool).
-:::
-
-The `TailwindCss.tsx` component imports the `tailwind.css` file and return `null` since it doesn't render any visible content. After you create an override of this component, you can modify the `tailwind.css` file to customize your TailwindCSS 4 configuration.
-
-Here's the default `tailwind.css` file included in the default theme:
-
-```css title="modules/base/pages/frontStore/all/tailwind.css"
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
-@import "tw-animate-css";
-@import "./shadcn.css";
-
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-divider: var(--divider);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-}
-
-:root {
-  --radius: 0.325rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --divider: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  h3 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
 }
 ```
 
-## Using Sass
-
-In addition to SCSS, EverShop supports the indented syntax of [Sass](https://sass-lang.com/). This provides a more concise way to write your styles with meaningful whitespace.
-
-Example of SCSS syntax:
-
-```scss
-nav {
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  li {
-    display: inline-block;
-  }
-
-  a {
-    display: block;
-    padding: 6px 12px;
-    text-decoration: none;
-  }
-```
-
-You can import these files into your components just as you would with SCSS files.
+:::info
+SCSS files are processed through the same PostCSS pipeline as CSS files, so Tailwind's `@apply` directive works inside SCSS if needed.
+:::
 
 ## Adding Global CSS
 
-There are two approaches to include global CSS that will be applied across your entire storefront:
+There are two approaches for adding CSS that applies across your entire storefront.
 
-### 1. Using Configuration Files
+### Approach 1: Override the `GlobalCss.tsx` Component (Recommended)
 
-You can add external CSS files to your theme by modifying the `themeConfig` section in your configuration file. This approach is useful for third-party libraries or fonts that need to be loaded across your entire site.
+EverShop includes a `GlobalCss.tsx` component that loads on every storefront page. Override it in your theme to add your own global styles:
 
-```js title="config/default.json"
-{
-  // Other configuration settings
-  "themeConfig": {
-    "headTags": {
-      "links": [
-        {
-          "rel": "stylesheet",
-          "href": "/custom.css"
-        }
-      ]
-    }
-  }
-}
-```
+**Step 1:** Use `theme:twizz` to copy the component, or create it manually:
 
-:::info
-For more information about theme configuration options, refer to the [configuration guide](../knowledge-base/configuration-guide).
-:::
-
-:::info
-For more information about how to serve static assets in your theme, refer to the [static assets documentation](../knowledge-base/static-file-serving).
-:::
-
-### 2. Importing CSS in Global Components
-
-Another approach is to import CSS files directly in a component that appears on every page of your storefront. This method provides more control over the loading order of your styles.
-
-You can do it by overriding the `GlobalCss.tsx` component that will be included in your layout:
-
-```ts title="themes/yourtheme/src/pages/all/GlobalCss.tsx"
+```tsx title="themes/my-theme/src/pages/all/GlobalCss.tsx"
 import React from "react";
 import "./global.scss";
 
@@ -258,25 +221,68 @@ export const layout = {
 };
 ```
 
-And then you can add your global styles in the `global.scss` file:
+**Step 2:** Add your global styles in the SCSS file:
 
-```scss title="themes/yourtheme/src/pages/all/global.scss"
+```scss title="themes/my-theme/src/pages/all/global.scss"
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  font-family: 'Inter', sans-serif;
+}
+
+.page-width {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 ```
 
-## Best Practices for Styling in EverShop
+This approach bundles your CSS into the page's JavaScript bundle, so it goes through the full build pipeline (SCSS compilation + Tailwind processing).
 
-When styling your EverShop theme, consider these recommendations:
+### Approach 2: Link External CSS via Configuration
 
-1. **Choose a consistent approach**: Decide whether to use TailwindCSS, SCSS, or standard CSS throughout your theme for better maintainability.
+For third-party CSS files, Google Fonts, or other external stylesheets that don't need build processing, add them to the `<head>` via configuration:
 
-2. **Leverage component-scoped styles**: Keep styles related to specific components in their own files to improve modularity.
+```json title="config/default.json"
+{
+  "themeConfig": {
+    "headTags": {
+      "links": [
+        {
+          "rel": "stylesheet",
+          "href": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        },
+        {
+          "rel": "stylesheet",
+          "href": "/custom.css"
+        }
+      ]
+    }
+  }
+}
+```
 
-3. **Minimize global styles**: Use global styles sparingly to avoid specificity issues and unintended side effects.
+Local files (like `/custom.css`) should be placed in the `public/` folder of your theme or project root. See [Static File Serving](../knowledge-base/static-file-serving) for details.
 
-4. **Optimize for performance**: Be mindful of CSS bundle size, especially when using utility frameworks like TailwindCSS.
+:::warning
+Files added via configuration are loaded as separate HTTP requests and are **not** processed by the build pipeline — no SCSS compilation, no Tailwind processing. Use this approach only for external resources or pre-built CSS.
+:::
 
-5. **Use variables for consistency**: Whether through SCSS variables or TailwindCSS configuration, use variables for colors, spacing, and other repeated values.
+## Styling Best Practices
+
+1. **Use Tailwind utility classes as the primary approach** — The default theme is built with Tailwind. Staying consistent makes your theme easier to maintain.
+
+2. **Use SCSS for complex component styles** — When a component needs styles that are hard to express with utilities (animations, complex selectors), use a co-located SCSS file.
+
+3. **Customize via design tokens, not overrides** — Instead of writing CSS that fights the defaults, modify the CSS custom properties in `tailwind.css` to change colors, spacing, and radius globally.
+
+4. **Keep component styles co-located** — Place SCSS files next to the component that uses them (e.g., `ProductCard.tsx` and `ProductCard.scss` in the same folder).
+
+5. **Use `var(--token)` for consistency** — Reference design tokens like `var(--primary)`, `var(--border)`, `var(--background)` in your SCSS so your styles respond to the same theme as Tailwind classes.

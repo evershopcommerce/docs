@@ -181,6 +181,35 @@ This function adds a value to the GraphQL execution context. It accepts three ar
 By default, EverShop adds all data in the current `request` object to the context. For example, you can call the `getContextValue('url')` function to get the current request URL.
 :::
 
+## How Server-Side Data Fetching Works Internally
+
+Understanding the internal mechanism helps you debug data-fetching issues and write more effective queries.
+
+### Build Time: Query Extraction
+
+During the build process, EverShop scans all React components for each route and:
+
+1. **Extracts** the `export const query` from each component file using regex.
+2. **Aliases** all selected fields to prevent naming collisions across components (e.g., `product.name` becomes `e_uniqueId_name`).
+3. **Encodes** `getContextValue()` calls as Base64 placeholders.
+4. **Merges** all component queries into a single GraphQL query per route.
+5. **Generates** a `propsMap` that maps aliased field names back to the original component prop names.
+
+The merged query and propsMap are saved as build artifacts.
+
+### Request Time: Query Execution
+
+When a request arrives for a page route:
+
+1. The **buildQuery** middleware reads the pre-built query file.
+2. It **decodes** `getContextValue()` placeholders by replacing them with actual values from the request context (set by earlier middleware).
+3. If any widgets are registered for the route, their queries are merged in as well.
+4. The **graphql** middleware executes the merged query against the schema.
+5. The **response** middleware uses the `propsMap` to distribute the query results back to each component as props.
+6. React's `renderToString()` produces the HTML with all data pre-filled.
+
+This is why `setContextValue()` must be called in a middleware that runs **before** the GraphQL query execution — the values need to be available when placeholders are replaced.
+
 ## Client-Side Data Fetching
 
 ### GraphQL API Endpoint

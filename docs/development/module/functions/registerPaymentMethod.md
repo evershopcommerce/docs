@@ -62,7 +62,7 @@ Let's create a simple "Cash on Delivery" payment method that is only available f
 
 ```js
 import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
-import { getSetting } from '@evershop/evershop/lib/util/settings';
+import { getSetting } from '@evershop/evershop/setting/services';
 
 registerPaymentMethod({
   init: () => {

@@ -173,7 +173,7 @@ Renews the admin access token using a valid refresh token. This endpoint allows 
 **Authentication:** Requires valid refresh token
 
 <Api
-method="GET"
+method="POST"
 url="/api/user/token/refresh"
 requestSchema={{
   "type": "object",
@@ -280,7 +280,7 @@ Renews the customer access token using a valid refresh token. This endpoint allo
 **Authentication:** Requires valid refresh token
 
 <Api
-method="GET"
+method="POST"
 url="/api/customer/token/refresh"
 requestSchema={{
   "type": "object",

@@ -108,3 +108,48 @@ With this configuration, you can structure your extensions like this:
 ```
 
 When you run `npm install` in the project root, NPM will install the dependencies for all your extensions and themes and symlink them in the root `node_modules` directory. This is a powerful way to manage complex projects with multiple custom modules.
+
+## Bootstrap Lifecycle
+
+Understanding the startup sequence is essential for knowing when and where to register your extension points. Here is the complete lifecycle:
+
+1.  **Create Express App** — The HTTP application is initialized.
+2.  **Load Modules** — Core modules (catalog, checkout, customer, etc.) and enabled extensions are discovered.
+3.  **Scan Routes & Middleware** — Route definitions (`route.json`) and middleware files are scanned from all modules and extensions.
+4.  **Execute Bootstrap Scripts** — Each module's `bootstrap.ts` is executed sequentially. This is where modules register [processors](/docs/development/knowledge-base/registry-and-processors), [hooks](/docs/development/module/functions/hookable), [widgets](/docs/development/knowledge-base/cron-jobs), and [cron jobs](/docs/development/knowledge-base/cron-jobs).
+5.  **Lock Hooks & Registry** — After all bootstrap scripts run, the hook and registry systems are **locked**. No new hooks or processors can be added after this point. This ensures the extension pipeline is stable during request handling.
+6.  **Validate Configuration** — The configuration is validated against the merged JSON schema.
+7.  **Run Migrations** — Pending database migrations from all modules are executed within transactions.
+8.  **Start Child Processes** — Two separate child processes are spawned:
+    - **Cron Process** — Handles scheduled jobs.
+    - **Event Process** — Handles asynchronous event subscribers.
+9.  **Start HTTP Server** — The Express app begins listening for requests.
+
+## Extension Points
+
+EverShop provides four primary extension mechanisms, all registered during the bootstrap phase:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Mechanism</th>
+      <th>Purpose</th>
+      <th>Documentation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Registry &amp; Processors</strong></td><td>Transform data values across modules (cart fields, email services, config schemas)</td><td><a href="/docs/development/knowledge-base/registry-and-processors">Registry and Processors</a></td></tr>
+    <tr><td><strong>Hooks</strong></td><td>Run code before or after specific function calls</td><td><a href="/docs/development/module/functions/hookable">hookable</a></td></tr>
+    <tr><td><strong>Events &amp; Subscribers</strong></td><td>React to actions asynchronously (product created, order placed)</td><td><a href="/docs/development/knowledge-base/events-and-subscribers">Events and Subscribers</a></td></tr>
+    <tr><td><strong>Middleware</strong></td><td>Add request-processing logic to routes</td><td><a href="/docs/development/knowledge-base/middleware-system">Middleware System</a></td></tr>
+  </tbody>
+</table>
+
+## TypeScript and the Build Process
+
+EverShop source code is written in TypeScript. All `.ts` and `.tsx` files in the `src/` directory are compiled to JavaScript in the `dist/` directory before the application runs. In development mode, EverShop handles TypeScript compilation automatically. In production, you must compile your extensions and themes before deployment.
+
+This means:
+- You write code in `src/` as TypeScript.
+- The runtime loads compiled JavaScript from `dist/`.
+- Core modules are published as pre-compiled JavaScript in `node_modules/@evershop/evershop/dist/`.

@@ -55,8 +55,12 @@ Returns `number` if `forDisplay = false`, or formatted `string` if `forDisplay =
 import { toPrice } from "@evershop/evershop/checkout/services";
 
 const price = toPrice("19.999");
-console.log(price); // 20.00 (depends on rounding config)
+console.log(price); // 20 (number, rounded based on pricing.rounding config)
 ```
+
+:::warning
+`toPrice` throws an `Error` if the value cannot be parsed as a number. Always ensure the input is a valid numeric string.
+:::
 
 ### Format for Display
 

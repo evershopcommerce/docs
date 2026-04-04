@@ -225,7 +225,7 @@ hookAfter('createProduct', async (product) => {
 
 ## Context Object
 
-Pass context to provide additional data to hooks:
+Pass context to provide additional data to hooks. The context is bound to `this` inside hook callbacks, so you **must use regular functions** (not arrow functions) to access it:
 
 ```typescript
 import { hookable } from '@evershop/evershop/lib/util/hookable';
@@ -236,13 +236,17 @@ const result = await hookable(myFunction, {
   permissions: request.session.permissions
 })(data, connection);
 
-// Hooks can access context
-hookBefore('myFunction', async (data, connection, context) => {
-  if (!context.permissions.includes('create')) {
+// Hooks access context via 'this' — use a regular function, NOT an arrow function
+hookBefore('myFunction', async function(data, connection) {
+  if (!this.permissions.includes('create')) {
     throw new Error('Unauthorized');
   }
 });
 ```
+
+:::warning
+Arrow functions (`=>`) do **not** have their own `this` binding. If you use an arrow function as a hook callback, `this` will be `undefined` and you will not be able to access the context. Always use the `function` keyword when your hook needs context access.
+:::
 
 ## Notes
 

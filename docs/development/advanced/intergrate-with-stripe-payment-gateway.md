@@ -91,7 +91,7 @@ Here's the implementation of `createPaymentIntent.js`:
 
 ```js
 import { select } from "@evershop/postgres-query-builder";
-import { pool } from "@evershop/evershop/src/lib/postgres";
+import { pool } from "@evershop/evershop/lib/postgres";
 import smallestUnit from "zero-decimal-currencies";
 import { getSetting } from "@evershop/evershop/setting/services";
 import stripePayment from "stripe";
@@ -170,7 +170,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { useCheckout } from "@components/common/context/checkout";
+import { useCheckout } from "@components/frontStore/checkout/CheckoutContext";
 import StripeLogo from "@components/frontStore/stripe/StripeLogo";
 import CheckoutForm from "@components/frontStore/stripe/checkout/CheckoutForm";
 
@@ -313,7 +313,7 @@ import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useQuery } from "urql";
-import { useCheckout } from "@components/common/context/checkout";
+import { useCheckout } from "@components/frontStore/checkout/CheckoutContext";
 import "./CheckoutForm.scss";
 import { Field } from "@components/common/form/Field";
 import TestCards from "./TestCards";

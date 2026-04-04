@@ -134,7 +134,7 @@ Azure's deployment process automatically runs `npm install` followed by `npm run
   "author": "EverShop",
   "license": "ISC",
   "dependencies": {
-    "@evershop/evershop": "^1.0.0-rc.8"
+    "@evershop/evershop": "latest"
   }
 }
 ```

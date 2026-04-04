@@ -509,6 +509,49 @@ responseSample={`{
 
 <hr />
 
+## Category-Product Relationships
+
+### Add Product to Category
+
+Associates a product with a category.
+
+<Api
+method="POST"
+url="/api/categories/{category_id}/products"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string"
+    }
+  },
+  "required": ["product_id"]
+}}
+responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+/>
+
+<hr/>
+
+### Remove Product from Category
+
+Removes the association between a product and a category. The product itself is not deleted.
+
+<Api
+method="DELETE"
+url="/api/categories/{category_id}/products/{product_id}"
+responseSample={`{
+  "data": {
+    "success": true
+  }
+}`}
+/>
+
+<hr/>
+
 ### Get Category Data with GraphQL
 
 EverShop uses GraphQL for querying category data. For detailed information on how to query categories, refer to the [GraphQL API documentation](/docs/development/knowledge-base/data-fetching).

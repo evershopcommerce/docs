@@ -133,9 +133,9 @@ extend type Query {
 
 ## GraphQL Resolvers
 
-The resolvers are used to fetch data from the database. The resolvers are written in JavaScript. The resolvers file must have the `.resolvers.js` extension.
+The resolvers are used to fetch data from the database. The resolver source file should have the `.resolvers.ts` extension (TypeScript). During the build process, these are compiled to `.resolvers.js` files which are loaded at runtime.
 
-```ts title="Product.resolvers.js"
+```ts title="Product.resolvers.ts"
 import { select } from "@evershop/postgres-query-builder";
 import { buildUrl } from "@evershop/evershop/lib/router";
 import { camelCase } from "@evershop/evershop/lib/util/camelCase";
@@ -194,6 +194,15 @@ export default {
   },
 };
 ```
+
+## Admin-Only Types and Resolvers
+
+If you need GraphQL types or resolvers that are only available in the admin panel (not the storefront), use the `.admin` suffix:
+
+- **Type definitions**: `MyType.admin.graphql`
+- **Resolvers**: `MyType.admin.resolvers.ts`
+
+These files are included when building the admin GraphQL schema but excluded from the storefront schema.
 
 ## GraphQL in Use
 

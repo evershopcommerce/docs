@@ -109,12 +109,6 @@ function ContactForm() {
       <td>Icon displayed on the right inside the input</td>
     </tr>
     <tr>
-      <td>onChange</td>
-      <td>(value: string) =&gt; void</td>
-      <td>-</td>
-      <td>Callback fired when the value changes</td>
-    </tr>
-    <tr>
       <td>wrapperClassName</td>
       <td>string</td>
       <td>-</td>
