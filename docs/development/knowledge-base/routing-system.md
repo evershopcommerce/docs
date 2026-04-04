@@ -31,28 +31,30 @@ Routes are organized into two main categories within a module:
 Let's look at a typical module structure:
 
 ```bash
-├── api
-│   ├── createProduct
+├── api/
+│   ├── createProduct/
 │   │   ├── route.json
-│   │   └── index.js
-│   └── updateProduct
+│   │   └── createProduct.ts
+│   └── updateProduct/
 │       ├── route.json
-│       └── index.js
-├── pages
-│   ├── admin
-│   │   ├── productEdit
+│       └── updateProduct.ts
+├── pages/
+│   ├── admin/
+│   │   ├── productEdit/
 │   │   │   ├── route.json
-│   │   │   └── index.js
-│   │   └── productGrid
+│   │   │   ├── index.ts            # Middleware (lowercase)
+│   │   │   └── General.tsx          # React component (uppercase)
+│   │   └── productGrid/
 │   │       ├── route.json
-│   │       └── index.js
-│   └── frontStore
-│       ├── categoryView
+│   │       └── index.ts
+│   └── frontStore/
+│       ├── categoryView/
 │       │   ├── route.json
-│       │   └── index.js
-│       └── productView
+│       │   └── index.ts
+│       └── productView/
 │           ├── route.json
-│           └── index.js
+│           ├── index.ts
+│           └── ProductInfo.tsx
 └── ...
 ```
 
@@ -61,9 +63,9 @@ Let's look at a typical module structure:
 The `api` folder is where you define all your RESTful API endpoints. Each sub-folder inside `api` corresponds to a single API endpoint and contains:
 
 -   `route.json`: A file that defines the route's path and HTTP method.
--   `index.js`: The controller that handles the request.
+-   One or more middleware files (`.ts`): Functions that process the request sequentially.
 
-This structure keeps your API logic organized and self-contained.
+See [API Routes](/docs/development/knowledge-base/api-routes) for the full API development guide.
 
 ### The `pages` Folder
 
@@ -72,7 +74,7 @@ The `pages` folder is for routes that render a user interface. It is further div
 -   **`admin`**: Routes for the admin panel. These routes automatically have authentication and authorization middleware applied.
 -   **`frontStore`**: Routes for the customer-facing storefront.
 
-Each sub-folder inside `admin` or `frontStore` represents a page and contains the same `route.json` and `index.js` files.
+Each sub-folder inside `admin` or `frontStore` represents a page and contains `route.json`, middleware files (lowercase `.ts`), and React components (uppercase `.tsx`). See [Pages](/docs/development/knowledge-base/pages) for more details.
 
 ## The Route ID
 
@@ -84,7 +86,7 @@ This ID is crucial for two reasons:
 2.  It is used to generate URLs programmatically.
 
 :::warning
-Route IDs must be unique and should not contain spaces or special characters.
+Route IDs must be unique and can only contain **alphabetic characters** (a-z, A-Z). Numbers, spaces, hyphens, underscores, and other special characters are not allowed in route folder names.
 :::
 
 ## Route Declaration (`route.json`)

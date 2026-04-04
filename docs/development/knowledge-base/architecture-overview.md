@@ -100,11 +100,15 @@ With this configuration, you can structure your extensions like this:
 ```bash
 ├── extensions
 │   ├── my-custom-extension
+│   │   ├── src/
+│   │   │   └── bootstrap.ts
 │   │   ├── package.json
-│   │   └── index.js
+│   │   └── tsconfig.json
 │   └── another-extension
+│       ├── src/
+│       │   └── bootstrap.ts
 │       ├── package.json
-│       └── index.js
+│       └── tsconfig.json
 ```
 
 When you run `npm install` in the project root, NPM will install the dependencies for all your extensions and themes and symlink them in the root `node_modules` directory. This is a powerful way to manage complex projects with multiple custom modules.
@@ -116,7 +120,7 @@ Understanding the startup sequence is essential for knowing when and where to re
 1.  **Create Express App** — The HTTP application is initialized.
 2.  **Load Modules** — Core modules (catalog, checkout, customer, etc.) and enabled extensions are discovered.
 3.  **Scan Routes & Middleware** — Route definitions (`route.json`) and middleware files are scanned from all modules and extensions.
-4.  **Execute Bootstrap Scripts** — Each module's `bootstrap.ts` is executed sequentially. This is where modules register [processors](/docs/development/knowledge-base/registry-and-processors), [hooks](/docs/development/module/functions/hookable), [widgets](/docs/development/knowledge-base/cron-jobs), and [cron jobs](/docs/development/knowledge-base/cron-jobs).
+4.  **Execute Bootstrap Scripts** — Each module's `bootstrap.ts` is executed sequentially. This is where modules register [processors](/docs/development/knowledge-base/registry-and-processors), [hooks](/docs/development/module/functions/hookable), [widgets](/docs/development/module/widget-development), and [cron jobs](/docs/development/knowledge-base/cron-jobs).
 5.  **Lock Hooks & Registry** — After all bootstrap scripts run, the hook and registry systems are **locked**. No new hooks or processors can be added after this point. This ensures the extension pipeline is stable during request handling.
 6.  **Validate Configuration** — The configuration is validated against the merged JSON schema.
 7.  **Run Migrations** — Pending database migrations from all modules are executed within transactions.

@@ -67,6 +67,119 @@ type PaymentMethodInfo = {
 Each payment method code must be unique. Registering two methods with the same code throws an error.
 :::
 
+## Registering the Payment Form on the Checkout Page
+
+After registering the payment method in `bootstrap.ts`, you need a React component on the checkout page that renders the payment UI (e.g., a credit card form, a "Pay with Cash" message, or a redirect button).
+
+EverShop's `CheckoutContext` provides a `registerPaymentComponent()` function that lets your extension register three renderers for the checkout page:
+
+- **`nameRenderer`** — Renders the payment method label in the method selector (e.g., "Credit Card" with a logo).
+- **`formRenderer`** — Renders the payment form when this method is selected (e.g., Stripe card input fields, or an informational message for COD).
+- **`checkoutButtonRenderer`** — Renders the "Place Order" button with your custom logic (e.g., call Stripe to confirm payment before placing the order).
+
+### Creating the Checkout Component
+
+Create a React component in `pages/frontStore/checkout/`:
+
+```tsx title="extensions/my-payment/src/pages/frontStore/checkout/MyPayment.tsx"
+import React, { useEffect } from 'react';
+import {
+  useCheckout,
+  useCheckoutDispatch
+} from '@components/frontStore/checkout/CheckoutContext';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
+
+export default function MyPayment({ setting }) {
+  const { checkoutSuccessUrl, orderPlaced, orderId, checkoutData } = useCheckout();
+  const { registerPaymentComponent } = useCheckoutDispatch();
+
+  // Redirect to success page after order is placed with this method
+  useEffect(() => {
+    if (orderPlaced && checkoutData.paymentMethod === 'my_payment') {
+      window.location.href = `${checkoutSuccessUrl}/${orderId}`;
+    }
+  }, [orderPlaced, checkoutSuccessUrl, orderId]);
+
+  // Register the three renderers for this payment method
+  useEffect(() => {
+    registerPaymentComponent('my_payment', {
+      // 1. The label shown in the payment method selector
+      nameRenderer: () => (
+        <div className="flex items-center justify-between w-full">
+          <span>{setting.myPaymentDisplayName}</span>
+          <img src="/my-payment-logo.png" alt="My Payment" width={60} />
+        </div>
+      ),
+      // 2. The form shown when this method is selected
+      formRenderer: () => (
+        <div className="p-4">
+          {/* Your payment form fields go here */}
+          <p>{_('Enter your payment details below.')}</p>
+          <input type="text" placeholder="Card number" className="w-full border p-2 rounded" />
+        </div>
+      ),
+      // 3. The checkout button with your payment logic
+      checkoutButtonRenderer: () => {
+        const { checkout } = useCheckoutDispatch();
+        const { loadingStates, orderPlaced } = useCheckout();
+
+        const handleClick = async (e: React.MouseEvent) => {
+          e.preventDefault();
+          // Call your payment provider here if needed, then place the order
+          await checkout();
+        };
+
+        return (
+          <button
+            onClick={handleClick}
+            disabled={loadingStates.placingOrder || orderPlaced}
+            className="w-full bg-primary text-primary-foreground py-3 rounded-md"
+          >
+            {loadingStates.placingOrder ? _('Placing Order...') : _('Place Order')}
+          </button>
+        );
+      }
+    });
+  }, [registerPaymentComponent, setting.myPaymentDisplayName]);
+
+  // This component doesn't render anything visible itself
+  return null;
+}
+
+export const layout = {
+  areaId: 'checkoutFormAfter',
+  sortOrder: 10
+};
+
+export const query = `
+  query Query {
+    setting {
+      myPaymentDisplayName
+    }
+  }
+`;
+```
+
+### Key Points
+
+- The component must be placed in the **checkout page folder** (`pages/frontStore/checkout/`) so it loads on the checkout page.
+- The `layout.areaId` should be `'checkoutFormAfter'` — this is the Area where payment methods are rendered.
+- The `registerPaymentComponent()` **code** (first argument) must match the code returned by your `registerPaymentMethod()` init function in bootstrap.
+- The component itself returns `null` — it only registers renderers via the effect.
+- Use `useCheckout()` to read checkout state (e.g., `orderPlaced`, `orderId`, `loadingStates`).
+- Use `useCheckoutDispatch()` to access `checkout()` (places the order) and `registerPaymentComponent()`.
+- The `query` export fetches any settings your payment method needs (e.g., display name, public API keys).
+
+### The `PaymentMethodComponent` Interface
+
+```typescript
+interface PaymentMethodComponent {
+  nameRenderer: React.ComponentType;      // Label in payment method list
+  formRenderer: React.ComponentType;      // Form shown when method is selected
+  checkoutButtonRenderer: React.ComponentType; // "Place Order" button
+}
+```
+
 ## Handling Order Placement
 
 After a customer places an order, you need to handle the payment flow. The approach depends on your payment type:

@@ -63,24 +63,27 @@ The public Docker image is for installing EverShop in your local environment onl
 
 `@evershop/evershop` is the core of the EverShop platform. It contains all of the core modules like `catalog`, `checkout`, `order`.
 
-```js title="Install the @evershop/evershop Npm package"
-npm init -y;
-npm install @evershop/evershop;
+```bash title="Install the @evershop/evershop Npm package"
+npm init -y
+npm install @evershop/evershop
 ```
 
 ### Step 2: Install the core Npm scripts
 
 Open the package.json file and add the following scripts:
 
-```js title="Add the core npm scripts"
-"scripts": {
+```json title="Add the core npm scripts to package.json"
+{
+  "scripts": {
     "setup": "evershop install",
     "build": "evershop build",
     "start": "evershop start",
+    "dev": "evershop dev",
     "seed": "evershop seed",
     "start:debug": "evershop start --debug",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
+  }
 }
 ```
 
@@ -183,26 +186,16 @@ This command will populate your store with sample products, categories, and othe
 Demo data seeding is intended for development and testing environments only. Do not use it in production.
 :::
 
-## For developer
+## For Developers
 
-If you are a developer and want to start the project in the development mode, there are some additional steps you need to follow.
+If you are a developer and want to start the project in development mode, there are some additional steps you need to follow.
 
-### Install some additional dependencies for development
+### Install Additional Dev Dependencies
 
-To run the project in development mode, you need to install some additional dependencies. These dependencies are not required for production but are essential for development.
+To run the project in development mode, you need to install additional dependencies. These are not required for production but are essential for development:
 
 ```bash
 npm install --save-dev @types/node typescript @parcel/watcher @types/config @types/express @types/pg @types/react execa
-```
-
-### Adding the `dev` script to the package.json file.
-
-Open the package.json and add the following script:
-
-```js title="Add the core dev script"
-"scripts": {
-    "dev": "evershop dev"
-}
 ```
 
 ### Adding the workspace configuration
@@ -222,9 +215,11 @@ This allows each extension and theme to function as an independent package with 
 
 ### Start the project in development mode
 
-```js title="Start the site in development mode"
+```bash title="Start the site in development mode"
 npm run dev
 ```
+
+Your store will start at `http://localhost:3000` with hot-reloading enabled. Changes to React components update instantly in the browser.
 
 ### The debug mode
 

@@ -38,6 +38,10 @@ After a fresh installation of EverShop, you'll need to manually create the `publ
 The directory must be named exactly as `public` (not `publics`, `static`, etc.) to be properly recognized by EverShop.
 :::
 
+:::warning
+Static files must have a **file extension** (e.g., `.png`, `.css`, `.js`). Requests for paths without a file extension (like `/about`) are not served as static files — they are passed to the router for page matching instead.
+:::
+
 ## Serving Static Files From Your Theme
 
 In addition to the root `public` directory, EverShop also supports serving static files from individual themes. Each theme can have its own `public` folder for theme-specific static assets.

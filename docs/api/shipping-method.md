@@ -78,9 +78,24 @@ responseSample={`{
 
 ### Path Parameters
 
-| Parameter | Type   | Required | Description                                          |
-| --------- | ------ | -------- | ---------------------------------------------------- |
-| cart_id   | string | Yes      | The UUID of the cart to apply the shipping method to |
+<table className="not-prose table-auto">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cart_id</td>
+      <td>string</td>
+      <td>Yes</td>
+      <td>The UUID of the cart to apply the shipping method to</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Get Cart Shipping Method
 
@@ -100,18 +115,62 @@ responseSample={`{
 
 ### Path Parameters
 
-| Parameter | Type   | Required | Description                                              |
-| --------- | ------ | -------- | -------------------------------------------------------- |
-| cart_id   | string | Yes      | The UUID of the cart to retrieve the shipping method for |
+<table className="not-prose table-auto">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cart_id</td>
+      <td>string</td>
+      <td>Yes</td>
+      <td>The UUID of the cart to retrieve the shipping method for</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Troubleshooting
 
 ### Common Error Codes
 
-| Status Code | Description          | Solution                                                             |
-| ----------- | -------------------- | -------------------------------------------------------------------- |
-| 400         | Bad Request          | Check that the shipping method code is valid                         |
-| 401         | Unauthorized         | Ensure your API credentials are correct                              |
-| 404         | Not Found            | Verify the cart ID exists                                            |
-| 422         | Unprocessable Entity | The cart may be missing required information (like shipping address) |
-| 500         | Server Error         | Contact support if the issue persists                                |
+<table className="not-prose table-auto">
+  <thead>
+    <tr>
+      <th>Status Code</th>
+      <th>Description</th>
+      <th>Solution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>400</td>
+      <td>Bad Request</td>
+      <td>Check that the shipping method code is valid</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>Unauthorized</td>
+      <td>Ensure your API credentials are correct</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>Not Found</td>
+      <td>Verify the cart ID exists</td>
+    </tr>
+    <tr>
+      <td>422</td>
+      <td>Unprocessable Entity</td>
+      <td>The cart may be missing required information (like shipping address)</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Server Error</td>
+      <td>Contact support if the issue persists</td>
+    </tr>
+  </tbody>
+</table>

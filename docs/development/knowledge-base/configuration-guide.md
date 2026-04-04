@@ -37,8 +37,7 @@ By default, EverShop does not create the `config/` directory. You need to create
 
 This file should contain all the default settings for your application.
 
-```json
-// config/default.json
+```json title="config/default.json"
 {
   "shop": {
     "currency": "USD",
@@ -54,8 +53,7 @@ This file should contain all the default settings for your application.
 
 You can create separate files for each deployment environment. For example, to override the theme for production, you would create `config/production.json`:
 
-```json
-// config/production.json
+```json title="config/production.json"
 {
   "system": {
     "theme": "my-production-theme"
@@ -69,8 +67,7 @@ When you run your application with `NODE_ENV=production`, the theme will be `my-
 
 For settings specific to your local machine, like database credentials, use `config/local.json`. This file is perfect for sensitive information that should not be in Git.
 
-```json
-// config/local.json
+```json title="config/local.json"
 {
   "db": {
     "user": "local_user",
@@ -87,8 +84,8 @@ EverShop provides two ways to access configuration values.
 
 You can use the `config` package directly. This is useful in modules and extensions.
 
-```typescript
-const config = require('config');
+```ts
+import config from 'config';
 
 // Throws an error if the key is not found
 const currency = config.get('shop.currency');
@@ -110,6 +107,26 @@ import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 const language = getConfig('shop.language', 'en');
 ```
 
+### Setting Module Defaults (For Extensions)
+
+Extensions can register their own default configuration values using `config.util.setModuleDefaults()` in their `bootstrap.ts`. This deep-merges the extension's defaults with the existing configuration without overwriting other modules' settings:
+
+```ts title="extensions/my-extension/src/bootstrap.ts"
+import config from 'config';
+
+export default () => {
+  config.util.setModuleDefaults('myExtension', {
+    apiKey: '',
+    maxRetries: 3,
+    timeout: 5000
+  });
+};
+```
+
+The values are then accessible via `getConfig('myExtension.apiKey')` and can be overridden by the store owner in their `config/default.json`.
+
+This is also how core modules register their defaults (e.g., catalog image sizes, OMS order statuses, checkout settings).
+
 ## Core Configuration Reference
 
 Here is a reference for the most important configuration sections.
@@ -126,7 +143,7 @@ This section contains general information about your shop.
     "timezone": "America/New_York",
     "currency": "USD",
     "weightUnit": "kg",
-    "homeUrl": "http://localhost:3000" // Used for integrations
+    "homeUrl": "http://localhost:3000"
   }
 }
 ```
@@ -386,6 +403,13 @@ Define shipping carriers and their tracking URLs.
   }
 }
 ```
+
+## See Also
+
+- [Order Status Management](/docs/development/knowledge-base/order-status-management) — Detailed guide to OMS status configuration and programmatic registration
+- [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — Payment-specific configuration
+- [Database](/docs/development/knowledge-base/database) — Database connection settings
+- [Styling](/docs/development/theme/styling) — Theme configuration for styles and Tailwind
 
 import Sponsors from '@site/src/components/Sponsor';
 

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 126
 keywords:
-- addPaymentTransaction
-- payment
-- transaction
-- OMS
+  - addPaymentTransaction
+  - payment
+  - transaction
+  - OMS
 groups:
-- oms
+  - oms
 sidebar_label: addPaymentTransaction
 title: addPaymentTransaction
 description: Record a payment transaction for an order.
@@ -19,7 +19,7 @@ Record a payment transaction (capture, refund, authorization) for an order.
 ## Import
 
 ```typescript
-import { addPaymentTransaction } from '@evershop/evershop/oms/services';
+import { addPaymentTransaction } from "@evershop/evershop/oms/services";
 ```
 
 ## Syntax
@@ -39,31 +39,72 @@ addPaymentTransaction(
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `connection` | `Pool \| PoolClient` | Database connection |
-| `orderId` | `number` | Order database ID |
-| `amount` | `number` | Transaction amount |
-| `transactionId` | `string \| number` | Provider's transaction ID |
-| `transactionType` | `string` | e.g., `'capture'`, `'refund'`, `'authorization'` |
-| `paymentAction` | `string` | e.g., `'Capture'`, `'Refund'` |
-| `additionalInformation` | `string` (optional) | Extra details (JSON string) |
-| `parentTransactionId` | `string \| number` (optional) | Parent transaction for refunds |
+<table className="not-prose table-auto">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>`connection`</td>
+      <td>`Pool | PoolClient`</td>
+      <td>Database connection</td>
+    </tr>
+    <tr>
+      <td>`orderId`</td>
+      <td>`number`</td>
+      <td>Order database ID</td>
+    </tr>
+    <tr>
+      <td>`amount`</td>
+      <td>`number`</td>
+      <td>Transaction amount</td>
+    </tr>
+    <tr>
+      <td>`transactionId`</td>
+      <td>`string | number`</td>
+      <td>Provider's transaction ID</td>
+    </tr>
+    <tr>
+      <td>`transactionType`</td>
+      <td>`string`</td>
+      <td>e.g., `'capture'`, `'refund'`, `'authorization'`</td>
+    </tr>
+    <tr>
+      <td>`paymentAction`</td>
+      <td>`string`</td>
+      <td>e.g., `'Capture'`, `'Refund'`</td>
+    </tr>
+    <tr>
+      <td>`additionalInformation`</td>
+      <td>`string` (optional)</td>
+      <td>Extra details (JSON string)</td>
+    </tr>
+    <tr>
+      <td>`parentTransactionId`</td>
+      <td>`string | number` (optional)</td>
+      <td>Parent transaction for refunds</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Examples
 
 ```typescript
-import { addPaymentTransaction } from '@evershop/evershop/oms/services';
+import { addPaymentTransaction } from "@evershop/evershop/oms/services";
 
 // Record a capture
 await addPaymentTransaction(
   connection,
   orderId,
   99.99,
-  'pi_1234567890',
-  'capture',
-  'Capture',
-  JSON.stringify({ provider: 'stripe' })
+  "pi_1234567890",
+  "capture",
+  "Capture",
+  JSON.stringify({ provider: "stripe" }),
 );
 
 // Record a refund linked to the capture
@@ -71,11 +112,11 @@ await addPaymentTransaction(
   connection,
   orderId,
   49.99,
-  're_0987654321',
-  'refund',
-  'Refund',
+  "re_0987654321",
+  "refund",
+  "Refund",
   null,
-  'pi_1234567890'  // parent transaction
+  "pi_1234567890", // parent transaction
 );
 ```
 

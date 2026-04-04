@@ -19,25 +19,25 @@ A React context provider that manages global application state. The `AppProvider
 ## Import
 
 ```typescript
-import { AppProvider } from '@components/common/context/app';
+import { AppProvider } from "@components/common/context/app";
 ```
 
 ## Usage
 
 ```tsx
-import { AppProvider } from '@components/common/context/app';
+import { AppProvider } from "@components/common/context/app";
 
 function App() {
   const initialData = {
     graphqlResponse: {},
     config: {
-      pageMeta: { title: 'My Store' },
+      pageMeta: { title: "My Store" },
       tax: { priceIncludingTax: false },
-      catalog: { imageDimensions: { width: 1200, height: 1200 } }
+      catalog: { imageDimensions: { width: 1200, height: 1200 } },
     },
     propsMap: {},
     widgets: [],
-    fetching: false
+    fetching: false,
   };
 
   return (
@@ -50,11 +50,27 @@ function App() {
 
 ## Props
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| value | AppStateContextValue | The initial application state containing GraphQL data, config, props, and widgets |
-| children | React.ReactNode | Child components that need access to the app context |
-
+<table className="not-prose table-auto">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>value</td>
+      <td>AppStateContextValue</td>
+      <td>The initial application state containing GraphQL data, config, props, and widgets</td>
+    </tr>
+    <tr>
+      <td>children</td>
+      <td>React.ReactNode</td>
+      <td>Child components that need access to the app context</td>
+    </tr>
+  </tbody>
+</table>
 
 ## AppStateContextValue Type
 
@@ -85,12 +101,14 @@ interface Config {
 ### State Management
 
 The provider manages two types of state:
+
 - **Application Data**: GraphQL responses, configuration, props, and widgets
 - **Fetching State**: Tracks when page data is being loaded
 
 ### Client-Side Navigation
 
 The provider automatically handles browser back/forward navigation:
+
 - Listens to `popstate` events
 - Fetches updated page data via AJAX
 - Updates context with new data using Immer for immutability
@@ -98,13 +116,14 @@ The provider automatically handles browser back/forward navigation:
 ### Context Dispatch Methods
 
 Provides methods to update the application state:
+
 - `setData`: Directly set the entire application state
 - `fetchPageData`: Fetch and update data from a URL
 
 ## Example: Server-Side Rendering
 
 ```tsx
-import { AppProvider } from '@components/common/context/app';
+import { AppProvider } from "@components/common/context/app";
 
 export function ServerApp({ contextData }) {
   return (
@@ -124,15 +143,15 @@ export function ServerApp({ contextData }) {
 Use the hooks to access the app context in child components:
 
 ```tsx
-import { useAppState, useAppDispatch } from '@components/common/context/app';
+import { useAppState, useAppDispatch } from "@components/common/context/app";
 
 function MyComponent() {
   const { graphqlResponse, config, fetching } = useAppState();
   const { fetchPageData } = useAppDispatch();
 
   const loadNewPage = async () => {
-    const url = new URL('/new-page', window.location.origin);
-    url.searchParams.append('ajax', 'true');
+    const url = new URL("/new-page", window.location.origin);
+    url.searchParams.append("ajax", "true");
     await fetchPageData(url.toString());
   };
 
