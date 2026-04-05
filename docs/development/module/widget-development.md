@@ -17,23 +17,23 @@ description: Learn how to develop custom widgets for your EverShop store, enhanc
 
 </p>
 
-Widgets are modular, self-contained components that can be embedded throughout your EverShop storefront. They serve as building blocks that display specific content or provide functionality to users. Widgets can present various types of content, such as product listings, promotional banners, or informational text. They can also offer interactive functionality, like search boxes or shopping cart summaries.
+Widgets are admin-configurable UI components that store owners can place on storefront pages through the admin panel — without writing code. A developer creates the **widget type** (the code), and the store owner creates **widget instances** (the configuration and placement).
 
-In EverShop, widgets are a key part of the storefront's user interface. Store administrators can create, configure, and manage widgets through the admin panel without requiring technical knowledge. Once configured, these widgets display on the customer-facing pages, creating a dynamic and engaging shopping experience.
+### How Widgets Work
 
-## Why Develop Custom Widgets?
+The widget system has two layers:
 
-Custom widgets offer significant benefits for EverShop stores:
+1. **Widget Type** (developer) — Registered in `bootstrap.ts` with `registerWidget()`. Defines the React component that renders on the storefront, the settings form component for the admin panel, and default settings.
 
-1. **Flexible Content Display**: Widgets provide a structured way to present various types of content throughout your store.
+2. **Widget Instance** (store owner) — Created in the admin panel by choosing a widget type, configuring its settings (e.g., which collection to show, how many products), and specifying which pages and Areas it appears in.
 
-2. **Enhanced User Experience**: Well-designed widgets can improve navigation, highlight key products, and streamline the shopping process.
+At request time, EverShop loads all enabled widget instances from the database, matches them to the current page route, and injects them into the [Area](/docs/development/theme/view-system#the-area-component) components they target — alongside regular master-level components, sorted by `sortOrder`.
 
-3. **Store Customization**: Custom widgets allow store owners to create a unique brand identity and shopping experience that distinguishes them from competitors.
+### Why Develop Custom Widgets?
 
-4. **Modular Functionality**: Widgets encapsulate specific functionality in reusable components, making your codebase more maintainable.
-
-5. **Non-Technical Management**: Once developed, widgets can be managed by non-technical staff through the admin interface.
+- **Admin-managed content** — Store owners can add, configure, and remove widgets without developer involvement
+- **Reusable across pages** — A single widget type can be instantiated on multiple pages with different settings
+- **Theme-independent** — Widgets work with any theme; themes can override the rendering without changing the widget logic
 
 ## How to Develop a Widget
 
@@ -205,18 +205,20 @@ Next, we need to create GraphQL types and resolvers to support our widget's data
 ```bash
 extensions/
 └── greeting_widget/
-    ├── dist/                     # Compiled code for the extension
+    ├── dist/
     ├── src/
     │   ├── bootstrap.ts
     │   ├── components/
     │   │   └── widgets/
     │   │       ├── GreetingWidgetSetting.tsx
     │   │       └── GreetingWidget.tsx
-    │   ├── graphql/
+    │   └── graphql/
     │       └── types/
     │           └── GreetingWidget/
-    │           ├── GreetingWidget.graphql
-    │           └── GreetingWidget.resolvers.ts
+    │               ├── GreetingWidget.graphql
+    │               └── GreetingWidget.resolvers.ts
+    ├── package.json
+    └── tsconfig.json
 ```
 
 :::info
@@ -320,19 +322,18 @@ This component:
 
 To make your widget available, you need to enable your extension in your EverShop configuration file:
 
-```javascript title="./config/production.json"
+```json title="config/default.json"
 {
-    ...,
-    "system": {
-        "extensions": [
-            {
-                "name": "greeting_widget",
-                "resolve": "extensions/greeting_widget",
-                "enabled": true,
-                "priority": 20
-            }
-        ]
-    }
+  "system": {
+    "extensions": [
+      {
+        "name": "greeting_widget",
+        "resolve": "extensions/greeting_widget",
+        "enabled": true,
+        "priority": 20
+      }
+    ]
+  }
 }
 ```
 
@@ -355,35 +356,34 @@ This process compiles your components and makes your widget available in the adm
 
 Congratulations! You've successfully developed a widget for EverShop. You can now create instances of your widget from the admin panel and display them on your storefront.
 
-### Step 8: Build Your Extension And Run Your Project In Production Mode
+### Step 8: Build and Run in Production Mode
 
-To prepare your extension for production, you need to build it. Run the following command in your extension directory:
+First, compile your extension's TypeScript. From your **extension directory**:
 
 ```bash
+cd extensions/greeting_widget
 npm run compile
 ```
 
-This command compiles your TypeScript code and prepares the extension for deployment.
-After building your extension, you can run your project in production mode:
+Then, from your **EverShop root directory**, build and start:
 
 ```bash
+cd ../..
+npm run build
 npm run start
 ```
 
 ## Customizing Existing Widgets
 
-EverShop allows you to override widget components to customize their appearance or behavior without modifying the original code. This is particularly useful when working with third-party extensions or core widgets.
+Widget components are registered with **absolute file paths** via `registerWidget()`. Unlike page-level components, they are **not** resolved through the `@components` alias, so themes cannot override widget rendering by simply placing a file in the theme's `components/` folder.
 
-### How to Override a Widget Component
+To customize an existing widget, you must use an **extension** that calls `updateWidget()` in its `bootstrap.ts`:
 
-To override a widget component, update your configuration file to specify a custom component path:
-
-```ts title="extensions/greeting_widget/src/bootstrap.ts"
+```ts title="extensions/my-extension/src/bootstrap.ts"
 import path from "path";
 import { updateWidget } from "@evershop/evershop/lib/widget";
 
 export default () => {
-  // Override the greeting widget with custom components
   updateWidget("greeting_widget", {
     settingComponent: path.resolve(
       import.meta.dirname,
@@ -397,8 +397,16 @@ export default () => {
 };
 ```
 
+You can also remove a widget type entirely:
+
+```ts
+import { removeWidget } from "@evershop/evershop/lib/widget";
+
+removeWidget("greeting_widget");
+```
+
 :::info
-Remember to rebuild your project after changing widget configuration settings:
+Rebuild your project after any widget changes:
 
 ```bash
 npm run build
