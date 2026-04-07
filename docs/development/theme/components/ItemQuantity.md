@@ -1,11 +1,13 @@
 ---
 sidebar_position: 37
 title: ItemQuantity
-description: A render props component and hook for managing cart item quantities with debouncing and validation.
+description: A headless render props component and hook for managing cart item quantities with debouncing and validation.
 keywords:
   - EverShop ItemQuantity
   - quantity selector
   - cart quantity
+  - headless component
+  - theme development
 groups:
   - components
 ---
@@ -14,7 +16,38 @@ groups:
 
 ## Description
 
-Provides quantity management for cart items with automatic cart updates, debouncing, min/max validation, and loading states. Available as both a hook and render props component.
+A headless component that provides quantity management for cart items with automatic cart updates, debouncing, min/max validation, and loading states. Available as both a render props component and a `useItemQuantity` hook.
+
+## Role in Theming
+
+ItemQuantity is one of EverShop's **headless components** — it owns the quantity update logic while leaving all UI decisions to its parent:
+
+- **ItemQuantity renders nothing.** It returns only what its `children` function renders.
+- **Theme developers do not override ItemQuantity.** Instead, they override the parent components that consume it (typically `DefaultCartItemList` which uses it inside each cart item row).
+- **The logic stays stable across themes.** Debounced cart updates, min/max validation, optimistic UI, and error recovery are all encapsulated in ItemQuantity.
+
+ItemQuantity is unique among EverShop's headless components because it also exposes its logic as a **hook** (`useItemQuantity`), giving theme developers a choice between the render props pattern and direct hook usage.
+
+## Theme Override Points
+
+ItemQuantity is consumed inside cart item components. Theme developers override the parent to change the quantity UI:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Parent Component</th>
+      <th>Route</th>
+      <th>Override Path in Theme</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DefaultCartItemList</td>
+      <td>cart</td>
+      <td><code>themes/&lt;name&gt;/src/pages/cart/DefaultCartItemList.tsx</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Import
 
@@ -192,34 +225,7 @@ function CartItem({ item }) {
 
 ## Examples
 
-### Basic Quantity Selector
-
-```tsx
-import { ItemQuantity } from '@components/frontStore/cart/ItemQuantity';
-
-function QuantitySelector({ item }) {
-  return (
-    <ItemQuantity cartItemId={item.cartItemId} initialValue={item.qty}>
-      {({ quantity, increase, decrease, loading }) => (
-        <div className="quantity-selector">
-          <button 
-            onClick={decrease} 
-            disabled={loading || quantity <= 1}
-          >
-            -
-          </button>
-          <span>{quantity}</span>
-          <button onClick={increase} disabled={loading}>
-            +
-          </button>
-        </div>
-      )}
-    </ItemQuantity>
-  );
-}
-```
-
-### With Input Field
+### With Input Field (Hook)
 
 ```tsx
 import { useItemQuantity } from '@components/frontStore/cart/ItemQuantity';
@@ -242,39 +248,6 @@ function QuantityInput({ item }) {
 }
 ```
 
-### With Stock Limit
-
-```tsx
-import { ItemQuantity } from '@components/frontStore/cart/ItemQuantity';
-
-function CartItemRow({ item }) {
-  return (
-    <ItemQuantity 
-      cartItemId={item.cartItemId} 
-      initialValue={item.qty}
-      max={item.product.stockQuantity}
-    >
-      {({ quantity, increase, decrease, loading }) => (
-        <div>
-          <span>{item.productName}</span>
-          <div className="quantity-controls">
-            <button onClick={decrease} disabled={loading}>-</button>
-            <span>{quantity}</span>
-            <button 
-              onClick={increase} 
-              disabled={loading || quantity >= item.product.stockQuantity}
-            >
-              +
-            </button>
-          </div>
-          <span>In stock: {item.product.stockQuantity}</span>
-        </div>
-      )}
-    </ItemQuantity>
-  );
-}
-```
-
 ### With Callbacks
 
 ```tsx
@@ -288,9 +261,6 @@ function CartItem({ item }) {
     cartItemId: item.cartItemId,
     initialValue: item.qty,
     debounce: 300,
-    onChange: (qty) => {
-      console.log('Quantity changed to:', qty);
-    },
     onSuccess: () => {
       setMessage('Updated successfully');
       setTimeout(() => setMessage(''), 2000);
@@ -312,73 +282,69 @@ function CartItem({ item }) {
 }
 ```
 
-### Complete Cart Item
+### Theme Override Example
+
+A theme developer overrides the cart item layout and uses `useItemQuantity` hook for a custom quantity control:
+
+**`themes/my-theme/src/pages/cart/DefaultCartItemList.tsx`**
 
 ```tsx
-import { ItemQuantity } from '@components/frontStore/cart/ItemQuantity';
-import { Image } from '@components/common/Image';
+import { CartItems } from '@components/frontStore/cart/CartItems';
+import { useItemQuantity } from '@components/frontStore/cart/ItemQuantity';
 
-function CartItem({ item, onRemove }) {
+function QuantityControl({ item }) {
+  const { quantity, increase, decrease, loading } = useItemQuantity({
+    cartItemId: item.cartItemId,
+    initialValue: item.qty,
+    min: 1,
+    max: 20
+  });
+
   return (
-    <div className="cart-item">
-      <Image src={item.thumbnail} alt={item.productName} width={80} height={80} />
-      
-      <div className="item-details">
-        <h3>{item.productName}</h3>
-        <p>{item.productPrice.text}</p>
-      </div>
-
-      <ItemQuantity 
-        cartItemId={item.cartItemId} 
-        initialValue={item.qty}
-        min={1}
-        max={10}
-        debounce={500}
-      >
-        {({ quantity, increase, decrease, loading, inputProps }) => (
-          <div className="quantity-wrapper">
-            <label>Quantity:</label>
-            <div className="controls">
-              <button 
-                onClick={decrease}
-                disabled={loading || quantity <= 1}
-                className="btn-decrease"
-              >
-                -
-              </button>
-              <input 
-                {...inputProps} 
-                className="quantity-input"
-              />
-              <button 
-                onClick={increase}
-                disabled={loading || quantity >= 10}
-                className="btn-increase"
-              >
-                +
-              </button>
-            </div>
-            {loading && <span className="loading">Updating...</span>}
-          </div>
-        )}
-      </ItemQuantity>
-
-      <button onClick={() => onRemove(item.cartItemId)}>Remove</button>
-    </div>
+    <select
+      value={quantity}
+      onChange={(e) => {/* handled by hook */}}
+      disabled={loading}
+    >
+      {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
+        <option key={n} value={n}>{n}</option>
+      ))}
+    </select>
   );
 }
+
+function DefaultCartItemList() {
+  return (
+    <CartItems>
+      {({ items, isEmpty, onRemoveItem }) => {
+        if (isEmpty) return <p>Your cart is empty</p>;
+
+        return (
+          <div className="my-theme-cart">
+            {items.map(item => (
+              <div key={item.cartItemId} className="my-theme-cart-row">
+                <span>{item.productName}</span>
+                <QuantityControl item={item} />
+                <span>{item.subTotal.text}</span>
+                <button onClick={() => onRemoveItem(item.cartItemId)}>
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        );
+      }}
+    </CartItems>
+  );
+}
+
+export default DefaultCartItemList;
+
+export const layout = {
+  areaId: 'shoppingCartLeft',
+  sortOrder: 10
+};
 ```
-
-## Features
-
-- **Debounced Updates**: Waits 500ms before updating cart (configurable)
-- **Min/Max Validation**: Enforces quantity limits
-- **Loading State**: Disables controls during updates
-- **Error Recovery**: Reverts to previous value on failure
-- **Input Integration**: Pre-configured input props
-- **Callbacks**: Success/failure/change handlers
-- **Optimistic UI**: Updates immediately, syncs with server
-- **Smart Diff**: Only sends changed quantity to server
 
 ## Behavior
 
@@ -394,8 +360,22 @@ Quantity is clamped between `min` and `max` values. Invalid input is ignored, em
 
 Uses `cartDispatch.updateItem` with `action: 'increase'` or `action: 'decrease'` and the quantity difference. On failure, reverts to previous quantity.
 
+## Features
+
+- **Headless**: Renders no UI — full control via render props or hook
+- **Debounced Updates**: Waits 500ms before updating cart (configurable)
+- **Min/Max Validation**: Enforces quantity limits
+- **Loading State**: Disables controls during updates
+- **Error Recovery**: Reverts to previous value on failure
+- **Input Integration**: Pre-configured input props via `inputProps`
+- **Optimistic UI**: Updates immediately, syncs with server
+
 ## Related Components
 
 - [CartItems](CartItems.md) - Cart display component
 - [CartContext](CartContext.md) - Cart state management
 - [AddToCart](AddToCart.md) - Add to cart component
+
+import Sponsors from '@site/src/components/Sponsor';
+
+<Sponsors/>

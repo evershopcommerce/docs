@@ -1,11 +1,13 @@
 ---
 sidebar_position: 35
 title: CartItems
-description: A render props component for displaying shopping cart items.
+description: A headless render props component that provides cart items data and operations without rendering UI.
 keywords:
   - EverShop CartItems
   - cart items
   - shopping cart
+  - headless component
+  - theme development
 groups:
   - components
 ---
@@ -14,7 +16,41 @@ groups:
 
 ## Description
 
-A render props component that provides cart items data and operations. Handles loading states and integrates with the cart context to provide item management functionality.
+A headless render props component that provides cart items data and operations. It reads from CartContext and exposes items, loading states, item count, and a remove handler — but renders no UI of its own.
+
+## Role in Theming
+
+CartItems is one of EverShop's **headless components** — it owns the data access and operations while leaving all UI decisions to its parent:
+
+- **CartItems renders nothing.** It returns only what its `children` function renders.
+- **Theme developers do not override CartItems.** Instead, they override the parent components that consume it (`DefaultCartItemList`, `DefaultMiniCartDropdown`).
+- **The data layer stays stable across themes.** Item data extraction, tax display logic, loading states, and remove operations are encapsulated in CartItems.
+
+## Theme Override Points
+
+CartItems is consumed by these components, which are the actual override targets for theme developers:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Parent Component</th>
+      <th>Route</th>
+      <th>Override Path in Theme</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DefaultCartItemList</td>
+      <td>cart</td>
+      <td><code>themes/&lt;name&gt;/src/pages/cart/DefaultCartItemList.tsx</code></td>
+    </tr>
+    <tr>
+      <td>DefaultMiniCartDropdown</td>
+      <td>all (via MiniCart)</td>
+      <td><code>themes/&lt;name&gt;/src/pages/all/DefaultMiniCartDropdown.tsx</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Import
 
@@ -120,6 +156,47 @@ The render function receives an object with:
   </tbody>
 </table>
 
+## CartItem Interface
+
+Each item in the `items` array has:
+
+```typescript
+interface CartItem {
+  cartItemId: string;
+  productId: string;
+  productSku: string;
+  productName: string;
+  productUrl: string;
+  thumbnail?: string;
+  qty: number;
+  productPrice: { value: number; text: string };
+  finalPrice: { value: number; text: string };
+  finalPriceInclTax: { value: number; text: string };
+  lineTotal: { value: number; text: string };
+  lineTotalInclTax: { value: number; text: string };
+  subTotal: { value: number; text: string };
+  variantOptions?: Array<{
+    attributeCode: string;
+    attributeName: string;
+    optionText: string;
+  }>;
+}
+```
+
+## Price Fields
+
+Different price fields available:
+
+- **productPrice**: Base product price
+- **productPriceInclTax**: Base price with tax
+- **finalPrice**: Price after discounts (excl. tax)
+- **finalPriceInclTax**: Price after discounts (incl. tax)
+- **lineTotal**: Item total (qty x price, excl. tax)
+- **lineTotalInclTax**: Item total (qty x price, incl. tax)
+- **subTotal**: Subtotal for the item
+
+Use `showPriceIncludingTax` to determine which price to display.
+
 ## Examples
 
 ### Basic Cart List
@@ -130,7 +207,11 @@ import { CartItems } from '@components/frontStore/cart/CartItems';
 function ShoppingCart() {
   return (
     <CartItems>
-      {({ items, isEmpty, onRemoveItem }) => {
+      {({ items, loading, isEmpty, onRemoveItem }) => {
+        if (loading) {
+          return <div>Loading cart...</div>;
+        }
+
         if (isEmpty) {
           return <p>Your cart is empty</p>;
         }
@@ -155,39 +236,7 @@ function ShoppingCart() {
 }
 ```
 
-### With Loading State
-
-```tsx
-import { CartItems } from '@components/frontStore/cart/CartItems';
-
-function Cart() {
-  return (
-    <CartItems>
-      {({ items, loading, isEmpty }) => {
-        if (loading) {
-          return <div>Loading cart...</div>;
-        }
-
-        if (isEmpty) {
-          return <p>Your cart is empty</p>;
-        }
-
-        return (
-          <ul>
-            {items.map(item => (
-              <li key={item.cartItemId}>
-                {item.productName} - Qty: {item.qty}
-              </li>
-            ))}
-          </ul>
-        );
-      }}
-    </CartItems>
-  );
-}
-```
-
-### With Price Display
+### With Tax-Aware Pricing
 
 ```tsx
 import { CartItems } from '@components/frontStore/cart/CartItems';
@@ -237,151 +286,86 @@ function CartTable() {
 }
 ```
 
-### Complete Example
+### Theme Override Example
+
+A theme developer overrides `DefaultCartItemList` to provide a custom cart item layout. Create this file in your theme:
+
+**`themes/my-theme/src/pages/cart/DefaultCartItemList.tsx`**
 
 ```tsx
 import { CartItems } from '@components/frontStore/cart/CartItems';
-import { Image } from '@components/common/Image';
+import { ItemQuantity } from '@components/frontStore/cart/ItemQuantity';
 
-function CartPage() {
+function DefaultCartItemList() {
   return (
-    <div className="cart-page">
-      <h1>Shopping Cart</h1>
-      
-      <CartItems>
-        {({
-          items,
-          loading,
-          isEmpty,
-          totalItems,
-          showPriceIncludingTax,
-          onRemoveItem
-        }) => {
-          if (loading) {
-            return (
-              <div className="loading">
-                <p>Loading your cart...</p>
-              </div>
-            );
-          }
-
-          if (isEmpty) {
-            return (
-              <div className="empty-cart">
-                <p>Your cart is empty</p>
-                <a href="/products">Continue Shopping</a>
-              </div>
-            );
-          }
-
+    <CartItems>
+      {({ items, loading, isEmpty, showPriceIncludingTax, onRemoveItem }) => {
+        if (isEmpty) {
           return (
-            <div className="cart-content">
-              <p className="item-count">{totalItems} items in cart</p>
-              
-              <div className="cart-items-list">
-                {items.map(item => {
-                  const price = showPriceIncludingTax
-                    ? item.finalPriceInclTax
-                    : item.finalPrice;
-
-                  return (
-                    <div key={item.cartItemId} className="cart-item">
-                      {item.thumbnail && (
-                        <Image
-                          src={item.thumbnail}
-                          alt={item.productName}
-                          width={100}
-                          height={100}
-                        />
-                      )}
-                      
-                      <div className="item-details">
-                        <h3>{item.productName}</h3>
-                        <p>SKU: {item.productSku}</p>
-                        
-                        {item.variantOptions && (
-                          <div className="options">
-                            {item.variantOptions.map(opt => (
-                              <span key={opt.attributeCode}>
-                                {opt.attributeName}: {opt.optionText}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="item-pricing">
-                        <p>Price: {price.text}</p>
-                        <p>Quantity: {item.qty}</p>
-                        <p className="subtotal">
-                          Subtotal: {item.subTotal.text}
-                        </p>
-                      </div>
-                      
-                      <button
-                        className="remove-btn"
-                        onClick={() => onRemoveItem(item.cartItemId)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="my-theme-empty-cart">
+              <p>Nothing here yet</p>
+              <a href="/products">Start Shopping</a>
             </div>
           );
-        }}
-      </CartItems>
-    </div>
+        }
+
+        return (
+          <div className="my-theme-cart-items">
+            {items.map(item => {
+              const price = showPriceIncludingTax
+                ? item.finalPriceInclTax
+                : item.finalPrice;
+
+              return (
+                <div key={item.cartItemId} className="my-theme-cart-item">
+                  {item.thumbnail && (
+                    <img src={item.thumbnail} alt={item.productName} />
+                  )}
+                  <div>
+                    <h3>{item.productName}</h3>
+                    <p>{price.text}</p>
+                    {item.variantOptions?.map(opt => (
+                      <span key={opt.attributeCode}>
+                        {opt.attributeName}: {opt.optionText}
+                      </span>
+                    ))}
+                  </div>
+                  <ItemQuantity
+                    cartItemId={item.cartItemId}
+                    initialValue={item.qty}
+                  >
+                    {({ quantity, increase, decrease, loading: qtyLoading }) => (
+                      <div>
+                        <button onClick={decrease} disabled={qtyLoading}>-</button>
+                        <span>{quantity}</span>
+                        <button onClick={increase} disabled={qtyLoading}>+</button>
+                      </div>
+                    )}
+                  </ItemQuantity>
+                  <button onClick={() => onRemoveItem(item.cartItemId)}>
+                    Remove
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }}
+    </CartItems>
   );
 }
+
+export default DefaultCartItemList;
+
+export const layout = {
+  areaId: 'shoppingCartLeft',
+  sortOrder: 10
+};
 ```
-
-## CartItem Interface
-
-Each item in the `items` array has:
-
-```typescript
-interface CartItem {
-  cartItemId: string;
-  productId: string;
-  productSku: string;
-  productName: string;
-  productUrl: string;
-  thumbnail?: string;
-  qty: number;
-  productPrice: { value: number; text: string };
-  finalPrice: { value: number; text: string };
-  finalPriceInclTax: { value: number; text: string };
-  lineTotal: { value: number; text: string };
-  lineTotalInclTax: { value: number; text: string };
-  subTotal: { value: number; text: string };
-  variantOptions?: Array<{
-    attributeCode: string;
-    attributeName: string;
-    optionText: string;
-  }>;
-  // ... other fields
-}
-```
-
-## Price Fields
-
-Different price fields available:
-
-- **productPrice**: Base product price
-- **productPriceInclTax**: Base price with tax
-- **finalPrice**: Price after discounts (excl. tax)
-- **finalPriceInclTax**: Price after discounts (incl. tax)
-- **lineTotal**: Item total (qty × price, excl. tax)
-- **lineTotalInclTax**: Item total (qty × price, incl. tax)
-- **subTotal**: Subtotal for the item
-
-Use `showPriceIncludingTax` to determine which price to display.
 
 ## Features
 
-- **Render Props Pattern**: Flexible UI implementation
+- **Headless**: Renders no UI — full control via render props
 - **Loading State**: Automatic loading management
 - **Empty State**: isEmpty flag for easy empty cart handling
 - **Item Count**: Total items count
@@ -393,4 +377,9 @@ Use `showPriceIncludingTax` to determine which price to display.
 
 - [CartContext](CartContext.md) - Shopping cart context
 - [AddToCart](AddToCart.md) - Add to cart component
-- [Area](Area.md) - Component area system
+- [ItemQuantity](ItemQuantity.md) - Item quantity management
+- [CartTotalSummary](CartTotalSummary.md) - Cart totals display
+
+import Sponsors from '@site/src/components/Sponsor';
+
+<Sponsors/>

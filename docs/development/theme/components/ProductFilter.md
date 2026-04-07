@@ -1,11 +1,13 @@
 ---
 sidebar_position: 41
 title: ProductFilter
-description: A render props component for managing product filters with attributes, categories, and price ranges.
+description: A headless render props component for managing product filters with attributes, categories, and price ranges.
 keywords:
   - EverShop ProductFilter
   - product filters
   - filtering
+  - headless component
+  - theme development
 groups:
   - components
 ---
@@ -14,7 +16,41 @@ groups:
 
 ## Description
 
-A render props component for building product filtering interfaces. Manages filter state, URL updates, and provides helper functions for attribute, category, and price filtering.
+A headless render props component for building product filtering interfaces. It manages filter state, URL synchronization, and provides helper functions for attribute, category, and price filtering — but renders no UI of its own.
+
+## Role in Theming
+
+ProductFilter is one of EverShop's **headless components** — it owns the filtering logic while leaving all UI decisions to its parent:
+
+- **ProductFilter renders nothing.** It returns only what its `children` function renders.
+- **Theme developers do not override ProductFilter.** Instead, they override the parent components that consume it (`CategoryProductsFilter` and search filter components).
+- **The logic stays stable across themes.** URL parameter management, multi-value filter handling, page reset on filter change, and GraphQL refetching are all encapsulated in ProductFilter.
+
+## Theme Override Points
+
+ProductFilter is consumed by these components, which are the actual override targets for theme developers:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Parent Component</th>
+      <th>Route</th>
+      <th>Override Path in Theme</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CategoryProductsFilter</td>
+      <td>categoryView</td>
+      <td><code>themes/&lt;name&gt;/src/pages/categoryView/CategoryProductsFilter.tsx</code></td>
+    </tr>
+    <tr>
+      <td>SearchProductsFilter</td>
+      <td>catalogSearch</td>
+      <td><code>themes/&lt;name&gt;/src/pages/catalogSearch/SearchProductsFilter.tsx</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Import
 
@@ -27,7 +63,7 @@ import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
 ```tsx
 import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
 
-function ProductFilters({ currentFilters, availableAttributes, priceRange }) {
+function Filters({ currentFilters, availableAttributes, priceRange }) {
   return (
     <ProductFilter
       currentFilters={currentFilters}
@@ -225,9 +261,9 @@ function ProductFilters({ currentFilters, availableAttributes, priceRange }) {
 
 ```typescript
 interface FilterInput {
-  key: string;                              // Filter key (attribute code)
+  key: string;                                       // Filter key (attribute code)
   operation: 'eq' | 'in' | 'range' | 'gt' | 'lt';  // Filter operation
-  value: string;                            // Filter value(s)
+  value: string;                                     // Filter value(s)
 }
 ```
 
@@ -258,7 +294,7 @@ interface PriceRange {
 
 ## Examples
 
-### Attribute Checkboxes
+### Attribute Checkboxes with Toggle
 
 ```tsx
 import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
@@ -317,13 +353,9 @@ function PriceFilter({ currentFilters, priceRange }) {
       currentFilters={currentFilters}
       priceRange={priceRange}
     >
-      {({ addFilter, removeFilter, hasFilter, getFilterValue }) => {
+      {({ addFilter, removeFilter, hasFilter }) => {
         const [min, setMin] = useState(priceRange.min);
         const [max, setMax] = useState(priceRange.max);
-
-        const applyPriceFilter = () => {
-          addFilter('price', 'range', `${min}-${max}`);
-        };
 
         return (
           <div className="price-filter">
@@ -345,7 +377,9 @@ function PriceFilter({ currentFilters, priceRange }) {
                 max={priceRange.max}
               />
             </div>
-            <button onClick={applyPriceFilter}>Apply</button>
+            <button onClick={() => addFilter('price', 'range', `${min}-${max}`)}>
+              Apply
+            </button>
             {hasFilter('price') && (
               <button onClick={() => removeFilter('price')}>Clear</button>
             )}
@@ -357,83 +391,21 @@ function PriceFilter({ currentFilters, priceRange }) {
 }
 ```
 
-### Category Filter
+### Theme Override Example
+
+A theme developer overrides `CategoryProductsFilter` to build a custom filter panel. Create this file in your theme:
+
+**`themes/my-theme/src/pages/categoryView/CategoryProductsFilter.tsx`**
 
 ```tsx
 import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
 
-function CategoryFilter({ currentFilters, categories, priceRange }) {
-  return (
-    <ProductFilter
-      currentFilters={currentFilters}
-      categories={categories}
-      priceRange={priceRange}
-    >
-      {({ toggleFilter, isCategorySelected }) => (
-        <div className="category-filter">
-          <h3>Categories</h3>
-          {categories.map(category => (
-            <label key={category.categoryId}>
-              <input
-                type="checkbox"
-                checked={isCategorySelected(category.categoryId.toString())}
-                onChange={() => toggleFilter('cat', 'in', category.categoryId.toString())}
-              />
-              {category.name}
-            </label>
-          ))}
-        </div>
-      )}
-    </ProductFilter>
-  );
-}
-```
-
-### Active Filters Display
-
-```tsx
-import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
-
-function ActiveFilters({ currentFilters, availableAttributes, priceRange }) {
-  return (
-    <ProductFilter
-      currentFilters={currentFilters}
-      availableAttributes={availableAttributes}
-      priceRange={priceRange}
-    >
-      {({ currentFilters, removeFilter, clearAllFilters, activeFilterCount }) => {
-        if (activeFilterCount === 0) {
-          return null;
-        }
-
-        return (
-          <div className="active-filters">
-            <h4>Active Filters ({activeFilterCount})</h4>
-            <div className="filter-tags">
-              {currentFilters
-                .filter(f => !['page', 'limit', 'ob', 'od'].includes(f.key))
-                .map((filter, index) => (
-                  <span key={index} className="filter-tag">
-                    {filter.key}: {filter.value}
-                    <button onClick={() => removeFilter(filter.key)}>×</button>
-                  </span>
-                ))}
-            </div>
-            <button onClick={clearAllFilters}>Clear All</button>
-          </div>
-        );
-      }}
-    </ProductFilter>
-  );
-}
-```
-
-### Complete Filter Panel
-
-```tsx
-import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
-
-function FilterPanel({ currentFilters, availableAttributes, categories, priceRange }) {
+function CategoryProductsFilter({
+  currentFilters,
+  availableAttributes,
+  categories,
+  priceRange
+}) {
   return (
     <ProductFilter
       currentFilters={currentFilters}
@@ -442,18 +414,14 @@ function FilterPanel({ currentFilters, availableAttributes, categories, priceRan
       priceRange={priceRange}
     >
       {({
-        addFilter,
-        removeFilterValue,
         toggleFilter,
         clearAllFilters,
         isOptionSelected,
         isCategorySelected,
-        getSelectedCount,
         activeFilterCount,
         isLoading
       }) => (
-        <div className="filter-panel">
-          {/* Header */}
+        <aside className="my-theme-filters">
           <div className="filter-header">
             <h2>Filters</h2>
             {activeFilterCount > 0 && (
@@ -463,7 +431,6 @@ function FilterPanel({ currentFilters, availableAttributes, categories, priceRan
             )}
           </div>
 
-          {/* Categories */}
           {categories.length > 0 && (
             <div className="filter-section">
               <h3>Categories</h3>
@@ -481,56 +448,38 @@ function FilterPanel({ currentFilters, availableAttributes, categories, priceRan
             </div>
           )}
 
-          {/* Attributes */}
           {availableAttributes.map(attr => (
             <div key={attr.attributeCode} className="filter-section">
-              <h3>
-                {attr.attributeName}
-                {getSelectedCount(attr.attributeCode) > 0 && (
-                  <span className="count">
-                    ({getSelectedCount(attr.attributeCode)})
-                  </span>
-                )}
-              </h3>
-              <div className="filter-options">
-                {attr.options.map(option => {
-                  const selected = isOptionSelected(
-                    attr.attributeCode,
-                    option.optionId.toString()
-                  );
-                  return (
-                    <label key={option.optionId} className={selected ? 'selected' : ''}>
-                      <input
-                        type="checkbox"
-                        checked={selected}
-                        onChange={() => {
-                          if (selected) {
-                            removeFilterValue(attr.attributeCode, option.optionId.toString());
-                          } else {
-                            addFilter(attr.attributeCode, 'in', option.optionId.toString());
-                          }
-                        }}
-                        disabled={isLoading}
-                      />
-                      {option.optionText}
-                    </label>
-                  );
-                })}
-              </div>
+              <h3>{attr.attributeName}</h3>
+              {attr.options.map(option => (
+                <label key={option.optionId}>
+                  <input
+                    type="checkbox"
+                    checked={isOptionSelected(attr.attributeCode, option.optionId.toString())}
+                    onChange={() => toggleFilter(
+                      attr.attributeCode, 'in', option.optionId.toString()
+                    )}
+                    disabled={isLoading}
+                  />
+                  {option.optionText}
+                </label>
+              ))}
             </div>
           ))}
 
-          {/* Loading Overlay */}
-          {isLoading && (
-            <div className="loading-overlay">
-              Updating filters...
-            </div>
-          )}
-        </div>
+          {isLoading && <div className="loading-overlay">Updating...</div>}
+        </aside>
       )}
     </ProductFilter>
   );
 }
+
+export default CategoryProductsFilter;
+
+export const layout = {
+  areaId: 'categoryPageLeft',
+  sortOrder: 10
+};
 ```
 
 ## Filter Operations
@@ -560,7 +509,7 @@ The following filter keys are reserved and excluded from active count: `page`, `
 
 ## Features
 
-- **Render Props Pattern**: Flexible UI implementation
+- **Headless**: Renders no UI — full control via render props
 - **URL Sync**: Filters synced with URL parameters
 - **Multi-Value Support**: Comma-separated values for 'in' operation
 - **Loading State**: Shows loading during updates
@@ -571,5 +520,9 @@ The following filter keys are reserved and excluded from active count: `page`, `
 
 ## Related Components
 
-- [CategoryContext](CategoryContext.md) - Category page context
-- [ProductContext](ProductContext.md) - Product page context
+- [Pagination](Pagination.md) - Pagination component
+- [ProductList](ProductList.md) - Product listing component
+
+import Sponsors from '@site/src/components/Sponsor';
+
+<Sponsors/>
