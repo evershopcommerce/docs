@@ -152,11 +152,11 @@ const config = {
             position: "left",
             label: "Marketplace",
           },
-          {
-            href: "/pricing",
-            position: "left",
-            label: "Pricing",
-          },
+          // {
+          //   href: "/pricing",
+          //   position: "left",
+          //   label: "Pricing",
+          // },
           {
             href: "/contact-us",
             position: "left",
