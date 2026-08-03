@@ -223,21 +223,37 @@ The `Area` component renders its child components in order of their `sortOrder` 
 
 ### Injecting Components into an Area
 
-Let's say we have a 'productView' page with the following layout component:
+Let's take the `productView` page as an example. Its master component declares several Areas:
 
-```tsx title="src/modules/catalog/pages/frontStore/productView/Layout.tsx"
+```tsx title="src/modules/catalog/pages/frontStore/productView/ProductView.tsx"
 import React from "react";
-import Area from "@components/common/Area";
+import Area from "@components/common/Area.js";
 
-export default function Layout() {
+export default function ProductView({ product }) {
   return (
-    <div className="just-a-block">
-      <Area id="productViewLeft" />
-      <Area id="productViewRight" />
-    </div>
+    <ProductProvider product={product}>
+      <div className="product__detail">
+        <Area id="productPageTop" className="product__page__top" />
+        <div className="product__page__middle page-width">
+          <div className="grid grid-cols-1 gap-7 md:grid-cols-2">
+            <Area id="productPageMiddleLeft" className="product__detail__left" />
+            <Area id="productPageMiddleRight" className="product__detail__right" />
+          </div>
+          <Area id="productSingleDescription" />
+        </div>
+        <Area id="productPageBottom" className="product__page__bottom" />
+      </div>
+    </ProductProvider>
   );
 }
 ```
+
+:::info
+The example above is abridged. The real component also passes `coreComponents` to
+each Area to render the product media, name, attributes, and add-to-cart form. Read
+`@evershop/evershop/src/modules/catalog/pages/frontStore/productView/ProductView.tsx`
+for the complete list, or use the Area debug overlay in development mode.
+:::
 
 If we want to insert a component into the left side of the product view page to show product ratings, we can create a new component named `ProductRating.tsx`:
 
@@ -255,8 +271,8 @@ export default function ProductRating({ stars }) {
 // highlight-start
 
 export const layout = {
-  areaId: "productViewLeft",
-  sortOrder: 1,
+  areaId: "productPageMiddleRight",
+  sortOrder: 15,
 };
 
 // highlight-end
@@ -264,9 +280,9 @@ export const layout = {
 
 We then export a `layout` object from the `ProductRating.tsx` component. This object tells the system where to insert the component within the page.
 
-In the code above, we export a `layout` object with `areaId` and `sortOrder` properties. The `areaId` specifies which `Area` component should include this component, and the `sortOrder` determines the component's position within that Area.
+In the code above, we export a `layout` object with `areaId` and `sortOrder` properties. The `areaId` specifies which `Area` component should include this component, and the `sortOrder` determines the component's position within that Area. A `sortOrder` of `15` places the rating between the product name (`10`) and the attributes (`20`).
 
-That's all you need to do to insert the `ProductRating` component into the `productViewLeft` area of the `productView` page.
+That's all you need to do to insert the `ProductRating` component into the `productPageMiddleRight` area of the `productView` page.
 
 ## Component Data Fetching
 
@@ -287,8 +303,8 @@ export default function ProductPrice({ product }) {
 }
 
 export const layout = {
-  areaId: "productViewInfo",
-  sortOrder: 20,
+  areaId: "productPageMiddleRight",
+  sortOrder: 25,
 };
 
 export const query = `

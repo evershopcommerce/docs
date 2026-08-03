@@ -226,7 +226,7 @@ export const layout: ComponentLayout = {
 ```
 
 :::info
-To see a list of available areas where you can place components, check the file `@evershop/evershop/src/modules/catalog/pages/frontStore/productView/Layout.js`.
+To see a list of available areas where you can place components, check the file `@evershop/evershop/src/modules/catalog/pages/frontStore/productView/ProductView.tsx`.
 :::
 
 With this layout configuration, your product page should now display the comment form in the left column:

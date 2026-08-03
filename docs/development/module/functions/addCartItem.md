@@ -3,6 +3,7 @@ sidebar_position: 94
 groups:
 - checkout
 title: addCartItem
+description: Add an item to the cart, merging quantities when the SKU already exists.
 hide_table_of_contents: true
 keywords:
   - EverShop addCartItem

@@ -1,11 +1,14 @@
 ---
 sidebar_position: 93
 title: updateCartItemQty
+description: Update a cart item's quantity, removing the item when it reaches zero.
 hide_table_of_contents: true
 keywords:
   - EverShop updateCartItemQty
   - cart quantity update
   - checkout service
+groups:
+- checkout
 ---
 
 # updateCartItemQty

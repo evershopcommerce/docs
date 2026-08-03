@@ -1,6 +1,7 @@
 ---
 sidebar_position: 92
 title: removeCartItem
+description: Remove an item from the cart by its UUID.
 hide_table_of_contents: true
 keywords:
   - EverShop removeCartItem
