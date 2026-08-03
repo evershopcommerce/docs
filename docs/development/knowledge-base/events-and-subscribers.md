@@ -23,7 +23,7 @@ For example, when a product is created, EverShop core triggers the `product_crea
 
 An event has a name and a data object. The name is used to identify the event, and the data object contains the data that will be passed to the event subscribers.
 
-To emit an event, you can use the `emitter` helper function. This function accepts two parameters: the event name and the data object.
+To emit an event, you can use the `emit` helper function. This function accepts two parameters: the event name and the data object.
 
 ```ts title="Emit an event"
 import { emit } from "@evershop/evershop/lib/event";
@@ -44,34 +44,41 @@ An event will be removed from the pool when all subscribers are executed, regard
 
 ## Subscribe to an Event
 
-To subscribe to an event, the first thing you need to do is create a `subscribers` folder in your extension directory. This folder will contain all the subscribers for your extension.
+To subscribe to an event, the first thing you need to do is create a `subscribers` folder inside your extension's `src` directory. This folder will contain all the subscribers for your extension.
 
 ```bash
 
 ├── your-extension
-│   ├── subscribers
+│   ├── src
+│   │   ├── subscribers
 ```
 
 Next, create a subfolder with the name of the event you want to subscribe to. For example, if you want to subscribe to the `product_created` event, you need to create a folder named `product_created`.
 
 ```bash
 ├── your-extension
-│   ├── subscribers
-│   │   ├── product_created
+│   ├── src
+│   │   ├── subscribers
+│   │   │   ├── product_created
 ```
 
 Next, create a TS file. This file will contain the code that will be executed when the event is triggered. You can have multiple subscribers for the same event.
 
 ```bash
 ├── your-extension
-│   ├── subscribers
-│   │   ├── product_created
-│   │   │   ├── sendEmail.ts
+│   ├── src
+│   │   ├── subscribers
+│   │   │   ├── product_created
+│   │   │   │   ├── sendEmail.ts
 ```
+
+:::info
+The `subscribers` folder must be inside `src`. EverShop loads subscribers from the extension's compiled `dist` directory, so `src/subscribers` is compiled to `dist/subscribers` where the runtime looks for them.
+:::
 
 Here is an example of a subscriber:
 
-```ts title="your-extension/subscribers/product_created/sendEmail.ts"
+```ts title="your-extension/src/subscribers/product_created/sendEmail.ts"
 export default async function sendMail(data) {
   // Send email to the customer
 }
@@ -492,7 +499,7 @@ EverShop provides TypeScript utilities for writing type-safe event subscribers:
 
 ### Using the `EventSubscriber` Type
 
-```ts title="your-extension/subscribers/order_placed/sendConfirmation.ts"
+```ts title="your-extension/src/subscribers/order_placed/sendConfirmation.ts"
 import type { EventSubscriber } from '@evershop/evershop/lib/event/subscriber';
 
 const handler: EventSubscriber<'order_placed'> = async (data) => {
@@ -509,7 +516,7 @@ export default handler;
 
 The `createSubscriber` helper provides better IDE autocomplete:
 
-```ts title="your-extension/subscribers/product_created/syncCatalog.ts"
+```ts title="your-extension/src/subscribers/product_created/syncCatalog.ts"
 import { createSubscriber } from '@evershop/evershop/lib/event/subscriber';
 
 export default createSubscriber('product_created', async (data) => {
