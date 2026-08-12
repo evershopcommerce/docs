@@ -64,7 +64,7 @@ The public Docker image is for installing EverShop in your local environment onl
 `@evershop/evershop` is the core of the EverShop platform. It contains all of the core modules like `catalog`, `checkout`, `order`.
 
 ```bash title="Install the @evershop/evershop Npm package"
-npm init -y
+npm init --init-type=module -y
 npm install @evershop/evershop
 ```
 
