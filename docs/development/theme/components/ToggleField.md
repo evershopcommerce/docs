@@ -15,7 +15,7 @@ groups:
 
 ## Description
 
-A toggle switch field component that provides a visual switch interface for boolean or binary (0/1) values. Features customizable size, variant colors, and label text for on/off states.
+A toggle switch field component that provides a visual switch interface for boolean or binary (0/1) values. Features two sizes and configurable label text for the on/off states.
 
 ## Import
 
@@ -92,15 +92,9 @@ function SettingsForm() {
     </tr>
     <tr>
       <td>size</td>
-      <td>'sm' | 'md' | 'lg'</td>
-      <td>'md'</td>
-      <td>Size of the toggle switch</td>
-    </tr>
-    <tr>
-      <td>variant</td>
-      <td>'default' | 'success' | 'warning' | 'danger'</td>
+      <td>'sm' | 'default'</td>
       <td>'default'</td>
-      <td>Color variant for the toggle</td>
+      <td>Size of the toggle switch</td>
     </tr>
     <tr>
       <td>defaultValue</td>
@@ -221,55 +215,8 @@ function SizeDemo() {
       
       <ToggleField
         name="setting2"
-        label="Medium Toggle"
-        size="md"
-      />
-      
-      <ToggleField
-        name="setting3"
-        label="Large Toggle"
-        size="lg"
-      />
-    </Form>
-  );
-}
-```
-
-## Example: Color Variants
-
-```tsx
-import { Form } from '@components/common/form/Form';
-import { ToggleField } from '@components/common/form/ToggleField';
-
-function VariantDemo() {
-  return (
-    <Form action="/api/settings">
-      <ToggleField
-        name="default"
-        label="Default"
-        variant="default"
-        defaultValue={true}
-      />
-      
-      <ToggleField
-        name="success"
-        label="Success"
-        variant="success"
-        defaultValue={true}
-      />
-      
-      <ToggleField
-        name="warning"
-        label="Warning"
-        variant="warning"
-        defaultValue={true}
-      />
-      
-      <ToggleField
-        name="danger"
-        label="Danger"
-        variant="danger"
-        defaultValue={true}
+        label="Default Toggle"
+        size="default"
       />
     </Form>
   );
@@ -304,24 +251,15 @@ function FeatureToggle() {
 
 ## Size Options
 
-- **sm**: Small toggle (h-5 w-9)
-- **md**: Medium toggle (h-6 w-11) - default
-- **lg**: Large toggle (h-7 w-14)
-
-## Variant Colors
-
-- **default**: Blue (default)
-- **success**: Green
-- **warning**: Yellow
-- **danger**: Red
+- **sm**: 14 x 24 px
+- **default**: 18.4 x 32 px — the default
 
 ## Features
 
 - **Visual Feedback**: Animated switch with smooth transitions
 - **Flexible Values**: Support for boolean or binary (0/1) values
 - **Custom Labels**: Different labels for on/off states
-- **Size Control**: Three size options
-- **Color Variants**: Four color schemes
+- **Size Control**: Two size options
 - **Controller Integration**: Uses React Hook Form Controller
 - **Accessibility**: Includes ARIA attributes and screen reader support
 - **TypeScript Support**: Full type safety with generics

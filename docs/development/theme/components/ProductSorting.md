@@ -30,6 +30,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function ProductPage() {
   return (
     <ProductSorting
+      count={category.products.total}
       sortOptions={[
         { code: '', name: 'Default' },
         { code: 'price', name: 'Price' },
@@ -53,6 +54,13 @@ function ProductPage() {
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td>count</td>
+      <td>number</td>
+      <td>Yes</td>
+      <td>—</td>
+      <td>Total product count. Rendered as the "&#36;&#123;count&#125; products" label — the component calls <code>count.toString()</code> unconditionally, so omitting it throws.</td>
+    </tr>
     <tr>
       <td>sortOptions</td>
       <td>SortOption[]</td>
@@ -158,7 +166,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function CategoryPage() {
   return (
     <div className="toolbar">
-      <ProductSorting />
+      <ProductSorting count={category.products.total} />
     </div>
   );
 }
@@ -172,6 +180,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function ProductListing() {
   return (
     <ProductSorting
+      count={category.products.total}
       sortOptions={[
         { code: '', name: 'Relevance' },
         { code: 'price', name: 'Price' },
@@ -194,6 +203,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function SearchResults() {
   return (
     <ProductSorting
+      count={category.products.total}
       showSortDirection={false}
       sortOptions={[
         { code: 'relevance', name: 'Most Relevant' },
@@ -221,6 +231,7 @@ function CustomSort() {
 
   return (
     <ProductSorting
+      count={category.products.total}
       enableUrlUpdate={false}
       onSortChange={handleSortChange}
     />
@@ -236,6 +247,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function StyledSort() {
   return (
     <ProductSorting
+      count={category.products.total}
       renderSortSelect={({ options, value, onChange, disabled }) => (
         <div className="custom-select">
           <label>Sort by:</label>
@@ -270,6 +282,7 @@ import { ProductSorting } from '@components/frontStore/catalog/ProductSorting';
 function CustomDirection() {
   return (
     <ProductSorting
+      count={category.products.total}
       renderSortDirection={({ sortOrder, onToggle, disabled }) => (
         <button
           onClick={onToggle}
@@ -300,6 +313,7 @@ function CategoryToolbar() {
       </div>
 
       <ProductSorting
+        count={category.products.total}
         sortOptions={[
           { code: '', name: 'Featured' },
           { code: 'price', name: 'Price' },

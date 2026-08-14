@@ -42,15 +42,17 @@ ProductFilter is consumed by these components, which are the actual override tar
     <tr>
       <td>CategoryProductsFilter</td>
       <td>categoryView</td>
-      <td><code>themes/&lt;name&gt;/src/pages/categoryView/CategoryProductsFilter.tsx</code></td>
-    </tr>
-    <tr>
-      <td>SearchProductsFilter</td>
-      <td>catalogSearch</td>
-      <td><code>themes/&lt;name&gt;/src/pages/catalogSearch/SearchProductsFilter.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/catalog/CategoryProductsFilter.tsx</code></td>
     </tr>
   </tbody>
 </table>
+
+:::note There is no filter on the search page
+The search page renders no product filter, so there is nothing to override there. To add
+one, drop a component into one of the areas the search page already exposes:
+`searchPageTop` / `searchPageBottom` (`SearchPage.tsx`), or `searchProductsBefore` /
+`searchProductsAfter` (`components/frontStore/catalog/SearchProducts.tsx`).
+:::
 
 ## Import
 
@@ -395,7 +397,7 @@ function PriceFilter({ currentFilters, priceRange }) {
 
 A theme developer overrides `CategoryProductsFilter` to build a custom filter panel. Create this file in your theme:
 
-**`themes/my-theme/src/pages/categoryView/CategoryProductsFilter.tsx`**
+**`themes/my-theme/src/components/frontStore/catalog/CategoryProductsFilter.tsx`**
 
 ```tsx
 import { ProductFilter } from '@components/frontStore/catalog/ProductFilter';
@@ -475,11 +477,6 @@ function CategoryProductsFilter({
 }
 
 export default CategoryProductsFilter;
-
-export const layout = {
-  areaId: 'categoryPageLeft',
-  sortOrder: 10
-};
 ```
 
 ## Filter Operations

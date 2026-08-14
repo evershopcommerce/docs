@@ -141,12 +141,14 @@ export default async (request, response, next) => {
       .from("category")
       .leftJoin("category_description")
       .on(
-        "category.`category_id`",
+        "category.category_id",
         "=",
-        "category_description.`category_description_category_id`"
+        "category_description.category_description_category_id"
       );
 
-    query.where("category_description.`url_key`", "=", request.params.url_key);
+    // The categoryView route is /category/:uuid — the path param is `uuid`,
+    // not `url_key`. Filtering on url_key would 404 every category page.
+    query.where("category.uuid", "=", request.params.uuid);
     const category = await query.load(pool);
 
     if (category === null) {
@@ -181,6 +183,39 @@ This function adds a value to the GraphQL execution context. It accepts three ar
 By default, EverShop adds all data in the current `request` object to the context. For example, you can call the `getContextValue('url')` function to get the current request URL.
 :::
 
+### The `getWidgetSetting` Function
+
+Widget components have a second placeholder available to them: `getWidgetSetting()`. It reads a value out of the **widget instance's own settings** rather than the request context.
+
+Widgets normally declare GraphQL variables and fill them from settings, using a companion `export const variables`:
+
+```js title="A widget component"
+export const query = `
+  query Query($collection: String, $count: Int, $countPerRow: Int) {
+    collection(code: $collection) {
+      name
+      products(filters: [{ key: "limit", operation: eq, value: $count }]) {
+        items {
+          name
+          url
+        }
+      }
+    }
+  }`;
+
+export const variables = `{
+  collection: getWidgetSetting("collection"),
+  count: getWidgetSetting("count"),
+  countPerRow: getWidgetSetting("countPerRow", 4)
+}`;
+```
+
+It takes the setting path (dot notation for nested values, e.g. `"style.columns"`) and an optional second argument used as the default when the setting is unset. It is also recognized inline inside `export const query`.
+
+`getWidgetSetting()` is **not a runtime function** — like `getContextValue()`, it is a build-time marker. The same webpack loader rewrites both into Base64-encoded string placeholders (`"getWidgetSetting_<base64>"`), and the `buildQuery` middleware decodes them at request time, substituting the widget instance's stored settings before the query is executed. That is why the call must appear literally inside the exported template — a variable holding the key will not be rewritten.
+
+See [Widget Development](/docs/development/module/widget-development) for how widget settings are declared and stored.
+
 ## How Server-Side Data Fetching Works Internally
 
 Understanding the internal mechanism helps you debug data-fetching issues and write more effective queries.
@@ -191,7 +226,7 @@ During the build process, EverShop scans all React components for each route and
 
 1. **Extracts** the `export const query` from each component file using regex.
 2. **Aliases** all selected fields to prevent naming collisions across components (e.g., `product.name` becomes `e_uniqueId_name`).
-3. **Encodes** `getContextValue()` calls as Base64 placeholders.
+3. **Encodes** `getContextValue()` and `getWidgetSetting()` calls as Base64 placeholders.
 4. **Merges** all component queries into a single GraphQL query per route.
 5. **Generates** a `propsMap` that maps aliased field names back to the original component prop names.
 
@@ -203,18 +238,27 @@ When a request arrives for a page route:
 
 1. The **buildQuery** middleware reads the pre-built query file.
 2. It **decodes** `getContextValue()` placeholders by replacing them with actual values from the request context (set by earlier middleware).
-3. If any widgets are registered for the route, their queries are merged in as well.
+3. If any widgets are registered for the route, their queries are merged in as well, with `getWidgetSetting()` placeholders resolved against each widget instance's stored settings.
 4. The **graphql** middleware executes the merged query against the schema.
 5. The **response** middleware uses the `propsMap` to distribute the query results back to each component as props.
 6. React's `renderToString()` produces the HTML with all data pre-filled.
 
 This is why `setContextValue()` must be called in a middleware that runs **before** the GraphQL query execution — the values need to be available when placeholders are replaced.
 
+### When a Resolver Fails
+
+The SSR path and the client-side endpoint handle GraphQL errors **differently**:
+
+- **During SSR**, field errors no longer abort the page. The merged query is executed, any errors are logged at `debug` level, and whatever data did resolve (`data.data`, or `{}` if everything failed) is passed on to the renderer. A single failing or non-critical resolver — "related products", a third-party widget — degrades its own area instead of turning the whole page into a 500.
+- **The client-side `/api/graphql` endpoint still aborts on the first error.** It forwards `data.errors[0]` to the error handler rather than returning partial data, so a `useQuery` hook sees a failed result, not a half-filled one.
+
+A failure in the React render itself (as opposed to a resolver) *is* fatal: it is forwarded to the error handler and produces a proper 500 instead of leaving the request hanging until the socket times out.
+
 ## Client-Side Data Fetching
 
 ### GraphQL API Endpoint
 
-EverShop provides a GraphQL API endpoint to fetch data from the server. The GraphQL API endpoint is available at the `/graphql` path. You can use this endpoint to fetch data from the server.
+EverShop provides a GraphQL API endpoint to fetch data from the server. The storefront endpoint is `/api/graphql`; the admin endpoint is `/api/admin/graphql`. The URQL client is pre-wired to the right one for each context, so components hydrated on the storefront talk to `/api/graphql` and admin components talk to `/api/admin/graphql`.
 
 ### The `useQuery` Hook from URQL
 

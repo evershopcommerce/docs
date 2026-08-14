@@ -106,9 +106,24 @@ const config = {
           editUrl: "https://github.com/evershopcommerce/docs/tree/main/",
         },
         blog: {
+          blogTitle: "EverShop Blog",
+          blogDescription:
+            "What's new in EverShop, and what it means for your store.",
+          blogSidebarTitle: "Recent posts",
+          blogSidebarCount: 10,
+          postsPerPage: 10,
           showReadingTime: true,
-          blogSidebarCount: 0,
-          blogSidebarTitle: "All posts",
+          // Posts without a <!-- truncate --> marker render in full on the list
+          // page. Warn rather than throw so a missing marker is visible in CI
+          // without blocking a build.
+          onUntruncatedBlogPosts: "warn",
+          feedOptions: {
+            type: "all",
+            title: "EverShop Blog",
+            description:
+              "Release notes, upgrade guides and announcements from the EverShop team.",
+            copyright: `Copyright © ${new Date().getFullYear()} EverShop.`,
+          },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl: "https://github.com/evershopcommerce/docs/tree/main/",
@@ -151,6 +166,11 @@ const config = {
             href: "/extensions",
             position: "left",
             label: "Marketplace",
+          },
+          {
+            to: "/blog",
+            position: "left",
+            label: "Blog",
           },
           // {
           //   href: "/pricing",

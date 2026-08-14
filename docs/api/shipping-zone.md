@@ -5,23 +5,36 @@ displayed_sidebar: "apiSidebar"
 keywords:
   - EverShop API
   - Shipping Zone
+  - Shipping Provider
   - Shipping Method
 sidebar_label: Shipping Zone
 title: Shipping Zone REST API
-description: Use the EverShop REST API to manage shipping zones and their methods.
+description: Use the EverShop REST API to manage shipping zones, attach shipping providers to them, and configure Core shipping methods and rates.
 ---
 
 import Api from '@site/src/components/rest/Api';
 
 # Shipping Zone API
 
-Shipping zones define geographic regions and the shipping methods available to them. Each zone can have multiple shipping methods with different pricing models.
+A shipping zone is a set of countries (optionally narrowed to provinces). Zones no longer own methods directly — they own **provider attachments**. Configuring shipping is three steps:
 
-## Endpoints
+1. Create a **zone** — the geography.
+2. Attach a **provider** to the zone (`core`, or one supplied by an extension).
+3. For the built-in `core` provider, define **methods** and give each one a per-zone **rate**.
+
+:::warning Removed endpoints
+`POST /api/shippingZones/{id}/methods`, `PATCH /api/shippingZones/{zone_id}/methods/{method_id}` and `DELETE /api/shippingZones/{zone_id}/methods/{method_id}` no longer exist. Their replacements are the provider endpoints (`/api/shippingZones/:zone_id/providers[...]`) and the Core provider endpoints (`/api/shippingProviders/core/methods` and `/api/shippingProviders/core/rates`) documented below.
+
+The `calculation_type` field is gone entirely — the shape of the cost is inferred from which cost field you set on a rate. `condition_type` accepts only `"price"`, `"weight"` or `null`; the old `"none"` value is rejected.
+:::
+
+## Zones
 
 ### Create a Shipping Zone
 
-Creates a new shipping zone with a name, country, and optional province restrictions.
+Creates a shipping zone. Only `name` is required by the payload schema, but the request is rejected with `400 At least one country is required` unless the normalized country list is non-empty — so send `countries` (preferred) or the legacy `country`.
+
+Creating a zone automatically attaches the built-in `core` provider to it.
 
 <Api
 method="POST"
@@ -32,32 +45,54 @@ requestSchema={{
     "name": {
       "type": "string"
     },
+    "countries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Preferred. ISO country codes covered by this zone. Takes precedence over the legacy country field"
+    },
     "country": {
-      "type": "string"
+      "type": "string",
+      "description": "Legacy single-country field. New clients should send countries"
     },
     "provinces": {
-      "type": "array",
-      "items": { "type": "string" }
+      "description": "Either a legacy array of province codes (paired with country), or an array of { country, province } pairs for multi-country zones"
     }
   },
-  "required": ["name", "country"]
+  "required": ["name"],
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
     "shipping_zone_id": 3,
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "name": "US West Coast",
-    "country": "US",
-    "provinces": ["CA", "OR", "WA"]
+    "name": "North America"
   }
 }`}
 />
+
+A multi-country zone with province restrictions:
+
+```json
+{
+  "name": "North America",
+  "countries": ["US", "CA"],
+  "provinces": [
+    { "country": "US", "province": "CA" },
+    { "country": "US", "province": "OR" },
+    { "country": "CA", "province": "BC" }
+  ]
+}
+```
+
+:::info `shipping_zone.country` was dropped
+Countries live in the `shipping_zone_country` table and provinces in `shipping_zone_province`, both keyed by zone. The zone row itself carries only `name`, so the create response does not echo the geography back.
+:::
 
 <hr/>
 
 ### Update a Shipping Zone
 
-Updates an existing shipping zone.
+Replaces the zone's name, countries and provinces. Country and province rows are replaced wholesale, not merged — send the complete lists every time. The same "at least one country" rule applies.
 
 <Api
 method="PATCH"
@@ -68,148 +103,87 @@ requestSchema={{
     "name": {
       "type": "string"
     },
-    "country": {
-      "type": "string"
-    },
-    "provinces": {
+    "countries": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "country": {
+      "type": "string",
+      "description": "Legacy single-country field"
+    },
+    "provinces": {
+      "description": "Array of province codes, or array of { country, province } pairs"
     }
   },
-  "required": ["name", "country"]
+  "required": ["name"],
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
-    "shipping_zone_id": 3,
-    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "name": "US West Coast Updated"
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
   }
 }`}
 />
+
+`{id}` is the zone **uuid**.
 
 <hr/>
 
 ### Delete a Shipping Zone
 
-Permanently removes a shipping zone and all its associated methods.
+Permanently removes a shipping zone along with its country, province, provider-attachment and rate rows.
 
 <Api
 method="DELETE"
 url="/api/shippingZones/{id}"
 responseSample={`{
   "data": {
-    "success": true
+    "shipping_zone_id": 3,
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "North America"
   }
 }`}
 />
 
 <hr/>
 
-## Zone Methods
+## Providers, Methods and Rates
 
-### Add Method to Shipping Zone
+A zone on its own offers nothing. Shipping options come from **providers** attached
+to the zone, and — for the built-in Core provider — from the methods and rates
+configured beneath it.
 
-Adds a shipping method to a zone with pricing and condition rules.
+Those endpoints have their own reference:
 
-<Api
-method="POST"
-url="/api/shippingZones/{id}/methods"
-requestSchema={{
-  "type": "object",
-  "properties": {
-    "method_id": {
-      "type": "string",
-      "description": "Unique method identifier"
-    },
-    "cost": {
-      "type": ["string", "number"],
-      "description": "Flat rate cost"
-    },
-    "is_enabled": {
-      "type": ["integer", "string", "boolean"],
-      "enum": [0, 1, "0", "1", true, false]
-    },
-    "calculation_type": {
-      "type": "string",
-      "enum": ["flat_rate", "price_based_rate", "weight_based_rate", "api"]
-    },
-    "condition_type": {
-      "type": "string",
-      "enum": ["weight", "price", "none"]
-    },
-    "min": {
-      "type": ["string", "number"],
-      "description": "Minimum weight or price for condition"
-    },
-    "max": {
-      "type": ["string", "number"],
-      "description": "Maximum weight or price for condition"
-    }
-  },
-  "required": ["method_id", "condition_type"]
-}}
-responseSample={`{
-  "data": {
-    "method_id": "standard_shipping",
-    "zone_id": 3,
-    "cost": 5.99,
-    "is_enabled": true,
-    "calculation_type": "flat_rate",
-    "condition_type": "none"
-  }
-}`}
-/>
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>What you want to do</th>
+      <th>Where</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Attach, update or detach a provider on a zone</td>
+      <td><a href="./shipping-provider">Shipping Provider API</a></td>
+    </tr>
+    <tr>
+      <td>Create, update or delete a Core method</td>
+      <td><a href="./shipping-provider">Shipping Provider API</a></td>
+    </tr>
+    <tr>
+      <td>Create, update or delete a Core rate (flat, price-tiered or weight-tiered)</td>
+      <td><a href="./shipping-provider">Shipping Provider API</a></td>
+    </tr>
+    <tr>
+      <td>Build a provider of your own</td>
+      <td><a href="../development/knowledge-base/shipping-provider-development">Shipping Provider Development</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <hr/>
 
-### Update Zone Method
+## Selecting a Method at Checkout
 
-Updates an existing shipping method within a zone.
-
-<Api
-method="PATCH"
-url="/api/shippingZones/{zone_id}/methods/{method_id}"
-requestSchema={{
-  "type": "object",
-  "properties": {
-    "cost": {
-      "type": ["string", "number"]
-    },
-    "is_enabled": {
-      "type": ["integer", "string", "boolean"],
-      "enum": [0, 1, "0", "1", true, false]
-    },
-    "calculation_type": {
-      "type": "string",
-      "enum": ["flat_rate", "price_based_rate", "weight_based_rate", "api"]
-    },
-    "condition_type": {
-      "type": "string",
-      "enum": ["weight", "price", "none"]
-    }
-  },
-  "required": ["condition_type", "calculation_type"]
-}}
-responseSample={`{
-  "data": {
-    "method_id": "standard_shipping",
-    "cost": 7.99
-  }
-}`}
-/>
-
-<hr/>
-
-### Delete Zone Method
-
-Removes a shipping method from a zone.
-
-<Api
-method="DELETE"
-url="/api/shippingZones/{zone_id}/methods/{method_id}"
-responseSample={`{
-  "data": {
-    "success": true
-  }
-}`}
-/>
+Once zones, providers, methods and rates exist, the storefront reads the available methods from GraphQL and applies one with `POST /api/carts/:cart_id/shippingMethods`. See the [Shipping Method API](./shipping-method.md).

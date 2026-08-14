@@ -6,140 +6,230 @@ keywords:
   - e-commerce payments
 sidebar_label: Stripe Payment Integration
 title: Integrating Stripe Payment Gateway
-description: This step-by-step guide demonstrates how to integrate the Stripe payment gateway with EverShop, providing a blueprint for implementing additional payment gateways in your e-commerce platform.
+description: How EverShop's built-in Stripe module is wired together — registration, the payment component, the payment intent API and the webhook — as a blueprint for building your own payment gateway.
 ---
 
 # Integrating Stripe Payment Gateway
 
-By default, EverShop supports Stripe as an online payment gateway. This document walks you through the integration process, serving as a reference for implementing your own custom payment gateways with EverShop.
+EverShop ships Stripe as a core module. This guide walks through how that module is actually wired together, so you can use it as a blueprint for your own gateway.
 
-## Understanding the Integration Structure
+Every path below is relative to `packages/evershop/src/modules/stripe/` in the EverShop repository. Read alongside [Payment Method Development](/docs/development/knowledge-base/payment-method-development), which covers the registration contract in isolation.
 
-Since Stripe is part of EverShop's core functionality, you can find the Stripe module in the `modules/stripe` folder.
+## The five pieces
 
-If you want to create your own payment gateway, follow the [Create Your First Extension](/docs/development/module/create-your-first-extension) guide to establish the foundation for your payment integration.
+A payment gateway in EverShop is made of five parts:
 
-## Registering Your Payment Gateway for Checkout
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Piece</th>
+      <th>File</th>
+      <th>Job</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Registration</td>
+      <td><code>bootstrap.ts</code></td>
+      <td>Declares the method, its payment statuses, and when it is available</td>
+    </tr>
+    <tr>
+      <td>Checkout component</td>
+      <td><code>pages/frontStore/checkout/Stripe.tsx</code></td>
+      <td>Mounts into the checkout page and supplies the name, form and button renderers</td>
+    </tr>
+    <tr>
+      <td>Payment intent API</td>
+      <td><code>api/createPaymentIntent/</code></td>
+      <td>Creates the Stripe PaymentIntent and returns its client secret</td>
+    </tr>
+    <tr>
+      <td>Webhook</td>
+      <td><code>api/stripeWebHook/</code></td>
+      <td>Receives Stripe events and moves the order's payment status</td>
+    </tr>
+    <tr>
+      <td>Admin settings</td>
+      <td><code>pages/admin/paymentSetting/StripePayment.tsx</code></td>
+      <td>Keys, display name and capture mode</td>
+    </tr>
+  </tbody>
+</table>
 
-During checkout, EverShop renders a list of payment options for customers to choose from. To add your payment gateway to this list, you need to hook into the `getPaymentMethods` API.
+## 1. Registration
 
-To hook into an API, create a middleware function. Let's set up a middleware to register our payment gateway:
+Registration happens in the module's `bootstrap.ts` — the only entry point the framework loads per module. The registry is locked immediately afterwards, so calling `registerPaymentMethod` from a middleware or request handler throws `Registry is locked`.
 
-```bash
-stripe
-├── api
-│   └── getPaymentMethods
-│       └── registerStripe[sendMethods].js
-```
+```ts title="modules/stripe/bootstrap.ts"
+import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
+import { getSetting } from '@evershop/evershop/setting/services';
+import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
-The middleware name indicates that it executes before the `sendMethods` middleware, allowing us to add our payment gateway to the list before it's sent to the client.
-
-Here's the complete middleware implementation:
-
-```js
-import { getConfig } from "@evershop/evershop/lib/util/getConfig";
-import { getSetting } from "@evershop/evershop/setting/services";
-
-export default async (request, response) => {
-  // Check if Stripe is enabled
-  const stripeConfig = getConfig("system.stripe", {});
-  let stripeStatus;
-  if (stripeConfig.status) {
-    stripeStatus = stripeConfig.status;
-  } else {
-    stripeStatus = await getSetting("stripePaymentStatus", 0);
-  }
-  if (parseInt(stripeStatus, 10) === 1) {
-    return {
-      methodCode: "stripe",
-      methodName: await getSetting("stripeDislayName", "Stripe"),
-    };
-  } else {
-    return null;
-  }
-};
-```
-
-Your middleware should return a payment gateway object containing `methodCode` (a unique identifier) and `methodName` (the display name that appears on the checkout page). You can include validation logic, such as checking if the payment gateway is enabled, and return null if it should not be displayed.
-
-After implementing this step, your payment gateway will appear in the checkout payment options.
-
-## Adding the Payment Method to the Cart
-
-When a customer selects a payment method during checkout, EverShop calls the `addPaymentMethod` API to associate that payment method with the cart. This API simply records the `methodCode` and `methodName` in the cart without initiating any payment processing.
-
-:::info
-You might wonder about validating the payment method before adding it to the cart. We'll cover validation in later sections. For now, we'll assume no validation is needed at this stage.
-:::
-
-## Creating a Payment Intent
-
-Stripe requires creating a payment intent before processing a payment. For more information about payment intents, see the [Stripe documentation](https://stripe.com/docs/payments/payment-intents).
-
-Let's create an API endpoint to generate a payment intent:
-
-```bash
-stripe
-├── api
-    └── createPaymentIntent
-          └── [context]bodyParser[auth].js
-          └── createPaymentIntent.js
-          └── route.json
-```
-
-Here's the implementation of `createPaymentIntent.js`:
-
-```js
-import { select } from "@evershop/postgres-query-builder";
-import { pool } from "@evershop/evershop/lib/postgres";
-import smallestUnit from "zero-decimal-currencies";
-import { getSetting } from "@evershop/evershop/setting/services";
-import stripePayment from "stripe";
-import { getConfig } from "@evershop/evershop/lib/util/getConfig";
-
-export default async (request, response, next) => {
-  const { body } = request;
-  // Check the order
-  const order = await select()
-    .from("order")
-    .where("uuid", "=", body.orderId)
-    .load(pool);
-
-  if (!order) {
-    response.json({
-      success: false,
-      message: "The requested order does not exist",
-    });
-  } else {
-    const stripeConfig = getConfig("system.stripe", {});
-    let stripeSecretKey;
-    if (stripeConfig.secretKey) {
-      stripeSecretKey = stripeConfig.secretKey;
-    } else {
-      stripeSecretKey = await getSetting("stripeSecretKey", "");
+export default async () => {
+  registerPaymentMethod({
+    // `init` returns the method's identity. `code` is the value stored on the
+    // order; `name` is what the shopper sees.
+    init: async () => ({
+      code: 'stripe',
+      name: await getSetting('stripeDisplayName', 'Stripe')
+    }),
+    // `validator` decides whether the method is offered for this checkout.
+    // It is REQUIRED — a factory without one makes the whole payment-method
+    // listing throw `Value checkoutPaymentMethods is invalid: false`.
+    validator: async () => {
+      const stripeConfig = getConfig('system.stripe', {}) ?? {};
+      const stripeStatus =
+        stripeConfig.status ?? (await getSetting('stripePaymentStatus', 0));
+      return parseInt(stripeStatus, 10) === 1;
     }
-
-    const stripe = stripePayment(stripeSecretKey);
-    // Create a PaymentIntent with the order amount and currency
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: smallestUnit.default(order.grand_total, order.currency),
-      currency: order.currency,
-      metadata: {
-        orderId: body.orderId,
-      },
-    });
-
-    response.json({
-      clientSecret: paymentIntent.client_secret,
-      success: true,
-    });
-  }
+  });
 };
 ```
 
-And the corresponding `route.json` file:
+`validator` receives an optional `PaymentMethodValidationContext` carrying `cartTotal`. Read it defensively (`context?.cartTotal`) — and note that a cart total of `0` collapses the list to the built-in `zero_checkout` method regardless of what your validator returns. See [Zero Total Checkout](/docs/development/knowledge-base/zero-total-checkout).
 
-```json
+### Declaring payment statuses
+
+The same bootstrap declares the payment statuses the gateway can put an order into, plus their mapping to the order's overall status:
+
+```ts title="modules/stripe/bootstrap.ts"
+import config from 'config';
+
+config.util.setModuleDefaults('oms', {
+  order: {
+    paymentStatus: {
+      stripe_authorized: { name: 'Authorized', isDefault: false, isCancelable: true, badge: 'warning' },
+      stripe_captured: { name: 'Captured', isDefault: false, isCancelable: false, badge: 'success' },
+      stripe_failed: { name: 'Failed', isDefault: false, isCancelable: true, badge: 'critical' },
+      stripe_refunded: { name: 'Refunded', isDefault: false, isCancelable: false, badge: 'destructive' },
+      stripe_partial_refunded: { name: 'Partial Refunded', isDefault: false, isCancelable: false, badge: 'destructive' }
+    },
+    psoMapping: {
+      'stripe_authorized:*': 'processing',
+      'stripe_captured:*': 'processing',
+      'stripe_captured:delivered': 'completed',
+      'stripe_failed:*': 'new',
+      'stripe_refunded:*': 'closed',
+      'stripe_partial_refunded:*': 'processing',
+      'stripe_partial_refunded:delivered': 'completed'
+    }
+  }
+});
+```
+
+The module also hooks order cancellation so a cancelled order releases its authorization:
+
+```ts
+import { hookAfter } from '@evershop/evershop/lib/util/hookable';
+
+hookAfter('changePaymentStatus', async (order, orderID, status) => {
+  if (status !== 'canceled' || order.payment_method !== 'stripe') {
+    return;
+  }
+  await cancelPaymentIntent(orderID);
+});
+```
+
+Note the first argument is the hook **name as a string**. Passing the imported function files the hook under a key that never matches, and it silently never fires.
+
+## 2. The checkout component
+
+Every payment method mounts into the **same** area — `checkoutFormAfter`. There is no per-method area convention:
+
+```tsx title="modules/stripe/pages/frontStore/checkout/Stripe.tsx"
+export const layout = {
+  areaId: 'checkoutFormAfter',
+  sortOrder: 10
+};
+```
+
+The component does not render the payment UI directly into that area. Instead it calls `registerPaymentComponent` from `useCheckoutDispatch()` and returns `null` — the checkout page decides where and when to draw each renderer:
+
+```tsx
+import { useEffect } from 'react';
+import { useCheckoutDispatch } from '@components/frontStore/checkout/CheckoutContext';
+
+function StripeMethod({ setting, grandTotal, currency, returnUrl, createPaymentIntentApi }) {
+  const { registerPaymentComponent } = useCheckoutDispatch();
+
+  useEffect(() => {
+    registerPaymentComponent('stripe', {
+      nameRenderer: () => <span>{setting.stripeDisplayName}</span>,
+      formRenderer: () => (
+        <StripeApp
+          total={grandTotal.value}
+          currency={currency}
+          returnUrl={returnUrl}
+          createPaymentIntentApi={createPaymentIntentApi}
+        />
+      ),
+      checkoutButtonRenderer: () => <StripeCheckoutButton />
+    });
+  }, [registerPaymentComponent, setting.stripeDisplayName]);
+
+  // The component itself renders nothing.
+  return null;
+}
+```
+
+Its GraphQL query supplies everything the renderers need:
+
+```tsx
+export const query = `
+  query Query {
+    setting {
+      stripeDisplayName
+      stripePublishableKey
+      stripePaymentMode
+    }
+    cart: myCart {
+      grandTotal {
+        value
+      }
+      currency
+    }
+    returnUrl: url(routeId: "stripeReturn")
+    createPaymentIntentApi: url(routeId: "createPaymentIntent")
+  }
+`;
+```
+
+### The card form
+
+The form uses Stripe's `PaymentElement` inside `<Elements>`, in deferred-intent mode — the intent is created when the shopper submits, not on render:
+
+```tsx
+import { Elements, PaymentElement } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+<Elements
+  stripe={loadStripe(setting.stripePublishableKey)}
+  options={{
+    mode: 'payment',
+    currency: currency.toLowerCase(),
+    amount: smallestUnit(total, currency),
+    capture_method: setting.stripePaymentMode === 'capture' ? 'automatic_async' : 'manual'
+  }}
+>
+  <PaymentElement id="payment-element" />
+</Elements>
+```
+
+If you need a hidden field to carry validation state into the checkout form, use a real field component — there is no `Field` component and no `validationRules` prop:
+
+```tsx
+import { InputField } from '@components/common/form/InputField';
+
+<InputField
+  type="hidden"
+  name="stripeCartComplete"
+  validation={{ required: 'Please complete the card information' }}
+/>
+```
+
+## 3. Creating the payment intent
+
+```json title="modules/stripe/api/createPaymentIntent/route.json"
 {
   "methods": ["POST"],
   "path": "/stripe/paymentIntents",
@@ -147,559 +237,159 @@ And the corresponding `route.json` file:
 }
 ```
 
-When a customer clicks the "Place Order" button, EverShop calls this API to create a payment intent and return the client secret to the frontend, which then uses it to complete the payment process.
+Both `cart_id` and `order_id` are required:
 
-## Creating a Payment Form
-
-Stripe provides tools to create a secure payment form. For more information, see the [Stripe Quick Start Guide](https://stripe.com/docs/payments/payment-intents/quickstart).
-
-Let's create a React component for our payment form that will display when a customer selects the Stripe payment method:
-
-```bash
-stripe
-├── pages
-│   └── frontStore
-│       └── checkout
-│           └── Stripe.jsx
-```
-
-Here's the implementation of `Stripe.jsx`:
-
-```js
-import PropTypes from "prop-types";
-import React from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { useCheckout } from "@components/frontStore/checkout/CheckoutContext";
-import StripeLogo from "@components/frontStore/stripe/StripeLogo";
-import CheckoutForm from "@components/frontStore/stripe/checkout/CheckoutForm";
-
-// Make sure to call loadStripe outside of a component's render to avoid
-// recreating the Stripe object on every render.
-// loadStripe is initialized with your real test publishable API key.
-let stripe;
-const stripeLoader = (publishKey) => {
-  if (!stripe) {
-    stripe = loadStripe(publishKey);
-  }
-  return stripe;
-};
-
-function StripeApp({ stripePublishableKey }) {
-  return (
-    // eslint-disable-next-line react/jsx-filename-extension
-    <div className="App">
-      <Elements stripe={stripeLoader(stripePublishableKey)}>
-        <CheckoutForm stripePublishableKey={stripePublishableKey} />
-      </Elements>
-    </div>
-  );
-}
-
-StripeApp.propTypes = {
-  stripePublishableKey: PropTypes.string.isRequired,
-};
-
-export default function StripeMethod({ setting }) {
-  const checkout = useCheckout();
-  const { paymentMethods, setPaymentMethods } = checkout;
-  // Get the selected payment method
-  const selectedPaymentMethod = paymentMethods
-    ? paymentMethods.find((paymentMethod) => paymentMethod.selected)
-    : undefined;
-
-  return (
-    <div>
-      <div className="flex justify-start items-center gap-1">
-        {(!selectedPaymentMethod ||
-          selectedPaymentMethod.code !== "stripe") && (
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setPaymentMethods((previous) =>
-                previous.map((paymentMethod) => {
-                  if (paymentMethod.code === "stripe") {
-                    return {
-                      ...paymentMethod,
-                      selected: true,
-                    };
-                  } else {
-                    return {
-                      ...paymentMethod,
-                      selected: false,
-                    };
-                  }
-                })
-              );
-            }}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-circle">
-              <circle cx="12" cy="12" r="10" />
-            </svg>
-          </a>
-        )}
-        {selectedPaymentMethod && selectedPaymentMethod.code === "stripe" && (
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#2c6ecb"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-check-circle">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-        )}
-        <div>
-          <StripeLogo width={100} />
-        </div>
-      </div>
-      <div>
-        {selectedPaymentMethod && selectedPaymentMethod.code === "stripe" && (
-          <div>
-            <StripeApp stripePublishableKey={setting.stripePublishableKey} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-StripeMethod.propTypes = {
-  setting: PropTypes.shape({
-    stripePublishableKey: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-export const layout = {
-  areaId: "checkoutPaymentMethodstripe",
-  sortOrder: 10,
-};
-
-export const query = `
-  query Query {
-    setting {
-      stripeDislayName
-      stripePublishableKey
-    }
-  }
-`;
-```
-
-This component appears as a payment option on the checkout page. When selected, it displays the Stripe payment form.
-
-Note how we use the `layout` property to specify where this component should appear. The `areaId` follows the pattern `checkoutPaymentMethod` + your payment method code. We also use GraphQL `query` to fetch the Stripe publishable key from settings.
-
-Next, let's create the `CheckoutForm.jsx` component that handles the actual payment form:
-
-```js
-import PropTypes from "prop-types";
-import React, { useState, useEffect } from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { useQuery } from "urql";
-import { useCheckout } from "@components/frontStore/checkout/CheckoutContext";
-import "./CheckoutForm.scss";
-import { Field } from "@components/common/form/Field";
-import TestCards from "./TestCards";
-
-const cartQuery = `
-  query Query($cartId: String) {
-    cart(id: $cartId) {
-      billingAddress {
-        cartAddressId
-        fullName
-        postcode
-        telephone
-        country {
-          name
-          code
-        }
-        province {
-          name
-          code
-        }
-        city
-        address1
-        address2
-      }
-      shippingAddress {
-        cartAddressId
-        fullName
-        postcode
-        telephone
-        country {
-          name
-          code
-        }
-        province {
-          name
-          code
-        }
-        city
-        address1
-        address2
-      }
-      customerEmail
-    }
-  }
-`;
-
-const cardStyle = {
-  style: {
-    base: {
-      color: "#737373",
-      fontFamily: "Arial, sans-serif",
-      fontSmoothing: "antialiased",
-      fontSize: "16px",
-      "::placeholder": {
-        color: "#737373",
-      },
-    },
-    invalid: {
-      color: "#fa755a",
-      iconColor: "#fa755a",
-    },
-  },
-  hidePostalCode: true,
-};
-
-export default function CheckoutForm({ stripePublishableKey }) {
-  const [, setSucceeded] = useState(false);
-  const [cardComleted, setCardCompleted] = useState(false);
-  const [error, setError] = useState(null);
-  const [, setDisabled] = useState(true);
-  const [clientSecret, setClientSecret] = useState("");
-  const [showTestCard, setShowTestCard] = useState("success");
-  const stripe = useStripe();
-  const elements = useElements();
-  const { cartId, orderId, orderPlaced, paymentMethods, checkoutSuccessUrl } =
-    useCheckout();
-
-  const [result] = useQuery({
-    query: cartQuery,
-    variables: {
-      cartId,
-    },
-    pause: orderPlaced === true,
-  });
-
-  useEffect(() => {
-    // Create PaymentIntent as soon as the order is placed
-    if (orderId) {
-      window
-        .fetch("/api/stripe/paymentIntents", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ order_id: orderId }),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-          setClientSecret(data.data.clientSecret);
-        });
-    }
-  }, [orderId]);
-
-  useEffect(() => {
-    const pay = async () => {
-      const billingAddress =
-        result.data.cart.billingAddress || result.data.cart.shippingAddress;
-      const payload = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name: billingAddress.fullName,
-            email: result.data.cart.customerEmail,
-            phone: billingAddress.telephone,
-            address: {
-              line1: billingAddress.address1,
-              country: billingAddress.country.code,
-              state: billingAddress.province.code,
-              postal_code: billingAddress.postcode,
-              city: billingAddress.city,
-            },
-          },
-        },
-      });
-
-      if (payload.error) {
-        setError(`Payment failed ${payload.error.message}`);
-      } else {
-        setError(null);
-        setSucceeded(true);
-        // Redirect to checkout success page
-        window.location.href = `${checkoutSuccessUrl}/${orderId}`;
-      }
-    };
-
-    if (orderPlaced === true && clientSecret) {
-      pay();
-    }
-  }, [orderPlaced, clientSecret, result]);
-
-  const handleChange = (event) => {
-    // Listen for changes in the CardElement
-    // and display any errors as the customer types their card details
-    setDisabled(event.empty);
-    if (event.complete === true && !event.error) {
-      setCardCompleted(true);
-    }
-  };
-
-  const testSuccess = () => {
-    setShowTestCard("success");
-  };
-
-  const testFailure = () => {
-    setShowTestCard("failure");
-  };
-
-  if (result.error) {
-    return (
-      <p>
-        Oh no...
-        {error.message}
-      </p>
-    );
-  }
-  // Check if the selected payment method is Stripe
-  const stripePaymentMethod = paymentMethods.find(
-    (method) => method.code === "stripe" && method.selected === true
-  );
-  if (!stripePaymentMethod) return null;
-
-  return (
-    // eslint-disable-next-line react/jsx-filename-extension
-    <div>
-      <div className="stripe-form">
-        {stripePublishableKey && stripePublishableKey.startsWith("pk_test") && (
-          <TestCards
-            showTestCard={showTestCard}
-            testSuccess={testSuccess}
-            testFailure={testFailure}
-          />
-        )}
-        <CardElement
-          id="card-element"
-          options={cardStyle}
-          onChange={handleChange}
-        />
-      </div>
-      {/* Show any error that happens when processing the payment */}
-      {error && (
-        <div className="card-error text-critical mb-2" role="alert">
-          {error}
-        </div>
-      )}
-      <Field
-        type="hidden"
-        name="stripeCartComplete"
-        value={cardComleted ? 1 : ""}
-        validationRules={[
-          {
-            rule: "notEmpty",
-            message: "Please complete the card information",
-          },
-        ]}
-      />
-    </div>
-  );
-}
-
-CheckoutForm.propTypes = {
-  stripePublishableKey: PropTypes.string.isRequired,
-};
-```
-
-The EverShop checkout process is organized in steps: contact information, shipping information, and payment information. The checkout context manages these steps and automatically triggers the order creation API when all steps are completed.
-
-For the payment integration, we need to:
-
-1. Manage the billing address form and payment method
-2. Save the billing address and payment method
-3. Mark the payment information step as completed
-4. When an order is placed (and orderId is available), create a payment intent and get the client secret
-5. Use the client secret to confirm the payment with Stripe
-6. Process the payment result and redirect to the success page
-
-## Managing Order Payment Status with Webhooks
-
-When an order is initially placed, its payment status is set to `pending`.
-
-After a successful payment, Stripe sends a webhook notification to your server, which updates the order payment status to `paid`. Let's set up this webhook system:
-
-### Creating a Webhook Endpoint
-
-Create a webhook endpoint to receive notifications from Stripe:
-
-```bash
-stripe
-└── api
-    └── stripeWebHook
-          ├── route.json
-          └── bodyJson.js
-          └── [bodyJson]webhook.js
-```
-
-Define the route in `route.json`:
-
-```json
+```json title="modules/stripe/api/createPaymentIntent/payloadSchema.json"
 {
-  "methods": ["POST"],
-  "path": "/stripe/webhook",
-  "access": "public"
+  "type": "object",
+  "properties": {
+    "cart_id": { "type": "string" },
+    "order_id": { "type": "string" }
+  },
+  "required": ["cart_id", "order_id"],
+  "additionalProperties": true,
+  "errorMessage": {
+    "properties": {
+      "cart_id": "Cart is invalid",
+      "order_id": "Order is invalid"
+    }
+  }
 }
 ```
 
-Implement the webhook handler in `[bodyJson]webhook.js`:
+The handler loads the **cart** — not the order — and derives the amount from `cart.grand_total`, so the client can never dictate what it pays:
 
-```js
-import {
-  insert,
-  startTransaction,
-  update,
-  commit,
-  rollback,
-  select,
-} from "@evershop/postgres-query-builder";
-import { getConnection } from "@evershop/evershop/lib/postgres";
-import { getConfig } from "@evershop/evershop/lib/util/getConfig";
-import { emit } from "@evershop/evershop/lib/event";
-import { debug } from "@evershop/evershop/lib/log";
-import { getSetting } from "@evershop/evershop/setting/services";
+```ts title="modules/stripe/api/createPaymentIntent/createPaymentIntent.ts"
+import Stripe from 'stripe';
+import smallestUnit from 'zero-decimal-currencies';
+import { select } from '@evershop/evershop/lib/postgres/query';
+import { pool } from '@evershop/evershop/lib/postgres';
+import { getSetting } from '@evershop/evershop/setting/services';
+import { OK, INVALID_PAYLOAD } from '@evershop/evershop/lib/util/httpStatus';
 
 export default async (request, response, next) => {
-  const sig = request.headers["stripe-signature"];
+  const { cart_id, order_id } = request.body;
 
-  let event;
-  const connection = await getConnection();
-  try {
-    const stripeConfig = getConfig("system.stripe", {});
-    let stripeSecretKey;
-    if (stripeConfig.secretKey) {
-      stripeSecretKey = stripeConfig.secretKey;
-    } else {
-      stripeSecretKey = await getSetting("stripeSecretKey", "");
-    }
-    const stripe = require("stripe")(stripeSecretKey);
-
-    // Webhook endpoint secret
-    let endpointSecret;
-    if (stripeConfig.endpointSecret) {
-      endpointSecret = stripeConfig.endpointSecret;
-    } else {
-      endpointSecret = await getSetting("stripeEndpointSecret", "");
-    }
-
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    await startTransaction(connection);
-    // Handle the event
-    switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const { orderId } = paymentIntent.metadata;
-        // Load the order
-        const order = await select()
-          .from("order")
-          .where("uuid", "=", orderId)
-          .load(connection);
-
-        // Update the order
-        // Create payment transaction
-        await insert("payment_transaction")
-          .given({
-            amount: paymentIntent.amount,
-            payment_transaction_order_id: order.order_id,
-            transaction_id: paymentIntent.id,
-            transaction_type: "online",
-            payment_action:
-              paymentIntent.capture_method === "automatic"
-                ? "Capture"
-                : "Authorize",
-          })
-          .execute(connection);
-
-        // Update the order status
-        await update("order")
-          .given({ payment_status: "paid" })
-          .where("order_id", "=", order.order_id)
-          .execute(connection);
-
-        // Add an activity log
-        await insert("order_activity")
-          .given({
-            order_activity_order_id: order.order_id,
-            comment: `Customer paid by using credit card. Transaction ID: ${paymentIntent.id}`,
-          })
-          .execute(connection);
-
-        // Emit event to add order placed event
-        await emit("order_placed", { ...order });
-        break;
-      }
-      case "payment_method.attached": {
-        debug("PaymentMethod was attached to a Customer!");
-        break;
-      }
-      // ... handle other event types
-      default: {
-        debug(`Unhandled event type ${event.type}`);
-      }
-    }
-    await commit(connection);
-    // Return a response to acknowledge receipt of the event
-    response.json({ received: true });
-  } catch (err) {
-    await rollback(connection);
-    response.status(400).send(`Webhook Error: ${err.message}`);
+  const cart = await select().from('cart').where('uuid', '=', cart_id).load(pool);
+  if (!cart) {
+    response.status(INVALID_PAYLOAD);
+    response.json({ error: { status: INVALID_PAYLOAD, message: 'Invalid cart' } });
+    return;
   }
+
+  const stripeSecretKey = await getSetting('stripeSecretKey', '');
+  const stripePaymentMode = await getSetting('stripePaymentMode', 'capture');
+
+  // ESM: import the constructor. `require()` is not available.
+  const stripe = new Stripe(stripeSecretKey);
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: parseInt(smallestUnit(cart.grand_total, cart.currency), 10),
+    currency: cart.currency,
+    metadata: { cart_id, order_id },
+    automatic_payment_methods: { enabled: true },
+    capture_method: stripePaymentMode === 'capture' ? 'automatic_async' : 'manual'
+  });
+
+  response.status(OK);
+  response.json({ data: { clientSecret: paymentIntent.client_secret } });
 };
 ```
 
-This middleware processes incoming webhooks from Stripe, updating the order payment status to `paid`, creating a payment transaction record, and adding an activity log entry.
+Call it from the form with both ids:
 
-### Configuring the Webhook in Stripe Dashboard
+```ts
+const response = await fetch(createPaymentIntentApi, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ cart_id: cartId, order_id: orderId })
+});
+const { data } = await response.json();
+// data.clientSecret
+```
 
-To set up the webhook in your Stripe account:
+:::note This handler declares three parameters
+`(request, response, next)` — the third parameter is required whenever a middleware sends its own response. A 2-argument middleware is treated as *passive*: the framework auto-calls `next()` and `apiResponse` then tries to send headers again, producing `ERR_HTTP_HEADERS_SENT`.
+:::
 
-1. Go to the Stripe dashboard
-2. Navigate to Developers → Webhooks → Add endpoint
-3. Enter your webhook URL: `https://<your-domain>/api/stripe/webhook`
-4. Select the events you want to receive (at minimum, select `payment_intent.succeeded`)
+## 4. The webhook
 
-## Implementing Stripe Settings in the Admin Panel
+The webhook is where payment status actually moves. It never writes `payment_status` with a raw `update()` — it goes through the OMS services so the status transition, the activity log and the payment transaction all stay consistent.
 
-To provide administrative control over Stripe settings, create a settings page in the admin panel. This allows store administrators to configure API keys and webhook endpoints.
+The order is found via `paymentIntent.metadata.order_id` (the key set when the intent was created):
 
-We won't detail this process here as it's similar to creating other admin pages. You can refer to previous tutorials on creating pages or extending layouts, or examine the source code [here](https://github.com/evershopcommerce/evershop/tree/dev/packages/evershop/src/modules/stripe) for implementation details.
+```ts title="modules/stripe/api/stripeWebHook/[bodyJson]webhook.ts"
+import Stripe from 'stripe';
+import { insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
+import addOrderActivityLog from '@evershop/evershop/oms/services/addOrderActivityLog';
+import { updatePaymentStatus } from '@evershop/evershop/oms/services/updatePaymentStatus';
 
-## Summary
+const { order_id } = paymentIntent.metadata;
 
-In this tutorial, we've covered how to integrate the Stripe payment gateway with EverShop:
+// Record the transaction
+await insertOnUpdate('payment_transaction', [
+  'transaction_id',
+  'payment_transaction_order_id'
+])
+  .given({ /* ... */ })
+  .execute(connection);
 
-1. We created middleware to register Stripe as a payment method
-2. We built an API endpoint to create payment intents
-3. We developed React components to display and handle Stripe payment forms
-4. We set up a webhook system to process payment confirmations
-5. We briefly discussed admin settings for configuring Stripe
+// Move the payment status through the registered stripe_* statuses
+await updatePaymentStatus(order.order_id, 'stripe_captured', connection);
+await addOrderActivityLog(order.order_id, 'Payment captured by Stripe', false, connection);
+```
 
-Each payment gateway has its own unique flow and integration requirements. This tutorial focused on Stripe as an example, but the same principles apply when integrating other payment gateways with EverShop.
+The event-to-status mapping:
 
-By following this pattern, you can extend EverShop to support additional payment methods that meet your specific business needs.
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Stripe event</th>
+      <th>Payment status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>payment_intent.amount_capturable_updated</code></td>
+      <td><code>stripe_authorized</code></td>
+    </tr>
+    <tr>
+      <td><code>payment_intent.succeeded</code></td>
+      <td><code>stripe_captured</code></td>
+    </tr>
+    <tr>
+      <td><code>payment_intent.canceled</code></td>
+      <td><code>canceled</code></td>
+    </tr>
+  </tbody>
+</table>
+
+### Configuring the webhook in Stripe
+
+Point a Stripe webhook endpoint at `https://yourstore.com/api/stripe/webhook` and subscribe to the events above. Copy the signing secret into the admin settings.
+
+For local development, forward events with the Stripe CLI:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+## 5. Admin settings
+
+`pages/admin/paymentSetting/StripePayment.tsx` mounts into the payment settings page and collects the publishable key, secret key, webhook signing secret, display name, capture mode and enabled flag. Values are read back with `getSetting`, and `getConfig('system.stripe')` takes precedence when present — which lets an operator keep secrets in configuration or the environment instead of the database.
+
+## Building your own gateway
+
+The same five pieces apply. The parts most people get wrong:
+
+- **Register from `bootstrap.ts`.** Nothing else is loaded per module, and the registry locks right after.
+- **`validator` is mandatory.** Return `true` if your method is always available.
+- **Mount into `checkoutFormAfter`** and call `registerPaymentComponent(code, …)`; do not invent a per-method area.
+- **Compute the amount server-side** from the cart, never from the request body.
+- **Move status through `updatePaymentStatus`**, not a raw `update('order')`, and declare your statuses plus their `psoMapping` in bootstrap.
+
+## See also
+
+- [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — the registration contract on its own
+- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod) — API reference
+- [Order Status Management](/docs/development/knowledge-base/order-status-management) — how payment status maps to order status

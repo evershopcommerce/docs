@@ -56,12 +56,12 @@ AddToCart is consumed by these components, which are the actual override targets
     <tr>
       <td>ProductSingleForm</td>
       <td>productView</td>
-      <td><code>themes/&lt;name&gt;/src/pages/productView/ProductSingleForm.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/catalog/ProductSingleForm.tsx</code></td>
     </tr>
     <tr>
       <td>ProductListItemRender</td>
       <td>categoryView, catalogSearch</td>
-      <td><code>themes/&lt;name&gt;/src/pages/categoryView/ProductListItemRender.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/catalog/ProductListItemRender.tsx</code></td>
     </tr>
   </tbody>
 </table>
@@ -245,7 +245,7 @@ function ProductAddToCart({ product }) {
 
 A theme developer overrides `ProductSingleForm` to provide a completely custom add-to-cart experience. Create this file in your theme:
 
-**`themes/my-theme/src/pages/productView/ProductSingleForm.tsx`**
+**`themes/my-theme/src/components/frontStore/catalog/ProductSingleForm.tsx`**
 
 ```tsx
 import { AddToCart } from '@components/frontStore/cart/AddToCart';

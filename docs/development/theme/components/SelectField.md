@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: SelectField
-description: A dropdown select field with single or multiple selection.
+description: A dropdown select field for choosing one option.
 hide_table_of_contents: false
 keywords:
   - EverShop SelectField
@@ -15,7 +15,7 @@ groups:
 
 ## Description
 
-A dropdown select field component that integrates with React Hook Form. Supports single or multiple selection, placeholder text, and disabled options.
+A dropdown select field component that integrates with React Hook Form. Supports placeholder text and disabled options. It renders the Base UI Select composite (not a native `<select>`) and always emits a single scalar value — for multi-select, use `ReactSelectField` with `isMulti`.
 
 ## Import
 
@@ -123,10 +123,28 @@ function CategoryForm() {
       <td>CSS class for the wrapper div</td>
     </tr>
     <tr>
-      <td>...props</td>
-      <td>SelectHTMLAttributes</td>
+      <td>disabled</td>
+      <td>boolean</td>
       <td>-</td>
-      <td>All standard HTML select attributes</td>
+      <td>Disables the select</td>
+    </tr>
+    <tr>
+      <td>id</td>
+      <td>string</td>
+      <td>field-&#123;name&#125;</td>
+      <td>Overrides the generated element id</td>
+    </tr>
+    <tr>
+      <td>onChange</td>
+      <td>(value: string | number) =&gt; void</td>
+      <td>-</td>
+      <td>Called with the selected value</td>
+    </tr>
+    <tr>
+      <td>className</td>
+      <td>string</td>
+      <td>-</td>
+      <td>Applied to the SelectTrigger</td>
     </tr>
   </tbody>
 </table>
@@ -163,34 +181,6 @@ function AddressForm() {
         options={countries}
         placeholder="Select your country"
         required
-      />
-    </Form>
-  );
-}
-```
-
-## Example: Multiple Selection
-
-```tsx
-import { Form } from '@components/common/form/Form';
-import { SelectField } from '@components/common/form/SelectField';
-
-function InterestsForm() {
-  const interests = [
-    { value: 'tech', label: 'Technology' },
-    { value: 'sports', label: 'Sports' },
-    { value: 'music', label: 'Music' },
-    { value: 'travel', label: 'Travel' }
-  ];
-
-  return (
-    <Form action="/api/interests">
-      <SelectField
-        name="interests"
-        label="Select Your Interests"
-        options={interests}
-        multiple
-        helperText="Hold Ctrl/Cmd to select multiple"
       />
     </Form>
   );
@@ -255,7 +245,7 @@ function LanguageForm() {
 
 ## Features
 
-- **Single/Multiple Selection**: Toggle with `multiple` prop
+- **Single Selection**: Emits one scalar value
 - **Disabled Options**: Mark specific options as disabled
 - **Placeholder Support**: Show placeholder for empty selection
 - **Required Validation**: Built-in validation for required selections
@@ -265,7 +255,6 @@ function LanguageForm() {
 
 - When `required` is true, the component validates that a value is selected
 - Empty string values are validated as empty
-- For multiple selection, returns an array of selected values
 
 ## Related Components
 

@@ -157,8 +157,9 @@ This event is triggered when a category is created.
   "uuid": "d5111391-d1ea-4ea0-9e21-1bfcffe23f48",
   "status": true,
   "parent_id": null,
-  "include_in_nav": true,
   "position": null,
+  "show_products": true,
+  "meta_data": {},
   "created_at": "2022-11-24T14:05:19+00:00",
   "updated_at": "2022-11-24T14:05:19+00:00"
 }
@@ -181,8 +182,9 @@ This event is triggered when a category is updated.
   "uuid": "d5111391-d1ea-4ea0-9e21-1bfcffe23f48",
   "status": true,
   "parent_id": null,
-  "include_in_nav": true,
   "position": null,
+  "show_products": true,
+  "meta_data": {},
   "created_at": "2022-11-24T14:05:19+00:00",
   "updated_at": "2022-11-24T14:05:19+00:00"
 }
@@ -223,13 +225,21 @@ This event is triggered when an order is created.
   "tax_amount": 0,
   "shipping_note": null,
   "grand_total": 509,
-  "shipping_method": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
-  "shipping_method_name": "Standard Delivery",
+  "shipping_method_data": {
+    "provider_code": "core",
+    "method_code": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
+    "snapshot": {
+      "code": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
+      "name": "Standard Delivery",
+      "cost": 5,
+      "carrier": "Core"
+    }
+  },
   "shipping_address_id": 4141,
   "payment_method": "stripe",
   "payment_method_name": "Credit Card",
   "billing_address_id": 4142,
-  "shipment_status": "processing",
+  "shipment_status": "pending",
   "payment_status": "pending",
   "created_at": "2024-05-08T10:13:00.138845+00:00",
   "updated_at": "2024-05-08T10:13:00.138845+00:00",
@@ -241,6 +251,12 @@ This event is triggered when an order is created.
 //     const customerEmail = data.customer_email;
 // }
 ```
+
+:::warning
+The `shipping_method` and `shipping_method_name` varchar columns were **dropped** (`modules/checkout/migration/Version-1.0.9.ts`). The shipping selection now lives in the `shipping_method_data` JSONB column, which carries the provider code, the provider-stable method code, and an immutable snapshot of the method (`name`, `cost`, `carrier`, delivery window, provider metadata). Subscribers that read `data.shipping_method_name` must read `data.shipping_method_data?.snapshot?.name` instead.
+
+`shipment_status` is an order-level **rollup**, not a per-shipment status. A brand-new order has zero shipments, so it starts at `pending` — never `processing`. Valid values are `pending`, `partially_shipped`, `shipped`, `partially_delivered`, `partially_canceled`, `delivered`, `canceled`.
+:::
 
 ### An Order Placed
 
@@ -274,13 +290,21 @@ With online payment gateways like Stripe or PayPal, this event will be triggered
   "tax_amount": 0,
   "shipping_note": null,
   "grand_total": 509,
-  "shipping_method": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
-  "shipping_method_name": "Standard Delivery",
+  "shipping_method_data": {
+    "provider_code": "core",
+    "method_code": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
+    "snapshot": {
+      "code": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
+      "name": "Standard Delivery",
+      "cost": 5,
+      "carrier": "Core"
+    }
+  },
   "shipping_address_id": 4141,
   "payment_method": "stripe",
   "payment_method_name": "Credit Card",
   "billing_address_id": 4142,
-  "shipment_status": "processing",
+  "shipment_status": "pending",
   "payment_status": "paid",
   "created_at": "2024-05-08T10:13:00.138845+00:00",
   "updated_at": "2024-05-08T10:13:00.138845+00:00",
@@ -460,8 +484,9 @@ This event is triggered when a category is deleted.
   "uuid": "d5111391-d1ea-4ea0-9e21-1bfcffe23f48",
   "status": true,
   "parent_id": null,
-  "include_in_nav": true,
   "position": null,
+  "show_products": true,
+  "meta_data": {},
   "created_at": "2022-11-24T14:05:19+00:00",
   "updated_at": "2022-11-24T14:05:19+00:00"
 }
@@ -485,6 +510,70 @@ This event is triggered when an order's status changes.
 //     console.log(`Order ${data.orderId} changed from ${data.before} to ${data.after}`);
 // }
 ```
+
+### Shipment Events
+
+The multi-shipment fulfillment flow emits five events. All of them fire **after** the transaction commits.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Data</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>shipment_created</code></td><td><code>&#123; shipmentId, orderId, notifyCustomer &#125;</code></td><td>A shipment row was inserted and the order rollup recomputed. <code>notifyCustomer</code> mirrors the admin's checkbox — short-circuit when it is <code>false</code>.</td></tr>
+    <tr><td><code>shipment_status_changed</code></td><td><code>&#123; shipmentId, orderId, from, to, phase &#125;</code></td><td>Every shipment status write. <code>phase</code> is the resolved phase of the new status (<code>pending</code> | <code>shipped</code> | <code>delivered</code> | <code>canceled</code>).</td></tr>
+    <tr><td><code>shipment_delivered</code></td><td><code>&#123; shipmentId, orderId &#125;</code></td><td>A shipment moved to a status whose phase is <code>delivered</code>. Always fires — gate customer notification inside the subscriber.</td></tr>
+    <tr><td><code>shipment_label_created</code></td><td><code>&#123; shipmentId, orderId, labelUrl, trackingNumber &#125;</code></td><td>A carrier integration purchased a label. <code>labelUrl</code> may be <code>null</code> when the carrier returns only a tracking number.</td></tr>
+    <tr><td><code>shipment_label_voided</code></td><td><code>&#123; shipmentId, orderId, trackingNumber &#125;</code></td><td>An admin voided a purchased label. The tracking number is kept for the record; only <code>label_url</code> / <code>label_format</code> are cleared.</td></tr>
+  </tbody>
+</table>
+
+### Catalog Events
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Data</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>product_duplicated</code></td><td><code>&#123; source_product_id, source_product_uuid, product_id, product_uuid &#125;</code></td><td>A product duplication committed and the source's collection memberships were copied. The regular <code>product_created</code> fires for the copy too — this event is the source→copy link, for copying extension-owned data.</td></tr>
+    <tr><td><code>recommendation_stats_recomputed</code></td><td>Recompute result summary</td><td>The cross-sell statistics job finished a recompute.</td></tr>
+  </tbody>
+</table>
+
+### Metafield Definition Events
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Data</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>metafield_definition_created</code></td><td>The created definition (API shape)</td><td>A metafield definition row was inserted.</td></tr>
+    <tr><td><code>metafield_definition_updated</code></td><td>The updated definition (API shape)</td><td>A metafield definition's mutable fields changed.</td></tr>
+    <tr><td><code>metafield_definition_deleted</code></td><td><code>&#123; ownerType, namespace, fieldKey &#125;</code></td><td>A definition was deleted. Drives the per-entity prune subscribers that strip the key from each owner table's <code>meta_data</code>.</td></tr>
+  </tbody>
+</table>
+
+See [Metafields](/docs/development/knowledge-base/metafields) for the definition lifecycle.
+
+### Blog Events
+
+The blog module emits `blog_post_created`, `blog_post_updated`, `blog_post_deleted`, `blog_category_created`, `blog_category_updated`, `blog_category_deleted`, `blog_tag_created`, `blog_tag_updated` and `blog_tag_deleted`. Its own subscribers use them to keep `url_rewrite` rows in sync.
+
+:::warning
+Not every event EverShop emits is declared in `EventDataRegistry` (`types/event.ts`). The nine blog events, `recommendation_stats_recomputed`, and `account_created` are emitted at runtime but are **not** in the registry, so `EventSubscriber<'blog_post_created'>` and `createSubscriber('blog_post_created', …)` will not typecheck for them. Write those subscribers as plain default-export functions, or declare the event yourself with the module-augmentation pattern below.
+:::
 
 ## Type-Safe Subscribers
 

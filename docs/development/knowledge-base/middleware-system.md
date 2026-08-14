@@ -79,6 +79,56 @@ Route-level middleware functions are executed only on specific routes.
 
 For example, a middleware that loads product data will only be executed when a user visits the product view route.
 
+## Core Middleware That Runs Before Yours
+
+Before any module or extension middleware is reached, EverShop mounts a fixed chain of Express-level middleware. In order:
+
+1. **Debug logger** — collects per-middleware timings for the `debug` log.
+2. **Static file serving** — `publicStatic` and `themePublicStatic`. Requests they serve terminate here.
+3. **Rate limiter** — per-client-IP request limiting (see below).
+4. **Cookie parser**
+5. **Locale resolution** — strips a storefront locale prefix into `request.localePath` and wraps the rest of the request so `translate()` and resolvers see the locale.
+6. **Session** — separate admin and storefront cookies; skipped for `/api/**`, which is stateless.
+7. **URL rewrite lookup** — resolves `url_rewrite` into `request.currentRoute` when no standard route matched.
+8. **Dev middleware** (development only) — webpack dev server and HMR.
+
+Only after all of that does the router dispatch to your module middleware.
+
+### The Rate Limiter
+
+A per-client-IP rate limiter is mounted **globally**, after static serving and before the session and locale lookups — so a flood is shed with a `429` before it consumes a database connection, and **before any module middleware runs**. You cannot bypass or reorder it from a module.
+
+Three tiers are applied based on method and path (classified before route matching):
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Tier</th>
+      <th>Applies to</th>
+      <th>Limit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>page</code></td><td>Storefront and admin pages — anything not matching the tiers below</td><td>300 requests / minute / IP</td></tr>
+    <tr><td><code>api</code></td><td><code>/api</code> and <code>/api/**</code></td><td>120 requests / minute / IP</td></tr>
+    <tr><td><code>auth</code></td><td>POSTs to the credential endpoints: <code>/customer/login</code>, <code>/admin/user/login</code>, <code>/api/customers</code>, <code>/api/customers/reset-password</code>, <code>/api/customers/password</code></td><td>8 requests / 15 minutes / IP</td></tr>
+  </tbody>
+</table>
+
+Exempt from all tiers: any path with a static-asset extension (`.js`, `.css`, images, fonts, …), `/__webpack_hmr*`, `*.hot-update*`, `/backend/`, `/health` and `/healthz`.
+
+Responses carry the standard `RateLimit-*` headers so clients can back off, and a rejected request gets `Retry-After` plus a JSON error envelope on `/api/**` (plain text on pages).
+
+:::info
+The limiter is **disabled entirely when `NODE_ENV=test`**, so integration suites stay deterministic.
+
+The limits are hardcoded, not operator-configurable — they are a capacity safety net, not a policy knob. They are per IP, so they only stop single-source floods; a distributed flood needs an edge WAF.
+:::
+
+:::warning
+The limiter keys on `request.ip`, which behind a reverse proxy is only correct if Express `trust proxy` is set. EverShop sets it from the `TRUST_PROXY_HOPS` environment variable (default `1`). If you run behind more than one proxy layer, set it to the real hop count — otherwise every request appears to come from the same address and one visitor can exhaust the limit for everyone.
+:::
+
 ## Middleware Functions
 
 A middleware function can access up to 4 arguments:
@@ -86,6 +136,7 @@ A middleware function can access up to 4 arguments:
 1. `request` object: The HTTP request object.
 2. `response` object: The HTTP response object.
 3. `next`: The function that calls the next middleware.
+4. `error`: Passed as the **first** argument, and only to error-handling middleware — those named `errorHandler` (pages) or `apiErrorHandler` (API). Their signature is `(error, request, response, next)`.
 
 ### 'Passive' Middleware Functions
 
@@ -207,9 +258,11 @@ If your middleware is not `context` or `errorHandler`, EverShop automatically ad
 
 ### Overriding Defaults
 
-These defaults only apply when you **haven't** specified your own `before` or `after` dependencies. If you explicitly declare dependencies using the bracket syntax (e.g., `[myDep]myMiddleware.js`), EverShop uses your declarations instead.
+The two defaults are injected **independently, per side**. Declaring one side does not suppress the other.
 
-For example, `[context]bodyParser[auth].js` explicitly sets `after: ['context']` and `before: ['auth']`, so no defaults are injected.
+- `[myDep]myMiddleware.js` sets `after: ['myDep']` — but the `before` default (`apiResponse` for API routes, `notFound` for pages) is still injected.
+- `myMiddleware[myDep].js` sets `before: ['myDep']` — the `after` default (`escapeHtml`, `auth`) is still injected.
+- Only the two-sided form, e.g. `[context]bodyParser[auth].js`, suppresses both.
 
 ## TypeScript and File Extensions
 

@@ -139,10 +139,14 @@ requestSchema={{
     },
     "url_key": {
       "type": "string",
-      "pattern": "^\\S+$",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 255,
       "errorMessage": {
         "type": "URL key must be a string",
-        "pattern": "URL key cannot contain spaces"
+        "pattern": "URL key must contain only lowercase letters, numbers, and hyphens (e.g., 'my-category-name')",
+        "minLength": "URL key cannot be empty",
+        "maxLength": "URL key cannot exceed 255 characters"
       }
     },
     "status": {
@@ -151,14 +155,6 @@ requestSchema={{
       "errorMessage": {
         "type": "Status must be a number or string",
         "enum": "Status must be either 0, 1, '0', or '1'"
-      }
-    },
-    "include_in_nav": {
-      "type": ["integer", "string"],
-      "enum": [0, 1, "0", "1"],
-      "errorMessage": {
-        "type": "Include in navigation must be a number or string",
-        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
       }
     },
     "parent_id": {
@@ -177,23 +173,24 @@ requestSchema={{
         "type": "Position must be a string or number",
         "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
       }
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'category' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Folded into the category's meta_data column",
+      "errorMessage": {
+        "type": "Custom fields must be an object"
+      }
     }
   },
   "required": [
     "name",
-    "description",
-    "status",
-    "meta_title",
-    "meta_description"
+    "url_key"
   ],
   "additionalProperties": true,
   "errorMessage": {
     "required": {
       "name": "Category name is required",
-      "description": "Category description is required",
-      "status": "Category status is required",
-      "meta_title": "Meta title is required",
-      "meta_description": "Meta description is required"
+      "url_key": "URL key is required"
     }
   }
 }}
@@ -203,7 +200,6 @@ responseSample={`{
     "uuid": "9ab75946a63211edb46b60d819134f39",
     "status": 1,
     "parent_id": 16,
-    "include_in_nav": 0,
     "position": 22,
     "created_at": "2023-02-07 00:01:47",
     "updated_at": "2023-02-07 00:01:47",
@@ -228,7 +224,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/category/athletic-shoes",
+        "href": "/category/9ab75946a63211edb46b60d819134f39",
         "action": "GET",
         "types": [
           "text/xml"
@@ -252,6 +248,8 @@ responseSample={`{
 ### Update a Category
 
 Modifies an existing product category. You can update any of the category attributes, including its hierarchical position in the catalog.
+
+This is a true partial update: `updateCategory` empties the schema's `required` list at call time, so nothing is mandatory and only the fields present in the body are written.
 
 <Api
 method="PATCH"
@@ -366,10 +364,14 @@ requestSchema={{
     },
     "url_key": {
       "type": "string",
-      "pattern": "^\\S+$",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 255,
       "errorMessage": {
         "type": "URL key must be a string",
-        "pattern": "URL key cannot contain spaces"
+        "pattern": "URL key must contain only lowercase letters, numbers, and hyphens (e.g., 'my-category-name')",
+        "minLength": "URL key cannot be empty",
+        "maxLength": "URL key cannot exceed 255 characters"
       }
     },
     "status": {
@@ -378,14 +380,6 @@ requestSchema={{
       "errorMessage": {
         "type": "Status must be a number or string",
         "enum": "Status must be either 0, 1, '0', or '1'"
-      }
-    },
-    "include_in_nav": {
-      "type": ["integer", "string"],
-      "enum": [0, 1, "0", "1"],
-      "errorMessage": {
-        "type": "Include in navigation must be a number or string",
-        "enum": "Include in navigation must be either 0, 1, '0', or '1'"
       }
     },
     "parent_id": {
@@ -404,25 +398,17 @@ requestSchema={{
         "type": "Position must be a string or number",
         "pattern": "Position must be a valid number (e.g., 0, 1, 10)"
       }
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'category' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Folded into the category's meta_data column",
+      "errorMessage": {
+        "type": "Custom fields must be an object"
+      }
     }
   },
-  "required": [
-    "name",
-    "description",
-    "status",
-    "meta_title",
-    "meta_description"
-  ],
-  "additionalProperties": true,
-  "errorMessage": {
-    "required": {
-      "name": "Category name is required",
-      "description": "Category description is required",
-      "status": "Category status is required",
-      "meta_title": "Meta title is required",
-      "meta_description": "Meta description is required"
-    }
-  }
+  "required": [],
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
@@ -430,7 +416,6 @@ responseSample={`{
     "uuid": "9ab75946a63211edb46b60d819134f39",
     "status": 1,
     "parent_id": 16,
-    "include_in_nav": 1,
     "position": 22,
     "created_at": "2023-02-07 00:01:47",
     "updated_at": "2023-02-07 00:01:47",
@@ -455,7 +440,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/category/athletic-shoes",
+        "href": "/category/9ab75946a63211edb46b60d819134f39",
         "action": "GET",
         "types": [
           "text/xml"
@@ -489,7 +474,6 @@ responseSample={`{
     "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
     "status": 0,
     "parent_id": 16,
-    "include_in_nav": 0,
     "position": 22,
     "created_at": "2023-02-07 00:01:47",
     "updated_at": "2023-02-07 00:01:48",
@@ -528,8 +512,10 @@ requestSchema={{
   "required": ["product_id"]
 }}
 responseSample={`{
+  "success": true,
   "data": {
-    "success": true
+    "product_id": 14,
+    "category_id": 5
   }
 }`}
 />
@@ -544,8 +530,10 @@ Removes the association between a product and a category. The product itself is 
 method="DELETE"
 url="/api/categories/{category_id}/products/{product_id}"
 responseSample={`{
+  "success": true,
   "data": {
-    "success": true
+    "product_id": "8f2b...",
+    "category_id": "5c47..."
   }
 }`}
 />

@@ -13,7 +13,9 @@ description: EverShop provides a powerful cron job system that allows you to sch
 
 ## Overview
 
-This document explains the cron job system in EverShop. EverShop provides a powerful cron job system that allows you to schedule tasks to run at specific intervals. You can use cron jobs to automate repetitive tasks such as sending emails, updating data, and more.
+This document explains the cron job system in EverShop. EverShop provides a cron job system that allows you to schedule tasks to run at specific intervals. You can use cron jobs to automate repetitive tasks such as sending emails, updating data, and more.
+
+Jobs are registered with the `registerJob` function from `@evershop/evershop/lib/cronjob`, which is backed by the job manager in `lib/cronjob/jobManager.ts`.
 
 ## How to Create a Cron Job in EverShop
 
@@ -29,7 +31,7 @@ From your extension folder, create a new subfolder called `jobs`. Inside the `jo
 │   │   ├── myCronJob.ts
 ```
 
-The file `myCronJob.ts` should provide a default export function that will be executed when the cron job runs. Here is an example of a simple cron job:
+The file `myCronJob.ts` should provide a default export function that will be executed when the cron job runs. The function is called with **no arguments**. Here is an example of a simple cron job:
 
 ```ts title="myCronJob.ts"
 export default function myCronJob() {
@@ -45,9 +47,9 @@ In your `bootstrap.(ts, js)` file, you need to register the cron job with the Ev
 
 ```ts title="bootstrap.ts"
 import path from "path";
-import { registerCronJob } from "@evershop/evershop/lib/cronjob";
+import { registerJob } from "@evershop/evershop/lib/cronjob";
 
-registerCronJob({
+registerJob({
   name: "myCronJob",
   resolve: path.resolve(import.meta.dirname, "jobs/myCronJob.js"),
   schedule: "0 0 * * *",
@@ -56,6 +58,59 @@ registerCronJob({
 ```
 
 In the configuration above, we define a new cron job called `myCronJob`. The `resolve` property should point to the path of the cron job file. The `schedule` property defines when the cron job should run. In this example, the cron job will run every day at midnight. The `enabled` property can be set to `true` or `false` to enable or disable the cron job.
+
+### The `Job` Object
+
+All four properties are **required**:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>name</code></td><td><code>string</code></td><td>Unique job name. Registering a second job with the same name logs a warning and is skipped (it returns <code>false</code>, it does not throw).</td></tr>
+    <tr><td><code>resolve</code></td><td><code>string</code></td><td>Absolute path to an <strong>existing, compiled <code>.js</code> file</strong>. The path is checked on the filesystem at registration time; a <code>.ts</code> path, a relative path, or a missing file throws.</td></tr>
+    <tr><td><code>schedule</code></td><td><code>string</code></td><td>Cron expression, validated with <code>node-cron</code>. An invalid expression throws.</td></tr>
+    <tr><td><code>enabled</code></td><td><code>boolean</code></td><td>Whether the job is scheduled. <strong>Disabled jobs are still validated</strong> — <code>enabled: false</code> does not bypass the path and schedule checks.</td></tr>
+  </tbody>
+</table>
+
+Because your source `.ts` file is compiled to `.js` before it runs, `resolve` must point at the compiled output — `jobs/myCronJob.js`, not `jobs/myCronJob.ts`.
+
+:::danger
+`registerJob` **throws** when the schedule is not a valid cron expression:
+
+```bash
+Cannot register job "myCronJob". Invalid cron schedule: "0 0 * *". Please ensure it's a valid cron expression.
+```
+
+It also throws when `resolve` does not point at an existing `.js` file. Because jobs are registered from `bootstrap.ts`, **an uncaught throw here kills application startup** — the store will not boot.
+
+If your schedule comes from configuration (i.e. an operator can edit it), wrap the call in a `try/catch` so a config typo degrades to a skipped job rather than a dead store. This is exactly what core does for its own configurable job:
+
+```ts title="bootstrap.ts"
+import { registerJob } from "@evershop/evershop/lib/cronjob";
+import { getConfig } from "@evershop/evershop/lib/util/getConfig";
+import { warning } from "@evershop/evershop/lib/log";
+
+try {
+  registerJob({
+    name: "myCronJob",
+    schedule: getConfig("myExtension.schedule", "0 2 * * *"),
+    resolve: path.resolve(import.meta.dirname, "jobs/myCronJob.js"),
+    enabled: getConfig("myExtension.enabled", true),
+  });
+} catch (e) {
+  warning(`Skipping myCronJob registration: ${e.message}`);
+}
+```
+
+See `modules/catalog/bootstrap.js` for the original.
+:::
 
 ### Step 3: Run the Cron Job
 
@@ -94,6 +149,55 @@ The `schedule` property in the cron job configuration defines when the cron job 
 - Month (1 - 12)
 - Day of the week (0 - 7) (0 and 7 both represent Sunday)
 
+:::warning
+EverShop upgraded from `node-cron` 3 to `node-cron` 4. Schedule validation (`cron.validate`) is now performed by version 4, which is stricter about several expression forms that version 3 tolerated. If you carry a custom expression over from an older EverShop installation, **verify it against `node-cron` 4** — an expression that used to register fine can now throw at bootstrap and stop the store from starting.
+:::
+
+## Built-in Cron Jobs
+
+Core registers two jobs out of the box:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Schedule</th>
+      <th>Registered in</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>generateSitemap</code></td>
+      <td><code>sitemap.schedule</code> (default <code>*/30 * * * *</code>)</td>
+      <td><code>modules/base/bootstrap.js</code></td>
+      <td>Regenerates <code>sitemap.xml</code>. Enabled via <code>sitemap.enabled</code> (default <code>true</code>).</td>
+    </tr>
+    <tr>
+      <td><code>recomputeProductRecommendations</code></td>
+      <td><code>catalog.crossSell.recomputeSchedule</code> (default <code>0 2 * * *</code>)</td>
+      <td><code>modules/catalog/bootstrap.js</code></td>
+      <td>Recomputes the cross-sell / product recommendation statistics. Enabled via <code>catalog.crossSell.recomputeEnabled</code> (default <code>true</code>).</td>
+    </tr>
+  </tbody>
+</table>
+
+Both schedules are plain configuration, so you can retune them without code:
+
+```json title="config/default.json"
+{
+  "sitemap": {
+    "schedule": "0 * * * *"
+  },
+  "catalog": {
+    "crossSell": {
+      "recomputeSchedule": "0 3 * * *",
+      "recomputeEnabled": true
+    }
+  }
+}
+```
+
 ## Remove a Cron Job
 
 To remove a cron job, you can use the `removeJob` function from the `@evershop/evershop/lib/cronjob` module. Here is an example of how to do this:
@@ -105,7 +209,7 @@ removeJob("myCronJob");
 ```
 
 :::warning
-When updating or re-registering a cron job, you must call `removeJob` **before** calling `registerCronJob` to take effect.
+When updating or re-registering a cron job, you must call `removeJob` **before** calling `registerJob` to take effect. Registering over an existing name does not replace it — it logs a warning and skips.
 :::
 
 ## Update Schedule of a Cron Job
@@ -117,6 +221,16 @@ import { updateJobSchedule } from "@evershop/evershop/lib/cronjob";
 
 updateJobSchedule("myCronJob", "0 0 * * *");
 ```
+
+Like `registerJob`, `updateJobSchedule` throws on an invalid cron expression. An unknown job name only logs a warning and returns `false`.
+
+:::warning
+`registerJob`, `removeJob`, and `updateJobSchedule` must all be called from `bootstrap.(ts, js)`. The job manager becomes read-only once the application has finished reading the job list, and any mutation attempted afterwards throws:
+
+```bash
+Job manager is in a read-only state. No further mutations are allowed.
+```
+:::
 
 ## When to Use Cron Jobs
 

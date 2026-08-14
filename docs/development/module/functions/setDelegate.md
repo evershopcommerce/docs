@@ -58,7 +58,7 @@ Returns `void`.
 
 ```typescript title="middleware/loadProduct.ts"
 import { setDelegate } from '@evershop/evershop/lib/middleware/delegate';
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 export default async (request, response, next) => {

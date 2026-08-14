@@ -55,7 +55,7 @@ Returns `number` if `forDisplay = false`, or formatted `string` if `forDisplay =
 import { toPrice } from "@evershop/evershop/checkout/services";
 
 const price = toPrice("19.999");
-console.log(price); // 20 (number, rounded based on pricing.rounding config)
+console.log(price); // 20 (number, rounded per the store's pricing settings)
 ```
 
 :::warning
@@ -68,7 +68,7 @@ console.log(price); // 20 (number, rounded based on pricing.rounding config)
 import { toPrice } from "@evershop/evershop/checkout/services";
 
 const formatted = toPrice("49.99", true);
-console.log(formatted); // "$49.99" (depends on currency/language config)
+console.log(formatted); // "$49.99" (depends on the store currency setting and shop.language)
 ```
 
 ### Calculate Total
@@ -93,30 +93,52 @@ const product = {
 };
 
 const displayPrice = toPrice(product.price, true);
-// Returns: "$149.95" or "€149,95" based on config
+// Returns: "$149.95" or "€149,95" depending on the store currency and language
 ```
 
-## Rounding Options
+## Rounding and precision
 
-Configured in `pricing.rounding`:
+Both come from the **admin Tax settings** first, with the legacy config as a fallback:
 
-- `'round'` - Standard rounding (default)
-- `'up'` - Always round up
-- `'down'` - Always round down
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Admin setting</th>
+      <th>Config fallback</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rounding mode</td>
+      <td><code>pricingRounding</code></td>
+      <td><code>pricing.rounding</code></td>
+      <td><code>round</code></td>
+    </tr>
+    <tr>
+      <td>Decimal precision</td>
+      <td><code>pricingPrecision</code></td>
+      <td><code>pricing.precision</code></td>
+      <td><code>2</code></td>
+    </tr>
+  </tbody>
+</table>
 
-## Precision
+Accepted rounding modes are `'round'` (nearest, default), `'ceil'` (always up) and `'floor'` (always down). `'up'` and `'down'` are still accepted as backward-compatible aliases for `'ceil'` and `'floor'`.
 
-Configured in `pricing.precision`:
-- Default: `2` decimals
-- Configurable per installation
+Both lookups are synchronous and read the warmed settings cache, so `toPrice` is safe in hot paths (cart build, promotion calculators) with no per-call DB round trip.
 
 ## Currency Format
 
-When `forDisplay = true`:
-- Uses `shop.currency` config (e.g., "USD", "EUR")
-- Uses `shop.language` config (e.g., "en", "de")
-- Formats using `Intl.NumberFormat`
+When `forDisplay = true`, the value is formatted with `Intl.NumberFormat`:
+
+- **Currency** comes from `getStoreCurrency()` — the admin setting `storeCurrency`, falling back to the legacy `shop.currency` config, then `USD`. The `shop.currency` key was removed from the typed configuration structure; it survives only as an untyped legacy fallback.
+- **Locale** comes from the `shop.language` config (e.g. `en`, `de`).
+
+An existing cart or order carries its own persisted `currency` — `getStoreCurrency()` is only the default for *new* carts and the display fallback when no currency is in context.
 
 ## See Also
 
+- [getSetting](/docs/development/module/functions/getSetting) - Read an admin setting
 - [getConfig](/docs/development/module/functions/getConfig) - Get configuration

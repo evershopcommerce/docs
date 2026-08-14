@@ -126,12 +126,16 @@ Supported join types: `.leftJoin()`, `.rightJoin()`, `.innerJoin()`.
 ### Ordering, Grouping, and Pagination
 
 ```ts
-const products = await select()
-  .from('product')
-  .where('status', '=', true)
-  .orderBy('created_at', 'DESC')
-  .limit(0, 20)  // offset, limit
-  .execute(pool);
+// `.orderBy()`, `.limit()`, `.groupBy()` and `.having()` are SelectQuery methods.
+// `.where()` returns a `Where`, which only carries the condition builders
+// (`.andWhere()`, `.orWhere()`, `.and()`, `.or()`) plus `.execute()` / `.load()`.
+// Chaining ordering onto a condition throws `orderBy is not a function`.
+const query = select().from('product');
+query.where('status', '=', true);
+query.orderBy('created_at', 'DESC');
+query.limit(0, 20); // offset, limit
+
+const products = await query.execute(pool);
 ```
 
 ```ts
@@ -140,6 +144,45 @@ const categoryCounts = await select('category_id')
   .groupBy('category_id')
   .execute(pool);
 ```
+
+### Never Pass an Unbounded ID List to `IN`
+
+:::danger
+Do not fetch a set of ids into Node and feed them back as `.where('id', 'IN', ids)`. Two things go wrong at scale:
+
+1. The builder converts named bindings by scanning the whole SQL string **once per parameter** — an O(n²) loop that is fully synchronous. Measured on a real catalog: 0.9s at 25k ids, 12.5s at 100k, **~145s at 341k** — during which the Node event loop is frozen and every other request, storefront included, hangs with it.
+2. If the query ever reaches the wire, node-pg's bind message parameter count is a 16-bit integer, so anything above **65,535** parameters fails outright (`bind message has N parameter formats but 0 parameters`).
+
+Keep the set operation in SQL. Either push it down into a semi-join subquery on the WHERE tree:
+
+```ts
+const subQuery = baseQuery.clone();
+subQuery.removeLimit();
+subQuery.removeOrderBy();
+
+const subSql = await subQuery.sql();
+
+baseQuery
+  .getWhere()
+  .addRaw('AND', `product.product_id IN (${subSql})`, subQuery.getBinding());
+```
+
+or bind the whole list as a single array parameter with `execute()`:
+
+```ts
+import { execute } from '@evershop/evershop/lib/postgres/query';
+
+const result = await execute(
+  connection,
+  `SELECT * FROM product WHERE product_id = ANY($1::int[])`,
+  [productIds]
+);
+```
+
+Both send a bounded number of parameters instead of `n`. This bit production once already — see `catalog/services/ProductCollection.js`, which now does its variant de-duplication entirely in SQL.
+
+When you embed a cloned query's SQL, **re-key its bindings first** — `clone()` preserves binding keys, so the inner and outer queries would collide during the named-to-positional conversion. `ProductCollection.js` shows the re-keying loop.
+:::
 
 ### Chaining Conditions
 
@@ -206,10 +249,22 @@ const result = await insert('product')
 import { update } from '@evershop/evershop/lib/postgres/query';
 
 await update('order')
-  .given({ shipment_status: 'shipped' })
+  .given({ shipping_note: 'Leave at the front desk' })
   .where('order_id', '=', orderId)
   .execute(connection);
 ```
+
+:::warning
+**Never write `order.shipment_status` directly.** It is a *derived rollup* — `recomputeOrderShipmentStatus()` recalculates it from the order's shipment items after any shipment write, so a manual `UPDATE` is silently overwritten on the next shipment change and leaves the order status (`psoMapping`) out of sync in the meantime. Change a shipment's status through the service instead:
+
+```ts
+import { updateShipmentStatus } from '@evershop/evershop/oms/services';
+
+await updateShipmentStatus(shipmentUuid, 'delivered');
+```
+
+The same applies to `order.status`, which is derived from the payment status and the shipment rollup. See [Multi-Shipment and Fulfillment](./multi-shipment-and-fulfillment).
+:::
 
 ## DELETE Queries
 
@@ -307,9 +362,18 @@ await insert('product').given({ price: 29.99 }).execute(connection);
 
 ### Known Tables
 
-The following tables have full type support with column autocompletion:
+The following tables have full type support with column autocompletion. The authoritative list is the `TableName` union in `lib/postgres/query.ts` — check there if you suspect this list has drifted.
 
-`admin_user`, `attribute`, `attribute_group`, `attribute_group_link`, `attribute_option`, `cart`, `cart_address`, `cart_item`, `category`, `category_description`, `cms_page`, `cms_page_description`, `collection`, `coupon`, `customer`, `customer_address`, `customer_group`, `event`, `migration`, `order`, `order_activity`, `order_address`, `order_item`, `payment_transaction`, `product`, `product_attribute_value_index`, `product_category`, `product_collection`, `product_custom_option`, `product_custom_option_value`, `product_description`, `product_image`, `product_inventory`, `reset_password_token`, `session`, `setting`, `shipment`, `shipping_method`, `shipping_zone`, `shipping_zone_method`, `shipping_zone_province`, `tax_class`, `tax_rate`, `url_rewrite`, `variant_group`, `widget`
+`admin_user`, `attribute`, `attribute_group`, `attribute_group_link`, `attribute_option`, `cart`, `cart_address`, `cart_item`, `category`, `category_description`, `changeset`, `changeset_operation`, `cms_page`, `cms_page_description`, `collection`, `core_shipping_method`, `core_shipping_method_rate`, `coupon`, `customer`, `customer_address`, `customer_group`, `event`, `migration`, `order`, `order_activity`, `order_address`, `order_item`, `payment_transaction`, `product`, `product_attribute_value_index`, `product_category`, `product_collection`, `product_custom_option`, `product_custom_option_value`, `product_description`, `product_image`, `product_inventory`, `reset_password_token`, `rollout_plan`, `session`, `setting`, `shipment`, `shipment_item`, `shipping_zone`, `shipping_zone_country`, `shipping_zone_province`, `shipping_zone_provider`, `tax_class`, `tax_rate`, `url_rewrite`, `variant_group`, `widget_instance`, `widget_placement`
+
+:::warning
+Three tables that older documentation lists **no longer exist**:
+
+- `shipping_method` and `shipping_zone_method` were dropped by `modules/checkout/migration/Version-1.0.9.ts`. Their replacements are `core_shipping_method` and `core_shipping_method_rate`, alongside the new `shipping_zone_country` and `shipping_zone_provider` tables.
+- `widget` was renamed to `widget_instance` by `modules/cms/migration/Version-1.3.0.ts` (and `widget_id` to `widget_instance_id`), with the new `widget_placement` table holding one row per route/area placement.
+
+`user_token_secret` still appears in the `TableName` union, but the table itself was dropped by `modules/auth/migration/Version-1.0.1.js` and its column map resolves to `never` — do not use it. `url_redirect` is a real table but is not in the union yet, so it works without column autocompletion.
+:::
 
 Custom tables created by extensions also work — they just won't have column autocompletion (any string is accepted as a column name).
 

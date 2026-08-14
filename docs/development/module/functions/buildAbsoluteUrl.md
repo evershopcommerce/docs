@@ -58,8 +58,8 @@ import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 const url = buildAbsoluteUrl('homepage');
 // Returns: "https://myshop.com/"
 
-const url = buildAbsoluteUrl('productListing');
-// Returns: "https://myshop.com/products"
+const url = buildAbsoluteUrl('cart');
+// Returns: "https://myshop.com/cart"
 ```
 
 ### With Parameters
@@ -67,12 +67,14 @@ const url = buildAbsoluteUrl('productListing');
 ```typescript
 import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 
-// Route with parameters
-const url = buildAbsoluteUrl('productView', { id: '123' });
-// Returns: "https://myshop.com/product/123"
+// Route with parameters. The keys must match the `:placeholders` in the route's
+// path: `productView` is /product/:uuid and `categoryView` is /category/:uuid,
+// so both take `uuid`. A wrong key throws `Could not build url for route ...`.
+const url = buildAbsoluteUrl('productView', { uuid: product.uuid });
+// Returns: "https://myshop.com/product/2f1c9e8a-..."
 
-const url = buildAbsoluteUrl('categoryView', { slug: 'electronics' });
-// Returns: "https://myshop.com/category/electronics"
+const url = buildAbsoluteUrl('categoryView', { uuid: category.uuid });
+// Returns: "https://myshop.com/category/8b3d7f21-..."
 ```
 
 ### In Email Templates
@@ -80,9 +82,14 @@ const url = buildAbsoluteUrl('categoryView', { slug: 'electronics' });
 ```typescript
 import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 
-// Generate URLs for emails
-const orderUrl = buildAbsoluteUrl('orderView', { orderId: order.order_id });
-const resetPasswordUrl = buildAbsoluteUrl('resetPassword', { token: token });
+// Generate URLs for emails.
+// `orderView` is /account/orders/:uuid — it takes the order's `uuid`.
+const orderUrl = buildAbsoluteUrl('orderView', { uuid: order.uuid });
+
+// The reset-password page route is `resetPasswordPage` (/account/reset-password)
+// and takes no path parameter — the token rides as a query string, exactly as
+// `sendResetPasswordEmail` does it. (`resetPassword` is the POST API route.)
+const resetPasswordUrl = `${buildAbsoluteUrl('resetPasswordPage')}?token=${token}`;
 
 const emailData = {
   orderLink: orderUrl,
@@ -118,7 +125,7 @@ export default async function createProduct(request, response) {
     success: true,
     product: {
       ...product,
-      url: buildAbsoluteUrl('productView', { id: product.product_id })
+      url: buildAbsoluteUrl('productView', { uuid: product.uuid })
     }
   });
 }
@@ -130,7 +137,7 @@ export default async function createProduct(request, response) {
 import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 
 // Generate shareable URLs
-const productUrl = buildAbsoluteUrl('productView', { id: product.product_id });
+const productUrl = buildAbsoluteUrl('productView', { uuid: product.uuid });
 
 const shareData = {
   url: productUrl,
@@ -141,7 +148,15 @@ const shareData = {
 
 ## Configuration
 
-The base URL is configured in `config/default.json`:
+`buildAbsoluteUrl` prefixes the path produced by `buildUrl` with `getBaseUrl()`, which resolves in this order:
+
+1. The `EVERSHOP_HOME_URL` environment variable — takes precedence over **every** config file
+2. The `shop.homeUrl` config value
+3. `http://localhost:{PORT}`
+
+```bash
+EVERSHOP_HOME_URL=https://myshop.com
+```
 
 ```json
 {
@@ -151,19 +166,22 @@ The base URL is configured in `config/default.json`:
 }
 ```
 
-If not configured, defaults to `http://localhost:{PORT}`.
+:::danger A malformed `EVERSHOP_HOME_URL` fails boot
+The variable is validated at startup: if it is set but is not a parseable absolute `http`/`https` URL, the process throws and exits rather than emitting broken absolute links.
+:::
 
 ## Notes
 
 - **Server-side only** - includes full domain
-- Uses `shop.homeUrl` from configuration
-- Falls back to localhost if homeUrl not configured
+- Base URL comes from `EVERSHOP_HOME_URL`, then `shop.homeUrl`, then localhost
 - Automatically removes trailing slashes
 - Does not support query parameters (use `buildUrl` then concatenate)
+- Inherits `buildUrl`'s locale prefixing: a non-default storefront locale produces `https://myshop.com/<locale>/…`
 - Used for emails, redirects, API responses, and social sharing
 - For relative URLs, use `buildUrl()` instead
 
 ## See Also
 
 - [buildUrl](/docs/development/module/functions/buildUrl) - Build relative URLs
+- [getBaseUrl](/docs/development/module/functions/getBaseUrl) - Resolve the store base URL
 - [getConfig](/docs/development/module/functions/getConfig) - Get configuration values

@@ -31,12 +31,43 @@ requestSchema={{
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type": "array",
+      "description": "Block-editor rows, not a plain string — the same shape as the category and product description field.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"]
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "code": {
       "type": "string"
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'collection' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Folded into the collection's meta_data column",
+      "errorMessage": {
+        "type": "Custom fields must be an object"
+      }
     }
-  }
+  },
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
@@ -44,7 +75,7 @@ responseSample={`{
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "name": "Summer Sale",
     "code": "summer-sale",
-    "description": "Products on sale for summer"
+    "description": [{ "id": "row-1", "size": 12, "columns": [{ "id": "col-1", "size": 12, "data": { "blocks": [] } }] }]
   }
 }`}
 />
@@ -65,12 +96,43 @@ requestSchema={{
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type": "array",
+      "description": "Block-editor rows, not a plain string — the same shape as the category and product description field.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": ["id", "size", "columns"]
+      },
+      "default": [],
+      "errorMessage": {
+        "type": "Description must be an array"
+      }
     },
     "code": {
       "type": "string"
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'collection' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Folded into the collection's meta_data column",
+      "errorMessage": {
+        "type": "Custom fields must be an object"
+      }
     }
-  }
+  },
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
@@ -118,8 +180,10 @@ requestSchema={{
   "required": ["product_id"]
 }}
 responseSample={`{
+  "success": true,
   "data": {
-    "success": true
+    "product_id": 14,
+    "collection_id": 3
   }
 }`}
 />
@@ -134,8 +198,10 @@ Removes a product from a collection. The product itself is not deleted.
 method="DELETE"
 url="/api/collections/{collection_id}/products/{product_id}"
 responseSample={`{
+  "success": true,
   "data": {
-    "success": true
+    "product_id": "8f2b...",
+    "collection_id": "3a91..."
   }
 }`}
 />

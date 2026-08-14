@@ -79,19 +79,19 @@ function PageForm() {
 ## Row Structure
 
 ```typescript
-interface Row {
-  id?: string;
-  size: string; // Row sizing (e.g., 'full')
-  className?: string;
-  columns: Column[];
+// The exported type. `id` is required and both sizes are NUMBERS (column spans).
+export interface Row {
+  id: string;
+  size: number;              // sum of its columns' sizes
+  columns: {
+    id: string;
+    size: number;            // column span, 1-3
+    data: any;               // EditorJS output data
+  }[];
 }
 
-interface Column {
-  id?: string;
-  size: string; // Column sizing (e.g., '1/2', '1/3')
-  className?: string;
-  data?: any; // EditorJS output data
-}
+// There is no exported `Column` type, and `className` is not part of the exported
+// shape — RowTemplates adds it at runtime (`md:grid-cols-N` / `md:col-span-N`).
 ```
 
 ## Example: Basic Content Editor
@@ -122,10 +122,12 @@ import { Editor } from '@components/common/form/Editor';
 function EditPage() {
   const initialContent = [
     {
-      size: 'full',
+      id: 'r__1',
+      size: 1,
       columns: [
         {
-          size: '1/1',
+          id: 'c__1',
+          size: 1,
           data: {
             blocks: [
               {
@@ -209,24 +211,19 @@ The editor supports multiple EditorJS block types:
 
 ### Row Templates
 Users can add rows with different column layouts:
-- Single column (1/1)
-- Two columns (1/2 + 1/2)
-- Three columns (1/3 + 1/3 + 1/3)
-- Custom layouts
+- Single column (`1`)
+- Two columns, equal or weighted (`1:1`, `1:2`, `2:1`, `2:3`, `3:2`)
+- Three columns (`1:1:1`, `1:2:1`)
 
 ### Drag and Drop
 - Drag rows to reorder content
 - Visual feedback during dragging
 - Keyboard navigation support
 
-### Column Sizes
-Common column size classes:
-- `1/1` - Full width
-- `1/2` - Half width
-- `1/3` - One third
-- `1/4` - One quarter
-- `2/3` - Two thirds
-- `3/4` - Three quarters
+### Column sizes
+Sizes are integer grid spans, not fractions. A column's `size` is 1-3; the row's `size`
+is the sum of its columns (1-5). The layout toolbar offers these templates:
+`1`, `1:1`, `1:2`, `2:1`, `2:3`, `3:2`, `1:1:1`, `1:2:1`.
 
 ## Dependencies
 
@@ -259,13 +256,13 @@ The editor outputs an array of rows, each containing columns with EditorJS data:
 [
   {
     id: "r__uuid",
-    size: "full",
-    className: "grid-cols-1",
+    size: 2,
+    className: "md:grid-cols-2",
     columns: [
       {
         id: "c__uuid",
-        size: "1/1",
-        className: "col-span-1",
+        size: 1,
+        className: "md:col-span-1",
         data: {
           blocks: [
             { type: "header", data: { text: "...", level: 1 } },

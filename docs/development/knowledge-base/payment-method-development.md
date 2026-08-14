@@ -19,9 +19,22 @@ This guide walks you through creating a custom payment method for EverShop. You'
 EverShop uses a registry-based system for payment methods. Each payment method is registered during the bootstrap phase with two functions:
 
 1. **`init()`** — Returns the method's code and display name.
-2. **`validator()`** (optional) — Determines whether the method is available for the current checkout. If omitted, the method is always available.
+2. **`validator(context?)`** — **Required.** Determines whether the method is available for the current checkout. It receives an optional cart context carrying `cartTotal`. It cannot be omitted: the registry asserts `typeof method.validator === 'function'` on every factory, and a factory without one makes the whole listing throw `Value checkoutPaymentMethods is invalid: false`. If your method is always available, return `true`.
 
-When a customer reaches the checkout, EverShop calls `getAvailablePaymentMethods()` which runs every registered method's `init()` and `validator()` to build the list of available options.
+When a customer reaches the checkout, EverShop calls `getAvailablePaymentMethods(context)` which runs every registered method's `init()` and `validator(context)` to build the list of available options.
+
+:::danger Zero-total carts bypass your validator
+When the cart's `grand_total` is `0`, `getAvailablePaymentMethods()` **discards every method except the built-in `zero_checkout`** — no matter what your `validator()` returned. The filter is applied centrally, after all validators have run, because a gateway validator cannot reasonably know about zero totals:
+
+```ts
+// modules/checkout/services/getAvailablePaymentMethods.ts
+if (typeof context.cartTotal === 'number' && context.cartTotal <= 0) {
+  return applicableMethods.filter((m) => m.code === ZERO_CHECKOUT_CODE);
+}
+```
+
+So a 100%-off coupon, a fully store-credited order, or an all-free-items cart will never show your gateway. Do not try to work around it from your validator — see [Zero Total Checkout](./zero-total-checkout) for the full behavior.
+:::
 
 ## Registering a Payment Method
 
@@ -54,8 +67,16 @@ registerPaymentMethod(factory: PaymentMethodFactory): void
 
 type PaymentMethodFactory = {
   init: () => PaymentMethodInfo | Promise<PaymentMethodInfo>;
-  validator?: () => boolean | Promise<boolean>;
+  validator?: (
+    context?: PaymentMethodValidationContext
+  ) => boolean | Promise<boolean>;
 };
+
+interface PaymentMethodValidationContext {
+  // The cart's `grand_total` in major currency units. Undefined when no cart
+  // is in scope (context-less callers).
+  cartTotal?: number;
+}
 
 type PaymentMethodInfo = {
   code: string;  // Unique identifier (e.g., 'stripe', 'cod', 'paypal')
@@ -63,8 +84,52 @@ type PaymentMethodInfo = {
 };
 ```
 
+The `context` argument is optional and may be `undefined`, so always read it defensively (`context?.cartTotal`). A validator that only checks settings can simply ignore it.
+
+```ts
+validator: async (context) => {
+  const status = await getSetting('myPaymentStatus', 0);
+  if (parseInt(status, 10) !== 1) {
+    return false;
+  }
+  // Example: this gateway rejects anything under 1.00
+  return (context?.cartTotal ?? 0) >= 1;
+}
+```
+
 :::warning
 Each payment method code must be unique. Registering two methods with the same code throws an error.
+
+`zero_checkout` is a **reserved** code used by the built-in zero-total payment method. Do not register a method with that code.
+:::
+
+### Zero-total Order Validation Rules
+
+Two order-validation rules run at `validateBeforeCreateOrder` and will reject an order outright:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Rule</th>
+      <th>Rejects when</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>zeroTotalRequiresZeroCheckout</code></td>
+      <td>The cart's <code>grand_total</code> is <code>0</code> but <code>payment_method</code> is anything other than <code>zero_checkout</code>.</td>
+    </tr>
+    <tr>
+      <td><code>zeroCheckoutRequiresZeroTotal</code></td>
+      <td>The cart's <code>payment_method</code> is <code>zero_checkout</code> but <code>grand_total</code> is greater than <code>0</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+These close the gap left by a cart whose `payment_method` was never set at all (such a cart carries no field-level error). They apply only to zero-total carts — a non-zero-total order with no payment method behaves as it always has.
+
+:::warning Billing address can be null
+A zero-total order does **not** require a billing address — nothing is charged, taxed, or invoiced — so `order.billing_address_id` may be `null`. Any payment code that loads the billing address (to build a gateway payload, to compute AVS data, to render an invoice) must handle the null case instead of assuming a row exists.
 :::
 
 ## Registering the Payment Form on the Checkout Page
@@ -249,7 +314,7 @@ Payment gateways often have their own status lifecycle (e.g., `authorized`, `cap
       "paymentStatus": {
         "my_payment_authorized": {
           "name": "Authorized",
-          "badge": "attention"
+          "badge": "warning"
         },
         "my_payment_captured": {
           "name": "Captured",
@@ -257,7 +322,7 @@ Payment gateways often have their own status lifecycle (e.g., `authorized`, `cap
         },
         "my_payment_refunded": {
           "name": "Refunded",
-          "badge": "critical"
+          "badge": "destructive"
         }
       }
     }
@@ -265,9 +330,13 @@ Payment gateways often have their own status lifecycle (e.g., `authorized`, `cap
 }
 ```
 
+:::warning
+`badge` must be one of the `Badge` component's status variants: `default`, `destructive`, `success`, `warning`, or `outline` (`components/common/ui/Badge.tsx`). Values such as `attention` or `critical` are **not** valid and render with the fallback style.
+:::
+
 ### PSO (Payment-Shipment-Order) Status Mapping
 
-EverShop automatically resolves the overall order status based on the combination of payment status and shipment status. Configure this mapping:
+EverShop automatically resolves the overall order status based on the combination of the payment status and the order's shipment **rollup**. Configure this mapping:
 
 ```json title="config/default.json"
 {
@@ -275,14 +344,14 @@ EverShop automatically resolves the overall order status based on the combinatio
     "order": {
       "psoMapping": {
         "my_payment_captured:*": "processing",
-        "my_payment_refunded:*": "canceled"
+        "my_payment_refunded:*": "closed"
       }
     }
   }
 }
 ```
 
-The format is `{paymentStatus}:{shipmentStatus}` where `*` matches any status.
+The format is `{paymentStatus}:{shipmentRollup}` where `*` matches anything. The second segment is the **order-level shipment rollup** (`pending`, `partially_shipped`, `shipped`, `partially_delivered`, `delivered`, `partially_canceled`, `canceled`), not a per-shipment status. See [Order Status Management](./order-status-management) for the full mapping rules.
 
 ## Complete Example: Cash on Delivery
 
@@ -325,6 +394,8 @@ export default async () => {
 
 ## See Also
 
+- [Zero Total Checkout](./zero-total-checkout) — Why a zero-total cart only offers `zero_checkout`
+- [Order Status Management](./order-status-management) — Payment, shipment, and order statuses
 - [Registry and Processors](/docs/development/knowledge-base/registry-and-processors) — How the registration system works
 - [Events and Subscribers](/docs/development/knowledge-base/events-and-subscribers) ��� How to react to order events
 - [hookable](/docs/development/module/functions/hookable) — How to hook into the order creation process

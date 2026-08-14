@@ -33,6 +33,23 @@ Every page request follows this flow:
 
 This gives you fast time-to-content, good SEO (crawlers see fully rendered pages), and a fully interactive page after hydration.
 
+#### The rendering APIs
+
+Hydration uses the React 19 client APIs. Server-rendered storefront pages are hydrated with **`hydrateRoot`**, from the per-route entry file the build generates (`bin/lib/buildEntry.js`). Client-only trees — the admin React entry — are mounted with **`createRoot`** (`components/common/react/client/Index.jsx`).
+
+```js
+import { createRoot, hydrateRoot } from 'react-dom/client';
+
+hydrateRoot(container, <App />);       // server-rendered markup
+createRoot(container).render(<App />); // client-only
+```
+
+The legacy `ReactDOM.render` and `ReactDOM.hydrate` were removed in React 19 and are no longer used anywhere in EverShop. This only matters if you wrote custom mount code — page and widget components are mounted for you.
+
+:::warning Hydration is strict now
+React 19 no longer patches over a server/client markup mismatch: it discards the server HTML and re-renders on the client. The two most common causes in a theme are calling the translation helper `_()` at module scope and reading `window` / `localStorage` in a `useState` initializer. See [Upgrading To React 19](/blog/upgrading-to-react-19).
+:::
+
 ### The Dynamic Layout System
 
 Instead of a fixed page template, EverShop uses a dynamic layout system based on **Areas**. Each Area is a named slot where components can be inserted. Components declare which Area they belong to and their sort order via the `layout` export, and EverShop assembles the page automatically.
@@ -59,16 +76,14 @@ catalog
     │   └── productEdit
     │       ├── route.json
     │       ├── index.ts
-    │       ├── General.tsx
-    │       ├── Images.tsx
-    │       ├── Price.tsx
+    │       ├── ProductEditForm.tsx
+    │       ├── Collection.tsx
+    │       ├── VariantGroup.tsx
     └── frontStore
         └── productView
             ├── route.json
             ├── index.ts
-            ├── ProductImages.tsx
-            ├── ProductInfo.tsx
-            ├── ProductOptions.tsx
+            ├── ProductView.tsx
 ```
 
 The `pages` folder has three sub-folders: `admin`, `frontStore`, and `global`. The `admin` folder contains all admin panel pages. The `frontStore` folder contains pages for your storefront. The `global` folder contains _middleware functions_ used in both the admin panel and storefront.
@@ -85,21 +100,18 @@ catalog
     │   └── productEdit
     │       ├── route.json
     │       ├── index.ts
-    │       ├── General.tsx
-    │       ├── Images.tsx
-    │       └── Price.tsx
+    │       ├── ProductEditForm.tsx
+    │       ├── Collection.tsx
+    │       └── VariantGroup.tsx
     └── frontStore
         ├── categoryView
         │   ├── route.json
         │   ├── index.ts
-        │   ├── CategoryInfo.tsx
-        │   └── CategoryProducts.tsx
+        │   └── CategoryView.tsx
         └── productView
             ├── route.json
             ├── index.ts
-            ├── ProductImages.tsx
-            ├── ProductInfo.tsx
-            └── ProductOptions.tsx
+            └── ProductView.tsx
 
 ```
 
@@ -120,16 +132,20 @@ Every master component must be provided as a default export.
 
 ### Shared Master Components
 
-Sometimes, you may want to share components between multiple pages. For example, if you have a `ProductInfo` component used in both `productNew` and `productEdit` pages, you can create a folder named `productNew + productEdit` in the `admin` folder and place the `ProductInfo.tsx` component in it. This shared folder makes the `ProductInfo.tsx` component available in both pages.
+Sometimes, you may want to share components between multiple pages. For example, if you have a `ProductInfo` component used in both `productEdit` and `productNew` pages, you can create a folder named `productEdit+productNew` in the `admin` folder and place the `ProductInfo.tsx` component in it. This shared folder makes the `ProductInfo.tsx` component available in both pages.
 
 ```bash
 catalog
 ├── pages
     ├── admin
-    │   └── productNew+productEdit
+    │   └── productEdit+productNew
     │       └── ProductInfo.tsx
     └── frontStore
 ```
+
+:::info
+The folder name is a `+`-joined list of route IDs with no spaces. The core catalog module uses this for `productEdit+productNew`, `categoryEdit+categoryNew`, `attributeEdit+attributeNew` and `collectionEdit+collectionNew`.
+:::
 
 ## The `Area` Component
 
@@ -158,8 +174,14 @@ Each block in the diagram above is an `Area` with a unique ID. The `Area` compon
     <tr><td><code>wrapper</code></td><td><code>string | ReactNode</code></td><td><code>'div'</code></td><td>The HTML tag or React component used as the wrapper.</td></tr>
     <tr><td><code>wrapperProps</code></td><td><code>object</code></td><td><code>{}</code></td><td>Additional props passed to the wrapper element.</td></tr>
     <tr><td><code>coreComponents</code></td><td><code>Component[]</code></td><td><code>[]</code></td><td>Pre-defined inline components (see below).</td></tr>
+    <tr><td><code>isGlobal</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Marks an Area that appears on every page (the header and footer Areas set this). Informational — the page builder uses it to warn that an edit here affects every page, and to outline the Area when <em>Globals view</em> is on. Adds <code>data-evershop-global="true"</code> to the wrapper.</td></tr>
+    <tr><td><code>editableInPageBuilder</code></td><td><code>boolean</code></td><td><code>false</code></td><td>Opts the Area into page-builder editing. When false (the default) the page builder will not accept widget drops here, even though the Area still renders in the preview — this is what protects layout-only and system-message Areas from accidental edits. Adds <code>data-evershop-editable-area="true"</code> to the wrapper.</td></tr>
   </tbody>
 </table>
+
+:::info
+Neither `isGlobal` nor `editableInPageBuilder` changes the production storefront beyond those two data attributes. The outlines and drop zones they enable render only inside the page-builder iframe.
+:::
 
 :::info
 In development mode, EverShop includes an Area debug overlay. Toggle it with the floating debug button to see Area boundaries, IDs, and component sort orders directly in the browser.
@@ -169,11 +191,11 @@ In development mode, EverShop includes an Area debug overlay. Toggle it with the
 
 Let's examine the following code:
 
-```tsx title="src/components/Layout.tsx"
+```tsx title="src/components/PageSection.tsx"
 import React from "react";
 import Area from "@components/common/Area";
 
-export default function Layout() {
+export default function PageSection() {
   return (
     <div className="just-a-block">
       <Area id="blockId" />
@@ -186,13 +208,13 @@ In this code, we declare an `Area` with the ID `blockId`. The `Area` will render
 
 You can also provide a list of pre-defined components to the `Area` component:
 
-```tsx title="src/components/Layout.tsx"
+```tsx title="src/components/PageSection.tsx"
 import React from "react";
 import Area from "@components/common/Area";
 import Top from "./Top";
 import Bottom from "./Bottom";
 
-export default function Layout() {
+export default function PageSection() {
   return (
     <div className="just-a-block">
       <Area
@@ -223,20 +245,25 @@ The `Area` component renders its child components in order of their `sortOrder` 
 
 ### Injecting Components into an Area
 
-Let's say we have a 'productView' page with the following layout component:
+Let's say we have a 'productView' page whose master component declares two Areas:
 
-```tsx title="src/modules/catalog/pages/frontStore/productView/Layout.tsx"
+```tsx title="src/modules/catalog/pages/frontStore/productView/ProductView.tsx"
 import React from "react";
 import Area from "@components/common/Area";
 
-export default function Layout() {
+export default function ProductView() {
   return (
     <div className="just-a-block">
-      <Area id="productViewLeft" />
+      <Area id="productPageMiddleLeft" />
       <Area id="productViewRight" />
     </div>
   );
 }
+
+export const layout = {
+  areaId: "content",
+  sortOrder: 10,
+};
 ```
 
 If we want to insert a component into the left side of the product view page to show product ratings, we can create a new component named `ProductRating.tsx`:
@@ -255,7 +282,7 @@ export default function ProductRating({ stars }) {
 // highlight-start
 
 export const layout = {
-  areaId: "productViewLeft",
+  areaId: "productPageMiddleLeft",
   sortOrder: 1,
 };
 
@@ -266,7 +293,7 @@ We then export a `layout` object from the `ProductRating.tsx` component. This ob
 
 In the code above, we export a `layout` object with `areaId` and `sortOrder` properties. The `areaId` specifies which `Area` component should include this component, and the `sortOrder` determines the component's position within that Area.
 
-That's all you need to do to insert the `ProductRating` component into the `productViewLeft` area of the `productView` page.
+That's all you need to do to insert the `ProductRating` component into the `productPageMiddleLeft` area of the `productView` page.
 
 ## Component Data Fetching
 
@@ -287,7 +314,7 @@ export default function ProductPrice({ product }) {
 }
 
 export const layout = {
-  areaId: "productViewInfo",
+  areaId: "productPageMiddleRight",
   sortOrder: 20,
 };
 

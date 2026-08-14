@@ -110,10 +110,12 @@ async function decreaseItemQty(cart, itemUuid) {
 This function is hookable. Extensions can register hooks to execute before or after the quantity update:
 
 ```typescript
-import { hookBefore } from '@evershop/evershop/lib/util/hookable';
-import { updateCartItemQty } from '@evershop/evershop/checkout/services';
+import { hookBeforeUpdateCartItemQty } from '@evershop/evershop/checkout/services';
 
-hookBefore(updateCartItemQty, async (cart, uuid, qty, action, context) => {
+// Use the exported typed helper. The low-level `hookBefore` takes the hook NAME as
+// a string — `hookBefore('updateCartItemQty', ...)`. Passing the imported function
+// files the hook under a key that never matches, so it silently never runs.
+hookBeforeUpdateCartItemQty(async (cart, uuid, qty, action, context) => {
   // Validate maximum quantity before update
   const item = cart.getItem(uuid);
   const maxQty = 10;

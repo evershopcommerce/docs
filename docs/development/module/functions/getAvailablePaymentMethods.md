@@ -24,12 +24,20 @@ import { getAvailablePaymentMethods } from "@evershop/evershop/checkout/services
 ## Syntax
 
 ```typescript
-getAvailablePaymentMethods(): Promise<PaymentMethodInfo[]>
+getAvailablePaymentMethods(context?: PaymentMethodValidationContext): Promise<PaymentMethodInfo[]>
 ```
 
 ### Parameters
 
-None.
+**`context`** — `PaymentMethodValidationContext` (optional, defaults to `{}`)
+
+Forwarded to every registered factory's `validator`. Its `cartTotal` field is the one core reads: when `cartTotal` is `0` or less, the returned list collapses to the built-in `zero_checkout` method regardless of what any validator returned. Omitting the argument keeps the legacy behaviour.
+
+```typescript
+interface PaymentMethodValidationContext {
+  cartTotal?: number;
+}
+```
 
 ## Return Value
 

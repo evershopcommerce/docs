@@ -210,7 +210,9 @@ You can also use the `createSubscriber` helper function for a more concise synta
 import { createSubscriber } from '@evershop/evershop/lib/event/subscriber';
 import { sendEmail } from '../../services/email';
 
-const sendConfirmationEmail = createSubscriber<'order_placed'>(async (data) => {
+// `createSubscriber` takes TWO required arguments: the event name, then the handler.
+// The generic is inferred from the name, so there is no need to write it out.
+const sendConfirmationEmail = createSubscriber('order_placed', async (data) => {
   // TypeScript automatically infers data type from 'order_placed'
   await sendEmail({
     to: data.customerEmail,
@@ -381,7 +383,7 @@ Here's a real-world example of building URL rewrites when a product is created:
 
 ```typescript
 // modules/catalog/subscribers/product_created/buildUrlRewrite.ts
-import { insertOnUpdate, select } from '@evershop/postgres-query-builder';
+import { insertOnUpdate, select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 import { EventSubscriber } from '@evershop/evershop/lib/event/subscriber';
 
@@ -400,7 +402,7 @@ const buildUrlRewrite: EventSubscriber<'product_created'> = async (data) => {
     }
 
     // Create URL rewrite for the product
-    await insertOnUpdate('url_rewrite', ['entity_uuid', 'language'])
+    await insertOnUpdate('url_rewrite', ['entity_uuid'])
       .given({
         entity_type: 'product',
         entity_uuid: uuid,
@@ -424,7 +426,7 @@ const buildUrlRewrite: EventSubscriber<'product_created'> = async (data) => {
           .load(pool);
 
         if (categoryUrlRewrite) {
-          await insertOnUpdate('url_rewrite', ['entity_uuid', 'language'])
+          await insertOnUpdate('url_rewrite', ['entity_uuid'])
             .given({
               entity_type: 'product',
               entity_uuid: uuid,
@@ -449,7 +451,7 @@ Here's a complete example showing how to use events in an order processing flow:
 
 ```typescript
 import { emit } from '@evershop/evershop/lib/event';
-import { insert, update } from '@evershop/postgres-query-builder';
+import { insert, update } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 export async function processOrder(orderData) {

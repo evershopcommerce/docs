@@ -151,7 +151,7 @@ function InterestsForm() {
       <td>...props</td>
       <td>InputHTMLAttributes</td>
       <td>-</td>
-      <td>All standard HTML input attributes</td>
+      <td>Accepted by the type (the interface extends <code>InputHTMLAttributes</code>), but the rest object is captured and never spread onto any element — extra attributes type-check and then silently do not reach the DOM.</td>
     </tr>
   </tbody>
 </table>

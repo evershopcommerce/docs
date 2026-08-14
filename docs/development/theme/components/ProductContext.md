@@ -429,12 +429,14 @@ function ProductPageContent() {
             product={{ sku, isInStock: inventory.isInStock }}
             qty={1}
           >
-            {({ addToCart, isLoading, canAddToCart }) => (
+            {/* children is (state, actions) => ReactNode — two arguments,
+                not one destructured object. */}
+            {(state, actions) => (
               <button 
-                onClick={addToCart}
-                disabled={!canAddToCart || isLoading}
+                onClick={actions.addToCart}
+                disabled={!state.canAddToCart || state.isLoading}
               >
-                {isLoading ? 'Adding...' : 'Add to Cart'}
+                {state.isLoading ? 'Adding...' : 'Add to Cart'}
               </button>
             )}
           </AddToCart>

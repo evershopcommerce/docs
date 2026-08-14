@@ -30,9 +30,9 @@ In EverShop, every module has its own GraphQL folder. The GraphQL folder contain
         ├── Category
         │   ├── Category.graphql
         │   └── Category.resolvers.ts
-        ├── FeaturedCategory
-        │   ├── FeaturedCategory.graphql
-        │   └── FeaturedCategory.resolvers.ts
+        ├── Collection
+        │   ├── Collection.graphql
+        │   └── Collection.resolvers.ts
         ├── FeaturedProduct
         │   ├── FeaturedProduct.graphql
         │   └── FeaturedProduct.resolvers.ts
@@ -47,8 +47,8 @@ In EverShop, every module has its own GraphQL folder. The GraphQL folder contain
             │   ├── ProductImage.graphql
             │   └── ProductImage.resolvers.ts
             ├── Inventory
-            │   ├── Inventory.resolvers.ts
-            │   └── TypeDef.graphql
+            │   ├── Inventory.graphql
+            │   └── Inventory.resolvers.ts
             ├── Price
             │   ├── ProductPrice.graphql
             │   └── ProductPrice.resolvers.ts
@@ -147,9 +147,9 @@ export default {
       query
         .leftJoin("category_description", "des")
         .on(
-          "des.`category_description_category_id`",
+          "des.category_description_category_id",
           "=",
-          "category.`category_id`"
+          "category.category_id"
         );
       return (
         await query
@@ -167,7 +167,10 @@ export default {
       ).map((row) => camelCase(row));
     },
     url: (product, _, { pool }) => {
-      return buildUrl("productView", { url_key: product.urlKey });
+      // `productView` is /product/:uuid — pass the uuid, not the url key.
+      // This is exactly what core's own resolver does; the merchant-facing slug
+      // is substituted afterwards by the `url_rewrite` layer.
+      return buildUrl("productView", { uuid: product.uuid });
     },
     editUrl: (product, _, { pool }) => {
       return buildUrl("productEdit", { id: product.productId });
@@ -179,9 +182,9 @@ export default {
       query
         .leftJoin("product_description")
         .on(
-          "product_description.`product_description_product_id`",
+          "product_description.product_description_product_id",
           "=",
-          "product.`product_id`"
+          "product.product_id"
         );
       query.where("product_id", "=", id);
       const result = await query.load(pool);

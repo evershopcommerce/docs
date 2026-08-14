@@ -239,7 +239,6 @@ responseSample={`{
     "postcode": "10001"
   }
 }`}
-isPrivate={false}
 />
 
 <hr/>
@@ -272,7 +271,6 @@ responseSample={`{
     "address_1": "456 Oak Ave"
   }
 }`}
-isPrivate={false}
 />
 
 <hr/>
@@ -290,7 +288,6 @@ responseSample={`{
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
   }
 }`}
-isPrivate={false}
 />
 
 <hr/>
@@ -315,9 +312,7 @@ requestSchema={{
   "required": ["email"]
 }}
 responseSample={`{
-  "data": {
-    "success": true
-  }
+  "data": {}
 }`}
 isPrivate={false}
 />
@@ -343,11 +338,7 @@ requestSchema={{
   },
   "required": ["password", "token"]
 }}
-responseSample={`{
-  "data": {
-    "success": true
-  }
-}`}
+responseSample={`{}`}
 isPrivate={false}
 />
 

@@ -82,7 +82,8 @@ import { updateCategory } from "@evershop/evershop/catalog/services";
 const updated = await updateCategory('category-uuid-123', {
   name: "New Electronics",
   url_key: "new-electronics",
-  description: "Latest electronic devices",
+  // `description` is an array of block-editor rows, not a string:
+  description: [{ id: 'r1', size: 12, columns: [{ id: 'c1', size: 12, data: { blocks: [] } }] }],
   position: 10
 });
 ```

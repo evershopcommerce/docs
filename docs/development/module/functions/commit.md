@@ -21,8 +21,12 @@ Commit a database transaction and release the connection.
 ## Import
 
 ```typescript
-import { commit } from '@evershop/postgres-query-builder';
+import { commit } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Import from the typed query module
+`@evershop/evershop/lib/postgres/query` re-exports `startTransaction`, `commit`, `rollback`, `execute`, `sql` and `value` unchanged from `@evershop/postgres-query-builder`, alongside the typed `select` / `insert` / `update` / `del` / `insertOnUpdate`. Importing everything from the one module keeps a transaction to a single import line. The raw package remains available as a lower-level fallback.
+:::
 
 ## Syntax
 
@@ -47,7 +51,7 @@ Returns `Promise<void>`.
 ### Basic Transaction
 
 ```typescript
-import { startTransaction, commit, rollback } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -68,7 +72,7 @@ try {
 ### With Query Builder
 
 ```typescript
-import { startTransaction, commit, rollback, insert, update } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback, insert, update } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -101,7 +105,7 @@ try {
 ### Complex Transaction
 
 ```typescript
-import { startTransaction, commit, rollback, insert, update } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback, insert, update } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 async function processOrder(orderId) {

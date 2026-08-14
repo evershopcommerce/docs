@@ -38,17 +38,44 @@ getAllWidgets(): Widget[]
 
 Returns all registered widgets (both enabled and disabled).
 
-:::warning
-After the first call to `getAllWidgets()`, the widget manager becomes read-only. No new widgets can be registered.
-:::
-
 ### getEnabledWidgets
 
 ```typescript
 getEnabledWidgets(): Widget[]
 ```
 
-Returns only widgets where `enabled === true`.
+Returns only widgets where `enabled === true`. It reads through the same underlying call as `getAllWidgets()` and therefore freezes the registry too.
+
+:::warning Both of these freeze the registry
+After the first call to **either** `getAllWidgets()` or `getEnabledWidgets()`, the widget manager becomes read-only. Any later `registerWidget`, `updateWidget` or `removeWidget` throws. `getWidget()` and `hasWidget()` are safe — they do not freeze anything.
+:::
+
+### Returned shape
+
+Both functions return frozen copies of the registered widget objects, with three generated component keys added:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>componentKey</code></td>
+      <td>Bundle key for the storefront component, derived from the <code>component</code> path.</td>
+    </tr>
+    <tr>
+      <td><code>settingComponentKey</code></td>
+      <td>Bundle key for the admin settings component, derived from the <code>settingComponent</code> path.</td>
+    </tr>
+    <tr>
+      <td><code>previewComponentKey</code></td>
+      <td>Bundle key for the page-builder palette preview. Unlike the other two it is derived from the widget type, not the path — it is always <code>admin_widget_preview_&lt;type&gt;</code>.</td>
+    </tr>
+  </tbody>
+</table>
 
 ### getWidget
 

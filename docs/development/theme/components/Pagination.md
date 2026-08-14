@@ -42,12 +42,12 @@ Pagination is consumed by these components, which are the actual override target
     <tr>
       <td>CategoryProductsPagination</td>
       <td>categoryView</td>
-      <td><code>themes/&lt;name&gt;/src/pages/categoryView/CategoryProductsPagination.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/catalog/CategoryProductsPagination.tsx</code></td>
     </tr>
     <tr>
       <td>SearchProductsPagination</td>
       <td>catalogSearch</td>
-      <td><code>themes/&lt;name&gt;/src/pages/catalogSearch/SearchProductsPagination.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/catalog/SearchProductsPagination.tsx</code></td>
     </tr>
   </tbody>
 </table>
@@ -364,7 +364,7 @@ function CustomPagination({ total, limit, currentPage }) {
 
 A theme developer overrides `CategoryProductsPagination` to use a compact pagination style. Create this file in your theme:
 
-**`themes/my-theme/src/pages/categoryView/CategoryProductsPagination.tsx`**
+**`themes/my-theme/src/components/frontStore/catalog/CategoryProductsPagination.tsx`**
 
 ```tsx
 import { Pagination } from '@components/frontStore/Pagination';
@@ -401,11 +401,6 @@ function CategoryProductsPagination({ total, limit, currentPage }) {
 }
 
 export default CategoryProductsPagination;
-
-export const layout = {
-  areaId: 'categoryPageMain',
-  sortOrder: 50
-};
 ```
 
 ## Behavior

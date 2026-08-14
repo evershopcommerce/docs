@@ -21,10 +21,19 @@ PostgreSQL connection pool instance for executing database queries.
 
 ```typescript
 import { pool } from '@evershop/evershop/lib/postgres';
-import {select} from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 
-const product = await select().from('product').where('product_id', 123).load(pool);
+const product = await select()
+  .from('product')
+  .where('product_id', '=', 123)
+  .load(pool);
 ```
+
+:::info Typed wrapper
+Query builders come from `@evershop/evershop/lib/postgres/query` — EverShop's first-party typed wrapper around `@evershop/postgres-query-builder`, adding column types for every known EverShop table. The raw package is still available as an untyped lower-level fallback. The `pool` itself always comes from `@evershop/evershop/lib/postgres`.
+:::
+
+The pool never needs releasing: the query builder's auto-release is a no-op on a `Pool`. Use it for reads and single statements, and reserve [`getConnection()`](/docs/development/module/functions/getConnection) for transactions.
 
 ## Type
 

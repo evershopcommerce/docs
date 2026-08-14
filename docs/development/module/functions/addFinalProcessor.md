@@ -47,21 +47,44 @@ Returns `void`.
 
 ## Examples
 
-### Override Email Service
+### Have the last word on a registry value
 
-```typescript title="extensions/custom-email/src/bootstrap.ts"
+```typescript title="extensions/shipping-floor/src/bootstrap.ts"
 import { addFinalProcessor } from '@evershop/evershop/lib/util/registry';
 
 export default function () {
-  addFinalProcessor('emailService', (currentService) => {
-    return {
-      send: async (to, subject, html) => {
-        await myCustomProvider.send({ to, subject, html });
-      }
-    };
+  // Runs at priority 1000, after every other processor, so nothing downstream
+  // can undo it. Only one final processor is allowed per key.
+  addFinalProcessor('shippingCost', (cost) => Math.max(cost, 500));
+}
+```
+
+:::tip Registering an email service
+To replace the email service, use
+[`registerEmailService`](/docs/development/module/functions/registerEmailService) rather
+than a final processor on `emailService`. The registry validates that key against the
+`EmailService` interface, which requires a **`sendEmail(args)`** method — a value exposing
+`send(to, subject, html)` is rejected, and the next `sendEmail()` call throws
+`Value emailService is invalid`, taking all outbound mail down with it. Note also that the
+rendered HTML arrives as `args.body`; there is no `args.html`.
+
+```typescript title="extensions/custom-email/src/bootstrap.ts"
+import { registerEmailService } from '@evershop/evershop/lib/mail/emailHelper';
+
+export default function () {
+  registerEmailService({
+    sendEmail: async (args) => {
+      await myCustomProvider.send({
+        from: args.from,
+        to: args.to,
+        subject: args.subject,
+        html: args.body
+      });
+    }
   });
 }
 ```
+:::
 
 ## Notes
 

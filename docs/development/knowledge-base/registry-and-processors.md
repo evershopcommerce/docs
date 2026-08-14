@@ -101,9 +101,9 @@ Use `addFinalProcessor()` to register a processor that always runs last (priorit
 ```ts
 import { addFinalProcessor } from '@evershop/evershop/lib/util/registry';
 
-addFinalProcessor('emailService', (service) => {
-  // Override the email service implementation
-  return myCustomEmailService;
+addFinalProcessor('shippingCost', (cost) => {
+  // Always runs last, so nothing downstream can undo this floor
+  return Math.max(cost, 500);
 });
 ```
 
@@ -128,8 +128,17 @@ const productData = await getValue('productData', async (value) => {
 ```ts
 import { getValueSync } from '@evershop/evershop/lib/util/registry';
 
-const config = getValueSync('configurationSchema', baseSchema);
+const schema = getValueSync('configurationSchema', baseSchema, {});
 ```
+
+:::warning
+Unlike `getValue()`, whose `context` parameter is optional, **`getValueSync()`'s `context` is required**. A two-argument call is a TypeScript error. Pass `{}` when you have no context to supply.
+
+```ts
+getValueSync('configurationSchema', baseSchema);      // TypeScript error
+getValueSync('configurationSchema', baseSchema, {});  // correct
+```
+:::
 
 :::warning
 `getValueSync()` will throw an error if any processor is asynchronous. Use `getValue()` if your processors perform async operations.
@@ -205,19 +214,30 @@ export default function () {
 Extensions can override the email sending implementation:
 
 ```ts title="extensions/resend/src/bootstrap.ts"
-import { addProcessor } from '@evershop/evershop/lib/util/registry';
+import { registerEmailService } from '@evershop/evershop/lib/mail/emailHelper';
 
 export default function () {
-  addProcessor('emailService', (currentService) => {
-    // Replace the default email service with Resend
-    return {
-      send: async (to, subject, html) => {
-        await resend.emails.send({ from: 'noreply@shop.com', to, subject, html });
-      }
-    };
+  // Replace the default email service with Resend.
+  registerEmailService({
+    sendEmail: async (args) => {
+      await resend.emails.send({
+        from: args.from ?? 'noreply@shop.com',
+        to: args.to,
+        subject: args.subject,
+        html: args.body
+      });
+    }
   });
 }
 ```
+
+:::warning The `emailService` value is validated
+The registry checks this key with `isValidEmailService`, which requires a
+**`sendEmail(args: SendEmailArguments)`** method. A value exposing
+`send(to, subject, html)` is rejected, and the next `sendEmail()` call throws
+`Value emailService is invalid` — taking all outbound mail down. The rendered HTML
+arrives as `args.body`; there is no `args.html`.
+:::
 
 ### Extending Configuration Validation
 

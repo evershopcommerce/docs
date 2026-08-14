@@ -74,12 +74,45 @@ productEdit
 
 Each page folder must contain a `route.json` file that defines the route for that page. For example, the `route.json` file for the `productEdit` page might look like this:
 
-```bash
+```json
 {
-  "path": "/admin/product/:productId",
-  "methods": [
-    "GET"
-  ]
+  "path": "/product/:productId",
+  "methods": ["GET"],
+  "name": "Edit Product"
+}
+```
+
+:::warning
+Do **not** write the `/admin` prefix into `path`. Every route under `pages/admin/` receives it automatically at registration time, so `"path": "/admin/product/:productId"` would produce `/admin/admin/product/:productId`. The same applies to `api/` routes and their `/api` prefix.
+:::
+
+`route.json` accepts five keys:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Required</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>path</code></td><td>Yes</td><td>The URL path pattern, without the <code>/admin</code> or <code>/api</code> prefix. Supports <code>path-to-regexp</code> parameters.</td></tr>
+    <tr><td><code>methods</code></td><td>Yes</td><td>Array of accepted HTTP methods.</td></tr>
+    <tr><td><code>access</code></td><td>No</td><td><code>"public"</code> or <code>"private"</code>, defaulting to <code>"private"</code> — but it only affects <code>api/</code> routes, where the API auth middleware reads it. <strong>Page routes ignore it entirely:</strong> storefront pages are always reachable, and admin page auth is enforced by the global admin <code>auth</code> middleware keyed on route id.</td></tr>
+    <tr><td><code>name</code></td><td>No</td><td>Human-readable label for the route. Defaults to the route ID; shown in the admin page-builder route list.</td></tr>
+    <tr><td><code>editable</code></td><td>No</td><td>Set to <code>true</code> to make the page openable in the <strong>page builder</strong> at <code>/admin/page-builder</code>, so widgets can be placed on it. Defaults to <code>false</code> and has no effect on request handling.</td></tr>
+  </tbody>
+</table>
+
+A storefront page opted into the page builder looks like this:
+
+```json
+{
+  "methods": ["GET"],
+  "path": "/page/:url_key",
+  "name": "Static Page",
+  "editable": true
 }
 ```
 
@@ -163,9 +196,22 @@ If you have components required for all pages within a section, you can place th
 
 EverShop uses a URL rewrite system to map user-friendly URLs to internal routes. For example, instead of visiting `/product/123`, a customer sees `/awesome-running-shoes`.
 
-URL rewrites are stored in the `url_rewrite` database table. When no standard route matches an incoming request, EverShop checks this table for a matching `request_path` and internally redirects to the corresponding `target_path`.
+URL rewrites are stored in the `url_rewrite` database table. When no standard route matches an incoming request, EverShop checks this table for a matching `request_path` and internally remaps to the corresponding `target_path`.
 
-URL rewrites are typically created automatically by event subscribers when products and categories are created or updated, based on the entity's `url_key` field.
+How a rewrite is created depends on the entity:
+
+- **Products, categories and blog entities** get theirs from **event subscribers** (`product_created`, `category_updated`, `blog_post_created`, …), so the rewrite lands shortly after the entity is saved.
+- **CMS pages and landing pages** write theirs **synchronously inside the create/update service transaction** (`syncPageUrlRewrite`, `syncLandingPageUrlRewrite`), so the friendly URL works the instant the save returns.
+
+CMS pages are served at the root level — `/about-us`, not `/page/about-us`. The `/page/:url_key` route still resolves but **301-redirects** to the root path.
+
+When two entity types claim the same `request_path`, the lookup resolves it deterministically by entity type (landing page → CMS page → product → category → everything else), then by the oldest row.
+
+For browser-visible 301/302 redirects — as opposed to these internal remaps — see [URL Redirects](./url-redirects).
+
+:::info
+See [the routing system documentation](/docs/development/knowledge-base/routing-system#url-rewrites) for the full lookup, including the precedence SQL and the locale-prefix interaction.
+:::
 
 ## File Naming Convention Summary
 

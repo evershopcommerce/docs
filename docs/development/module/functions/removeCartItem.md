@@ -89,10 +89,14 @@ async function handleRemoveItem(cart, itemUuid) {
 This function is hookable. Extensions can register hooks to execute before or after the item removal:
 
 ```typescript
-import { hookAfter } from '@evershop/evershop/lib/util/hookable';
-import { removeCartItem } from '@evershop/evershop/checkout/services';
+import { hookAfterRemoveCartItem } from '@evershop/evershop/checkout/services';
 
-hookAfter(removeCartItem, async (removedItem, cart, uuid, context) => {
+// Use the exported typed helper. Calling the low-level `hookAfter` directly takes
+// the hook NAME as a string — `hookAfter('removeCartItem', ...)`; passing the
+// imported function files it under a key that never matches and it never runs.
+// Note the callback receives only `(result, cart, uuid)`: `removeCartItem` invokes
+// the hookable with two arguments, and the context is bound to `this`, not passed.
+hookAfterRemoveCartItem(async function (removedItem, cart, uuid) {
   // Log the removal for analytics
   await logCartItemRemoval(cart.getId(), removedItem.getData('product_sku'));
   return removedItem;

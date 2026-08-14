@@ -21,33 +21,39 @@ Insert a new record into a database table using the query builder.
 ## Import
 
 ```typescript
-import { insert } from '@evershop/postgres-query-builder';
+import { insert } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Typed wrapper
+`@evershop/evershop/lib/postgres/query` is EverShop's first-party typed query builder. It wraps `@evershop/postgres-query-builder` and adds table/column types for every known EverShop table, so `insert('order')` narrows `.given()` / `.where()` to that table's columns and gives you autocomplete.
+
+The raw `@evershop/postgres-query-builder` package is still available as an untyped lower-level fallback, but new code should import from the wrapper.
+:::
 
 ## Syntax
 
 ```typescript
-insert(table: string): InsertQuery
+insert<T extends AnyTableName>(table: T): TypedInsertQuery<T>
 ```
 
 ### Parameters
 
 **`table`**
 
-**Type:** `string`
+**Type:** `AnyTableName`
 
-The name of the table to insert into.
+The name of the table to insert into. Known EverShop tables are suggested by name; any other string is still accepted for custom tables.
 
 ## Return Value
 
-Returns an `InsertQuery` instance that can be chained with additional methods.
+Returns a `TypedInsertQuery<T>` that can be chained with additional methods. When `T` is a known table, `.given()` and `.prime()` only accept that table's columns.
 
 ## Examples
 
 ### Basic Insert
 
 ```typescript
-import { insert } from '@evershop/postgres-query-builder';
+import { insert } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const result = await insert('customer')
@@ -65,7 +71,7 @@ console.log(result); // The full inserted row
 ### Insert with prime()
 
 ```typescript
-import { insert } from '@evershop/postgres-query-builder';
+import { insert } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const result = await insert('product')
@@ -81,7 +87,7 @@ const result = await insert('product')
 ### Insert in Transaction
 
 ```typescript
-import { insert, startTransaction, commit, rollback } from '@evershop/postgres-query-builder';
+import { insert, startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -96,11 +102,14 @@ try {
     })
     .execute(connection, false);
   
+  // The street columns are `address_1` / `address_2` — there is no `address`
+  // column, and `country` is NOT NULL.
   await insert('customer_address')
     .given({
       customer_id: customer.insertId,
-      address: '123 Main St',
-      city: 'New York'
+      address_1: '123 Main St',
+      city: 'New York',
+      country: 'US'
     })
     .execute(connection, false);
   
@@ -111,28 +120,34 @@ try {
 }
 ```
 
-### Insert with Dedicated Connection
+### A single statement outside a transaction
+
+Use the shared pool. A lone statement needs no dedicated connection:
 
 ```typescript
-import { insert } from '@evershop/postgres-query-builder';
-import { getConnection } from '@evershop/evershop/lib/postgres';
+import { insert } from '@evershop/evershop/lib/postgres/query';
+import { pool } from '@evershop/evershop/lib/postgres';
 
-const connection = await getConnection();
+const result = await insert('order')
+  .given({
+    customer_id: 123,
+    total: 199.99,
+    status: 'pending'
+  })
+  .execute(pool);
 
-try {
-  const result = await insert('order')
-    .given({
-      customer_id: 123,
-      total: 199.99,
-      status: 'pending'
-    })
-    .execute(connection);
-  
-  console.log(result.insertId);
-} finally {
-  connection.release();
-}
+console.log(result.insertId);
 ```
+
+:::warning Do not pair `.execute(connection)` with a manual `release()`
+`.execute()` releases the connection itself unless you pass `false` as the second
+argument. Combining the default `.execute(connection)` with a
+`finally { connection.release(); }` releases twice and throws
+`Release called on client which has already been released to the pool`.
+
+Pick one: either `.execute(connection)` and no manual release, or
+`.execute(connection, false)` with your own `finally { connection.release(); }`.
+:::
 
 ## Methods
 

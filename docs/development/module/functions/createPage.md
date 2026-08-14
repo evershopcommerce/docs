@@ -38,7 +38,7 @@ createPage(data: PageData, context?: Record<string, any>): Promise<CmsPageRow>
   name: string;           // Page title (required)
   status: '0' | '1';     // Published status (required)
   url_key: string;        // URL slug (required)
-  content: string;        // Page content - EditorJS JSON (required)
+  content: Row[];         // Required. Block-editor rows: { id, size, columns: [{ id, size, data }] }
   meta_title: string;     // SEO title (required)
   meta_description?: string;
   meta_keywords?: string;
@@ -65,7 +65,7 @@ const page = await createPage({
   name: 'About Us',
   status: '1',
   url_key: 'about-us',
-  content: '{"blocks":[]}',
+  content: [{ id: 'r1', size: 12, columns: [{ id: 'c1', size: 12, data: { blocks: [] } }] }],
   meta_title: 'About Our Store'
 });
 ```

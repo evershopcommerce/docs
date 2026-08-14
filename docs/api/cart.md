@@ -75,30 +75,32 @@ requestSchema={{
 }}
 responseSample={`{
   "data": {
-    "items": {
-      "cart_item_id": "2sl0ifz1etgldt28vm9",
-      "uuid": "4a6e5c9e0062489e82a472aeda0211be",
-      "product_id": 2,
-      "product_sku": "NJC90842-Blue-S",
-      "group_id": 1,
-      "product_name": "Lite racer adapt 3.0 shoes",
-      "thumbnail": "/assets/catalog/7385/1316/plv1138-Blue-thumb.png",
-      "product_weight": 5.4,
-      "product_price": 823,
-      "product_price_incl_tax": 823,
-      "qty": 10,
-      "final_price": 823,
-      "tax_percent": 0,
-      "tax_amount": 0,
-      "final_price_incl_tax": 823,
-      "variant_group_id": 62,
-      "variant_options": "[{\"attribute_code\":\"size\",\"attribute_name\":\"Size\",\"attribute_id\":2,\"option_id\":25,\"option_text\":\"S\"},{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":3,\"option_id\":8,\"option_text\":\"Blue\"}]",
-      "product_custom_options": null,
-      "productUrl": "/product/lite-racer-adapt-3.0-shoes",
-      "removeUrl": "/api/cart/mine/items/4a6e5c9e0062489e82a472aeda0211be",
-      "discount_amount": 0,
-      "total": 8230
-    },
+    "items": [
+      {
+        "cart_item_id": "2sl0ifz1etgldt28vm9",
+        "uuid": "4a6e5c9e0062489e82a472aeda0211be",
+        "product_id": 2,
+        "product_sku": "NJC90842-Blue-S",
+        "group_id": 1,
+        "product_name": "Lite racer adapt 3.0 shoes",
+        "thumbnail": "/assets/catalog/7385/1316/plv1138-Blue-thumb.png",
+        "product_weight": 5.4,
+        "product_price": 823,
+        "product_price_incl_tax": 823,
+        "qty": 10,
+        "final_price": 823,
+        "tax_percent": 0,
+        "tax_amount": 0,
+        "final_price_incl_tax": 823,
+        "variant_group_id": 62,
+        "variant_options": "[{\"attribute_code\":\"size\",\"attribute_name\":\"Size\",\"attribute_id\":2,\"option_id\":25,\"option_text\":\"S\"},{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":3,\"option_id\":8,\"option_text\":\"Blue\"}]",
+        "product_custom_options": null,
+        "productUrl": "/product/lite-racer-adapt-3.0-shoes",
+        "removeUrl": "/api/cart/mine/items/4a6e5c9e0062489e82a472aeda0211be",
+        "discount_amount": 0,
+        "total": 8230
+      }
+    ],
     "count": 3,
     "cartId": "251ca17e754f4473a9bdf97c85509a4a"
   }
@@ -145,32 +147,30 @@ requestSchema={{
 }}
 responseSample={`{
   "data": {
-    "item": [
-      {
-        "cart_item_id": "2sl0ifz1etgldt28vm9",
-        "uuid": "4a6e5c9e0062489e82a472aeda0211be",
-        "product_id": 2,
-        "product_sku": "NJC90842-Blue-S",
-        "group_id": 1,
-        "product_name": "Lite racer adapt 3.0 shoes",
-        "thumbnail": "/assets/catalog/7385/1316/plv1138-Blue-thumb.png",
-        "product_weight": 5.4,
-        "product_price": 823,
-        "product_price_incl_tax": 823,
-        "qty": 10,
-        "final_price": 823,
-        "tax_percent": 0,
-        "tax_amount": 0,
-        "final_price_incl_tax": 823,
-        "variant_group_id": 62,
-        "variant_options": "[{\"attribute_code\":\"size\",\"attribute_name\":\"Size\",\"attribute_id\":2,\"option_id\":25,\"option_text\":\"S\"},{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":3,\"option_id\":8,\"option_text\":\"Blue\"}]",
-        "product_custom_options": null,
-        "productUrl": "/product/lite-racer-adapt-3.0-shoes",
-        "removeUrl": "/api/cart/mine/items/4a6e5c9e0062489e82a472aeda0211be",
-        "discount_amount": 0,
-        "total": 8230
-      }
-    ],
+    "item": {
+      "cart_item_id": "2sl0ifz1etgldt28vm9",
+      "uuid": "4a6e5c9e0062489e82a472aeda0211be",
+      "product_id": 2,
+      "product_sku": "NJC90842-Blue-S",
+      "group_id": 1,
+      "product_name": "Lite racer adapt 3.0 shoes",
+      "thumbnail": "/assets/catalog/7385/1316/plv1138-Blue-thumb.png",
+      "product_weight": 5.4,
+      "product_price": 823,
+      "product_price_incl_tax": 823,
+      "qty": 10,
+      "final_price": 823,
+      "tax_percent": 0,
+      "tax_amount": 0,
+      "final_price_incl_tax": 823,
+      "variant_group_id": 62,
+      "variant_options": "[{\"attribute_code\":\"size\",\"attribute_name\":\"Size\",\"attribute_id\":2,\"option_id\":25,\"option_text\":\"S\"},{\"attribute_code\":\"color\",\"attribute_name\":\"Color\",\"attribute_id\":3,\"option_id\":8,\"option_text\":\"Blue\"}]",
+      "product_custom_options": null,
+      "productUrl": "/product/lite-racer-adapt-3.0-shoes",
+      "removeUrl": "/api/cart/mine/items/4a6e5c9e0062489e82a472aeda0211be",
+      "discount_amount": 0,
+      "total": 8230
+    },
     "count": 3,
     "cartId": "251ca17e754f4473a9bdf97c85509a4a"
   }

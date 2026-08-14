@@ -52,7 +52,7 @@ Returns a proxied version of the original function that executes registered hook
 
 ```typescript
 import { hookable } from '@evershop/evershop/lib/util/hookable';
-import { insert } from '@evershop/postgres-query-builder';
+import { insert } from '@evershop/evershop/lib/postgres/query';
 
 async function insertCustomerData(data, connection) {
   const customer = await insert('customer')
@@ -154,7 +154,7 @@ async function processData(data) {
 ```typescript
 import { hookable } from '@evershop/evershop/lib/util/hookable';
 import { hookBefore, hookAfter } from '@evershop/evershop/lib/util/hookable';
-import { insert } from '@evershop/postgres-query-builder';
+import { insert } from '@evershop/evershop/lib/postgres/query';
 
 // Core function
 async function createProduct(data, connection) {

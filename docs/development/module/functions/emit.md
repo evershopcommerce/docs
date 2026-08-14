@@ -91,7 +91,7 @@ Events are stored in the database and processed asynchronously by subscribers:
 - Event data is stored in the database
 - Subscribers are registered during bootstrap
 - Multiple subscribers can listen to the same event
-- Events are processed in order of subscriber priority
+- There is no subscriber priority. Every subscriber for an event is invoked concurrently via `Promise.all`, so do not rely on ordering between them.
 - Use typed events for better TypeScript support
 - Common events: `product_created`, `order_placed`, `customer_registered`, etc.
 

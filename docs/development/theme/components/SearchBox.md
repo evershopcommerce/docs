@@ -271,17 +271,17 @@ function CustomResults() {
 
 ```tsx
 import { SearchBox } from '@components/frontStore/catalog/SearchBox';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Search, X } from 'lucide-react';
 
 function IconSearch() {
   return (
     <SearchBox
       searchPageUrl="/search"
       renderSearchIcon={() => (
-        <MagnifyingGlassIcon className="w-6 h-6" />
+        <Search className="w-6 h-6" />
       )}
       renderCloseIcon={() => (
-        <XMarkIcon className="w-6 h-6" />
+        <X className="w-6 h-6" />
       )}
     />
   );

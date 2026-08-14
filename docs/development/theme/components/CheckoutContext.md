@@ -197,7 +197,7 @@ Returns checkout state:
     <tr>
       <td>requiresShipment</td>
       <td>boolean</td>
-      <td>True if items need shipping</td>
+      <td>Always <code>true</code> in 2.2.1 — virtual/downloadable products are not supported yet, so every cart is treated as shippable. Do not use it to hide shipping UI; the real per-cart flag is <code>noShippingRequired</code>, surfaced by CartTotalSummary.</td>
     </tr>
     <tr>
       <td>allowGuestCheckout</td>
@@ -304,6 +304,7 @@ interface PaymentMethod {
 
 ```typescript
 interface ShippingMethod {
+  providerCode: string; // required
   code: string;
   name: string;
   cost?: {
@@ -313,6 +314,12 @@ interface ShippingMethod {
   [key: string]: any;  // Extended fields
 }
 ```
+
+:::danger Keep `providerCode`
+`providerCode` identifies the provider a method came from (core, USPS, EasyPost, …). It is what `addShippingMethod(code, name, providerCode)` needs in order to route validation to the right provider — [`CartContext.addShippingMethod`](CartContext.md#addshippingmethod) throws without it.
+
+If you map `getShippingMethods()` results into your own state, carry `providerCode` through. Dropping it (or defaulting it to `'core'`) means the selection either throws on the client or 422s server-side as "method no longer available".
+:::
 
 ### ShippingAddressParams
 
@@ -416,13 +423,18 @@ function PaymentMethods() {
 
 ### Shipping Methods
 
+Selecting a method is a two-step flow: `getShippingMethods()` lists them, then `CartContext`'s `addShippingMethod(code, name, providerCode)` commits the selection. The `providerCode` must be threaded from the listed method into the call.
+
 ```tsx
+import { useCartDispatch } from '@components/frontStore/cart/CartContext';
 import { useCheckoutDispatch } from '@components/frontStore/checkout/CheckoutContext';
 import { useState, useEffect } from 'react';
 
 function ShippingMethods({ address }) {
   const { getShippingMethods } = useCheckoutDispatch();
+  const { addShippingMethod } = useCartDispatch();
   const [methods, setMethods] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -438,13 +450,26 @@ function ShippingMethods({ address }) {
     }
   }, [address]);
 
+  const handleSelect = async (method) => {
+    setSelected(method.code);
+    // All three arguments are required — `providerCode` comes straight
+    // off the listed method.
+    await addShippingMethod(method.code, method.name, method.providerCode);
+  };
+
   return (
     <div className="shipping-methods">
       <h3>Shipping Method</h3>
       {loading && <div>Loading...</div>}
       {methods.map(method => (
-        <label key={method.code}>
-          <input type="radio" name="shipping" value={method.code} />
+        <label key={`${method.providerCode}:${method.code}`}>
+          <input
+            type="radio"
+            name="shipping"
+            value={method.code}
+            checked={selected === method.code}
+            onChange={() => handleSelect(method)}
+          />
           {method.name} - {method.cost?.text || 'Free'}
         </label>
       ))}
@@ -452,6 +477,10 @@ function ShippingMethods({ address }) {
   );
 }
 ```
+
+:::warning
+Two providers can expose the same `code`, so key the list on `providerCode` + `code` rather than `code` alone.
+:::
 
 ### Checkout Data Management
 

@@ -42,6 +42,10 @@ For production environments, we recommend using **Linux-based systems** (Ubuntu 
 - We recommend using the **LTS (Long Term Support)** version
 - Verify installation: `node --version`
 
+:::info Tested versions
+EverShop's continuous integration builds and runs the test suite on **Node.js 20 and Node.js 22**. Both are supported; either one is a safe choice for production. Newer majors may work but are not covered by CI.
+:::
+
 :::caution Version Compatibility
 Node.js versions below 20.x are not supported and may cause compatibility issues.
 :::
@@ -115,7 +119,29 @@ When running EverShop in development mode, you'll need to install additional dev
 npm install --save-dev @types/node typescript @parcel/watcher @types/config @types/express @types/pg @types/react execa
 ```
 
-See the [Installation Guide](/docs/development/getting-started/installation-guide#for-developer) for the complete development setup steps.
+:::warning `@types/react` must be version 19
+EverShop runs on **React 19**. `@types/react` must resolve to `19.x` — if npm hoists an older `@types/react@18` (usually pulled in by another dependency), your theme's `tsc` build fails with JSX type errors such as *"JSX element type ... is not a constructor function for JSX elements"* or *"'Component' cannot be used as a JSX component"*.
+
+Pin it explicitly, and check what actually resolved:
+
+```bash
+npm install --save-dev @types/react@19 @types/react-dom@19
+npm ls @types/react
+```
+
+If `npm ls` still reports an 18.x copy somewhere in the tree, add an `overrides` entry to your `package.json`:
+
+```json
+{
+  "overrides": {
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.0.0"
+  }
+}
+```
+:::
+
+See the [Installation Guide](/docs/development/getting-started/installation-guide#for-developers) for the complete development setup steps.
 
 ## Network and Security Requirements
 

@@ -61,17 +61,35 @@ node_modules/@evershop/evershop/dist/components/
 ├── admin/           # Admin-only shared components
 ├── common/          # Components used in both admin and storefront
 │   ├── Area.js
+│   ├── Image.js
+│   ├── Link.js
+│   ├── ui/          # shadcn primitives (Button, Dialog, Select, Sonner, ...)
+│   │   ├── Button.js
+│   │   ├── Sonner.js
+│   │   └── ...
 │   ├── form/
 │   │   ├── Form.js
 │   │   ├── InputField.js
 │   │   └── ...
+│   ├── metafield/   # <Metafield> renderer and its per-type renderers
+│   ├── page-builder/
+│   ├── modal/
+│   ├── locale/
 │   └── context/
 │       └── app.js
 └── frontStore/      # Storefront-only shared components
+    ├── Header.js
+    ├── Footer.js
     ├── cart/
     ├── catalog/
-    └── checkout/
+    ├── checkout/
+    ├── customer/
+    └── blog/
 ```
+
+:::info
+`common/ui/` holds the shadcn-style primitives the storefront and admin share — including `Sonner.js`, which re-exports `toast` and the `<Toaster/>`. `common/metafield/` holds the `<Metafield>` component; see [Using Metafields in a Theme](./metafields.md).
+:::
 
 ## The `@components` Aliases
 
@@ -102,76 +120,102 @@ In your source code, you write components in `src/components/`. The TypeScript c
 
 ### Overriding Master Level Components
 
-To override a master-level component, create a file in your theme with the **same filename** in the **same route folder**. EverShop uses the combination of route folder name and filename (e.g., `all/Layout.js`) as a key — when your theme provides a file with the same key, it replaces the core component.
+To override a master-level component, create a file in your theme with the **same filename** in the **same route folder**. EverShop uses the combination of route folder name and filename (e.g., `all/Base.js`) as a key — when your theme provides a file with the same key, it replaces the core component.
 
 :::warning
 Theme overrides only apply to **storefront** (`frontStore`) pages. Admin panel components **cannot** be overridden by themes. To customize admin pages, use an [extension](/docs/development/module/extension-development) instead.
 :::
 
-Let's examine the default `Layout.tsx` component from the `cms` core module:
+### The storefront master component
 
-```tsx title="modules/pages/all/Layout.tsx"
-import React from "react";
-import Area from "@components/common/Area";
-import "./Layout.scss";
+The component that wraps every storefront page is `Base.tsx`, in the `base` core module. It is the storefront's outermost master component — it declares `areaId: 'body'` with `sortOrder: 1`, mounts the customer and cart providers, and renders the shared `Header` and `Footer` around exactly **one** Area:
 
-export default function Layout() {
+```tsx title="modules/base/pages/frontStore/all/Base.tsx"
+import Area from '@components/common/Area.js';
+import { useAppState } from '@components/common/context/app.js';
+import { LoadingBar } from '@components/common/LoadingBar.js';
+import { CartProvider } from '@components/frontStore/cart/CartContext.js';
+import { CustomerProvider } from '@components/frontStore/customer/CustomerContext.js';
+import { Footer } from '@components/frontStore/Footer.js';
+import { Header } from '@components/frontStore/Header.js';
+import React from 'react';
+
+export default function Base({ myCart, customer, themeConfig, /* ...apis */ }) {
+  const { config } = useAppState();
+  const isLandingPage = config?.pageMeta?.route?.id === 'landingPageView';
   return (
-    <>
-      <div className="header flex justify-between">
+    <CustomerProvider initialCustomer={customer} /* ...apis */>
+      <CartProvider cart={myCart} /* ...apis */>
+        <LoadingBar />
+        <Header />
         <Area
-          id="header"
-          noOuter
-          coreComponents={[
-            {
-              component: { default: Area },
-              props: {
-                id: "icon-wrapper",
-                className: "icon-wrapper flex justify-between space-x-1",
-              },
-              sortOrder: 20,
-            },
-          ]}
+          id={isLandingPage ? 'landing_page_content' : 'content'}
+          className="page-width min-h-36"
+          wrapper="main"
+          editableInPageBuilder
         />
-      </div>
-      <main className="content">
-        <Area id="content" className="" noOuter />
-      </main>
-      <div className="footer">
-        <Area id="footer" className="" />
-      </div>
-    </>
+        <Footer copyRight={themeConfig.copyRight} />
+      </CartProvider>
+    </CustomerProvider>
   );
 }
 
 export const layout = {
-  areaId: "body",
-  sortOrder: 1,
+  areaId: 'body',
+  sortOrder: 1
 };
 ```
 
-To override this component, create a new file at `themes/your-theme-folder/src/pages/all/Layout.tsx`:
+:::info There is no storefront `Layout.tsx`
+Older documentation described a `Layout.tsx` master component with separate `header`, `content` and `footer` Areas. That component does not exist. The storefront master is `Base.tsx`, and the header/footer Areas live inside the shared `Header` and `Footer` components, not in the master.
 
-```tsx title="themes/your-theme-folder/src/pages/all/Layout.tsx"
+The header Areas are `headerTop`, `headerMiddleLeft`, `headerMiddleCenter`, `headerMiddleRight`, `headerBottom`. The footer Areas are `footerTop`, `footerMiddleLeft`, `footerMiddleCenter`, `footerMiddleRight`, `footerBottom`. All are declared `isGlobal editableInPageBuilder`.
+:::
+
+To override the master, create a file at `themes/your-theme-folder/src/pages/all/Base.tsx`. Because it is the whole page shell, keep the pieces the rest of the system depends on — the providers, the `content` Area, and the `layout` export:
+
+```tsx title="themes/your-theme-folder/src/pages/all/Base.tsx"
+import Area from '@components/common/Area.js';
+import { useAppState } from '@components/common/context/app.js';
+import { CartProvider } from '@components/frontStore/cart/CartContext.js';
+import { CustomerProvider } from '@components/frontStore/customer/CustomerContext.js';
 import React from 'react';
-import Area from '@components/common/Area';
-import './Layout.scss';
+import MyHeader from '../../components/MyHeader.js';
+import MyFooter from '../../components/MyFooter.js';
 
-export default function Layout() {
-  // Your custom layout implementation
+export default function Base({ myCart, customer, themeConfig, ...apis }) {
+  const { config } = useAppState();
+  const isLandingPage = config?.pageMeta?.route?.id === 'landingPageView';
   return (
-    // Your JSX here
+    <CustomerProvider initialCustomer={customer} {...apis}>
+      <CartProvider cart={myCart} {...apis}>
+        <MyHeader />
+        <Area
+          id={isLandingPage ? 'landing_page_content' : 'content'}
+          className="my-container"
+          wrapper="main"
+          editableInPageBuilder
+        />
+        <MyFooter copyRight={themeConfig.copyRight} />
+      </CartProvider>
+    </CustomerProvider>
   );
 }
 
 export const layout = {
-  areaId: "body",
+  areaId: 'body',
   sortOrder: 1
 };
 ```
 
 :::warning
 Make sure the file path and name in your theme match exactly with the original component you are overriding.
+
+Replacing `Base.tsx` also replaces its `query` and `fragments` exports, which is what supplies `myCart`, `customer` and the API URLs. If you drop them, the providers get nothing. In most cases you want to override `Header`/`Footer` (shared components, via the `@components` alias) or add components to the existing header/footer Areas — not replace `Base.tsx` at all.
+:::
+
+:::danger Rendering the same Area twice
+An Area renders every component registered to its ID. If your override keeps the core `<Header/>` *and* adds your own copy of a header Area, everything registered to it renders twice. Pick one.
 :::
 
 ### Overriding Shared Components
@@ -320,3 +364,36 @@ export default function Component() {
   );
 }
 ```
+
+### Never call `_()` at module scope
+
+`_()` resolves against the **active dictionary**, which is per-request on the server and per-page on the client. Calling it at module scope evaluates it once, at import time, and freezes that result — so the server render and the client render can disagree. Under React 19 that is a hydration mismatch: React discards the server HTML and re-renders on the client, and the page briefly shows the wrong language.
+
+```tsx
+// Broken — evaluated once, at import
+const SORT_OPTIONS = [
+  { value: "price", label: _("Price") },
+  { value: "name", label: _("Name") }
+];
+
+export default function ProductSorting() {
+  return <Select options={SORT_OPTIONS} />;
+}
+```
+
+```tsx
+// Correct — evaluated per render, inside the component
+export default function ProductSorting() {
+  const sortOptions = [
+    { value: "price", label: _("Price") },
+    { value: "name", label: _("Name") }
+  ];
+  return <Select options={sortOptions} />;
+}
+```
+
+This applies to any module-scope `const` — arrays, objects, and default parameter values. It is the single most common cause of hydration errors in an upgraded theme, and it only shows up when the store is loaded in a non-default language.
+
+:::info
+See [Upgrading To React 19](/blog/upgrading-to-react-19) for the rest of the React 19 changes that affect themes — most of them break silently rather than at build time.
+:::

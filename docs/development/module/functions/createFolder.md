@@ -5,16 +5,17 @@ keywords:
 - cms
 - file management
 - media
+- storage
 groups:
 - files
 sidebar_label: createFolder
 title: createFolder
-description: Create a folder in media directory.
+description: Create a folder in the store's file storage.
 ---
 
 # createFolder
 
-Create a new folder at the specified path in the media directory.
+Create a new folder at the specified path in the store's file storage.
 
 ## Import
 
@@ -34,11 +35,17 @@ createFolder(destinationPath: string): Promise<string>
 
 **Type:** `string`
 
-Path where folder should be created, relative to media directory.
+Path where the folder should be created. This is a **storage key prefix**, not necessarily a local directory — see [Storage providers](#storage-providers). An empty path throws on the cloud providers.
 
 ## Return Value
 
-Returns `Promise<string>` with the created folder path.
+Returns `Promise<string>` with the created folder path (the normalised storage key).
+
+## Storage providers
+
+`createFolder` resolves the folder creator **at call time** from the `folderCreator` registry value, seeded from the active storage provider. The provider is chosen by the `fileStorage` admin setting, falling back to the `system.file_storage` config (default `local`). Core ships `local`, `s3`, `azure` and `gcs` implementations, and an extension can register its own.
+
+Object stores have no real directories, so the cloud providers emulate one: S3, for example, writes a zero-byte `{key}/` marker object — the same convention the AWS console uses — which the file browser then groups as a folder. The local provider does a recursive `mkdir` and is a no-op when the directory already exists.
 
 ## See Also
 

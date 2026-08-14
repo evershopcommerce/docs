@@ -176,6 +176,6 @@ function MyComponent() {
 ## Notes
 
 - The provider uses Immer's `produce` function to ensure immutable state updates
-- When fetching page data, the URL is automatically appended with `ajax=true` parameter
-- The entire context is replaced when new data is fetched, not merged
+- `fetchPageData` does **not** append `ajax=true` — callers must add it themselves (only the built-in `popstate` handler adds it). Without it the server returns HTML and the update is silently swallowed.
+- The response's `eContext` keys are shallow-merged onto the existing state via Immer's `produce`: top-level keys absent from the response are preserved, while nested objects under a returned key are replaced wholesale.
 - The `fetching` state is managed separately from the main application data

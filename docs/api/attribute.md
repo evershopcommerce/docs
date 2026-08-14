@@ -191,6 +191,12 @@ responseSample={`{
 
 Modifies an existing product attribute. You can update the attribute name, settings, associated groups, and options.
 
+This is a true partial update — `updateProductAttribute` empties the schema's `required` list, so only the fields you send are written.
+
+:::note `attribute_code` and `type` cannot be changed
+Both keys are deleted from the payload before the write, so sending them has no effect and raises no error. To change either, delete the attribute and create a new one.
+:::
+
 <Api
 method="PATCH"
 url="/api/attributes/363ba97f-8be7-4be9-be3f-a9f341f2b89f"
@@ -288,9 +294,7 @@ requestSchema={{
       "description": "Array of options for select/multiselect attribute types"
     }
   },
-  "required": [
-    "attribute_code"
-  ],
+  "required": [],
   "additionalProperties": true
 }}
 responseSample={`{
@@ -352,116 +356,57 @@ responseSample={`{
 
 <hr />
 
-### Get an Attribute
+### Reading Attributes
 
-:::info
-Retrieving attribute data is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute information. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::warning No REST read endpoints
+`GET /api/attributes` and `GET /api/attributes/{uuid}` **do not exist**. The catalog module registers no `GET` route for attributes — calling either returns a 404.
 :::
 
-The following shows the expected response format when querying attribute data:
+Read attribute data through **GraphQL**.
 
-<Api
-method="GET"
-url="/api/attributes/363ba97f-8be7-4be9-be3f-a9f341f2b89f"
-responseSample={`{
-  "data": {
-    "attribute_id": 99,
-    "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89f",
-    "attribute_code": "GTW5s9bqJ7rP3gDrU5HF",
-    "attribute_name": "Text attribute",
-    "type": "text",
-    "is_required": 1,
-    "display_on_frontend": 1,
-    "sort_order": 1,
-    "is_filterable": 0,
-    "options": []
-  }
-}`}
-/>
+A single attribute is available on both schemas via `Query.attribute(id: Int)`:
 
-<hr />
-
-### List All Attributes
-
-:::info
-Listing attributes is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute lists. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
-:::
-
-The following shows the expected response format when querying attribute lists:
-
-<Api
-method="GET"
-url="/api/attributes"
-responseSample={`{
-  "data": [
-    {
-      "attribute_id": 99,
-      "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89f",
-      "attribute_code": "color",
-      "attribute_name": "Color",
-      "type": "select",
-      "is_required": 0,
-      "display_on_frontend": 1,
-      "sort_order": 10,
-      "is_filterable": 1,
-      "options": [
-        {
-          "option_id": 1,
-          "option_text": "Red"
-        },
-        {
-          "option_id": 2,
-          "option_text": "Blue"
-        },
-        {
-          "option_id": 3,
-          "option_text": "Green"
-        }
-      ]
-    },
-    {
-      "attribute_id": 100,
-      "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89e",
-      "attribute_code": "size",
-      "attribute_name": "Size",
-      "type": "select",
-      "is_required": 0,
-      "display_on_frontend": 1,
-      "sort_order": 20,
-      "is_filterable": 1,
-      "options": [
-        {
-          "option_id": 4,
-          "option_text": "Small"
-        },
-        {
-          "option_id": 5,
-          "option_text": "Medium"
-        },
-        {
-          "option_id": 6,
-          "option_text": "Large"
-        }
-      ]
+```graphql
+query Attribute($id: Int) {
+  attribute(id: $id) {
+    attributeId
+    uuid
+    attributeCode
+    attributeName
+    type
+    isRequired
+    displayOnFrontend
+    sortOrder
+    isFilterable
+    options {
+      attributeOptionId
+      uuid
+      optionText
     }
-  ],
-  "links": {
-    "first": "/api/attributes?page=1",
-    "last": "/api/attributes?page=1",
-    "prev": null,
-    "next": null
-  },
-  "meta": {
-    "current_page": 1,
-    "from": 1,
-    "last_page": 1,
-    "path": "/api/attributes",
-    "per_page": 20,
-    "to": 2,
-    "total": 2
   }
-}`}
-/>
+}
+```
+
+The list query `Query.attributes(filters: [FilterInput])` is **admin-only** — it is defined in an `.admin.graphql` file and is therefore absent from the storefront schema. Send it to the authenticated endpoint `POST /admin/graphql`:
+
+```graphql
+query Attributes($filters: [FilterInput]) {
+  attributes(filters: $filters) {
+    items {
+      attributeId
+      uuid
+      attributeCode
+      attributeName
+      type
+      isFilterable
+    }
+    currentPage
+    total
+  }
+}
+```
+
+See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for filters and the full schema.
 
 ## Error Handling
 

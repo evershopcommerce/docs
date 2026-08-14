@@ -61,7 +61,7 @@ const result = camelCase(dbRow);
 
 ```typescript
 import { camelCase } from '@evershop/evershop/lib/util/camelCase';
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 
 export default {
   Query: {

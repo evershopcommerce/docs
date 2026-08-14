@@ -95,10 +95,13 @@ async function addProductToCart(cart, productId, quantity) {
 This function is hookable. Extensions can register hooks to execute before or after adding items:
 
 ```typescript
-import { hookAfter } from '@evershop/evershop/lib/util/hookable';
-import { addCartItem } from '@evershop/evershop/checkout/services';
+import { hookAfterAddCartItem } from '@evershop/evershop/checkout/services';
 
-hookAfter(addCartItem, async (addedItem, cart, productID, qty, context) => {
+// Use the exported typed helper. If you call the low-level `hookAfter` directly,
+// the first argument is the hook NAME as a string — `hookAfter('addCartItem', ...)`.
+// Passing the imported function itself files the hook under a key that never
+// matches, so it silently never runs.
+hookAfterAddCartItem(async (addedItem, cart, productID, qty, context) => {
   // Track add-to-cart event for analytics
   await trackAddToCart({
     productId: productID,

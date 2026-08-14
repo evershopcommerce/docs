@@ -39,8 +39,8 @@ createAttribute(data: AttributeData, context?: Record<string, any>): Promise<Att
   attribute_code: string;     // Required
   attribute_name: string;     // Required
   type: string;               // Required (text, textarea, select, multiselect, date)
-  is_required: boolean;       // Required
-  display_on_frontend?: boolean;
+  is_required: 0 | 1 | '0' | '1';        // Required. AJV enum — booleans are rejected
+  display_on_frontend: 0 | 1 | '0' | '1'; // Required. Same enum
   groups: number[];           // Required - attribute group IDs
   options?: { option_text: string }[]; // For select/multiselect types
   [key: string]: any;
@@ -68,8 +68,8 @@ const attribute = await createAttribute({
   attribute_code: "brand",
   attribute_name: "Brand",
   type: "text",
-  is_required: false,
-  display_on_frontend: true,
+  is_required: 0,
+  display_on_frontend: 1,
   groups: [1, 2]
 });
 ```
@@ -83,8 +83,8 @@ const attribute = await createAttribute({
   attribute_code: "color",
   attribute_name: "Color",
   type: "select",
-  is_required: true,
-  display_on_frontend: true,
+  is_required: 1,
+  display_on_frontend: 1,
   groups: [1],
   options: [
     { option_text: "Red" },
