@@ -36,7 +36,7 @@ function HomepageHeader() {
                   height={18}
                 />
               </div>
-              <span>Version 2.1</span>
+              <span>Version 2.2</span>
             </div>
             <div className="flex gap-[5px] items-center justify-center">
               <a
