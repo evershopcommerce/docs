@@ -24,16 +24,16 @@ import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 ## Syntax
 
 ```typescript
-getConfig<T>(path: string, defaultValue?: T): T
+getConfig<P extends ConfigPath>(path: P, defaultValue?: PathValue<P>): PathValue<P>
 ```
 
 ## Parameters
 
 ### `path`
 
-**Type:** `string`
+**Type:** `ConfigPath`
 
-The configuration key path using dot notation.
+The configuration key path using dot notation. The type is derived from EverShop's `ConfigStructure`, so your editor suggests valid paths and rejects unknown ones at compile time; the return type is inferred from the path. Extensions widen the structure by declaring their own keys in the configuration schema.
 
 ### `defaultValue`
 
@@ -53,14 +53,19 @@ Returns the configuration value at the specified path. If the path does not exis
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
 // Get a string value
-const siteName = getConfig('shop.name', 'My Store');
+const language = getConfig('shop.language', 'en');
+const timezone = getConfig('shop.timezone', 'UTC');
 
 // Get a number value
-const pageSize = getConfig('catalog.pageSize', 20);
+const pageSize = getConfig('catalog.collectionPageSize', 20);
 
 // Get a boolean value
-const enableCache = getConfig('system.cache.enabled', false);
+const guestCheckout = getConfig('checkout.allowGuestCheckout', true);
 ```
+
+:::warning `shop.currency` is gone
+`shop.currency`, `shop.weightUnit` and `shop.dimensionUnit` were removed from the typed configuration — they are admin settings now, stored in the `setting` table. Read them through `getStoreCurrency()`, `getWeightUnit()` and `getDimensionUnit()` from `@evershop/evershop/setting/services`; those helpers fall back to the old config keys internally, but `getConfig('shop.currency')` will no longer typecheck.
+:::
 
 ### Nested Configuration
 
@@ -68,29 +73,23 @@ const enableCache = getConfig('system.cache.enabled', false);
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
 // Access nested configuration
-const dbHost = getConfig('database.host', 'localhost');
-const dbPort = getConfig('database.port', 5432);
+const imageWidth = getConfig('catalog.product.image.width', 500);
+const taxRounding = getConfig('pricing.tax.rounding', 'round');
 
 // Complex nested paths
-const stripePublicKey = getConfig('payment.stripe.publicKey');
+const s3Bucket = getConfig('system.s3.bucket');
 ```
 
 ### Type Safety
 
+The return type is inferred from the path, so no type argument is needed:
+
 ```typescript
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
-// Explicitly specify the return type
-const maxItems = getConfig<number>('admin.collection.maxItems', 100);
-
-// Array configuration
-const allowedOrigins = getConfig<string[]>('cors.allowedOrigins', ['*']);
-
-// Object configuration
-const emailConfig = getConfig<{
-  host: string;
-  port: number;
-}>('email.smtp');
+const precision = getConfig('pricing.precision', 2);        // number
+const homeUrl = getConfig('shop.homeUrl', '');              // string
+const mimeTypes = getConfig('system.upload_allowed_mime_types', []); // string[]
 ```
 
 ### Conditional Logic
@@ -99,14 +98,13 @@ const emailConfig = getConfig<{
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 
 // Use with conditional logic
-if (getConfig('features.newsletter', false)) {
-  // Newsletter feature is enabled
-  initializeNewsletter();
+if (getConfig('sitemap.enabled', false)) {
+  scheduleSitemapBuild();
 }
 
 // Use in calculations
-const taxRate = getConfig('tax.defaultRate', 0);
-const totalWithTax = subtotal * (1 + taxRate);
+const precision = getConfig('pricing.precision', 2);
+const rounded = Math.round(value * 10 ** precision) / 10 ** precision;
 ```
 
 ## Configuration Files
@@ -122,18 +120,17 @@ Configuration values are read from files in the `config/` directory:
 ```json
 {
   "shop": {
-    "name": "My EverShop Store",
-    "currency": "USD"
+    "language": "en",
+    "timezone": "UTC",
+    "homeUrl": "https://myshop.com"
   },
   "catalog": {
-    "pageSize": 24,
-    "enableReviews": true
+    "collectionPageSize": 24,
+    "showOutOfStockProduct": true
   },
-  "system": {
-    "cache": {
-      "enabled": true,
-      "ttl": 3600
-    }
+  "pricing": {
+    "rounding": "round",
+    "precision": 2
   }
 }
 ```
@@ -141,11 +138,14 @@ Configuration values are read from files in the `config/` directory:
 ## Notes
 
 - Configuration keys use dot notation to access nested values
+- Paths are type-checked against `ConfigStructure`; an unknown path is a compile error
 - Environment-specific config files override `default.json` values
 - If a key does not exist and no default is provided, returns `undefined`
 - The function uses the `config` npm package internally
 - Configuration is loaded once at application startup
+- Store-wide values a merchant can change from the admin panel (currency, units, store address, rounding) live in the `setting` table, not in config — read those through `@evershop/evershop/setting/services`
 
 ## See Also
 
+- [getSetting](/docs/development/module/functions/getSetting) - Read an admin setting
 - [Configuration Guide](../../knowledge-base/configuration-guide.md) - Comprehensive guide on application configuration

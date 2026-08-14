@@ -20,8 +20,12 @@ Start a database transaction by executing BEGIN.
 ## Import
 
 ```typescript
-import { startTransaction } from '@evershop/postgres-query-builder';
+import { startTransaction } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Import from the typed query module
+`@evershop/evershop/lib/postgres/query` re-exports `startTransaction`, `commit`, `rollback`, `execute`, `sql` and `value` unchanged from `@evershop/postgres-query-builder`, alongside the typed `select` / `insert` / `update` / `del` / `insertOnUpdate`. Importing everything from the one module keeps a transaction to a single import line. The raw package remains available as a lower-level fallback.
+:::
 
 ## Syntax
 
@@ -46,7 +50,7 @@ Returns `Promise<void>`.
 ### Basic Transaction
 
 ```typescript
-import { startTransaction, commit, rollback } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -68,7 +72,7 @@ try {
 ### Transaction with Query Builder
 
 ```typescript
-import { startTransaction, commit, rollback, insert, update } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback, insert, update } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -76,17 +80,24 @@ const connection = await getConnection();
 try {
   await startTransaction(connection);
   
+  // `customer.password` is NOT NULL. Prefer the `createCustomer` service, which
+  // hashes it for you; if you insert directly, supply an already-hashed value.
   const customer = await insert('customer')
     .given({
       email: 'customer@example.com',
-      full_name: 'John Doe'
+      full_name: 'John Doe',
+      password: hashedPassword
     })
     .execute(connection, false); // Don't release connection
   
+  // The street columns are `address_1` / `address_2` — there is no `address`
+  // column, and `country` is NOT NULL.
   await insert('customer_address')
     .given({
       customer_id: customer.insertId,
-      address: '123 Main St'
+      address_1: '123 Main St',
+      city: 'New York',
+      country: 'US'
     })
     .execute(connection, false);
   
@@ -105,7 +116,7 @@ try {
 ### Nested Operations
 
 ```typescript
-import { startTransaction, commit, rollback, insert } from '@evershop/postgres-query-builder';
+import { startTransaction, commit, rollback, insert } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 async function createOrderWithItems(orderData, items) {
@@ -121,19 +132,20 @@ async function createOrderWithItems(orderData, items) {
     
     // Create order items
     for (const item of items) {
+      // The FK column on `order_item` is `order_item_order_id`.
       await insert('order_item')
         .given({
-          order_id: order.insertId,
+          order_item_order_id: order.insertId,
           product_id: item.product_id,
           qty: item.qty,
           price: item.price
         })
         .execute(connection, false);
       
-      // Update inventory
-      await update('product')
+      // Update inventory — stock lives on `product_inventory`.
+      await update('product_inventory')
         .given({ qty: item.qty })
-        .where('product_id', '=', item.product_id)
+        .where('product_inventory_product_id', '=', item.product_id)
         .execute(connection, false);
     }
     

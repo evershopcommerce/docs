@@ -15,7 +15,7 @@ We are excited to announce the release of **Evershop v2.1.1**! This release brin
 
 We have completely revamped our UI foundation. We are now adopting **Shadcn UI** for our component library, providing accessible and customizable components that you can copy and paste into your apps.
 
-Alongside this, we've updated dependencies to use **Tailwind CSS v4**, taking advantage of the latest performance improvements and features in the ecosystem. We also replaced `react-heroicons` with `lucide-react` for a more modern icon implementation.
+Alongside this, we've updated dependencies to use **Tailwind CSS v4**, taking advantage of the latest performance improvements and features in the ecosystem. We also replaced `@heroicons/react` with `lucide-react` for a more modern icon implementation.
 
 ### 📦 Digital Products Support
 
@@ -77,7 +77,7 @@ In previous versions, customizing the Tailwind configuration required creating a
 
 Starting from v2.1.1 with Tailwind CSS v4, the customization process has changed:
 
-- To customize Tailwind, you now overwrite the `Tailwind.tsx` component by running the following command:
+- To customize Tailwind, you now overwrite the `TailwindCss.tsx` component by running the following command:
   ```
   npm run theme:twizz
   ```
@@ -229,29 +229,32 @@ The email service architecture has been simplified to use a single instance.
 2. **Update Configuration**:
    - Update your email configuration to reflect the new unified service structure. Here’s an example configuration:
 
-   ```javascript
-    // config/config.json
+   ```json title="config/config.json"
     {
-      ...,
       "system": {
         "notification_emails": {
           "from": "noreply@example.com",
           "order_confirmation": {
             "enabled": true,
-            "templatePath": null, // In case you want to manage email template manually from source code. It should be the relative path from the project root. Missing this field or setting it to null will use the default template from EverShop
+            "templatePath": null
           },
           "customer_welcome": {
             "enabled": true,
-            "templatePath": null,
+            "templatePath": null
           },
-          "customer_password_reset": {
+          "reset_password": {
             "enabled": true,
-            "templatePath": null,
+            "templatePath": null
           }
         }
       }
     }
    ```
+
+   `templatePath` lets you manage an email template from source instead of using
+   EverShop's default. It is a path relative to the project root; omit it or set it
+   to `null` to keep the built-in template. Note the reset-password key is
+   `reset_password` — not `customer_password_reset`.
 
 3. **Test Email Delivery**:  
    After upgrading, send a test email (e.g., password reset or order confirmation) to verify that your configuration works as expected.

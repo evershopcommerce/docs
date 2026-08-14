@@ -14,6 +14,10 @@ description: A comprehensive, step-by-step guide on deploying your EverShop e-co
 
 This guide provides detailed instructions for deploying EverShop to DigitalOcean App Platform with a managed PostgreSQL database. Follow these steps to get your e-commerce store running in a production environment.
 
+:::tip
+Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.
+:::
+
 ## Prerequisites
 
 Before beginning the deployment process, ensure you have:
@@ -32,13 +36,19 @@ While DigitalOcean App Platform supports multiple deployment methods, this tutor
 Ensure your `package.json` file contains the following scripts that DigitalOcean will execute during deployment:
 
 ```json
-"scripts": {
-    "build": "evershop build --skip-minify",
+{
+  "scripts": {
+    "build": "evershop build",
     "start": "evershop start",
     "user:create": "evershop user:create",
     "user:changePassword": "evershop user:changePassword"
+  }
 }
 ```
+
+:::info
+`evershop build` takes no flags. Asset minification is always on in a production build and cannot be turned off.
+:::
 
 ### Create a New DigitalOcean App
 
@@ -140,6 +150,61 @@ Now that your database is ready, configure your EverShop application with the ap
 - `DB_USER`: Your database username
 - `DB_PASSWORD`: Your database password
 - `DB_SSLMODE`: Set to `no-verify` (or `require` if you've configured proper SSL)
+- `EVERSHOP_HOME_URL`: Your store's public base URL, e.g. `https://your-app.ondigitalocean.app` (or your custom domain once configured)
+- `TRUST_PROXY_HOPS`: Set to `1` — App Platform routes every request through its own load balancer
+
+### Set the public base URL
+
+`EVERSHOP_HOME_URL` overrides the `shop.homeUrl` configuration key and is the recommended way to set your production base URL — it lives with the rest of your App Platform environment variables, so changing it needs no code change.
+
+```bash
+EVERSHOP_HOME_URL=https://your-app.ondigitalocean.app
+```
+
+Everything EverShop emits as an absolute URL depends on it: links in transactional emails, canonical tags, `hreflang` alternates, and the `<loc>` entries plus the `Sitemap:` line in `robots.txt`. If it is left unset, EverShop falls back to `shop.homeUrl` and then to `http://localhost:<PORT>` — which means customer emails go out pointing at localhost.
+
+:::danger A malformed value stops the app from booting
+`EVERSHOP_HOME_URL` is validated during startup. It must be an **absolute** `http` or `https` URL. A value like `your-app.ondigitalocean.app` (no scheme), or one using another protocol, throws during bootstrap and the process exits before it listens — the deployment will fail its health check.
+
+Set the full origin with a scheme and no trailing path. Leaving the variable unset is fine; setting it to something invalid is fatal.
+:::
+
+:::tip
+Update `EVERSHOP_HOME_URL` when you attach your custom domain. Leaving it on the `*.ondigitalocean.app` hostname means every email and canonical URL keeps pointing at the platform domain.
+:::
+
+### Set the proxy hop count
+
+`TRUST_PROXY_HOPS` tells EverShop how many reverse proxies sit in front of the app. It drives Express's `trust proxy` setting, which determines `request.ip` — and `request.ip` is what the built-in rate limiter buckets on.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Use when</th>
+      <th>What goes wrong otherwise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0</code></td>
+      <td>The app is directly internet-facing with no proxy.</td>
+      <td>Never correct on App Platform — every request would be attributed to the platform load balancer.</td>
+    </tr>
+    <tr>
+      <td><code>1</code> (default)</td>
+      <td>One proxy: the App Platform load balancer. This is the normal setting.</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><code>2</code> or more</td>
+      <td>A proxy chain, e.g. Cloudflare or another CDN in front of App Platform.</td>
+      <td>Too low and every visitor collapses into one bucket, so a moderate traffic spike triggers mass <code>429</code> responses for everyone. Too high and a client can spoof <code>X-Forwarded-For</code> to present a fresh IP per request and bypass the limits entirely.</td>
+    </tr>
+  </tbody>
+</table>
+
+An unset, empty or non-numeric value falls back to `1`. Count the hops that actually terminate and re-forward the connection, and set the variable to that number.
 
 ### Configure Deployment Commands
 

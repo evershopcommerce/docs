@@ -19,39 +19,48 @@ Creates an INSERT query that updates existing rows on conflict (upsert). This is
 ## Import
 
 ```typescript
-import { insertOnUpdate } from '@evershop/postgres-query-builder';
+import { insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Typed wrapper
+`@evershop/evershop/lib/postgres/query` is EverShop's first-party typed query builder. It wraps `@evershop/postgres-query-builder` and adds table/column types for every known EverShop table, so `insertOnUpdate('order', ['uuid'])` narrows `.given()` / `.where()` to that table's columns and gives you autocomplete.
+
+The raw `@evershop/postgres-query-builder` package is still available as an untyped lower-level fallback, but new code should import from the wrapper.
+:::
 
 ## Syntax
 
 ```typescript
-insertOnUpdate(tableName: string, conflictColumns: string[]): InsertOnUpdateQuery
+insertOnUpdate<T extends AnyTableName>(
+  table: T,
+  conflictColumns: Array<ColumnOf<T>>
+): TypedInsertOnUpdateQuery<T>
 ```
 
 ### Parameters
 
-**`tableName`**
+**`table`**
 
-**Type:** `string`
+**Type:** `AnyTableName`
 
-The database table to insert into.
+The database table to insert into. Known EverShop tables are suggested by name; any other string is still accepted for custom tables.
 
 **`conflictColumns`**
 
-**Type:** `string[]`
+**Type:** `Array<ColumnOf<T>>`
 
 Column names that define the uniqueness constraint. If a row with matching values exists, it will be updated instead of inserted.
 
 ## Return Value
 
-Returns an `InsertOnUpdateQuery` builder with `.given(data).execute(connection)` methods.
+Returns a `TypedInsertOnUpdateQuery<T>` builder with `.given(data).execute(connection)` methods. When `T` is a known table, `.given()` and `.prime()` only accept that table's columns.
 
 ## Examples
 
 ### Track Migration Versions
 
 ```typescript
-import { insertOnUpdate } from '@evershop/postgres-query-builder';
+import { insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
 
 await insertOnUpdate('migration', ['module'])
   .given({
@@ -64,7 +73,7 @@ await insertOnUpdate('migration', ['module'])
 ### Upsert a Setting
 
 ```typescript
-import { insertOnUpdate } from '@evershop/postgres-query-builder';
+import { insertOnUpdate } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 await insertOnUpdate('setting', ['name'])

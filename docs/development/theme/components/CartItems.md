@@ -16,13 +16,13 @@ groups:
 
 ## Description
 
-A headless render props component that provides cart items data and operations. It reads from CartContext and exposes items, loading states, item count, and a remove handler — but renders no UI of its own.
+A headless render props component that provides cart items data and operations. It reads from CartContext and exposes items, loading states, item count, and a remove handler. It contributes no item markup of its own, but it does render a `div.cart-items` wrapper plus the `cartItemsBefore` and `cartItemsAfter` Areas.
 
 ## Role in Theming
 
 CartItems is one of EverShop's **headless components** — it owns the data access and operations while leaving all UI decisions to its parent:
 
-- **CartItems renders nothing.** It returns only what its `children` function renders.
+- **CartItems renders almost nothing.** Around whatever its `children` function returns it emits a `div.cart-items` wrapper and two Areas — `cartItemsBefore` and `cartItemsAfter` — which are themselves extension points you can drop components into.
 - **Theme developers do not override CartItems.** Instead, they override the parent components that consume it (`DefaultCartItemList`, `DefaultMiniCartDropdown`).
 - **The data layer stays stable across themes.** Item data extraction, tax display logic, loading states, and remove operations are encapsulated in CartItems.
 
@@ -42,12 +42,12 @@ CartItems is consumed by these components, which are the actual override targets
     <tr>
       <td>DefaultCartItemList</td>
       <td>cart</td>
-      <td><code>themes/&lt;name&gt;/src/pages/cart/DefaultCartItemList.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/cart/DefaultCartItemList.tsx</code></td>
     </tr>
     <tr>
       <td>DefaultMiniCartDropdown</td>
       <td>all (via MiniCart)</td>
-      <td><code>themes/&lt;name&gt;/src/pages/all/DefaultMiniCartDropdown.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/cart/DefaultMiniCartDropdown.tsx</code></td>
     </tr>
   </tbody>
 </table>
@@ -290,7 +290,7 @@ function CartTable() {
 
 A theme developer overrides `DefaultCartItemList` to provide a custom cart item layout. Create this file in your theme:
 
-**`themes/my-theme/src/pages/cart/DefaultCartItemList.tsx`**
+**`themes/my-theme/src/components/frontStore/cart/DefaultCartItemList.tsx`**
 
 ```tsx
 import { CartItems } from '@components/frontStore/cart/CartItems';
@@ -356,11 +356,6 @@ function DefaultCartItemList() {
 }
 
 export default DefaultCartItemList;
-
-export const layout = {
-  areaId: 'shoppingCartLeft',
-  sortOrder: 10
-};
 ```
 
 ## Features

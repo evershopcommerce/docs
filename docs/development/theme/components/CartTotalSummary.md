@@ -23,7 +23,7 @@ A headless render props component that provides cart summary data including subt
 CartTotalSummary is one of EverShop's **headless components** — it owns the data extraction and tax-aware price formatting while leaving UI decisions to its parent:
 
 - **With no children**, CartTotalSummary renders a default summary layout with Areas (`cartSummaryBeforeSubTotal`, `cartSummaryAfterSubTotal`, etc.) that extensions can inject into.
-- **With children**, it renders nothing of its own — only what the `children` function returns.
+- **With children**, it contributes only a `div.grid.grid-cols-1.gap-3` wrapper around what the `children` function returns — only what the `children` function returns.
 - **Theme developers override the parent components** that use CartTotalSummary (`ShoppingCart`, `Checkout`) to change the summary layout.
 - **The data logic stays stable across themes.** Tax-inclusive/exclusive price selection, loading state derivation, and cart data extraction are encapsulated.
 

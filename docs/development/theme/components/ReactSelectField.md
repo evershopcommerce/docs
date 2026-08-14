@@ -132,7 +132,7 @@ function ProductForm() {
       <td>helperText</td>
       <td>string</td>
       <td>-</td>
-      <td>Helper text shown below the select</td>
+      <td>Helper text shown in a tooltip next to the label</td>
     </tr>
     <tr>
       <td>validation</td>

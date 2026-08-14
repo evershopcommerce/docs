@@ -47,14 +47,19 @@ EverShop ships with a complete set of core modules out of the box:
     </tr>
   </thead>
   <tbody>
-    <tr><td><strong>Catalog</strong></td><td>Products, categories, attributes, collections, and product search</td></tr>
-    <tr><td><strong>Checkout</strong></td><td>Shopping cart, shipping zones/methods, payment method registration</td></tr>
+    <tr><td><strong>Catalog</strong></td><td>Products, categories, attributes, collections, product search, and recommendations</td></tr>
+    <tr><td><strong>Checkout</strong></td><td>Shopping cart, shipping providers and the built-in Core provider, multi-country shipping zones, shipping methods and rates, package/parcel packing, payment method registration</td></tr>
     <tr><td><strong>Customer</strong></td><td>Customer accounts, addresses, authentication (JWT)</td></tr>
-    <tr><td><strong>OMS</strong></td><td>Order management, shipments, payment/shipment status tracking</td></tr>
-    <tr><td><strong>Promotion</strong></td><td>Coupon codes and discount rules</td></tr>
-    <tr><td><strong>CMS</strong></td><td>Custom pages and widgets</td></tr>
+    <tr><td><strong>OMS</strong></td><td>Order management, multi-shipment fulfillment, carriers and labels, payment/shipment status tracking</td></tr>
+    <tr><td><strong>Promotion</strong></td><td>Coupon codes, discount rules, and landing pages</td></tr>
+    <tr><td><strong>CMS</strong></td><td>Custom pages, file storage, and widget definitions and storage</td></tr>
+    <tr><td><strong>Page Builder</strong></td><td>The visual editing experience for widgets — placements, drafts, changesets, and scheduled rollouts. Widgets are <em>stored</em> by CMS; they are <em>edited</em> here.</td></tr>
+    <tr><td><strong>Blog</strong></td><td>Blog posts, categories, tags, comments, and reactions</td></tr>
     <tr><td><strong>Tax</strong></td><td>Tax classes, rates, and calculation</td></tr>
-    <tr><td><strong>Setting</strong></td><td>Store configuration management</td></tr>
+    <tr><td><strong>Setting</strong></td><td>Store configuration management (the database-backed admin settings)</td></tr>
+    <tr><td><strong>Auth</strong></td><td>Admin login, JWT and session handling, and route access control</td></tr>
+    <tr><td><strong>Base</strong></td><td>Cross-cutting infrastructure — metafields, sitemap, URL redirects, rate limiting, and the shared error/response middleware</td></tr>
+    <tr><td><strong>GraphQL</strong></td><td>Schema assembly, query building, and the storefront and admin GraphQL endpoints</td></tr>
   </tbody>
 </table>
 

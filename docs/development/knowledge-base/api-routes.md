@@ -102,9 +102,9 @@ For security best practices, endpoints without an explicitly defined `access` pr
 
 EverShop allows you to define validation schemas for API request data using a `payloadSchema.json` file in the API endpoint folder. This ensures that incoming data meets your requirements before processing.
 
-Here's an example schema for product creation:
+Here's an illustrative schema — it is not the schema EverShop ships for `createProduct`, which declares only `description`, `metafields` and `duplicate_of` and has no `required` array. It does demonstrate the two conventions the real file uses: `skipEscape: true` and per-property `errorMessage`.
 
-```json title="createProduct/payloadSchema.json"
+```json title="payloadSchema.json"
 {
   "type": "object",
   "properties": {
@@ -273,6 +273,50 @@ For efficiency, you may need to reuse middleware functions across multiple API e
 
 These special shared middleware folders should contain only middleware functions without a `route.json` file, as they don't define endpoints themselves but enhance existing ones.
 
+## Rate Limiting
+
+Every API endpoint sits behind a per-client-IP rate limiter that is mounted **globally**, before any module middleware runs. You do not opt in, and you cannot opt out from a `route.json` or a middleware.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Scope</th>
+      <th>Limit (per IP)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/api</code> and <code>/api/**</code></td><td>120 requests per minute</td></tr>
+    <tr><td>Credential endpoints — POST to <code>/api/customers</code>, <code>/api/customers/reset-password</code>, <code>/api/customers/password</code>, <code>/customer/login</code>, <code>/admin/user/login</code></td><td>8 requests per 15 minutes</td></tr>
+    <tr><td>Page routes (storefront and admin)</td><td>300 requests per minute</td></tr>
+  </tbody>
+</table>
+
+Requests for static assets, HMR, `/backend/`, `/health` and `/healthz` are exempt. The limiter is disabled when `NODE_ENV=test`.
+
+### The 429 Contract
+
+When a limit is exceeded, an API request gets `429 Too Many Requests` with EverShop's standard error envelope:
+
+```json
+{
+  "error": {
+    "status": 429,
+    "message": "Too many requests. Please slow down and try again later."
+  }
+}
+```
+
+Two response headers matter to clients:
+
+- **`Retry-After`** — seconds until the window resets. Honour it rather than retrying immediately.
+- **`RateLimit-*`** — the standard limit/remaining/reset triple, so a well-behaved client can back off *before* it gets rejected.
+
+Page routes get the same status with a plain-text body instead of JSON.
+
+:::warning
+Behind a reverse proxy, the limiter only sees the true client IP if Express `trust proxy` matches your topology. Set the `TRUST_PROXY_HOPS` environment variable to the number of proxy layers in front of the app (default `1`); otherwise all traffic looks like one IP and a single visitor can lock everyone out.
+:::
+
 ## Best Practices for API Development
 
 When developing APIs for EverShop, consider these best practices:
@@ -281,4 +325,5 @@ When developing APIs for EverShop, consider these best practices:
 2. **Access Control**: Set appropriate `access` levels for your endpoints
 3. **Modular Design**: Break complex operations into multiple middleware functions
 4. **Error Handling**: Provide clear error responses with appropriate HTTP status codes
-5. **Documentation**: Comment your code and keep API contracts consistent
+5. **Handle 429s**: Clients should respect `Retry-After` and the `RateLimit-*` headers rather than retrying in a tight loop
+6. **Documentation**: Comment your code and keep API contracts consistent

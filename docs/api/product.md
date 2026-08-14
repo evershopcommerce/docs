@@ -350,6 +350,19 @@ requestSchema={{
       "errorMessage": {
         "type": "Options must be an array"
       }
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'product' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Validated against each definition and folded into the product's meta_data column"
+    },
+    "duplicate_of": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of a source product to duplicate. Copies the source's collection memberships and emits the product_duplicated event. Never persisted as a column",
+      "errorMessage": {
+        "type": "duplicate_of must be the uuid of the source product",
+        "format": "duplicate_of must be the uuid of the source product"
+      }
     }
   },
   "additionalProperties": true
@@ -392,7 +405,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/product/Q7Oq0kxZIMQ5isUyJRbg",
+        "href": "/product/99a7b39ca63211edb46b60d819134f39",
         "action": "GET",
         "types": [
           "text/xml"
@@ -744,6 +757,10 @@ requestSchema={{
       "errorMessage": {
         "type": "Options must be an array"
       }
+    },
+    "metafields": {
+      "type": "object",
+      "description": "Values for the metafield definitions registered against the 'product' owner type, keyed by namespace, then by the definition's key (the default namespace is 'custom'). Validated against each definition and folded into the product's meta_data column"
     }
   },
   "additionalProperties": true
@@ -786,7 +803,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/product/Q7Oq0kxZIMQ5isUyJRbg",
+        "href": "/product/99a7b39ca63211edb46b60d819134f39",
         "action": "GET",
         "types": [
           "text/xml"
@@ -829,6 +846,38 @@ responseSample={`{
 ### Update Parameters
 
 All parameters are optional for updates. Only include the parameters you want to modify. See the Create a Product section for detailed parameter descriptions.
+
+`duplicate_of` is accepted only on create — it has no meaning on update.
+
+<hr/>
+
+### Metafields
+
+Both create and update accept a `metafields` object. It is keyed **namespace → key → value**: the outer key is the definition's namespace (`custom` unless you set another), the inner key is the definition's `key`. Values are validated against each definition's type and validations, then folded into the product's `meta_data` column.
+
+```json
+{
+  "name": "Lite racer adapt 3.0 shoes",
+  "sku": "NJC90842",
+  "metafields": {
+    "custom": {
+      "care_instructions": "Machine wash cold",
+      "warranty_months": 24
+    }
+  }
+}
+```
+
+:::warning A flat object silently drops every value
+Validation reads each value at `input[definition.namespace][definition.key]`. Passing
+`{ "care_instructions": "..." }` without the namespace level means nothing is found, so
+optional fields are written as empty and any **required** definition fails the request
+with `"custom.care_instructions" is required`.
+:::
+
+Omitting `metafields` leaves `meta_data` untouched — the fold runs only when the key is explicitly present, so a partial update never wipes existing values. Sending a value that fails its definition's validation fails the whole request.
+
+The same field is available on `POST`/`PATCH` for categories and collections, scoped to the `category` and `collection` owner types respectively.
 
 <hr/>
 

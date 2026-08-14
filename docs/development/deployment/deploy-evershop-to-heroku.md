@@ -14,6 +14,10 @@ description: A comprehensive guide for deploying your EverShop e-commerce applic
 
 This guide provides detailed instructions for deploying an EverShop application on Heroku's cloud platform using the Heroku Command Line Interface (CLI) and a PostgreSQL database add-on.
 
+:::tip
+Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.
+:::
+
 ## Prerequisites
 
 Before beginning the deployment process, ensure you have:
@@ -143,16 +147,73 @@ Update your `package.json` with the necessary scripts for Heroku deployment:
 ```json title="package.json"
 {
   "scripts": {
-    "build": "evershop build --skip-minify",
+    "build": "evershop build",
     "start": "evershop start",
     "user:create": "evershop user:create"
   }
 }
 ```
 
-:::note
-The `--skip-minify` flag speeds up the build process. Remove this flag for production-optimized assets if preferred.
+:::info
+`evershop build` takes no flags. Asset minification is always on in a production build and cannot be turned off.
 :::
+
+### Set the Public Base URL
+
+`EVERSHOP_HOME_URL` overrides the `shop.homeUrl` configuration key and is the recommended way to set your production base URL on Heroku — it is a config var like any other, so changing it needs no redeploy of your code.
+
+```bash
+heroku config:set EVERSHOP_HOME_URL=https://YOUR_APP_NAME.herokuapp.com -a YOUR_APP_NAME
+```
+
+Everything EverShop emits as an absolute URL depends on it: links in transactional emails, canonical tags, `hreflang` alternates, and the `<loc>` entries plus the `Sitemap:` line in `robots.txt`. If it is left unset, EverShop falls back to `shop.homeUrl` and then to `http://localhost:<PORT>` — which means customer emails go out pointing at localhost.
+
+:::danger A malformed value stops the dyno from booting
+`EVERSHOP_HOME_URL` is validated during startup. It must be an **absolute** `http` or `https` URL. A value like `YOUR_APP_NAME.herokuapp.com` (no scheme), or one using another protocol, throws during bootstrap and the process exits before it binds to `$PORT` — Heroku will report an `R10 Boot timeout` or crash the dyno.
+
+Set the full origin with a scheme and no trailing path. Leaving the variable unset is fine; setting it to something invalid is fatal.
+:::
+
+:::tip
+Update `EVERSHOP_HOME_URL` when you attach a custom domain, otherwise every email and canonical URL keeps pointing at `herokuapp.com`.
+:::
+
+### Set the Proxy Hop Count
+
+Heroku's router sits in front of every dyno, so EverShop only sees the real client IP through `X-Forwarded-For`. `TRUST_PROXY_HOPS` tells EverShop how many proxies to trust. It drives Express's `trust proxy` setting, which determines `request.ip` — and `request.ip` is what the built-in rate limiter buckets on.
+
+```bash
+heroku config:set TRUST_PROXY_HOPS=1 -a YOUR_APP_NAME
+```
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Use when</th>
+      <th>What goes wrong otherwise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0</code></td>
+      <td>The app is directly internet-facing with no proxy.</td>
+      <td>Never correct on Heroku — every request would be attributed to the Heroku router.</td>
+    </tr>
+    <tr>
+      <td><code>1</code> (default)</td>
+      <td>One proxy: the Heroku router. This is the normal setting.</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><code>2</code> or more</td>
+      <td>A proxy chain, e.g. Cloudflare or another CDN in front of the Heroku router.</td>
+      <td>Too low and every visitor collapses into one bucket, so a moderate traffic spike triggers mass <code>429</code> responses for everyone. Too high and a client can spoof <code>X-Forwarded-For</code> to present a fresh IP per request and bypass the limits entirely.</td>
+    </tr>
+  </tbody>
+</table>
+
+An unset, empty or non-numeric value falls back to `1`. Count the hops that actually terminate and re-forward the connection, and set the variable to that number.
 
 ### Configure Build Behavior
 

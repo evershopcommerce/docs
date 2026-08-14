@@ -1005,7 +1005,7 @@ method="DELETE"
 url="/api/carts/{cart_id}/coupons/{coupon}"
 responseSample={`{
   "data": {
-    "success": true
+    "coupon": "SUMMER10"
   }
 }`}
 />

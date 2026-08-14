@@ -178,7 +178,7 @@ function ContactForm() {
 ```tsx
 import { Form } from '@components/common/form/Form';
 import { InputField } from '@components/common/form/InputField';
-import { toast } from 'react-toastify';
+import { toast } from '@components/common/ui/Sonner.js';
 
 function CustomForm() {
   const handleSubmit = async (data) => {
@@ -211,15 +211,14 @@ function CustomForm() {
 
 ```tsx
 import { Form } from '@components/common/form/Form';
-import { useRouter } from 'next/router';
+import { toast } from '@components/common/ui/Sonner.js';
 
 function ProductForm() {
-  const router = useRouter();
-
   const handleSuccess = (response, data) => {
     console.log('Product created:', response.data);
-    // Redirect to product page
-    router.push(`/products/${response.data.id}`);
+    // EverShop is a multi-page application — there is no client-side router.
+    // Navigate with the browser.
+    window.location.href = `/products/${response.data.id}`;
   };
 
   const handleError = (error, data) => {
@@ -407,7 +406,13 @@ import {
 ## Notes
 
 - The form automatically prevents default browser validation with `noValidate={true}`
-- Form fields are wrapped in a `<fieldset>` that gets disabled during submission or when `loading` is true
+- Form fields are wrapped in a `<fieldset disabled={loading}>` that reacts only to the external `loading` prop. Submitting does **not** disable the fields on its own — `isSubmitting` only drives the submit button's spinner (`isLoading={isSubmitting || loading}`). Pass `loading` yourself if you want fields locked during submit.
 - The component uses React Hook Form's `shouldUnregister: true` by default
-- Success and error messages are displayed using `react-toastify`
+- Success and error messages are displayed with [`sonner`](https://sonner.emilkowal.ski/). Core re-exports it from `@components/common/ui/Sonner.js` — import `toast` from there rather than from `sonner` directly so you always match the mounted `<Toaster/>`
 - All form fields must be inside the `<Form>` component to be included in submission
+
+:::info Do not mount your own `<Toaster/>`
+Core already renders the `Toaster` on every storefront page from `modules/base/pages/frontStore/all/Notification.tsx` (area `body`, sort order 10). A theme only needs to import `toast` and call it.
+
+`react-toastify` is no longer a dependency of `@evershop/evershop`. If your theme still imports it, see [Upgrading To React 19](/blog/upgrading-to-react-19).
+:::

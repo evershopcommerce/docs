@@ -139,7 +139,7 @@ First, create a `pages` folder structure to organize your extension components:
             └── pages
 ```
 
-We want to add our comment form to the product detail page, which has the route ID `productView`. You can verify this by examining the catalog module at `@evershop/evershop/src/modules/catalog/pages/frontStore`.
+We want to add our comment form to the product detail page, which has the route ID `productView`. You can verify this by examining the catalog module in the EverShop repository at `packages/evershop/src/modules/catalog/pages/frontStore/` (a source-tree path, not an import specifier).
 
 Create the necessary folder structure for our product page component:
 
@@ -164,7 +164,7 @@ export default function ComponentForm() {
   return (
     <div className="product-comment-form">
       <h3>Your comment</h3>
-      <Form id="comment-form" method="POST" btnText="Submit" isJSON={true}>
+      <Form id="comment-form" method="POST" submitBtnText="Submit">
         <Field
           name="user_name"
           label="Your Name"
@@ -197,7 +197,7 @@ export default function CommentForm() {
   return (
     <div className="product-comment-form">
       <h3>Your comment</h3>
-      <Form id="comment-form" method="POST" btnText="Submit" isJSON={true}>
+      <Form id="comment-form" method="POST" submitBtnText="Submit">
         <Field
           name="user_name"
           label="Your Name"
@@ -226,7 +226,7 @@ export const layout: ComponentLayout = {
 ```
 
 :::info
-To see a list of available areas where you can place components, check the file `@evershop/evershop/src/modules/catalog/pages/frontStore/productView/Layout.js`.
+To see a list of available areas where you can place components, check the file `packages/evershop/src/modules/catalog/pages/frontStore/productView/ProductView.tsx`.
 :::
 
 With this layout configuration, your product page should now display the comment form in the left column:
@@ -258,7 +258,7 @@ The `migration` folder must be inside `src/`, not at the root of the extension. 
 In the `migration` folder, create a file named `Version-1.0.0.ts`:
 
 ```ts title="src/migration/Version-1.0.0.ts"
-import { execute } from "@evershop/postgres-query-builder";
+import { execute } from "@evershop/evershop/lib/postgres/query";
 
 export default async (connection) => {
   await execute(
@@ -402,10 +402,10 @@ If successful, you should receive:
   "success": true,
   "data": {
     "comment": {
-      "commentId": 1,
-      "userName": "John Doe",
+      "comment_id": 1,
+      "user_name": "John Doe",
       "comment": "This is a comment",
-      "createdAt": "2023-01-01T00:00:00Z"
+      "created_at": "2023-01-01T00:00:00Z"
     }
   }
 }
@@ -438,9 +438,9 @@ export default function CommentForm({ action, product }) {
         id="comment-form"
         action={action}
         method="POST"
-        btnText="Submit"
+        submitBtnText="Submit"
         onSuccess={onSuccess}
-        isJSON={true}>
+       >
         <Field
           name="user_name"
           label="Your Name"
@@ -495,10 +495,10 @@ Create a file named `Comment.graphql` in the `Comment` directory:
 
 ```graphql title="graphql/types/Comment/Comment.graphql"
 type Comment {
-  commentId: Int!
-  userName: String
+  comment_id: Int!
+  user_name: String
   comment: String
-  createdAt: String
+  created_at: String
 }
 
 extend type Query {
@@ -514,7 +514,7 @@ Next, create a resolver for the `comments` field. Create a file named `Comment.r
 
 ```ts title="graphql/types/Comment/Comment.resolvers.ts"
 import { camelCase } from "@evershop/evershop/lib/util/camelCase";
-import { select } from "@evershop/postgres-query-builder";
+import { select } from "@evershop/evershop/lib/postgres/query";
 
 export default {
   Query: {

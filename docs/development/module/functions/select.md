@@ -21,14 +21,26 @@ Create a SELECT query using the query builder for PostgreSQL.
 ## Import
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Use the typed wrapper
+`@evershop/evershop/lib/postgres/query` is EverShop's first-party typed query builder. It wraps `@evershop/postgres-query-builder` and adds table/column types for every known EverShop table, so `.from('order')` narrows `.where()`, `.orderBy()`, `.groupBy()` and the returned rows to that table. It also re-exports `startTransaction`, `commit`, `rollback`, `execute`, `sql` and `value`, so a transaction usually needs a single import.
+
+The raw `@evershop/postgres-query-builder` package is still available as a lower-level fallback (untyped, useful for tables the type map does not know about), but new code should import from the wrapper.
+:::
 
 ## Syntax
 
 ```typescript
-select(...fields: string[]): SelectQuery
+select(...fields: string[]): UnboundSelectChain
 ```
+
+Call `.from(table)` to bind a table and unlock per-table column suggestions on every subsequent method.
+
+:::warning `select(...)` is variadic over columns
+The top-level `select(...)` takes a list of **columns**, not a `(column, alias)` pair. `select('shipment.uuid', 'shipment_uuid')` treats both strings as columns and fails at runtime with `column "shipment_uuid" does not exist`. Aliasing is only supported by the chained form: `select().from('shipment').select('uuid', 'shipment_uuid')`.
+:::
 
 ### Parameters
 
@@ -47,7 +59,7 @@ Returns a `SelectQuery` instance that can be chained with additional methods.
 ### Select All Fields
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const query = select()
@@ -61,12 +73,14 @@ const products = await query.execute(connection);
 ### Select Specific Fields
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
-const query = select('product_id', 'name', 'price')
+// `name` is not a `product` column — it lives on `product_description`. `status`
+// and `visibility` are booleans, so compare them against `true`/`false`, not 1/0.
+const query = select('product_id', 'sku', 'price')
   .from('product')
-  .where('status', '=', 1);
+  .where('status', '=', true);
 
 const products = await query.execute(pool);
 ```
@@ -74,7 +88,7 @@ const products = await query.execute(pool);
 ### With WHERE Clause
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const query = select()
@@ -88,12 +102,16 @@ const customer = await query.load(pool);
 ### With JOINs
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
-const query = select('p.name', 'c.name AS category_name').from('product', 'p');
+// Alias with the chained two-argument `.select(column, alias)`. Writing the alias
+// inside the column string ('c.name AS category_name') is quoted as a single
+// identifier and Postgres errors with `column "c.name AS category_name" does not exist`.
+const query = select('p.sku').from('product', 'p');
+query.select('c.name', 'category_name');
 query.leftJoin('category', 'c').on('p.category_id', '=', 'c.category_id');
-query.where('p.status', '=', 1);
+query.where('p.status', '=', true);
 
 const products = await query.execute(pool);
 ```
@@ -101,7 +119,7 @@ const products = await query.execute(pool);
 ### With LIMIT and ORDER BY
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const query = select()
@@ -115,14 +133,20 @@ const products = await query.execute(pool);
 ### With GROUP BY and HAVING
 
 ```typescript
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
-const query = select('category_id', 'COUNT(*) AS product_count')
-  .from('product')
-  .where('status', '=', 1)
-  .groupBy('category_id')
-  .having('COUNT(*)', '>', 5);
+// Two things to note:
+//  1. An inline `AS` alias inside a column string is quoted as ONE identifier, so
+//     'COUNT(*) AS product_count' becomes "COUNT(*) AS product_count" and Postgres
+//     errors. Alias with the chained two-argument form instead.
+//  2. `.groupBy()`, `.having()`, `.orderBy()` and `.limit()` live on SelectQuery, not
+//     on the `Where` that `.where()` returns — chaining them onto a condition throws.
+const query = select('category_id').from('product');
+query.select('COUNT(*)', 'product_count');
+query.where('status', '=', true);
+query.groupBy('category_id');
+query.having('COUNT(*)', '>', 5);
 
 const results = await query.execute(pool);
 ```
@@ -147,7 +171,8 @@ select().from('product').where('status', '=', 1)
 Add an AND condition.
 
 ```typescript
-select().from('product').where('status', '=', 1).and('qty', '>', 0)
+// `qty` moved to `product_inventory` in catalog 1.0.3 — it is not a `product` column.
+select().from('product').where('status', '=', true).and('visibility', '=', true)
 ```
 
 ### or(field, operator, value)
@@ -246,7 +271,7 @@ Both `Pool` and `PoolClient` instances can be used:
 
 ```typescript
 import { pool, getConnection } from '@evershop/evershop/lib/postgres';
-import { select } from '@evershop/postgres-query-builder';
+import { select } from '@evershop/evershop/lib/postgres/query';
 
 // Using pool directly
 const products1 = await select().from('product').execute(pool);

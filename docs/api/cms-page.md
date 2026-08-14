@@ -9,7 +9,7 @@ keywords:
   - REST API
 sidebar_label: CMS Pages
 title: CMS Page REST API
-description: Comprehensive guide to managing content pages in EverShop. Learn how to create, update, retrieve, and delete CMS pages using the REST API.
+description: Comprehensive guide to managing content pages in EverShop. Learn how to create, update, and delete CMS pages using the REST API.
 ---
 
 # CMS Page API
@@ -18,13 +18,18 @@ description: Comprehensive guide to managing content pages in EverShop. Learn ho
 
 The CMS Page API provides endpoints for managing static content pages in your EverShop store. CMS pages are useful for creating informational content such as About Us, Contact Us, Terms and Conditions, Privacy Policy, and other content that doesn't fit within the product catalog structure.
 
+Two things changed in recent releases that affect every integration:
+
+- **Pages live at the root.** A page is served at `/<url_key>`, not `/page/<url_key>`. A literal request to `/page/<url_key>` answers `301` and redirects to `/<url_key>`.
+- **`content` is a block array**, not an HTML string. It is the block-editor document that the admin page builder produces.
+
 import Api from '@site/src/components/rest/Api';
 
 ## Endpoints
 
 ### Create A CMS Page
 
-Creates a new content page in the system. You can specify the page content, layout, and SEO metadata.
+Creates a new content page.
 
 <Api
 method="POST"
@@ -48,6 +53,18 @@ requestSchema={{
         "minLength": "Page name is required and cannot be empty"
       }
     },
+    "url_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 255,
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key must contain only lowercase letters, numbers, and hyphens (e.g., 'my-product-name')",
+        "minLength": "URL key cannot be empty",
+        "maxLength": "URL key cannot exceed 255 characters"
+      }
+    },
     "content": {
       "type": "array",
       "items": {
@@ -117,14 +134,6 @@ requestSchema={{
         "type": "Content must be an array"
       }
     },
-    "url_key": {
-      "type": "string",
-      "pattern": "^\\S+$",
-      "errorMessage": {
-        "type": "URL key must be a string",
-        "pattern": "URL key cannot contain spaces"
-      }
-    },
     "meta_title": {
       "type": "string",
       "errorMessage": {
@@ -144,13 +153,19 @@ requestSchema={{
       }
     }
   },
+  "required": [
+    "status",
+    "name",
+    "url_key",
+    "content",
+    "meta_title"
+  ],
   "additionalProperties": true
 }}
 responseSample={`{
   "data": {
     "cms_page_id": 14,
     "uuid": "e15da567a66c11edb46b60d819134f39",
-    "layout": "oneColumn",
     "status": 1,
     "created_at": "2023-02-07 10:15:32",
     "updated_at": "2023-02-07 10:15:32",
@@ -158,10 +173,10 @@ responseSample={`{
     "cms_page_description_cms_page_id": 14,
     "url_key": "about-us",
     "name": "About Our Company",
-    "content": "<h1>About Us</h1><p>Welcome to our company. We specialize in providing high-quality products and exceptional customer service.</p>",
+    "content": "[{\"id\":\"row-1\",\"size\":12,\"columns\":[{\"id\":\"col-1\",\"size\":12,\"data\":{\"blocks\":[{\"type\":\"paragraph\",\"data\":{\"text\":\"Welcome to our company.\"}}]}}]}]",
     "meta_title": "About Us | Our Company Story",
     "meta_keywords": "about us, company history, our story, mission",
-    "meta_description": "Learn about our company's history, mission, and values. Discover why customers choose us for their shopping needs.",
+    "meta_description": "Learn about our company's history, mission, and values.",
     "links": [
       {
         "rel": "cmsPageGrid",
@@ -181,7 +196,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/page/about-us",
+        "href": "/about-us",
         "action": "GET",
         "types": [
           "text/xml"
@@ -196,7 +211,7 @@ responseSample={`{
 
 ### Update A CMS Page
 
-Modifies an existing content page. You can update any of the page attributes, including content, layout, and SEO metadata.
+Modifies an existing content page. Only `status` is required — send just the fields you want to change.
 
 <Api
 method="PATCH"
@@ -220,6 +235,18 @@ requestSchema={{
         "minLength": "Page name is required and cannot be empty"
       }
     },
+    "url_key": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 255,
+      "errorMessage": {
+        "type": "URL key must be a string",
+        "pattern": "URL key must contain only lowercase letters, numbers, and hyphens (e.g., 'my-product-name')",
+        "minLength": "URL key cannot be empty",
+        "maxLength": "URL key cannot exceed 255 characters"
+      }
+    },
     "content": {
       "type": "array",
       "items": {
@@ -289,14 +316,6 @@ requestSchema={{
         "type": "Content must be an array"
       }
     },
-    "url_key": {
-      "type": "string",
-      "pattern": "^\\S+$",
-      "errorMessage": {
-        "type": "URL key must be a string",
-        "pattern": "URL key cannot contain spaces"
-      }
-    },
     "meta_title": {
       "type": "string",
       "errorMessage": {
@@ -316,13 +335,15 @@ requestSchema={{
       }
     }
   },
+  "required": [
+    "status"
+  ],
   "additionalProperties": true
 }}
 responseSample={`{
   "data": {
     "cms_page_id": 14,
     "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
-    "layout": "oneColumn",
     "status": 1,
     "created_at": "2023-02-07 10:15:32",
     "updated_at": "2023-02-07 14:18:05",
@@ -330,10 +351,10 @@ responseSample={`{
     "cms_page_description_cms_page_id": 14,
     "url_key": "contact-us",
     "name": "Contact Us",
-    "content": "<h1>Contact Us</h1><p>We'd love to hear from you! Please use the form below to get in touch with our customer service team.</p><form>...</form>",
+    "content": "[]",
     "meta_title": "Contact Us | Customer Support",
     "meta_keywords": "contact, customer service, support, help",
-    "meta_description": "Contact our customer support team for assistance with orders, returns, or product questions.",
+    "meta_description": "Contact our customer support team.",
     "links": [
       {
         "rel": "cmsPageGrid",
@@ -353,7 +374,7 @@ responseSample={`{
       },
       {
         "rel": "view",
-        "href": "/page/contact-us",
+        "href": "/contact-us",
         "action": "GET",
         "types": [
           "text/xml"
@@ -368,7 +389,7 @@ responseSample={`{
 
 ### Delete A CMS Page
 
-Permanently removes a content page from the system.
+Permanently removes a content page. Its `url_rewrite` row is removed with it.
 
 <Api
 method="DELETE"
@@ -377,7 +398,6 @@ responseSample={`{
   "data": {
     "cms_page_id": 14,
     "uuid": "433ba97f-8be7-4be9-be3f-a9f341f2b89f",
-    "layout": "twoColumnsLeft",
     "status": 1,
     "created_at": "2023-02-07 10:15:32",
     "updated_at": "2023-02-07 14:18:05",
@@ -385,16 +405,91 @@ responseSample={`{
     "cms_page_description_cms_page_id": 14,
     "url_key": "contact-us",
     "name": "Contact Us",
-    "content": "<h1>Contact Us</h1><p>We'd love to hear from you! Please use the form below to get in touch with our customer service team.</p><form>...</form>",
     "meta_title": "Contact Us | Customer Support",
     "meta_keywords": "contact, customer service, support, help",
-    "meta_description": "Contact our customer support team for assistance with orders, returns, or product questions."
+    "meta_description": "Contact our customer support team."
   }
 }`}
 />
 
 <hr />
 
-### Get CMS Page Data with GraphQL
+## The `content` Field
 
-EverShop uses GraphQL for querying CMS page data. For detailed information on how to query CMS pages, refer to the [GraphQL API documentation](/docs/development/knowledge-base/data-fetching).
+`content` is an array of **rows**. Each row has an `id`, a `size`, and a `columns` array; each column has an `id`, a `size`, and a `data` object holding the block-editor document.
+
+```json
+{
+  "content": [
+    {
+      "id": "1a2b3c",
+      "size": 12,
+      "columns": [
+        {
+          "id": "4d5e6f",
+          "size": 12,
+          "data": {
+            "blocks": [
+              { "type": "header", "data": { "text": "About Us", "level": 1 } },
+              { "type": "paragraph", "data": { "text": "We build things." } }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+Sending an HTML string fails validation with `Content must be an array`. Raw-HTML blocks inside the document are sanitized server-side on every save.
+
+:::caution Asymmetric field
+You **send** `content` as an array, but the REST response **returns** it as a JSON string. The column is `text`, so the array is serialized on write and echoed back verbatim. `JSON.parse` it before using it. The GraphQL `CmsPage.content` field parses it for you (and falls back to wrapping legacy raw HTML in a single block when the value is not valid JSON).
+:::
+
+:::info The `layout` column was dropped
+`layout` is no longer part of the `cms_page` table. Sending it is harmless (unknown fields are dropped by the insert projection) but it is never persisted or returned.
+:::
+
+<hr />
+
+## URL Key Rules
+
+`url_key` must match `^[a-z0-9]+(?:-[a-z0-9]+)*$` — lowercase letters, digits and single hyphens between segments, 1 to 255 characters. `About Us`, `about_us`, `/about-us` and `about--us` are all rejected with a `400`.
+
+Beyond the pattern, the save is rejected at the service layer when the slug would be unreachable or ambiguous. These checks run against the live route table and database, so they cannot be expressed in the payload schema:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Rejection</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Slug equals a single-segment storefront route (<code>cart</code>, <code>checkout</code>, <code>search</code>, <code>blog</code>, ...)</td>
+      <td>URL key "cart" is reserved by a system route and would be unreachable.</td>
+    </tr>
+    <tr>
+      <td>Slug equals an enabled language code (<code>fr</code>, <code>de</code>, ...)</td>
+      <td>URL key "fr" conflicts with an enabled language code and would be unreachable.</td>
+    </tr>
+    <tr>
+      <td>Slug already owned by another CMS page</td>
+      <td>URL key "about-us" is already in use by another cms page.</td>
+    </tr>
+  </tbody>
+</table>
+
+Collisions **across** entity types are allowed — a landing page and a CMS page may share a slug, and request-time precedence resolves which one renders.
+
+### Renaming Records a Redirect
+
+Changing `url_key` on an existing page does three things in one transaction: it updates the page, repoints the page's `url_rewrite` row to the new slug, and records a `302` redirect from the old path to the new one. Old links keep working; you do not need to create the redirect yourself.
+
+<hr />
+
+## Reading Pages
+
+There is no REST endpoint for reading CMS pages. Query them through GraphQL — see the [data fetching documentation](/docs/development/knowledge-base/data-fetching).

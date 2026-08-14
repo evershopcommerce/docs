@@ -38,6 +38,12 @@ None.
 
 Returns a `Promise<PoolClient>` - a dedicated database client from the connection pool.
 
+:::warning Do not run query-builder reads on a fresh client before `startTransaction`
+The query builder auto-releases the connection after `.execute()` / `.load()` unless the client is inside a transaction (`startTransaction` sets an internal `INTRANSACTION` flag). A query-builder read on a freshly acquired `PoolClient` therefore hands it straight back to the pool, and the next `startTransaction(connection)` operates on a detached client — surfacing later as `Release called on client which has already been released to the pool`.
+
+Either call `startTransaction` **immediately** after `getConnection()`, or run pre-transaction reads on the shared `pool` (which the auto-release ignores) and acquire the dedicated client only at the top of the transaction. Raw `connection.query()` calls are unaffected.
+:::
+
 ## Examples
 
 ### Basic Usage
@@ -122,26 +128,53 @@ try {
 
 ### With Query Builder
 
+Inside a transaction, the query builder leaves the connection alone, so `commit()` / `rollback()` own the release:
+
 ```typescript
 import { getConnection } from '@evershop/evershop/lib/postgres';
-import { select } from '@evershop/postgres-query-builder';
+import {
+  select,
+  update,
+  startTransaction,
+  commit,
+  rollback
+} from '@evershop/evershop/lib/postgres/query';
 
 const connection = await getConnection();
+await startTransaction(connection);
 
 try {
-  const query = select()
+  const product = await select()
     .from('product')
-    .where('status', '=', 1)
-    .and('qty', '>', 0);
-  
-  const result = await query.execute(connection);
-  return result;
-} finally {
-  connection.release();
+    .where('product_id', '=', 123)
+    .load(connection);
+
+  await update('product')
+    .given({ status: false })
+    .where('product_id', '=', product.product_id)
+    .execute(connection);
+
+  await commit(connection);
+} catch (error) {
+  await rollback(connection);
+  throw error;
 }
+```
+
+For a plain read there is no reason to take a dedicated client at all — use the pool:
+
+```typescript
+import { pool } from '@evershop/evershop/lib/postgres';
+import { select } from '@evershop/evershop/lib/postgres/query';
+
+const products = await select()
+  .from('product')
+  .where('status', '=', true)
+  .execute(pool);
 ```
 
 ## See Also
 
 - [pool](/docs/development/module/functions/pool) - PostgreSQL connection pool instance
+- [startTransaction](/docs/development/module/functions/startTransaction) - Start a transaction
 - [getConfig](/docs/development/module/functions/getConfig) - Get configuration values

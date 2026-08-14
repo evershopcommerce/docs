@@ -69,7 +69,7 @@ Configure JWT behavior using the following environment variables:
     <tr>
       <td><code>JWT_ADMIN_REFRESH_TOKEN_EXPIRY</code></td>
       <td>Admin refresh token expiration (seconds)</td>
-      <td>1,296,000 (15 days)</td>
+      <td>54,000 (15 hours)</td>
     </tr>
     <tr>
       <td><code>JWT_CUSTOMER_TOKEN_EXPIRY</code></td>
@@ -79,7 +79,12 @@ Configure JWT behavior using the following environment variables:
     <tr>
       <td><code>JWT_CUSTOMER_REFRESH_TOKEN_EXPIRY</code></td>
       <td>Customer refresh token expiration (seconds)</td>
-      <td>2,592,000 (30 days)</td>
+      <td>108,000 (30 hours)</td>
+    </tr>
+    <tr>
+      <td><code>JWT_ISSUER</code></td>
+      <td>Value written to the <code>iss</code> claim and verified on every token</td>
+      <td><code>evershop</code></td>
     </tr>
   </tbody>
 </table>
@@ -90,6 +95,14 @@ Configure JWT behavior using the following environment variables:
 2. Include the access token in subsequent API requests via the `Authorization: Bearer <token>` header
 3. When the access token expires, use the refresh token to obtain a new one
 4. Repeat steps 2-3 to maintain continuous authenticated access
+
+:::info The refresh endpoints do not rotate the refresh token
+`/api/user/token/refresh` and `/api/customer/token/refresh` return `{ "data": { "accessToken": "..." } }` — a new **access** token only. Keep using the refresh token you already hold until it expires, then re-authenticate with credentials.
+
+Both refresh handlers re-read the account from the database and require `status = 1`, so a user or customer who has been disabled since the refresh token was issued gets `401` (`Admin user not found or inactive` / `Customer not found or inactive`) instead of a fresh token.
+:::
+
+The two token families are cryptographically separate. Access and refresh tokens are signed with different secrets, carry an explicit `tokenKind` (`access` / `refresh`) and an `aud` of `admin` or `customer`, and every claim is verified on use — presenting a refresh token where an access token is expected fails, and so does presenting a customer token to an admin route.
 
 import Api from '@site/src/components/rest/Api';
 
@@ -106,7 +119,7 @@ Generates a JWT (JSON Web Token) for admin user authentication. This endpoint al
 - Refresh or rotate admin authentication tokens
 
 :::info
-By default the access token is valid for 15 minutes. You can configure the token expiration time by using the `JWT_ADMIN_TOKEN_EXPIRY` environment variable with the desired duration in seconds. The refresh token is valid for 15 days by default and can be configured using the `JWT_ADMIN_REFRESH_TOKEN_EXPIRY` environment variable.
+By default the access token is valid for 15 minutes. You can configure the token expiration time by using the `JWT_ADMIN_TOKEN_EXPIRY` environment variable with the desired duration in seconds. The refresh token is valid for 15 hours by default (`54000` seconds) and can be configured using the `JWT_ADMIN_REFRESH_TOKEN_EXPIRY` environment variable.
 :::
 
 <Api
@@ -160,6 +173,50 @@ isPrivate={false}
       
 <hr/>
 
+## Mint Admin Tokens From A Session
+
+Issues an admin access/refresh token pair for the admin who is **already authenticated on this request** — no credentials are sent and there is no request body at all.
+
+This is the bridge between the cookie world and the token world. A script running same-origin inside the admin panel already has a valid admin session cookie but no JWT; this endpoint converts one into the other so the script can call the REST and GraphQL APIs, or hand the pair to a third-party service that will act on the admin's behalf and refresh at `/api/user/token/refresh`.
+
+**Authentication:** Requires an existing authenticated admin — either the admin session cookie or an admin `Bearer` token. Unlike the other three endpoints on this page, this route is declared `access: "private"`, so the global admin auth middleware rejects the request before the handler runs.
+
+<Api
+method="POST"
+url="/api/user/session/tokens"
+responseSample={`{
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImFkbWluX3VzZXJfaWQiOjEsInV1aWQiOiJjNmM4YThmNy1iOWI4LTQzYzYtYWQyNC0zMTdjMzRmY2ZlNzIiLCJzdGF0dXMiOnRydWUsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiZnVsbF9uYW1lIjoiYWRtaW4iLCJjcmVhdGVkX2F0IjoiMjAyNC0xMi0xMFQwNzowODoyMS4wMTFaIiwidXBkYXRlZF9hdCI6IjIwMjQtMTItMTBUMDc6MDg6MjEuMDExWiJ9LCJ0b2tlblR5cGUiOiJhZG1pbiIsInRva2VuS2luZCI6ImFjY2VzcyIsImlhdCI6MTc2MjE0NDQyOCwiZXhwIjoxNzYyMTczMjI4LCJhdWQiOiJhZG1pbiIsImlzcyI6ImV2ZXJzaG9wIn0.Dsd1DvAdWOthCv_0fAlHbVmxJNHFzrQvfeMy7p-ozhU",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImFkbWluX3VzZXJfaWQiOjEsInV1aWQiOiJjNmM4YThmNy1iOWI4LTQzYzYtYWQyNC0zMTdjMzRmY2ZlNzIiLCJzdGF0dXMiOnRydWUsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiZnVsbF9uYW1lIjoiYWRtaW4iLCJjcmVhdGVkX2F0IjoiMjAyNC0xMi0xMFQwNzowODoyMS4wMTFaIiwidXBkYXRlZF9hdCI6IjIwMjQtMTItMTBUMDc6MDg6MjEuMDExWiJ9LCJ0b2tlblR5cGUiOiJhZG1pbiIsInRva2VuS2luZCI6InJlZnJlc2giLCJpYXQiOjE3NjIxNDQ0MjgsImV4cCI6MTc2MjE0NTMyOCwiYXVkIjoiYWRtaW4iLCJpc3MiOiJldmVyc2hvcCJ9.JF00yEJla1P51JRq8gRUkbnrt080f_GOeh2d8_XGqHU"
+  }
+}`}
+/>
+
+The tokens are identical in shape, lifetime and privilege to the ones returned by `POST /api/user/tokens`. Treat the response as a credential: it grants the caller everything the signed-in admin can do, and the pair keeps working after the originating session cookie is cleared.
+
+**Errors**
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>401</code></td>
+      <td>No admin session or token on the request. Also returned when the admin's <code>roles</code> list is restrictive and does not include the <code>sessionTokens</code> route id.</td>
+    </tr>
+    <tr>
+      <td><code>500</code></td>
+      <td>Token signing failed — in practice, <code>JWT_ADMIN_SECRET</code> or <code>JWT_ADMIN_REFRESH_SECRET</code> is not configured.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr/>
+
 ## Refresh Admin User Access Token
 
 Renews the admin access token using a valid refresh token. This endpoint allows you to obtain a new access token without requiring credentials, extending your authenticated session without interruption.
@@ -193,7 +250,9 @@ requestSchema={{
   }
 }}
 responseSample={`{
-  "data": {}
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImFkbWluX3VzZXJfaWQiOjEsInV1aWQiOiJjNmM4YThmNy1iOWI4LTQzYzYtYWQyNC0zMTdjMzRmY2ZlNzIiLCJzdGF0dXMiOnRydWUsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiZnVsbF9uYW1lIjoiYWRtaW4iLCJjcmVhdGVkX2F0IjoiMjAyNC0xMi0xMFQwNzowODoyMS4wMTFaIiwidXBkYXRlZF9hdCI6IjIwMjQtMTItMTBUMDc6MDg6MjEuMDExWiJ9LCJ0b2tlblR5cGUiOiJhZG1pbiIsInRva2VuS2luZCI6ImFjY2VzcyIsImlhdCI6MTc2MjE0NDQyOCwiZXhwIjoxNzYyMTczMjI4LCJhdWQiOiJhZG1pbiIsImlzcyI6ImV2ZXJzaG9wIn0.Dsd1DvAdWOthCv_0fAlHbVmxJNHFzrQvfeMy7p-ozhU"
+  }
 }`}
 isPrivate={false}
 />
@@ -213,7 +272,7 @@ Generates JWT tokens for customer authentication. This API allows customers to s
 - Refresh or rotate customer authentication tokens
 
 :::info
-By default the access token is valid for 30 minutes. You can configure the token expiration time by using the `JWT_CUSTOMER_TOKEN_EXPIRY` environment variable with the desired duration in seconds. The refresh token is valid for 30 days by default and can be configured using the `JWT_CUSTOMER_REFRESH_TOKEN_EXPIRY` environment variable.
+By default the access token is valid for 30 minutes. You can configure the token expiration time by using the `JWT_CUSTOMER_TOKEN_EXPIRY` environment variable with the desired duration in seconds. The refresh token is valid for 30 hours by default (`108000` seconds) and can be configured using the `JWT_CUSTOMER_REFRESH_TOKEN_EXPIRY` environment variable.
 :::
 
 <Api
@@ -300,7 +359,9 @@ requestSchema={{
   }
 }}
 responseSample={`{
-  "data": {}
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImFkbWluX3VzZXJfaWQiOjEsInV1aWQiOiJjNmM4YThmNy1iOWI4LTQzYzYtYWQyNC0zMTdjMzRmY2ZlNzIiLCJzdGF0dXMiOnRydWUsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiZnVsbF9uYW1lIjoiYWRtaW4iLCJjcmVhdGVkX2F0IjoiMjAyNC0xMi0xMFQwNzowODoyMS4wMTFaIiwidXBkYXRlZF9hdCI6IjIwMjQtMTItMTBUMDc6MDg6MjEuMDExWiJ9LCJ0b2tlblR5cGUiOiJhZG1pbiIsInRva2VuS2luZCI6ImFjY2VzcyIsImlhdCI6MTc2MjE0NDQyOCwiZXhwIjoxNzYyMTczMjI4LCJhdWQiOiJhZG1pbiIsImlzcyI6ImV2ZXJzaG9wIn0.Dsd1DvAdWOthCv_0fAlHbVmxJNHFzrQvfeMy7p-ozhU"
+  }
 }`}
 isPrivate={false}
 />

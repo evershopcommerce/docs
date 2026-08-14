@@ -149,6 +149,37 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Product Recommendation",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/product-recommendation",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/product-recommendation#add-a-product-link"><span class="method POST">POST</span><span>Add a product link</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/product-recommendation#update-a-product-link"><span class="method PATCH">PATCH</span><span>Update a product link</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/product-recommendation#remove-a-product-link"><span class="method DELETE">DELETE</span><span>Remove a product link</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/product-recommendation#rebuild-co-purchase-statistics"><span class="method POST">POST</span><span>Rebuild co-purchase stats</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Category",
       className: "api-menu-item",
       link: {
@@ -170,6 +201,42 @@ const sidebars = {
           type: "html",
           value:
             '<a class="menu__link" href="/docs/api/category#delete-a-category"><span class="method DELETE">DELETE</span><span>Delete a category</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Collection",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/collection",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/collection#create-a-collection"><span class="method POST">POST</span><span>Create a collection</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/collection#update-a-collection"><span class="method PATCH">PATCH</span><span>Update a collection</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/collection#delete-a-collection"><span class="method DELETE">DELETE</span><span>Delete a collection</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/collection#add-product-to-collection"><span class="method POST">POST</span><span>Add product to collection</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/collection#remove-product-from-collection"><span class="method DELETE">DELETE</span><span>Remove product from collection</span></a>',
         },
       ],
     },
@@ -226,6 +293,22 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Payment Method",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/payment-method",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-method#apply-a-payment-method-to-a-cart"><span class="method POST">POST</span><span>Apply a payment method</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Promotion",
       className: "api-menu-item",
       link: {
@@ -272,17 +355,89 @@ const sidebars = {
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/order#create-a-shipment"><span class="method POST">POST</span><span>Create a shipment</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/order#update-a-shipment"><span class="method PATCH">PATCH</span><span>Update a shipment</span></a>',
-        },
-        {
-          type: "html",
-          value:
             '<a class="menu__link" href="/docs/api/order#cancel-an-order"><span class="method POST">POST</span><span>Cancel an order</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/order#mark-every-shipment-delivered"><span class="method POST">POST</span><span>Mark every shipment delivered</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Shipment",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/shipment",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#list-an-orders-shipments"><span class="method GET">GET</span><span>List order shipments</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#create-a-shipment"><span class="method POST">POST</span><span>Create a shipment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#update-a-shipment"><span class="method PATCH">PATCH</span><span>Update a shipment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#mark-a-shipment-delivered"><span class="method POST">POST</span><span>Mark a shipment delivered</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#cancel-a-shipment"><span class="method POST">POST</span><span>Cancel a shipment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#void-a-shipping-label"><span class="method DELETE">DELETE</span><span>Void a shipping label</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#mark-a-whole-order-delivered"><span class="method POST">POST</span><span>Mark a whole order delivered</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipment#update-a-shipment-through-the-order"><span class="method PATCH">PATCH</span><span>Update a shipment via order</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Package",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/package",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/package#create-a-package"><span class="method POST">POST</span><span>Create a package</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/package#update-a-package"><span class="method PATCH">PATCH</span><span>Update a package</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/package#delete-a-package"><span class="method DELETE">DELETE</span><span>Delete a package</span></a>',
         },
       ],
     },
@@ -314,6 +469,114 @@ const sidebars = {
     },
     {
       type: "category",
+      label: "Customer Self Service",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/customer-self-service",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/customer-self-service#update-my-profile"><span class="method PATCH">PATCH</span><span>Update my profile</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/customer-self-service#create-my-address"><span class="method POST">POST</span><span>Create my address</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/customer-self-service#update-my-address"><span class="method PATCH">PATCH</span><span>Update my address</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/customer-self-service#delete-my-address"><span class="method DELETE">DELETE</span><span>Delete my address</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Payment Gateway",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/payment-gateway",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#create-a-payment-intent"><span class="method POST">POST</span><span>Create a payment intent</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#capture-a-payment-intent"><span class="method POST">POST</span><span>Capture a payment intent</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#refund-a-payment-intent"><span class="method POST">POST</span><span>Refund a payment intent</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#stripe-webhook"><span class="method POST">POST</span><span>Stripe webhook</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#create-a-paypal-order"><span class="method POST">POST</span><span>Create a PayPal order</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#capture-a-paypal-order"><span class="method POST">POST</span><span>Capture a PayPal order</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#authorize-a-paypal-order"><span class="method POST">POST</span><span>Authorize a PayPal order</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#capture-an-authorized-paypal-payment"><span class="method POST">POST</span><span>Capture an authorized PayPal payment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/payment-gateway#capture-a-cod-payment"><span class="method POST">POST</span><span>Capture a COD payment</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Analytics",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/analytics",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/analytics#get-lifetime-sales"><span class="method GET">GET</span><span>Get lifetime sales</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/analytics#get-sales-statistics"><span class="method GET">GET</span><span>Get sales statistics</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Cms Page",
       className: "api-menu-item",
       link: {
@@ -324,17 +587,350 @@ const sidebars = {
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/cms-page#create-a-page"><span class="method POST">POST</span><span>Create a page</span></a>',
+            '<a class="menu__link" href="/docs/api/cms-page#create-a-cms-page"><span class="method POST">POST</span><span>Create a page</span></a>',
         },
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/cms-page#update-a-page"><span class="method PATCH">PATCH</span><span>Update a page</span></a>',
+            '<a class="menu__link" href="/docs/api/cms-page#update-a-cms-page"><span class="method PATCH">PATCH</span><span>Update a page</span></a>',
         },
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/cms-page#delete-a-page"><span class="method DELETE">DELETE</span><span>Delete a page</span></a>',
+            '<a class="menu__link" href="/docs/api/cms-page#delete-a-cms-page"><span class="method DELETE">DELETE</span><span>Delete a page</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Blog",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/blog",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#create-a-blog-post"><span class="method POST">POST</span><span>Create a blog post</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#update-a-blog-post"><span class="method PATCH">PATCH</span><span>Update a blog post</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#delete-a-blog-post"><span class="method DELETE">DELETE</span><span>Delete a blog post</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#create-a-blog-category"><span class="method POST">POST</span><span>Create a blog category</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#update-a-blog-category"><span class="method PATCH">PATCH</span><span>Update a blog category</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#delete-a-blog-category"><span class="method DELETE">DELETE</span><span>Delete a blog category</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#create-a-blog-tag"><span class="method POST">POST</span><span>Create a blog tag</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#update-a-blog-tag"><span class="method PATCH">PATCH</span><span>Update a blog tag</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#delete-a-blog-tag"><span class="method DELETE">DELETE</span><span>Delete a blog tag</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#moderate-a-blog-comment"><span class="method PATCH">PATCH</span><span>Moderate a comment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#delete-a-blog-comment"><span class="method DELETE">DELETE</span><span>Delete a comment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#submit-a-blog-comment"><span class="method POST">POST</span><span>Submit a comment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#like-a-blog-comment"><span class="method POST">POST</span><span>Like a comment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/blog#react-to-a-blog-post"><span class="method POST">POST</span><span>React to a blog post</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Landing Page",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/landing-page",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/landing-page#create-a-landing-page"><span class="method POST">POST</span><span>Create a landing page</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/landing-page#update-a-landing-page"><span class="method PATCH">PATCH</span><span>Update a landing page</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/landing-page#delete-a-landing-page"><span class="method DELETE">DELETE</span><span>Delete a landing page</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/landing-page#duplicate-a-landing-page"><span class="method POST">POST</span><span>Duplicate a landing page</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Page Builder",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/page-builder",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#create-a-changeset"><span class="method POST">POST</span><span>Create a changeset</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#add-an-operation-to-a-changeset"><span class="method POST">POST</span><span>Add an operation</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#publish-a-changeset"><span class="method POST">POST</span><span>Publish a changeset</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#move-the-current-change-undo--redo"><span class="method POST">POST</span><span>Undo / redo a change</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#discard-a-changeset"><span class="method POST">POST</span><span>Discard a changeset</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#create-a-rollout-plan"><span class="method POST">POST</span><span>Create a rollout plan</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#list-rollout-plans"><span class="method GET">GET</span><span>List rollout plans</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#update-a-rollout-plans-schedule"><span class="method PATCH">PATCH</span><span>Update rollout schedule</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#sync-a-rollout-plan"><span class="method POST">POST</span><span>Sync a rollout plan</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/page-builder#cancel-a-rollout-plan"><span class="method DELETE">DELETE</span><span>Cancel a rollout plan</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Widget",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/widget",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/widget#create-a-widget"><span class="method POST">POST</span><span>Create a widget</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/widget#update-a-widget"><span class="method PATCH">PATCH</span><span>Update a widget</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/widget#delete-a-widget"><span class="method DELETE">DELETE</span><span>Delete a widget</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "File Management",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/file-management",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/file-management#browse-files"><span class="method GET">GET</span><span>Browse files</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/file-management#upload-file"><span class="method POST">POST</span><span>Upload file</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/file-management#delete-file"><span class="method DELETE">DELETE</span><span>Delete file</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/file-management#upload-image"><span class="method POST">POST</span><span>Upload image</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/file-management#create-folder"><span class="method POST">POST</span><span>Create folder</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Shipping Zone",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/shipping-zone",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-zone#create-a-shipping-zone"><span class="method POST">POST</span><span>Create a shipping zone</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-zone#update-a-shipping-zone"><span class="method PATCH">PATCH</span><span>Update a shipping zone</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-zone#delete-a-shipping-zone"><span class="method DELETE">DELETE</span><span>Delete a shipping zone</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Shipping Provider",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/shipping-provider",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#attach-a-provider-to-a-zone"><span class="method POST">POST</span><span>Attach a provider to a zone</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#update-a-zone-provider-attachment"><span class="method PATCH">PATCH</span><span>Update a zone attachment</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#detach-a-provider-from-a-zone"><span class="method DELETE">DELETE</span><span>Detach a provider from a zone</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#create-a-core-method"><span class="method POST">POST</span><span>Create a core method</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#update-a-core-method"><span class="method PATCH">PATCH</span><span>Update a core method</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#delete-a-core-method"><span class="method DELETE">DELETE</span><span>Delete a core method</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#create-a-rate"><span class="method POST">POST</span><span>Create a rate</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#update-a-rate"><span class="method PATCH">PATCH</span><span>Update a rate</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-provider#delete-a-rate"><span class="method DELETE">DELETE</span><span>Delete a rate</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Shipping Method",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/shipping-method",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/shipping-method#set-shipping-method-for-cart"><span class="method POST">POST</span><span>Set shipping method for cart</span></a>',
         },
       ],
     },
@@ -371,6 +967,52 @@ const sidebars = {
           type: "html",
           value:
             '<a class="menu__link" href="/docs/api/tax#delete-a-tax-rate"><span class="method DELETE">DELETE</span><span>Delete a tax rate</span></a>',
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Metafield Definition",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/metafield-definition",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#list-definitions"><span class="method GET">GET</span><span>List definitions</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#create-a-definition"><span class="method POST">POST</span><span>Create a definition</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#update-a-definition"><span class="method PATCH">PATCH</span><span>Update a definition</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#delete-a-definition"><span class="method DELETE">DELETE</span><span>Delete a definition</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#update-shop-metafields"><span class="method PATCH">PATCH</span><span>Update shop metafields</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#update-order-metafields"><span class="method PATCH">PATCH</span><span>Update order metafields</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/metafield-definition#update-customer-metafields"><span class="method PATCH">PATCH</span><span>Update customer metafields</span></a>',
         },
       ],
     },

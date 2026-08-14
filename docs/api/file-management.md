@@ -22,24 +22,20 @@ These endpoints manage files and media in your EverShop store. All file manageme
 
 ### Browse Files
 
-Lists files in a directory. The path after `/files/` specifies which directory to browse.
+Lists the contents of a directory. The path after `/files/` specifies which directory to browse. Sub-directories and files are returned in **separate** keys: `folders` is a flat list of directory names, `files` carries a name and a servable URL.
 
 <Api
 method="GET"
 url="/api/files/{path}"
 responseSample={`{
   "data": {
+    "folders": [
+      "thumbnails"
+    ],
     "files": [
       {
         "name": "product-image.jpg",
-        "type": "file",
-        "size": 45230,
-        "path": "catalog/products/product-image.jpg"
-      },
-      {
-        "name": "thumbnails",
-        "type": "directory",
-        "path": "catalog/products/thumbnails"
+        "url": "/assets/catalog/products/product-image.jpg"
       }
     ]
   }
@@ -50,7 +46,7 @@ responseSample={`{
 
 ### Upload File
 
-Uploads a file to the specified directory path. Send the file as multipart form data.
+Uploads one or more files to the specified directory. Send them as multipart form data under the field name **`images`** — up to 20 per request. The path segment must match `^[a-zA-Z0-9_/-]+$`.
 
 <Api
 method="POST"
@@ -60,8 +56,9 @@ responseSample={`{
     "files": [
       {
         "name": "uploaded-file.pdf",
-        "path": "documents/uploaded-file.pdf",
-        "size": 102400
+        "mimetype": "application/pdf",
+        "size": 102400,
+        "url": "/assets/documents/uploaded-file.pdf"
       }
     ]
   }
@@ -79,7 +76,7 @@ method="DELETE"
 url="/api/files/{path}"
 responseSample={`{
   "data": {
-    "success": true
+    "path": "catalog/my-image.png"
   }
 }`}
 />
@@ -90,7 +87,9 @@ responseSample={`{
 
 ### Upload Image
 
-Uploads an image file with automatic processing (resizing, thumbnail generation). Send the image as multipart form data.
+Identical to `POST /api/files/{path}` except that every uploaded file must have an `image/*` mimetype — anything else is rejected with `400 Only images are allowed`.
+
+No processing happens on upload: files are written as received. There is no resizing and no thumbnail generation. (Resizing is done on read by the storefront image processor, from the original.)
 
 <Api
 method="POST"
@@ -100,8 +99,9 @@ responseSample={`{
     "files": [
       {
         "name": "product-photo.jpg",
-        "path": "catalog/products/product-photo.jpg",
-        "thumb": "catalog/products/product-photo-thumb.jpg"
+        "mimetype": "image/jpeg",
+        "size": 88120,
+        "url": "/assets/catalog/products/product-photo.jpg"
       }
     ]
   }
@@ -132,7 +132,7 @@ requestSchema={{
 responseSample={`{
   "data": {
     "path": "catalog/new-folder",
-    "success": true
+    "name": "new-folder"
   }
 }`}
 />

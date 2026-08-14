@@ -167,12 +167,17 @@ import { Form } from '@components/common/form/Form';
 import { TimeField } from '@components/common/form/TimeField';
 
 function AlarmForm() {
+  // TimeField does not extract `defaultValue`, so it lands in `...props` after
+  // the controlled `value` and is ignored (React also warns). Seed the value
+  // through the parent form's `formOptions` instead.
   return (
-    <Form action="/api/alarms">
+    <Form
+      action="/api/alarms"
+      formOptions={{ defaultValues: { alarmTime: '07:00' } }}
+    >
       <TimeField
         name="alarmTime"
         label="Wake Up Time"
-        defaultValue="07:00"
         step={300} // 5 minute intervals
         required
         helperText="Set your daily alarm time"

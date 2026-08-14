@@ -46,7 +46,10 @@ updatePage(uuid: string, data: PageData, context?: Record<string, any>): Promise
 ```typescript
 import { updatePage } from '@evershop/evershop/cms/services';
 
+// `status` is mandatory on update — updatePage sets `required = ['status']`,
+// so omitting it throws "must have required property 'status'".
 await updatePage('a1b2c3d4-e5f6-7890-abcd-ef1234567890', {
+  status: '1',
   name: 'Updated About Us',
   meta_title: 'About Our Store - Updated'
 });

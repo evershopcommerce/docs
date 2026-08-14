@@ -91,7 +91,7 @@ requestSchema={{
 "country": {
 "type": "string"
 },
-"provnice": {
+"province": {
 "type": "string"
 },
 "postcode": {
@@ -120,7 +120,7 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "provnice": "CA",
+    "province": "CA",
     "postcode": "90001",
     "rate": "7.25",
     "is_compound": 0,
@@ -147,7 +147,7 @@ requestSchema={{
 "country": {
 "type": "string"
 },
-"provnice": {
+"province": {
 "type": "string"
 },
 "postcode": {
@@ -176,7 +176,7 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "provnice": "CA",
+    "province": "CA",
     "postcode": "90001",
     "rate": "7.25",
     "is_compound": 0,
@@ -201,7 +201,7 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "provnice": "CA",
+    "province": "CA",
     "postcode": "90001",
     "rate": "7.25",
     "is_compound": 0,

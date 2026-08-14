@@ -96,12 +96,14 @@ Email templates use [Handlebars](https://handlebarsjs.com/) syntax. EverShop pro
 ```handlebars
 <!-- Format a number as currency -->
 {{currency 49.99}}
-<!-- Output: $49.99 (based on shop.currency config) -->
+<!-- Output: $49.99 — currency from getStoreCurrency() (the `storeCurrency` admin setting) -->
 
 <!-- Format a date -->
 {{date orderDate}}
-<!-- Output: Jan 15, 2024 (based on shop.language config) -->
+<!-- Output: Jan 15, 2024 — formatted with the per-render locale -->
 ```
+
+Both helpers resolve their locale **per render**, not from configuration. `sendEmail()` accepts an optional `locale`; when it is omitted the locale defaults to `getStoreLanguage()` (the `storeLanguage` admin setting, falling back to `shop.language` config). A malformed tag falls back to the config language and then to `en`, so a bad value can never throw and silently drop the message.
 
 ### Automatic Store Information
 
@@ -127,8 +129,11 @@ Extensions can modify email arguments or template data using processors:
 import { addProcessor } from '@evershop/evershop/lib/util/registry';
 
 export default () => {
-  // Add a CC recipient to all order confirmation emails
-  addProcessor('emailArguments', (args) => {
+  // Add a CC recipient to all order confirmation emails.
+  // The processor receives ONE argument (the value). The context is bound to
+  // `this` via `callback.call(context, value)`, so this must be a `function`
+  // expression — an arrow function cannot see it.
+  addProcessor('emailArguments', function (args) {
     if (this.id === 'order_confirmation') {
       args.cc = [...(args.cc || []), 'manager@store.com'];
     }

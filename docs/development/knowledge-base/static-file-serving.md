@@ -10,7 +10,9 @@ description: Learn how EverShop serves static files like images from the public 
 # Static File Serving
 
 :::warning
-For product images and category images, we recommend using cloud storage for production environments. This approach offers better scalability and performance. Please check the available extensions in the [EverShop Marketplace](https://evershop.io/extensions) for cloud storage solutions.
+This page is about the `public` directory — static files you ship with your project. It is **not** where uploaded product and category images live; those go to the `media` folder or to a cloud storage provider.
+
+For production, use cloud storage for uploaded media. Amazon S3, Azure Blob Storage and Google Cloud Storage are **built into EverShop core** — no extension to install. See [File Storage](./file-storage).
 :::
 
 EverShop provides a simple way to serve static files such as images, stylesheets, and JavaScript files through a directory called `public` in the root of your project. Files placed in this directory can be referenced in your code starting from the base URL (/).
@@ -31,11 +33,23 @@ The `public` directory is ideal for storing:
 - Images and other media files
 
 :::info
-After a fresh installation of EverShop, you'll need to manually create the `public` folder in the root directory of your project.
+You do not need to create the `public` folder by hand. The `evershop install` setup script creates it (along with `media`), and sitemap generation creates it on demand if it is missing. Create it yourself only if you are adding static files before running the installer.
 :::
 
 :::info
 The directory must be named exactly as `public` (not `publics`, `static`, etc.) to be properly recognized by EverShop.
+:::
+
+:::danger A static `robots.txt` or `sitemap.xml` shadows the generated one
+EverShop generates `/robots.txt` and `/sitemap.xml` (plus the `/sitemap-*.xml` children) at request time. That handler is a **cold path**: it only runs on a request that would otherwise 404. Static serving comes first, so a physical file always wins.
+
+If you drop a hand-written `public/robots.txt` into your project, it is served verbatim and the generated one never runs — including the absolute `Sitemap: https://your-store.com/sitemap.xml` line that EverShop builds from your base URL. Search engines then have no pointer to your sitemap. The same applies to a physical `public/sitemap.xml`, which permanently freezes your sitemap at whatever you committed.
+
+This applies to a **theme's** `public/` folder too. If a theme you installed ships a `robots.txt`, it is served and the generated one is suppressed, even though your own project's `public/` folder is empty.
+
+Note that the generator itself writes its output into `public/`, so a generated `public/sitemap.xml` appearing there is expected — the danger is a file *you* put there.
+
+If you need custom `robots.txt` content, do not create the file. Use the **`robotsTxt` store setting** instead: it replaces the generated body through the same handler, so it keeps working as a single source of truth. See [Sitemap](./sitemap.md).
 :::
 
 :::warning
@@ -69,7 +83,7 @@ This approach allows you to:
 - Easily package and distribute themes with their required assets
 
 :::info
-If the same file exists in both the root `public` directory and a theme's `public` directory, the file from the theme takes precedence.
+If the same file exists in both the root `public` directory and a theme's `public` directory, the file from the **root** `public` directory wins. `publicStatic` is mounted before `themePublicStatic` (`bin/lib/addDefaultMiddlewareFuncs.ts:56-58`) and terminates the request as soon as it matches, so the theme copy is served only when the root folder has nothing at that path.
 :::
 
 ## Best Practices for Static Files

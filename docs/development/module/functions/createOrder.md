@@ -25,7 +25,7 @@ import { createOrder } from "@evershop/evershop/checkout/services";
 ## Syntax
 
 ```typescript
-createOrder(cart: Cart): Promise<OrderCreateResult>
+createOrder(cart: Cart): Promise<CreateOrderResult>
 ```
 
 ### Parameters
@@ -38,7 +38,7 @@ Cart instance to convert to order.
 
 ## Return Value
 
-Returns `Promise<OrderCreateResult>` with order data including:
+Returns `Promise<CreateOrderResult>` — the inserted `order` row plus an `insertId` property. The main fields:
 
 ```typescript
 {
@@ -46,15 +46,28 @@ Returns `Promise<OrderCreateResult>` with order data including:
   uuid: string;
   order_number: string;
   cart_id: number;
-  customer_id: number;
-  customer_email: string;
-  grand_total: number;
-  payment_method: string;
-  shipping_method: string;
-  status: string;
+  currency: string;
+  customer_id: number | null;
+  customer_email: string | null;
+  grand_total: string;
+  payment_method: string | null;
+  payment_method_name: string | null;
+  shipping_method_data: Record<string, unknown> | null;
+  shipping_address_id: number | null;
+  billing_address_id: number | null;
+  status: string | null;
+  payment_status: string;
+  shipment_status: string;
+  insertId: number;
   // ... and more fields
 }
 ```
+
+:::warning No `shipping_method` column
+The `order.shipping_method` and `order.shipping_method_name` varchar columns were dropped. The shipping selection is now a single JSONB column, `shipping_method_data`, holding the structured snapshot taken at checkout (method code, name, carrier, service code, …). Read it instead of the old string fields.
+:::
+
+Monetary columns are PostgreSQL `numeric` and come back from the driver as **strings**, not numbers.
 
 ## Examples
 

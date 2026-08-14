@@ -55,10 +55,19 @@ import { pool } from "@evershop/evershop/lib/postgres";
 // Get products from collection ID 3
 const query = getProductsByCollectionBaseQuery(3);
 
+// Use `.andWhere()`, never `.where()`. This builder already carries a
+// `product_collection.collection_id = 3` predicate, and `query.where()` REPLACES
+// the whole WHERE clause instead of adding to it — you would silently get
+// products from every collection.
 const products = await query
-  .where('status', '=', 1)
+  .andWhere('product.status', '=', true)
   .execute(pool);
 ```
+
+:::danger Never call `.where()` on a builder you were handed
+`Query.where()` assigns a fresh `Where` to the query, discarding any conditions the
+factory already set. Always add to an existing builder with `.andWhere()` / `.orWhere()`.
+:::
 
 ### With Additional Filters
 
@@ -68,13 +77,15 @@ import { pool } from "@evershop/evershop/lib/postgres";
 
 const query = getProductsByCollectionBaseQuery(3);
 
-// Filter by price range
-const products = await query
-  .where('status', '=', 1)
-  .andWhere('price', '>=', 20)
-  .andWhere('price', '<=', 100)
-  .orderBy('price', 'ASC')
-  .execute(pool);
+// Filter by price range.
+// `.orderBy()` lives on SelectQuery, not on the `Where` that `.andWhere()` returns,
+// so call it on the query handle rather than chaining it onto the conditions.
+query.andWhere('product.status', '=', true);
+query.andWhere('product.price', '>=', 20);
+query.andWhere('product.price', '<=', 100);
+query.orderBy('product.price', 'ASC');
+
+const products = await query.execute(pool);
 ```
 
 ## See Also

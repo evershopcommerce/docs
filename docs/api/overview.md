@@ -51,6 +51,47 @@ The GraphQL API provides a single endpoint that accepts complex queries. This AP
 - Reducing the number of network requests
 - Complex data requirements with nested relationships
 
+There are two GraphQL endpoints, each backed by its own schema:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Endpoint</th>
+      <th>Methods</th>
+      <th>Access</th>
+      <th>Schema</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/api/graphql</code></td><td>GET, POST</td><td>Public</td><td>Storefront schema — excludes admin-only types</td></tr>
+    <tr><td><code>/api/admin/graphql</code></td><td>GET, POST</td><td>Private (admin token required)</td><td>Full schema, including admin-only types</td></tr>
+  </tbody>
+</table>
+
+:::info
+Unlike the SSR path — which renders whatever data resolved and logs field errors — these endpoints **abort on the first GraphQL error** and return an error response rather than partial data.
+:::
+
+### Store Settings
+
+Store settings live in the database and are written through a single endpoint:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Endpoint</th>
+      <th>Method</th>
+      <th>Access</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/api/settings</code></td><td>POST</td><td>Private</td><td>Save one or more store settings. This is what the admin Settings screens call.</td></tr>
+  </tbody>
+</table>
+
+Settings are read back through GraphQL (the `setting` root), not through a REST endpoint.
+
 ## Content Types
 
 All API requests and responses use the [JSON](https://www.json.org/json-en.html) format. The content type for both requests and responses is `application/json`.
@@ -60,6 +101,18 @@ When sending data to the API, include the following header:
 ```
 Content-Type: application/json
 ```
+
+## Localization
+
+REST API paths are **never** locale-prefixed — there is no `/fr/api/...`. Storefront endpoints resolve their locale from the `X-Locale` request header instead:
+
+```
+X-Locale: fr
+```
+
+The header is honoured **only when it names a currently enabled locale**; anything else (a disabled language, an unknown tag, a malformed value, or no header at all) falls back to the store's default language. This is deliberate — a header must not be able to request an arbitrary or disabled language.
+
+Admin API requests under `/api/admin/**` ignore `X-Locale` and always run in the configured admin language.
 
 ## Authentication
 
@@ -184,6 +237,11 @@ EverShop uses standard HTTP status codes to indicate the result of API requests:
       <td>Conflict</td>
       <td>Resource state conflict (e.g., duplicate)</td>
     </tr>
+    <tr>
+      <td>429</td>
+      <td>Too Many Requests</td>
+      <td>Rate limit exceeded — see <a href="#rate-limits">Rate Limits</a></td>
+    </tr>
   </tbody>
 </table>
 
@@ -273,10 +331,49 @@ For endpoints that return collections of resources, EverShop implements paginati
   </tbody>
 </table>
 
+## Rate Limits {#rate-limits}
+
+EverShop applies per-client-IP rate limits globally, before any route handling:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Scope</th>
+      <th>Limit (per IP)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/api/**</code></td><td>120 requests per minute</td></tr>
+    <tr><td>Authentication endpoints — login, registration, and password reset</td><td>8 requests per 15 minutes</td></tr>
+    <tr><td>Page routes (storefront and admin HTML)</td><td>~300 requests per minute</td></tr>
+  </tbody>
+</table>
+
+Static assets and health checks (`/health`, `/healthz`) are exempt.
+
+A rejected request returns `429` with the standard error envelope and two headers you should act on:
+
+- **`Retry-After`** — seconds until the window resets. Wait at least this long before retrying.
+- **`RateLimit-*`** — limit, remaining, and reset, so you can throttle before being rejected.
+
+```json
+{
+  "error": {
+    "status": 429,
+    "message": "Too many requests. Please slow down and try again later."
+  }
+}
+```
+
+:::info
+If you are running EverShop behind a reverse proxy or CDN, set the `TRUST_PROXY_HOPS` environment variable to the number of proxy layers so the limiter sees real client IPs instead of counting all traffic against one address.
+:::
+
 ## Best Practices
 
 1. **Use HTTPS** - Always use secure connections for API requests
 2. **Limit Request Volume** - Implement proper caching and throttling mechanisms
-3. **Handle Rate Limiting** - Be prepared to handle 429 Too Many Requests responses
-4. **Validate Input** - Always validate request data before sending to the API
-5. **Handle Errors Gracefully** - Implement proper error handling in your application
+3. **Handle Rate Limiting** - Respect `Retry-After` and the `RateLimit-*` headers on a 429; do not retry in a tight loop. Budget for 120 req/min on `/api/**` and 8 attempts per 15 minutes on authentication endpoints.
+4. **Send `X-Locale` for storefront reads** - Localized storefront responses depend on it, and it must name an enabled locale
+5. **Validate Input** - Always validate request data before sending to the API
+6. **Handle Errors Gracefully** - Implement proper error handling in your application

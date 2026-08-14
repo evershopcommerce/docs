@@ -22,33 +22,41 @@ Delete records from a database table using the query builder.
 ## Import
 
 ```typescript
-import { del } from '@evershop/postgres-query-builder';
+import { del } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Typed wrapper
+`@evershop/evershop/lib/postgres/query` is EverShop's first-party typed query builder. It wraps `@evershop/postgres-query-builder` and adds table/column types for every known EverShop table, so `del('order')` narrows `.where()` to that table's columns and gives you autocomplete. (A delete has no `.given()` — that belongs to insert and update.)
+
+The narrowing is autocomplete, not enforcement: `ColumnOf<T>` falls back to `(string & {})`, so an unknown column name still compiles and fails only at runtime.
+
+The raw `@evershop/postgres-query-builder` package is still available as an untyped lower-level fallback, but new code should import from the wrapper.
+:::
 
 ## Syntax
 
 ```typescript
-del(table: string): DeleteQuery
+del<T extends AnyTableName>(table: T): TypedDeleteQuery<T>
 ```
 
 ### Parameters
 
 **`table`**
 
-**Type:** `string`
+**Type:** `AnyTableName`
 
-The name of the table to delete from.
+The name of the table to delete from. Known EverShop tables are suggested by name; any other string is still accepted for custom tables.
 
 ## Return Value
 
-Returns a `DeleteQuery` instance that can be chained with additional methods.
+Returns a `TypedDeleteQuery<T>` that can be chained with additional methods. When `T` is a known table, `.where()` only accepts that table's columns.
 
 ## Examples
 
 ### Basic Delete
 
 ```typescript
-import { del } from '@evershop/postgres-query-builder';
+import { del } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 await del('customer')
@@ -59,12 +67,13 @@ await del('customer')
 ### Delete with Multiple Conditions
 
 ```typescript
-import { del } from '@evershop/postgres-query-builder';
+import { del } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
+// `qty` is not a `product` column — it moved to `product_inventory` in catalog 1.0.3.
+// `status` and `visibility` on `product` are booleans.
 await del('product')
-  .where('status', '=', 0)
-  .and('qty', '=', 0)
+  .where('status', '=', false)
   .and('created_at', '<', new Date('2024-01-01'))
   .execute(pool);
 ```
@@ -72,7 +81,7 @@ await del('product')
 ### Delete in Transaction
 
 ```typescript
-import { del, startTransaction, commit, rollback } from '@evershop/postgres-query-builder';
+import { del, startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -80,9 +89,10 @@ const connection = await getConnection();
 try {
   await startTransaction(connection);
   
-  // Delete order items first
+  // Delete order items first. The FK column on `order_item` is
+  // `order_item_order_id`, not `order_id`.
   await del('order_item')
-    .where('order_id', '=', 789)
+    .where('order_item_order_id', '=', 789)
     .execute(connection, false);
   
   // Then delete the order

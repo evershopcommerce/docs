@@ -14,6 +14,10 @@ description: A comprehensive guide for deploying EverShop to Amazon Web Services
 
 This comprehensive guide walks you through the process of deploying EverShop to Amazon Web Services (AWS) using EC2 for application hosting and RDS for PostgreSQL database management. This approach provides a scalable, reliable production environment for your e-commerce platform.
 
+:::tip
+Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.
+:::
+
 ## Prerequisites
 
 Before beginning, ensure you have:
@@ -234,6 +238,17 @@ mkdir $NEW_BUILD
 tar -xf $NEW_BUILD.tar.gz -C $NEW_BUILD --strip-components 1
 rm $NEW_BUILD.tar.gz
 
+# Carry the runtime configuration into the new build BEFORE building.
+# `evershop build` reads the .env file, so it has to be in place first.
+if [ -f "$CURRENT_BUILD/.env" ]; then
+  echo "Copying .env into the new build..."
+  cp $CURRENT_BUILD/.env $NEW_BUILD/
+fi
+
+if [ -d "$CURRENT_BUILD/config" ]; then
+  cp -R $CURRENT_BUILD/config $NEW_BUILD/
+fi
+
 # Install dependencies
 echo "Installing npm dependencies..."
 cd $NEW_BUILD && npm install --production
@@ -256,17 +271,13 @@ fi
 echo "Deploying new build..."
 mv $NEW_BUILD $CURRENT_BUILD
 
-# Copy persistent data from previous build
+# Copy uploaded media forward from the previous build
 if [ -d "previous-build" ]; then
-  echo "Copying media and configuration files..."
+  echo "Copying media files..."
   if [ -d "previous-build/media" ]; then
     cp -R previous-build/media $CURRENT_BUILD/
   else
     mkdir -p $CURRENT_BUILD/media
-  fi
-
-  if [ -d "previous-build/config" ]; then
-    cp -R previous-build/config $CURRENT_BUILD/
   fi
 fi
 
@@ -274,6 +285,11 @@ fi
 echo "Setting permissions..."
 chmod -R 755 $CURRENT_BUILD
 chmod -R 777 $CURRENT_BUILD/media
+
+# Re-restrict the environment file — the recursive chmod above widened it.
+if [ -f "$CURRENT_BUILD/.env" ]; then
+  chmod 600 $CURRENT_BUILD/.env
+fi
 
 # Restart application with PM2
 echo "Restarting application..."
@@ -290,30 +306,99 @@ Make the script executable:
 sudo chmod +x deploy.sh
 ```
 
-### Creating Your Configuration File
+### Creating Your Environment File
 
-Before running the first deployment, create your configuration file:
+EverShop reads its database credentials from **environment variables**, loaded from a `.env` file in the project root. This is the same file the `evershop install` setup wizard writes on a local install — on a server you create it by hand.
+
+Create it in the directory the deployment script treats as the live build:
 
 ```bash
-sudo mkdir -p /var/www/evershop/current/config
-sudo nano /var/www/evershop/current/config/default.json
+sudo mkdir -p /var/www/evershop/current
+sudo nano /var/www/evershop/current/.env
 ```
 
-Add your database configuration:
+Add your database connection and the production settings:
 
-```json
-{
-  "system": {
-    "database": {
-      "host": "your-rds-endpoint.rds.amazonaws.com",
-      "port": 5432,
-      "database": "evershop",
-      "user": "evershop",
-      "password": "secure_password"
-    }
-  }
-}
+```bash title=".env"
+DB_HOST="your-rds-endpoint.rds.amazonaws.com"
+DB_PORT="5432"
+DB_NAME="evershop"
+DB_USER="evershop"
+DB_PASSWORD="secure_password"
+DB_SSLMODE="require"
+
+PORT="3000"
+
+EVERSHOP_HOME_URL="https://yourdomain.com"
+TRUST_PROXY_HOPS="1"
 ```
+
+Lock the file down — it holds your database password:
+
+```bash
+sudo chmod 600 /var/www/evershop/current/.env
+```
+
+:::info
+RDS instances present a certificate signed by the Amazon RDS CA. Use `DB_SSLMODE="require"` for an encrypted connection. If you want full certificate verification, download the RDS root certificate bundle and point `DB_SSLROOTCERT` at it; use `DB_SSLMODE="no-verify"` only as a temporary fallback.
+:::
+
+:::caution
+The `config/<env>.json` files are still read, but the **database connection is not configured there**. Putting a `system.database` block in `config/default.json` has no effect — EverShop reads `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` and `DB_SSLMODE` from the environment. Use `config/` for non-secret deployment settings such as the active theme and extension wiring.
+:::
+
+### Setting the Public Base URL
+
+`EVERSHOP_HOME_URL` overrides the `shop.homeUrl` configuration key and is the recommended way to set your production base URL.
+
+```bash
+EVERSHOP_HOME_URL="https://yourdomain.com"
+```
+
+Everything EverShop emits as an absolute URL depends on it: links in transactional emails, canonical tags, `hreflang` alternates, and the `<loc>` entries plus the `Sitemap:` line in `robots.txt`. If it is left unset, EverShop falls back to `shop.homeUrl` and then to `http://localhost:<PORT>` — which means customer emails go out pointing at localhost.
+
+:::danger A malformed value stops the server from booting
+`EVERSHOP_HOME_URL` is validated during startup. It must be an **absolute** `http` or `https` URL. A value like `yourdomain.com` (no scheme), or one using another protocol, throws during bootstrap and the process exits before it listens — PM2 will show the app repeatedly restarting.
+
+Set the full origin with a scheme and no trailing path. Leaving the variable unset is fine; setting it to something invalid is fatal.
+:::
+
+:::tip
+Set it to your HTTPS domain once Certbot has issued your certificate (see [Securing Your Deployment](#securing-your-deployment) below). If you set it to `http://` and later switch to HTTPS, remember to update it — otherwise emails keep linking to the insecure URL.
+:::
+
+### Setting the Proxy Hop Count
+
+Nginx sits in front of the Node process and forwards the client address in `X-Forwarded-For` (that is what the `proxy_set_header X-Forwarded-For` line in the Nginx config above does). `TRUST_PROXY_HOPS` tells EverShop how many of those proxies to trust. It drives Express's `trust proxy` setting, which determines `request.ip` — and `request.ip` is what the built-in rate limiter buckets on.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Use when</th>
+      <th>What goes wrong otherwise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0</code></td>
+      <td>The Node process is directly internet-facing with no proxy at all.</td>
+      <td>Wrong for this guide — with Nginx in front, every request would be attributed to <code>127.0.0.1</code>.</td>
+    </tr>
+    <tr>
+      <td><code>1</code> (default)</td>
+      <td>One proxy: the Nginx reverse proxy on the EC2 instance. This is the setup in this guide.</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><code>2</code> or more</td>
+      <td>A proxy chain, e.g. an Application Load Balancer or CloudFront in front of Nginx.</td>
+      <td>Too low and every visitor collapses into one bucket, so a moderate traffic spike triggers mass <code>429</code> responses for everyone. Too high and a client can spoof <code>X-Forwarded-For</code> to present a fresh IP per request and bypass the limits entirely.</td>
+    </tr>
+  </tbody>
+</table>
+
+An unset, empty or non-numeric value falls back to `1`. Count the hops that actually terminate and re-forward the connection, and set the variable to that number. If you put an ALB or CloudFront in front of this instance, raise the value to `2`.
 
 ### Running the Deployment
 

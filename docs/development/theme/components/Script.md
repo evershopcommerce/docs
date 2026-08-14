@@ -147,20 +147,31 @@ import { ScriptInline } from '@components/common/Script';
 
 ### ScriptJSON
 
-For JSON-LD structured data:
+For embedding an inert JSON data payload. It hard-codes `type="application/json"` and
+exposes no `type` prop, so crawlers will **not** read its output as structured data:
 
 ```tsx
 import { ScriptJSON } from '@components/common/Script';
 
 <ScriptJSON
-  id="product-schema"
-  data={{
+  id="bootstrap-data"
+  data={{ currency: 'USD', locale: 'en' }}
+/>
+```
+
+For JSON-LD, use `Script` directly and set the mime type yourself:
+
+```tsx
+import { Script } from '@components/common/Script';
+
+<Script type="application/ld+json">
+  {JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Product",
     "name": "Product Name",
     "price": "99.99"
-  }}
-/>
+  })}
+</Script>
 ```
 
 ### ScriptImportMap

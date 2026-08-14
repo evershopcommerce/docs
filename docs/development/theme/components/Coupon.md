@@ -42,7 +42,7 @@ Coupon is consumed by these components, which are the actual override targets fo
     <tr>
       <td>CouponForm</td>
       <td>cart, checkout</td>
-      <td><code>themes/&lt;name&gt;/src/pages/cart/CouponForm.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/CouponForm.tsx</code></td>
     </tr>
     <tr>
       <td>CartTotalSummary (Discount section)</td>
@@ -239,7 +239,7 @@ function BasicCouponForm() {
 
 A theme developer overrides `CouponForm` to provide a custom coupon input experience. Create this file in your theme:
 
-**`themes/my-theme/src/pages/cart/CouponForm.tsx`**
+**`themes/my-theme/src/components/frontStore/CouponForm.tsx`**
 
 ```tsx
 import { Coupon } from '@components/frontStore/Coupon';

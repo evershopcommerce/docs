@@ -161,9 +161,9 @@ function ProductForm() {
     </tr>
     <tr>
       <td>...props</td>
-      <td>InputHTMLAttributes</td>
+      <td>—</td>
       <td>-</td>
-      <td>All standard HTML input attributes</td>
+      <td>Extra attributes are forwarded to the input at runtime, but <code>NumberFieldProps</code> does <strong>not</strong> extend <code>React.InputHTMLAttributes</code> (unlike InputField), so passing e.g. <code>autoFocus</code> is a TypeScript error even though it works.</td>
     </tr>
   </tbody>
 </table>

@@ -50,10 +50,14 @@ import { pool } from "@evershop/evershop/lib/postgres";
 
 const query = getProductsBaseQuery();
 
-// Load all visible products
+// Load all visible products.
+// Only the FIRST condition uses `.where()`. It returns a `Where`, which offers
+// `.andWhere()`, `.orWhere()`, `.and()`, `.or()` and `.execute()` — but not a
+// second `.where()`. Calling `query.where()` again would also RESET the builder's
+// existing predicates rather than add to them.
 const products = await query
-  .where('visibility', '=', 'visible')
-  .where('status', '=', 1)
+  .where('visibility', '=', true)
+  .andWhere('status', '=', true)
   .execute(pool);
 ```
 

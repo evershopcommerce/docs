@@ -108,75 +108,37 @@ responseSample={`{
 
 <hr />
 
-### Get an Attribute Group
+### Reading Attribute Groups
 
-:::info
-Retrieving attribute group data is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute group information. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
+:::warning No REST read endpoints
+`GET /api/attributeGroups` and `GET /api/attributeGroups/{uuid}` **do not exist**. The catalog module registers no `GET` route for attribute groups — calling either returns a 404.
 :::
 
-The following shows the expected response format when querying attribute group data:
+Read attribute groups through **GraphQL**. `Query.attributeGroups` is defined in an `.admin.graphql` file, so it exists only on the admin schema — send it to the authenticated endpoint `POST /admin/graphql`:
 
-<Api
-method="GET"
-url="/api/attributeGroups/363ba97f-8be7-4be9-be3f-a9f341f2b89f"
-responseSample={`{
-  "data": {
-    "attribute_group_id": 50,
-    "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89f",
-    "group_name": "Attribute Group Name",
-    "created_at": "2023-02-06 09:13:35",
-    "updated_at": "2023-02-06 09:13:35"
-  }
-}`}
-/>
-
-<hr />
-
-### List All Attribute Groups
-
-:::info
-Listing attribute groups is done via **GraphQL**, not the REST API. Use the GraphQL endpoint at `/graphql` to query attribute group lists. See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for details.
-:::
-
-The following shows the expected response format when querying attribute group lists:
-
-<Api
-method="GET"
-url="/api/attributeGroups"
-responseSample={`{
-  "data": [
-    {
-      "attribute_group_id": 49,
-      "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89f",
-      "group_name": "General Information",
-      "created_at": "2023-02-06 09:13:35",
-      "updated_at": "2023-02-06 09:13:35"
-    },
-    {
-      "attribute_group_id": 50,
-      "uuid": "363ba97f-8be7-4be9-be3f-a9f341f2b89w",
-      "group_name": "Technical Specifications",
-      "created_at": "2023-02-06 09:15:22",
-      "updated_at": "2023-02-06 09:15:22"
+```graphql
+query AttributeGroups($filters: [FilterInput]) {
+  attributeGroups(filters: $filters) {
+    items {
+      attributeGroupId
+      uuid
+      groupName
+      attributes {
+        items {
+          attributeId
+          attributeCode
+          attributeName
+        }
+        total
+      }
     }
-  ],
-  "links": {
-    "first": "/api/attributeGroups?page=1",
-    "last": "/api/attributeGroups?page=1",
-    "prev": null,
-    "next": null
-  },
-  "meta": {
-    "current_page": 1,
-    "from": 1,
-    "last_page": 1,
-    "path": "/api/attributeGroups",
-    "per_page": 20,
-    "to": 2,
-    "total": 2
+    currentPage
+    total
   }
-}`}
-/>
+}
+```
+
+See the [GraphQL documentation](/docs/development/knowledge-base/graphql) for filters and the full schema.
 
 ## Error Handling
 

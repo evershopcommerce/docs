@@ -21,33 +21,43 @@ Update existing records in a database table using the query builder.
 ## Import
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 ```
+
+:::info Typed wrapper
+`@evershop/evershop/lib/postgres/query` is EverShop's first-party typed query builder. It wraps `@evershop/postgres-query-builder` and adds table/column types for every known EverShop table, so `update('order')` narrows `.given()` / `.where()` to that table's columns and gives you autocomplete.
+
+The raw `@evershop/postgres-query-builder` package is still available as an untyped lower-level fallback, but new code should import from the wrapper.
+:::
 
 ## Syntax
 
 ```typescript
-update(table: string): UpdateQuery
+update<T extends AnyTableName>(table: T): TypedUpdateQuery<T>
 ```
 
 ### Parameters
 
 **`table`**
 
-**Type:** `string`
+**Type:** `AnyTableName`
 
-The name of the table to update.
+The name of the table to update. Known EverShop tables are suggested by name; any other string is still accepted for custom tables.
 
 ## Return Value
 
-Returns an `UpdateQuery` instance that can be chained with additional methods.
+Returns a `TypedUpdateQuery<T>` that can be chained with additional methods. When `T` is a known table, `.given()`, `.prime()` and `.where()` only accept that table's columns.
+
+:::warning No raw SQL in `.given()`
+`UpdateQuery.given` / `InsertQuery.given` stringify every value, so the `{ isSQL: true, value: '...' }` raw-escape convention — which only works inside `.where()` — is **not** honoured on the write side. A value like `COALESCE(col, NOW())`, `col + 1` or `gen_random_uuid()` will be bound as a literal string and fail with `invalid input syntax for type …`. Drop to `connection.query()` with bind parameters for those.
+:::
 
 ## Examples
 
 ### Basic Update
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const result = await update('customer')
@@ -65,23 +75,25 @@ console.log(result); // The full updated row
 ### Update with WHERE Conditions
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
+// `product.status` and `product.visibility` are booleans. `qty` is not a `product`
+// column — it moved to `product_inventory` in catalog 1.0.3.
 const result = await update('product')
   .given({
-    status: 0,
+    status: false,
     updated_at: new Date()
   })
-  .where('qty', '=', 0)
-  .and('status', '=', 1)
+  .where('visibility', '=', true)
+  .and('status', '=', true)
   .execute(pool);
 ```
 
 ### Update with prime()
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
 const result = await update('product')
@@ -95,7 +107,7 @@ const result = await update('product')
 ### Update in Transaction
 
 ```typescript
-import { update, startTransaction, commit, rollback } from '@evershop/postgres-query-builder';
+import { update, startTransaction, commit, rollback } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -103,10 +115,11 @@ const connection = await getConnection();
 try {
   await startTransaction(connection);
   
-  // Update inventory
-  await update('product')
+  // Update inventory. Stock lives on `product_inventory`, keyed by
+  // `product_inventory_product_id` — not on `product`.
+  await update('product_inventory')
     .given({ qty: 5 })
-    .where('product_id', '=', 123)
+    .where('product_inventory_product_id', '=', 123)
     .execute(connection, false);
   
   // Update order status
@@ -125,15 +138,15 @@ try {
 ### Conditional Update
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 import { pool } from '@evershop/evershop/lib/postgres';
 
+// `customer` has no `deactivated_at` or `last_login` column. Unknown keys in
+// `.given()` are silently dropped; unknown columns in `.where()` error at runtime.
+// (Note `customer.status` is an integer, unlike `product.status`, which is boolean.)
 const result = await update('customer')
-  .given({
-    status: 0,
-    deactivated_at: new Date()
-  })
-  .where('last_login', '<', new Date('2024-01-01'))
+  .given({ status: 0 })
+  .where('created_at', '<', new Date('2024-01-01'))
   .and('status', '=', 1)
   .execute(pool);
 ```
@@ -141,7 +154,7 @@ const result = await update('customer')
 ### Update with Dedicated Connection
 
 ```typescript
-import { update } from '@evershop/postgres-query-builder';
+import { update } from '@evershop/evershop/lib/postgres/query';
 import { getConnection } from '@evershop/evershop/lib/postgres';
 
 const connection = await getConnection();
@@ -227,9 +240,9 @@ Add an AND condition to the WHERE clause.
 
 ```typescript
 update('product')
-  .given({ status: 0 })
-  .where('qty', '=', 0)
-  .and('status', '=', 1)
+  .given({ status: false })
+  .where('visibility', '=', true)
+  .and('status', '=', true)
 ```
 
 ### execute(connection, releaseConnection?)

@@ -60,7 +60,7 @@ export default function bootstrap() {
   registerJob({
     name: 'cleanup_sessions',
     schedule: '0 2 * * *', // Run at 2 AM every day
-    resolve: path.resolve(__dirname, 'jobs/cleanupSessions.js'),
+    resolve: path.resolve(import.meta.dirname, 'jobs/cleanupSessions.js'),
     enabled: true
   });
 }
@@ -76,7 +76,7 @@ export default function bootstrap() {
   registerJob({
     name: 'sync_inventory',
     schedule: '*/30 * * * *', // Every 30 minutes
-    resolve: path.resolve(__dirname, 'jobs/syncInventory.js'),
+    resolve: path.resolve(import.meta.dirname, 'jobs/syncInventory.js'),
     enabled: true,
     description: 'Sync inventory with external system',
     category: 'inventory'
@@ -130,7 +130,7 @@ The job file should export a default async function:
 ```javascript
 // jobs/cleanupSessions.js
 export default async function cleanupSessions() {
-  const { del } = await import('@evershop/postgres-query-builder');
+  const { del } = await import('@evershop/evershop/lib/postgres/query');
   const { pool } = await import('@evershop/evershop/lib/postgres');
   
   // Delete expired sessions
@@ -172,7 +172,7 @@ export default function bootstrap() {
   registerJob({
     name: 'my_scheduled_job',
     schedule: '0 * * * *',
-    resolve: path.resolve(__dirname, 'jobs/myJob.js'),
+    resolve: path.resolve(import.meta.dirname, 'jobs/myJob.js'),
     enabled: true
   });
 }

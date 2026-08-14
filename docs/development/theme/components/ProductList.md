@@ -62,15 +62,8 @@ function CategoryPage({ products }) {
       <td>imageWidth</td>
       <td>number</td>
       <td>No</td>
-      <td>300</td>
-      <td>Product image width in pixels</td>
-    </tr>
-    <tr>
-      <td>imageHeight</td>
-      <td>number</td>
-      <td>No</td>
-      <td>300</td>
-      <td>Product image height in pixels</td>
+      <td><code>800</code> (grid) / <code>320</code> (list)</td>
+      <td>Base target width in pixels. The height is <strong>derived</strong>, not passed — see below.</td>
     </tr>
     <tr>
       <td>isLoading</td>
@@ -131,6 +124,27 @@ function CategoryPage({ products }) {
   </tbody>
 </table>
 
+## Image Sizing
+
+`ProductList` takes **no `imageHeight` prop**. The height comes from the store's configured original product image dimensions (the admin Catalog setting, surfaced to the client as `config.catalog.imageDimensions`), so every placement renders at the store's true aspect ratio:
+
+```tsx
+const catalogDimensions = useCatalogImageDimensions();
+const baseWidth = imageWidth ?? (layout === 'list' ? 320 : 800);
+const { width, height } = deriveProductImageSize(baseWidth, catalogDimensions);
+```
+
+Two consequences worth knowing:
+
+- **The defaults are ~2× the CSS display width**, deliberately — DPR-2 / retina screens stay sharp and the `<Image>` `srcset` covers the rest. `800` for grid, `320` for list. They are not the rendered pixel size.
+- **`deriveProductImageSize` clamps** the requested width to the store's original width, so it never asks for an upscale. When no usable original is configured it falls back to a square box at the requested width (the fallback original is `1200 × 1200`).
+
+Pass `imageWidth` only when a placement genuinely needs a different resolution ceiling — a narrow sidebar shelf, for example. To change the aspect ratio for the whole store, change the Catalog image setting rather than the component.
+
+:::warning Removed prop
+`imageHeight` no longer exists on `ProductList`. Passing it is a no-op: React drops the unknown prop and the height is derived regardless. If your theme still passes `imageWidth`/`imageHeight` as a matched square pair, drop the height and let the store's aspect ratio drive it.
+:::
+
 ## Examples
 
 ### Basic Grid Layout
@@ -159,12 +173,12 @@ function SearchResults({ products }) {
     <ProductList
       products={products}
       layout="list"
-      imageWidth={150}
-      imageHeight={150}
     />
   );
 }
 ```
+
+The `list` layout already defaults `imageWidth` to `320`. Override it only to change the resolution ceiling — the height still follows the store's aspect ratio.
 
 ### With Loading State
 
@@ -277,13 +291,15 @@ function ProductGrid({ products }) {
           product={{ sku: product.sku, isInStock: product.inventory.isInStock }}
           qty={1}
         >
-          {({ addToCart, isLoading, canAddToCart }) => (
+          {/* children is (state, actions) => ReactNode — two arguments,
+              not one destructured object. */}
+          {(state, actions) => (
             <button
-              onClick={addToCart}
-              disabled={!canAddToCart}
+              onClick={actions.addToCart}
+              disabled={!state.canAddToCart}
               className="custom-add-btn"
             >
-              {isLoading ? 'Adding...' : 'Quick Add'}
+              {state.isLoading ? 'Adding...' : 'Quick Add'}
             </button>
           )}
         </AddToCart>
@@ -342,8 +358,6 @@ function CategoryProducts() {
         layout={layout}
         gridColumns={columns}
         showAddToCart={true}
-        imageWidth={300}
-        imageHeight={300}
         emptyMessage="No products in this category"
         className="mt-8"
       />
@@ -367,8 +381,8 @@ Responsive grid columns based on `gridColumns` prop:
 
 In list layout:
 - Products displayed vertically
-- Images limited to max 150x150px
 - Full width items
+- `imageWidth` defaults to `320` instead of `800`; the height still follows the store's configured aspect ratio
 
 ## States
 
@@ -392,7 +406,7 @@ Renders product items using default or custom renderer.
 - **Empty State**: Customizable no-results message
 - **Custom Rendering**: Full control over product display
 - **Add to Cart**: Built-in or custom add to cart
-- **Image Sizing**: Configurable dimensions
+- **Image Sizing**: Height derived from the store's configured aspect ratio; `imageWidth` overridable per placement
 - **Type Safe**: Full TypeScript support
 
 ## Related Components

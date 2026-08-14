@@ -158,8 +158,8 @@ Add shipping address:
 const { addShippingAddress } = useCartDispatch();
 
 await addShippingAddress({
-  fullName: 'John Doe',
-  address1: '123 Main St',
+  full_name: 'John Doe',
+  address_1: '123 Main St',
   city: 'New York',
   province: 'NY',
   postcode: '10001',
@@ -167,6 +167,12 @@ await addShippingAddress({
   telephone: '555-0100'
 });
 ```
+
+:::warning The `Address` type is snake_case
+The keys are `full_name`, `address_1`, `address_2`, `city`, `province`, `postcode`,
+`country`, `telephone`. Passing camelCase (`fullName`, `address1`) does not silently
+save the wrong shape — `validateAddress` rejects the call with `Full name is required`.
+:::
 
 ### addBillingAddress
 
@@ -176,8 +182,8 @@ Add billing address:
 const { addBillingAddress } = useCartDispatch();
 
 await addBillingAddress({
-  fullName: 'John Doe',
-  address1: '123 Main St',
+  full_name: 'John Doe',
+  address_1: '123 Main St',
   city: 'New York',
   province: 'NY',
   postcode: '10001',
@@ -198,13 +204,23 @@ await addPaymentMethod('stripe', 'Credit Card');
 
 ### addShippingMethod
 
-Select shipping method:
+Select a shipping method. The signature is `addShippingMethod(code, name, providerCode)` — **all three arguments are required**:
 
 ```tsx
+const { data } = useCartState();
 const { addShippingMethod } = useCartDispatch();
 
-await addShippingMethod('standard', 'Standard Shipping');
+// Always thread the values straight off `availableShippingMethods`.
+const method = data.availableShippingMethods[0];
+
+await addShippingMethod(method.code, method.name, method.providerCode);
 ```
+
+:::danger `providerCode` is required
+`addShippingMethod` throws `Cannot add shipping method: providerCode is required` when the third argument is missing or empty — there is no silent fallback to `'core'`.
+
+`providerCode` identifies which shipping provider the method came from (core, USPS, EasyPost, …). The server uses it to route validation to that provider's `validateMethod`; passing the wrong one makes the selection fail with "method no longer available". Read it from `availableShippingMethods[].providerCode` — the GraphQL field is non-nullable (`String!`), so it is always present.
+:::
 
 ### addContactInfo
 
@@ -238,17 +254,41 @@ await removeCoupon();
 
 ### fetchAvailableShippingMethods
 
-Fetch shipping methods for an address:
+Fetch shipping methods for an address. Signature: `fetchAvailableShippingMethods(params: ShippingAddressParams)`.
 
 ```tsx
 const { fetchAvailableShippingMethods } = useCartDispatch();
+const { data } = useCartState();
 
 await fetchAvailableShippingMethods({
   country: 'US',
-  province: 'CA',
-  postcode: '90210'
+  province: 'CA',   // optional
+  postcode: '90210' // optional
+});
+
+// The result is written back onto cart state:
+data.availableShippingMethods.forEach((method) => {
+  console.log(method.providerCode, method.code, method.name, method.cost?.text);
 });
 ```
+
+It runs a GraphQL query, writes the result to `data.availableShippingMethods`, and toggles `loadingStates.fetchingShippingMethods`. Each entry has this shape:
+
+```typescript
+interface AvailableShippingMethod {
+  providerCode: string; // required — pass through to addShippingMethod
+  code: string;
+  name: string;
+  cost?: {
+    value: number;
+    text: string;
+  };
+}
+```
+
+:::info
+Throws `Cannot fetch shipping methods: cart not initialized` when the cart has no UUID yet.
+:::
 
 ## Helper Methods
 

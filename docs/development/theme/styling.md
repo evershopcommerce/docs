@@ -93,7 +93,7 @@ The `tailwind.css` file is the entry point for TailwindCSS v4. Here are the key 
 }
 ```
 
-The design tokens (colors, border radius, etc.) are defined as CSS custom properties in `:root` and `.dark` selectors. This provides a consistent design system with built-in dark mode support.
+The design tokens (colors, border radius, etc.) are defined as CSS custom properties on `:root`. Core ships **light-only** as of the 2026-07-10 re-skin — there is no `.dark` token block anywhere in core's `tailwind.css`, so the `dark:` utilities inside the shared `@components/common/ui/*` primitives never match. A theme that wants dark mode must supply its own `.dark` token block and add the `dark` class to the DOM.
 
 The key Tailwind v4 directives used:
 
@@ -112,7 +112,17 @@ To customize the Tailwind configuration for your theme, override the `TailwindCs
 npx evershop theme:twizz
 ```
 
-Select `TailwindCss.tsx` from the list. This copies the component, `tailwind.css`, and `shadcn.css` to your theme's `pages/all/` folder.
+Select `TailwindCss.tsx` from the list. The command follows the file's relative imports, so it copies the component **and** its stylesheet dependencies — `tailwind.css` and, through that file's `@import`, `shadcn.css` — into `themes/<your-theme>/src/pages/all/`.
+
+:::warning Copy `@custom-variant dark` across
+Core's `tailwind.css` declares dark mode as a **class-based** variant:
+
+```css
+@custom-variant dark (&:is(.dark *));
+```
+
+A theme that overrides `TailwindCss.tsx` and writes its own `tailwind.css` must carry that line over. Drop it and Tailwind v4 falls back to its default `prefers-color-scheme` behaviour, so every `dark:` utility inside the shared `@components/common/ui/*` primitives activates for any visitor whose OS is in dark mode — while no `.dark` tokens exist in core to answer them. The result is half-dark components on a light page: dark borders and muted text over a white background. It renders, nothing errors, and it only reproduces on an OS set to dark.
+:::
 
 **Step 2:** Edit the `tailwind.css` file in your theme to customize the configuration. For example, to add a custom Tailwind plugin or additional theme values:
 
@@ -273,6 +283,14 @@ Local files (like `/custom.css`) should be placed in the `public/` folder of you
 
 :::warning
 Files added via configuration are loaded as separate HTTP requests and are **not** processed by the build pipeline — no SCSS compilation, no Tailwind processing. Use this approach only for external resources or pre-built CSS.
+:::
+
+:::info Do not add a favicon `<link>` here
+The favicon is now derived from an **admin setting** — Store Setting → Branding → Favicon — not from a hand-written `<link rel="icon">` tag.
+
+`HeadTags.tsx` emits the tags itself: an `.ico` or `.svg` upload is linked as-is, while a raster upload (PNG / JPG / WebP) is resized through the `/images` endpoint into `32x32`, `16x16`, and a `180x180` Apple touch icon. When no favicon is uploaded, it falls back to a `favicon.ico` dropped in the `public/` folder.
+
+Adding your own `links` entry produces a second, competing `<link rel="icon">`.
 :::
 
 ## Styling Best Practices

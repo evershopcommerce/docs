@@ -44,7 +44,7 @@ ItemQuantity is consumed inside cart item components. Theme developers override 
     <tr>
       <td>DefaultCartItemList</td>
       <td>cart</td>
-      <td><code>themes/&lt;name&gt;/src/pages/cart/DefaultCartItemList.tsx</code></td>
+      <td><code>themes/&lt;name&gt;/src/components/frontStore/cart/DefaultCartItemList.tsx</code></td>
     </tr>
   </tbody>
 </table>
@@ -286,7 +286,7 @@ function CartItem({ item }) {
 
 A theme developer overrides the cart item layout and uses `useItemQuantity` hook for a custom quantity control:
 
-**`themes/my-theme/src/pages/cart/DefaultCartItemList.tsx`**
+**`themes/my-theme/src/components/frontStore/cart/DefaultCartItemList.tsx`**
 
 ```tsx
 import { CartItems } from '@components/frontStore/cart/CartItems';
@@ -339,11 +339,6 @@ function DefaultCartItemList() {
 }
 
 export default DefaultCartItemList;
-
-export const layout = {
-  areaId: 'shoppingCartLeft',
-  sortOrder: 10
-};
 ```
 
 ## Behavior

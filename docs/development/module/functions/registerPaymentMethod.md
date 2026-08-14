@@ -34,7 +34,10 @@ The `factory` object must conform to the `PaymentMethodFactory` type:
 ```ts
 type PaymentMethodFactory = {
   init: () => PaymentMethodInfo | Promise<PaymentMethodInfo>;
-  validator?: () => boolean | Promise<boolean>;
+  // REQUIRED. The registry validator asserts `typeof method.validator === 'function'`
+  // on every factory — a factory without one makes the whole payment-method listing
+  // throw `Value checkoutPaymentMethods is invalid: false`.
+  validator: (context?: PaymentMethodValidationContext) => boolean | Promise<boolean>;
 };
 
 type PaymentMethodInfo = {
@@ -47,14 +50,14 @@ type PaymentMethodInfo = {
     -   `code`: A unique string identifier for your payment method (e.g., `'stripe'`, `'cod'`).
     -   `name`: The display name for the payment method shown to the customer (e.g., `'Credit Card'`, `'Cash on Delivery'`).
 
--   **`validator()`**: (Optional) A function that returns a boolean value (or a Promise resolving to a boolean). This function determines if the payment method should be available for the current cart.
+-   **`validator(context?)`**: **Required.** Returns a boolean (or a Promise of one) deciding whether the method is available for the current cart. Every registered factory must supply one — the registry validates this and throws `Value checkoutPaymentMethods is invalid: false` otherwise, taking down every payment-method listing. If your method is always available, return `true`. The optional `context` carries `cartTotal`; read it defensively (`context?.cartTotal`).
     -   If it returns `true` or is not provided, the payment method will be available.
     -   If it returns `false`, the method will be hidden.
     -   This is useful for conditionally showing payment methods based on cart total, customer group, or specific items in the cart.
 
 ## How to Use
 
-You typically call `registerPaymentMethod()` in the `index.js` file of your module or extension.
+Call `registerPaymentMethod()` from the default export of your module or extension's `bootstrap.ts`. That is the only entry point the framework loads per module, and the registry is locked immediately afterwards — calling it from a middleware or request handler throws `Registry is locked`.
 
 ### Example: Creating a "Cash on Delivery" Method
 
@@ -72,7 +75,7 @@ registerPaymentMethod({
     };
   },
   validator: async () => {
-    codStatus = await getSetting('codPaymentStatus', 0);
+    const codStatus = await getSetting('codPaymentStatus', 0);
     if (parseInt(codStatus, 10) === 1) {
       return true;
     } else {

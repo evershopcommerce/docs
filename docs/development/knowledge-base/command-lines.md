@@ -26,12 +26,20 @@ The following scripts are available in the `package.json` file. You can run any 
     "build": "evershop build",
     "setup": "evershop install",
     "seed": "evershop seed",
+    "user:create": "evershop user:create",
     "theme:active": "evershop theme:active",
     "theme:twizz": "evershop theme:twizz",
-    "theme:create": "evershop theme:create"
+    "theme:create": "evershop theme:create",
+    "theme:status": "evershop theme:status",
+    "theme:uninstall": "evershop theme:uninstall",
+    "theme:export-content": "evershop theme:export-content"
   }
 }
 ```
+
+:::info
+When you pass flags through `npm run`, separate them with `--`, e.g. `npm run theme:active -- boutique --dry-run`. Without it, npm swallows the arguments and the command sees none.
+:::
 
 ## Installation Command
 
@@ -73,14 +81,7 @@ evershop build
 
 This command processes all React components and generates optimized bundles in the `.evershop` folder, preparing your application for production deployment.
 
-:::info
-To skip the JavaScript minification process (useful for debugging production builds), use the following command:
-
-```bash
-evershop build -- --skip-minify
-```
-
-:::
+The build command takes no arguments — minification is always on for production bundles.
 
 ## Start Command
 
@@ -109,7 +110,7 @@ This command seeds your database with sample data including:
 - Collections
 - Products with images
 - CMS pages
-- Widgets
+- Blog (categories, tags, posts and comments)
 
 You can also seed specific data types individually:
 
@@ -129,9 +130,11 @@ npm run seed -- --products
 # Seed only CMS pages
 npm run seed -- --pages
 
-# Seed only widgets
-npm run seed -- --widgets
+# Seed only the blog
+npm run seed -- --blog
 ```
+
+The available flags are `--attributes`, `--categories`, `--collections`, `--products`, `--pages`, `--blog` and `--all`. You must pass at least one; running `npm run seed` with no flag exits with an error. There is no `--widgets` flag — widget content is installed by the theme (see `theme:active`), not by the seeder.
 
 :::info
 The seed command is designed for development and testing environments only.
@@ -141,19 +144,23 @@ The seed command is designed for development and testing environments only.
 
 ### Create a New Theme
 
-Generate a new custom theme from the default template:
+Generate a new custom theme skeleton:
 
 ```bash
-npm run theme:create -- --name "my-theme"
+npm run theme:create
 ```
 
-This command:
-- Creates a new theme folder in the `themes/` directory
-- Copies the default theme structure
-- Sets up the theme configuration files
+This command is **interactive only** — it has no flags. It prompts you for the theme name, then:
 
-Required parameter:
-- `--name`: Name of your new theme (lowercase, hyphen-separated recommended)
+- Creates a new theme folder in the `themes/` directory
+- Creates the `src/pages/homepage/` structure with a starter component
+- Writes the theme's `package.json`
+
+The name must contain only letters, numbers, dashes or underscores. The command aborts if a theme with that name already exists.
+
+:::warning
+There is no `--name` flag. `npm run theme:create -- --name "my-theme"` will simply ignore the argument and still prompt you.
+:::
 
 ### Activate a Theme
 
@@ -163,18 +170,82 @@ Switch your store to use a different theme:
 npm run theme:active
 ```
 
-This command provides an interactive interface to activate a theme:
+You can also name the theme directly, as a positional argument:
 
-- Scans the `themes/` directory for available themes
-- Presents a list of themes to choose from
-- Updates the `config/default.json` file with your selected theme
-- Optionally runs the build command automatically
+```bash
+npm run theme:active -- boutique
+```
 
-After selecting a theme, you'll be prompted to run the build command. If you choose not to build immediately, remember to run it later for the changes to take effect.
+With no argument, the command scans the `themes/` directory and presents a list to choose from.
 
-:::tip
-The command will automatically detect all themes in your `themes/` directory, so you don't need to specify the theme name manually.
+Activation does considerably more than flip a config value. In order:
+
+1. **Validates the theme's `theme.json` manifest.** A theme without a `theme.json` is treated as presentation-only and this step is skipped. Validation failures abort activation — the active theme is left untouched.
+2. **Installs or upgrades the theme's content** — widgets and placements — reconciling against what is already in the database. Your own customizations are preserved and reported as conflicts rather than overwritten.
+3. **Provisions the theme's metafield definitions.** Idempotent, and re-run at every server boot.
+4. **Writes `system.theme` into `config/default.json`.**
+5. **Offers to run `npm run build`.**
+
+Supported flags:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Flag</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>--dry-run</code></td><td>Report the pending content changes and exit. Never writes anything, never changes the active theme.</td></tr>
+    <tr><td><code>--content-only</code></td><td>Install the theme's content but leave the active theme unchanged. Intended for CI provisioning and end-to-end tests.</td></tr>
+    <tr><td><code>-y</code>, <code>--yes</code></td><td>Skip the post-activation build prompt. The prompt is also skipped automatically in non-interactive environments.</td></tr>
+  </tbody>
+</table>
+
+```bash
+# Preview what activating "boutique" would change
+npm run theme:active -- boutique --dry-run
+```
+
+If you choose not to build immediately, remember to run `npm run build` later for the changes to take effect.
+
+### Inspect Theme Status
+
+```bash
+npm run theme:status
+```
+
+Lists every theme that has content installed, marking the active one, along with a summary of metafield definitions each theme provisioned. Pass a theme id to get a dry-run diff of that theme's manifest against what is currently installed:
+
+```bash
+npm run theme:status -- boutique
+```
+
+This command is read-only and prompt-free, so it is safe to run in CI.
+
+### Uninstall Theme Content
+
+```bash
+npm run theme:uninstall -- boutique
+```
+
+Deletes all of a theme's content — widgets, placements, draft changesets and rollout plans — after printing a preview and asking for confirmation. Metafield definitions the theme provisioned are **left in place** (their stored values survive).
+
+Pass `-y` / `--yes` to skip the confirmation. Without it, the command refuses to run non-interactively.
+
+:::danger
+This is destructive and cannot be undone. Run `theme:status` first to see what will be removed.
 :::
+
+### Export Theme Content
+
+```bash
+npm run theme:export-content -- boutique 1.2.0
+```
+
+Serializes the theme's live content from the database back into its `theme.json`, preserving widget and placement UUIDs so that buyers of the theme upgrade cleanly. This is the command a theme author runs after building a store layout in the admin page builder.
+
+Both the theme id and a valid SemVer version are **required** — the version gates upgrades, so it must be supplied explicitly. The version can be the second positional argument or the `--set-version` flag (it is not `--version`, which the top-level `evershop` CLI reserves for the package version). Pass `--force` to overwrite an existing `theme.json`.
 
 ### Theme Development Tool
 

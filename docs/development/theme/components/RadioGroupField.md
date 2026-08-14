@@ -80,12 +80,6 @@ function ShippingForm() {
       <td>Label text for the radio group</td>
     </tr>
     <tr>
-      <td>direction</td>
-      <td>'horizontal' | 'vertical'</td>
-      <td>'vertical'</td>
-      <td>Layout direction of radio buttons</td>
-    </tr>
-    <tr>
       <td>defaultValue</td>
       <td>string | number</td>
       <td>-</td>
@@ -131,8 +125,9 @@ function ShippingForm() {
       <td>...props</td>
       <td>InputHTMLAttributes</td>
       <td>-</td>
-      <td>All standard HTML input attributes</td>
+      <td>Accepted by the type (the interface extends <code>InputHTMLAttributes</code>), but the rest object is captured and never spread onto any element — extra attributes type-check and then silently do not reach the DOM.</td>
     </tr>
+
   </tbody>
 </table>
 
@@ -165,34 +160,7 @@ function PaymentForm() {
         name="paymentMethod"
         label="Payment Method"
         options={paymentMethods}
-        direction="vertical"
         required
-      />
-    </Form>
-  );
-}
-```
-
-## Example: Horizontal Layout
-
-```tsx
-import { Form } from '@components/common/form/Form';
-import { RadioGroupField } from '@components/common/form/RadioGroupField';
-
-function GenderForm() {
-  const genderOptions = [
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-    { value: 'other', label: 'Other' }
-  ];
-
-  return (
-    <Form action="/api/profile">
-      <RadioGroupField
-        name="gender"
-        label="Gender"
-        options={genderOptions}
-        direction="horizontal"
       />
     </Form>
   );
@@ -229,16 +197,14 @@ function PlanForm() {
 ## Features
 
 - **Single Selection**: Only one option can be selected at a time
-- **Horizontal/Vertical Layout**: Control layout direction
 - **Disabled Options**: Mark specific options as disabled
 - **Controller Integration**: Uses React Hook Form Controller for better control
 - **TypeScript Support**: Full type safety with generics
 
 ## Notes
 
-- Uses `fieldset` and `legend` for proper accessibility
+- Renders a `<div role="group">` wrapper around a `role="radiogroup"` container, with per-option `<label htmlFor>` associations — not `<fieldset>`/`<legend>`.
 - Individual options can be disabled while keeping others enabled
-- The `direction` prop controls CSS class for layout
 
 ## Related Components
 

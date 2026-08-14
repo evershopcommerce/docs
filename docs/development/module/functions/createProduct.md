@@ -40,13 +40,15 @@ Product data object containing:
 ```typescript
 {
   name: string;              // Product name (required)
-  url_key?: string;          // URL-friendly key
+  url_key: string;           // URL-friendly key (required)
   status: string;            // Product status (required)
   sku: string;               // Stock keeping unit (required)
   price: number;             // Product price (required)
   group_id: number;          // Product group ID (required)
-  visibility?: string;       // Product visibility
+  visibility: number;        // Required. Enum: 0 | 1 | '0' | '1' | true | false
   qty: number;               // Quantity (required)
+  package_id: number | string | null; // Required unless no_shipping_required is true
+  no_shipping_required?: boolean;     // Virtual product; nulls package_id automatically
   manage_stock: boolean;     // Whether to manage stock
   stock_availability: boolean; // Stock availability
   attributes?: ProductAttributeData[]; // Product attributes
@@ -74,11 +76,13 @@ import { createProduct } from "@evershop/evershop/catalog/services";
 
 const productData = {
   name: "Wireless Mouse",
+  url_key: "wireless-mouse",
   sku: "MOUSE-001",
   status: "1",
   price: 29.99,
   group_id: 1,
-  visibility: "visible",
+  visibility: 1,
+  package_id: 1,
   qty: 100,
   manage_stock: true,
   stock_availability: true
@@ -99,11 +103,13 @@ import { createProduct } from "@evershop/evershop/catalog/services";
 
 const productData = {
   name: "Gaming Laptop",
+  url_key: "gaming-laptop",
   sku: "LAPTOP-001",
   status: "1",
   price: 1299.99,
   group_id: 1,
-  visibility: "visible",
+  visibility: 1,
+  package_id: 1,
   qty: 10,
   manage_stock: true,
   stock_availability: true,
@@ -124,11 +130,13 @@ import { createProduct } from "@evershop/evershop/catalog/services";
 
 const productData = {
   name: "Smartphone",
+  url_key: "smartphone",
   sku: "PHONE-001",
   status: "1",
   price: 699.99,
   group_id: 1,
-  visibility: "visible",
+  visibility: 1,
+  package_id: 1,
   qty: 50,
   manage_stock: true,
   stock_availability: true,
@@ -153,7 +161,8 @@ const productData = {
   status: "1",
   price: 199.99,
   group_id: 1,
-  visibility: "visible",
+  visibility: 1,
+  package_id: 1,
   category_id: 5,
   qty: 30,
   manage_stock: true,

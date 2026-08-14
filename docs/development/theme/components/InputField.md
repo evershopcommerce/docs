@@ -251,7 +251,7 @@ function HelpForm() {
 - Must be used inside a `Form` component or `FormProvider`
 - Automatically connects to React Hook Form using `useFormContext`
 - Error messages are automatically translated using the `_()` function
-- The component applies an 'error' class when validation fails
+- On validation failure the wrapping `Field` gets `data-invalid="true"` and the input gets `aria-invalid="true"`. Style with `[data-invalid=true]` / `[aria-invalid=true]` rather than an `.error` class.
 - Icons automatically adjust input padding
 
 ## Related Components

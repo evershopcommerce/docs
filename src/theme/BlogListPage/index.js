@@ -99,7 +99,7 @@ function BlogListPageContent(props) {
             {metadata.blogTitle}
           </h1>
           <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-            News, updates, and tutorials from the Evershop team.
+            {metadata.blogDescription}
           </p>
         </div>
       </div>

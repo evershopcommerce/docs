@@ -31,13 +31,17 @@ import { Area } from '@components/common/Area';
 function Layout() {
   return (
     <div>
-      <Area id="header" className="header-area" />
-      <Area id="content" className="content-area" />
-      <Area id="footer" className="footer-area" />
+      <Area id="headerTop" className="header__top" isGlobal editableInPageBuilder />
+      <Area id="content" className="page-width min-h-36" wrapper="main" editableInPageBuilder />
+      <Area id="footerTop" className="footer__top" isGlobal editableInPageBuilder />
     </div>
   );
 }
 ```
+
+:::info
+`headerTop`, `content` and `footerTop` are real storefront Area IDs. The header and footer Areas are declared in the shared `Header` / `Footer` components; `content` is declared by the storefront master component `modules/base/pages/frontStore/all/Base.tsx`. See [Templating](/docs/development/theme/templating) for the full picture.
+:::
 
 ## Props
 
@@ -93,8 +97,24 @@ function Layout() {
       <td>false</td>
       <td>If true, renders without wrapper element</td>
     </tr>
+    <tr>
+      <td>isGlobal</td>
+      <td>boolean</td>
+      <td>false</td>
+      <td>Marks an area that appears on every page (header, footer). Informational: the page builder uses it to surface "this area appears on every page" warnings, and to outline the area when the editor's <em>Globals view</em> is on. When set, the wrapper gets a <code>data-evershop-global="true"</code> attribute.</td>
+    </tr>
+    <tr>
+      <td>editableInPageBuilder</td>
+      <td>boolean</td>
+      <td>false</td>
+      <td>Opts the area into page-builder editing. When false (the default) the page builder does not expose the area as a drop target, even though it still renders in the SSR'd preview — this is what protects layout-only and system-message areas from accidental edits. When set, the wrapper gets <code>data-evershop-editable-area="true"</code> and drop zones are emitted inside the page-builder iframe.</td>
+    </tr>
   </tbody>
 </table>
+
+:::info
+`isGlobal` and `editableInPageBuilder` have no effect on the production storefront beyond the two data attributes — the drop zones and outlines they enable render only inside the page-builder iframe.
+:::
 
 ## Component Interface
 
@@ -105,6 +125,16 @@ interface Component {
   props?: Record<string, any>;
   component: {
     default: React.ElementType | React.ReactNode;
+  };
+  /**
+   * Page-builder metadata. Set only when the entry is a widget instance —
+   * the iframe chrome uses it to identify the widget for selection, delete
+   * and inline edit. Undefined for regular layout components.
+   */
+  _widgetMeta?: {
+    uuid: string;
+    type: string;
+    settings: Record<string, unknown>;
   };
 }
 ```
@@ -132,35 +162,61 @@ function HomePage() {
 
 ## Example: With Core Components
 
+`coreComponents` are components the Area always renders, declared inline rather than registered through a `layout` export. They are merged with the registered components and widgets, then sorted by `sortOrder`.
+
 ```tsx
 import { Area } from '@components/common/Area';
-import Logo from '@components/common/Logo';
-import Navigation from '@components/common/Navigation';
+import { MiniCart } from '@components/frontStore/cart/MiniCart';
+import { SearchBox } from '@components/frontStore/catalog/SearchBox';
 
-function Header() {
+function HeaderRight() {
   const coreComponents = [
     {
-      id: 'logo',
+      id: 'search',
       sortOrder: 10,
-      component: { default: Logo },
-      props: { size: 'large' }
+      component: { default: SearchBox }
     },
     {
-      id: 'nav',
+      id: 'miniCart',
       sortOrder: 20,
-      component: { default: Navigation }
+      component: { default: MiniCart }
     }
   ];
 
   return (
     <Area
-      id="header"
-      className="site-header"
+      id="headerMiddleRight"
+      className="header__middle__right ml-auto flex items-center gap-1"
+      isGlobal
+      editableInPageBuilder
       coreComponents={coreComponents}
     />
   );
 }
 ```
+
+`component.default` also accepts an already-created element, which is how core's `Footer` renders its static payment-icon row:
+
+```tsx
+<Area
+  id="footerBottom"
+  className="footer__bottom"
+  isGlobal
+  editableInPageBuilder
+  coreComponents={[
+    {
+      component: { default: <div className="page-width">© 2026</div> },
+      sortOrder: 10
+    }
+  ]}
+/>
+```
+
+:::warning There is no `@components/common/Logo` or `@components/common/Navigation`
+The storefront logo is a **page** component at `modules/base/pages/frontStore/all/Logo.tsx` (it targets `areaId: 'headerMiddleCenter'` through its own `layout` export and pulls the admin-uploaded logo via a `query` export), not a shared component under `@components`. There is no `Navigation` shared component at all — the header is composed from Areas.
+
+To replace the logo in a theme, override the page component at `themes/<theme>/src/pages/all/Logo.tsx`.
+:::
 
 ## Example: Custom Wrapper
 
@@ -219,9 +275,35 @@ export const layout = {
 };
 ```
 
+## The Component Registry: `setAreaComponents` / `getAreaComponents`
+
+`Area` does not receive its component map through props in normal operation. The build step generates a **route-keyed registry** and `Area` looks up the current request's route from app state.
+
+```ts
+import {
+  setAreaComponents,
+  getAreaComponents
+} from '@components/common/Area.js';
+
+// Register every component for a route (generated by the build entry).
+setAreaComponents('productView', components);
+
+// Read a route's map back.
+const components = getAreaComponents('productView');
+```
+
+These two functions replaced the old `Area.defaultProps.components` channel. React 19 **ignores `defaultProps` on function components**, so any code still assigning to it hands `Area` nothing — and an Area with no components renders nothing, which shows up as a blank page section rather than an error.
+
+An explicit `components` prop is still honoured if one is passed directly, which is why the prop remains in the table above. It is not the path core uses.
+
+:::warning Upgrading a theme
+If your theme or extension wrote to `Area.defaultProps.components`, switch it to `setAreaComponents`. See [Upgrading To React 19](/blog/upgrading-to-react-19) for the full list of changes that break silently.
+:::
+
 ## See Also
 
 - [The View System](/docs/development/theme/view-system) - Overview of the view and area system
+- [Upgrading To React 19](/blog/upgrading-to-react-19) - `defaultProps`, the component registry, and other silent breaks
 
 ## Related Components
 
