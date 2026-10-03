@@ -356,13 +356,13 @@ Compose a `ShippingContext` for a single `(cart, provider, zone)` tuple.
 resolveZonesForAddress(filter: ZoneAddressFilter): Promise<ShippingZoneRow[]>
 ```
 
-Zones covering a destination. A zone matches when the country is in its `shipping_zone_country` rows **and** either the zone has no province rows for that country (whole country covered) or the destination province matches one.
+Zones covering a destination. A zone matches when the country is in its `shipping_zone_country` rows **and** either the zone has no `shipping_zone_region` rows for that country (whole country covered) or one of them matches the destination's region key.
 
 ```ts
 interface ZoneAddressFilter {
   country: string;
-  province?: string | null;
-  postcode?: string | null;  // reserved; not used for matching yet
+  administrativeArea?: string | null;  // the stored region key, e.g. US-CA
+  postalCode?: string | null;          // reserved; not used for matching yet
 }
 ```
 
@@ -376,7 +376,7 @@ getOriginAddress(): Promise<Address>
 
 The shop's origin address, composed from the existing store settings (`storeCountry`, `storeProvince`, `storeCity`, `storeAddress`, `storePostalCode`) rather than a separate origin setting.
 
-Returns a defined-but-possibly-incomplete `Address`. Providers that need specific fields — USPS needs country + postcode — must validate and return `[]` when they are missing.
+Returns a defined-but-possibly-incomplete `Address` in the shared vocabulary (`country`, `administrative_area`, `locality`, `address_line_1`, `postal_code`). Providers that need specific fields — USPS needs country + postal code — must validate and return `[]` when they are missing.
 
 ### serializeItems
 
@@ -411,7 +411,7 @@ computeFingerprintFromCart(cart: Cart): string
 computeFingerprintFromCtx(ctx: ShippingContext): string
 ```
 
-A SHA-1 over the shipping-relevant cart state: destination (`country`, `province`, `postcode`, `city` only), `totalWeight`, `totalValue`, and a sorted `[productId, qty]` list. Fields like `full_name` and `telephone` are deliberately excluded, so two copies of the same address hash identically.
+A SHA-1 over the shipping-relevant cart state: destination (`country`, `administrative_area`, `locality`, `dependent_locality`, `postal_code` only), `totalWeight`, `totalValue`, and a sorted `[productId, qty]` list. Fields like `recipient` and `telephone` are deliberately excluded, so two copies of the same address hash identically.
 
 - `computeFingerprintFromCart` runs inside the `shipping_method_data` resolver and stamps `ResolvedShippingMethod.fingerprint`.
 - `computeFingerprintFromCtx` backs the per-request memoization of `provider.getMethods`.

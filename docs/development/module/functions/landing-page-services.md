@@ -6,6 +6,10 @@ keywords:
 - updateLandingPage
 - deleteLandingPage
 - duplicateLandingPage
+- replaceHomepage
+- cloneWidgetBody
+- findFreeUrlKey
+- buildBackupIdentity
 - getLandingPagesBaseQuery
 - syncLandingPageUrlRewrite
 - landing page
@@ -229,7 +233,8 @@ Delete a landing page and everything hanging off it. Returns the row as it was b
 1. Purges historical redirect aliases for the page's URN, so old URLs stop 302ing.
 2. Removes the `url_rewrite` row, so `/<url_key>` stops resolving.
 3. Deletes the page body — every `widget_placement` row whose `entity_urn` is this page.
-4. Deletes the `landing_page` row.
+4. Deletes every `widget_instance` that was placed **only** on this page (an instance still placed elsewhere survives). Raw SQL; cms widget hooks do not fire.
+5. Deletes the `landing_page` row.
 
 :::warning The body does not cascade
 `widget_placement.entity_urn` is a plain `varchar` with no foreign key to `landing_page`. Dropping the entity row alone would orphan every placement, which is why step 3 is explicit. If you write your own landing-page teardown, you must delete placements by URN yourself.
@@ -358,6 +363,70 @@ await syncLandingPageUrlRewrite(connection, {
   url_key: page.url_key
 });
 ```
+
+## replaceHomepage
+
+```ts
+replaceHomepage(uuid: string, context: { userId: number; routeId?: string; expectedFingerprints?: { homepage: string; landingPage: string } }): Promise<ReplaceHomepageResult>
+preflightReplaceHomepage(uuid: string, userId: number): Promise<PreflightResult>
+```
+
+The service behind **Replace homepage with this page**. `preflightReplaceHomepage` runs the read-only checks the dialog shows; `replaceHomepage` performs the replacement in one transaction:
+
+1. Takes `pg_try_advisory_xact_lock` (another run in progress → `REPLACE_IN_PROGRESS`), locks the landing page and the homepage placements, and compares the fingerprints from preflight (`HOMEPAGE_CHANGED` on mismatch).
+2. Refuses when an active or upcoming rollout plan touches the homepage (`HOMEPAGE_ROLLOUT_ACTIVE`); cancels ended plans that touched it (plan rows only, changesets kept).
+3. Discards the unpublished page-builder operations that touch the homepage in every open changeset; the changeset rows are never deleted.
+4. Creates a **disabled** backup landing page (name `Homepage backup <yyyy-LL-dd HH:mm>`, url_key `homepage-backup-…`) through the create pipeline, copies the homepage instances and placements into it with fresh uuids, removes the homepage placements, and deletes originals left with no placement.
+5. Clones the landing page's body onto route `homepage` (`landing_page_content` → `content`, container children re-pointed), then re-checks and commits.
+
+"Touching the homepage" is decided by the operation's **target** (placement uuid, instance uuid, payload route), not only by the route stamped on it.
+
+### Throws
+
+`ReplaceHomepageError` with `code` ∈ `LANDING_PAGE_NOT_FOUND` (404), `HOMEPAGE_ROLLOUT_ACTIVE`, `HOMEPAGE_CHANGED`, `HOMEPAGE_ENTITY_SCOPED`, `REPLACE_IN_PROGRESS` (409) and, for `HOMEPAGE_ROLLOUT_ACTIVE`, a `rolloutPlans` array.
+
+### Hooks
+
+`replaceHomepage` (outer, no connection), and the inner, transaction-joined `createHomepageBackup`, `snapshotHomepage` and `cloneWidgetBody`. Helper pairs: `hookBefore/AfterReplaceHomepage`, `hookBefore/AfterCreateHomepageBackup`, `hookBefore/AfterSnapshotHomepage`.
+
+---
+
+## cloneWidgetBody
+
+```ts
+cloneWidgetBody(conn: PoolClient, opts: {
+  from: { route: string | null; entityUrn: string | null };
+  to: { route: string | null; entityUrn: string | null };
+  areaMap?: Record<string, string>;
+  excludeAreas?: string[];
+  theme: 'active' | 'preserve';
+  activeTheme?: string | null;
+}): Promise<{ clonedInstances: number; clonedPlacements: number; instanceUuidMap: Map<string, string> }>
+```
+
+Copies every placement in one scope, together with the instances behind them, into another scope with fresh uuids. Container-child areas (`columnsContainer_<parent uuid>_col_<i>`) are re-pointed at the copied parent. `theme: 'preserve'` copies every theme bucket and keeps each row's theme (what `duplicateLandingPage` uses); `theme: 'active'` copies only the active bucket and stamps it. Set-based (three statements regardless of body size). Writes both tables directly — cms widget hooks and processors do not fire.
+
+---
+
+## findFreeUrlKey
+
+```ts
+findFreeUrlKey(isTaken: (candidate: string) => Promise<boolean>, base: string, suffix?: string): Promise<string>
+```
+
+Returns `base` (or `<base>-<suffix>`) if free, else appends `-2`, `-3`, … Used by Duplicate (`-copy`) and by the homepage backup.
+
+---
+
+## buildBackupIdentity
+
+```ts
+buildBackupIdentity(now: Date, timezone: string | null, replacedByName: string): { name: string; urlKeyBase: string; description: string; zone: string }
+```
+
+Pure. Formats the backup's name and url_key base in the store timezone, falling back to UTC when the zone is empty or invalid. `HOMEPAGE_BACKUP_URL_KEY_PREFIX` (`homepage-backup-`) is the contract that identifies backups.
+
+---
 
 ## See Also
 

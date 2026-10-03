@@ -205,6 +205,8 @@ responseSample={`{
 
 ## Customer Addresses
 
+Addresses use the shared address vocabulary (the same column names as cart and order addresses). `country` is the only key the payload schema requires; the service validates the rest against the country's address schema and answers `400` with field-targeted `error.errors[]` on failure — the codes and the error shape are documented under [Address Validation](/docs/api/customer-self-service#address-validation).
+
 ### Create Customer Address
 
 Creates a new address for a customer.
@@ -215,28 +217,47 @@ url="/api/customers/{customer_id}/addresses"
 requestSchema={{
   "type": "object",
   "properties": {
-    "full_name": { "type": "string" },
-    "telephone": { "type": "string" },
-    "address_1": { "type": "string" },
-    "address_2": { "type": "string" },
-    "city": { "type": "string" },
-    "province": { "type": "string" },
-    "country": { "type": "string" },
-    "postcode": { "type": "string" },
-    "is_default": { "type": ["boolean", "integer"] }
-  }
+    "recipient": { "type": ["string", "null"], "description": "Full name of the recipient (single name field)" },
+    "given_name": { "type": ["string", "null"], "description": "Given name, when the store collects split names" },
+    "family_name": { "type": ["string", "null"], "description": "Family name, when the store collects split names" },
+    "organization": { "type": ["string", "null"], "description": "Company" },
+    "address_line_1": { "type": ["string", "null"] },
+    "address_line_2": { "type": ["string", "null"] },
+    "address_line_3": { "type": ["string", "null"], "description": "Only when the store enables a third line" },
+    "dependent_locality": { "type": ["string", "null"], "description": "Ward or neighbourhood; a region key where the country enumerates the level" },
+    "locality": { "type": ["string", "null"], "description": "City; a region key where enumerated, free text elsewhere" },
+    "administrative_area": { "type": ["string", "null"], "description": "State or province as a region key, for example US-CA" },
+    "postal_code": { "type": ["string", "null"] },
+    "sorting_code": { "type": ["string", "null"] },
+    "country": { "type": "string", "minLength": 2, "maxLength": 2, "description": "ISO 3166-1 alpha-2. The only key the payload schema requires" },
+    "telephone": { "type": ["string", "null"], "description": "Normalized to E.164 with the country's dial code" },
+    "extra": { "type": ["object", "null"], "description": "Registered extra fields by id (top-level extra keys are folded in)" },
+    "is_default": { "type": ["boolean", "number", "string", "null"] }
+  },
+  "required": ["country"],
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
     "customer_address_id": 42,
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "customer_id": 21,
-    "full_name": "John Smith",
-    "address_1": "123 Main St",
-    "city": "New York",
-    "province": "NY",
+    "recipient": "John Smith",
+    "given_name": null,
+    "family_name": null,
+    "organization": null,
+    "address_line_1": "123 Main St",
+    "address_line_2": null,
+    "address_line_3": null,
+    "dependent_locality": null,
+    "locality": "New York",
+    "administrative_area": "US-NY",
+    "postal_code": "10001",
+    "sorting_code": null,
     "country": "US",
-    "postcode": "10001"
+    "telephone": "+15550100",
+    "extra": {},
+    "is_default": true
   }
 }`}
 />
@@ -245,7 +266,7 @@ responseSample={`{
 
 ### Update Customer Address
 
-Updates an existing customer address.
+Updates an existing customer address. The patch is merged over the stored row before validation, so a partial body is fine.
 
 <Api
 method="PATCH"
@@ -253,22 +274,31 @@ url="/api/customers/{customer_id}/addresses/{address_id}"
 requestSchema={{
   "type": "object",
   "properties": {
-    "full_name": { "type": "string" },
-    "telephone": { "type": "string" },
-    "address_1": { "type": "string" },
-    "address_2": { "type": "string" },
-    "city": { "type": "string" },
-    "province": { "type": "string" },
-    "country": { "type": "string" },
-    "postcode": { "type": "string" }
-  }
+    "recipient": { "type": ["string", "null"], "description": "Full name of the recipient (single name field)" },
+    "given_name": { "type": ["string", "null"], "description": "Given name, when the store collects split names" },
+    "family_name": { "type": ["string", "null"], "description": "Family name, when the store collects split names" },
+    "organization": { "type": ["string", "null"], "description": "Company" },
+    "address_line_1": { "type": ["string", "null"] },
+    "address_line_2": { "type": ["string", "null"] },
+    "address_line_3": { "type": ["string", "null"], "description": "Only when the store enables a third line" },
+    "dependent_locality": { "type": ["string", "null"], "description": "Ward or neighbourhood; a region key where the country enumerates the level" },
+    "locality": { "type": ["string", "null"], "description": "City; a region key where enumerated, free text elsewhere" },
+    "administrative_area": { "type": ["string", "null"], "description": "State or province as a region key, for example US-CA" },
+    "postal_code": { "type": ["string", "null"] },
+    "sorting_code": { "type": ["string", "null"] },
+    "country": { "type": "string", "minLength": 2, "maxLength": 2, "description": "ISO 3166-1 alpha-2. The only key the payload schema requires" },
+    "telephone": { "type": ["string", "null"], "description": "Normalized to E.164 with the country's dial code" },
+    "extra": { "type": ["object", "null"], "description": "Registered extra fields by id (top-level extra keys are folded in)" },
+    "is_default": { "type": ["boolean", "number", "string", "null"] }
+  },
+  "additionalProperties": true
 }}
 responseSample={`{
   "data": {
     "customer_address_id": 42,
     "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "full_name": "John A. Smith",
-    "address_1": "456 Oak Ave"
+    "recipient": "John A. Smith",
+    "address_line_1": "456 Oak Ave"
   }
 }`}
 />

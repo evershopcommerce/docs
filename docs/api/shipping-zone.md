@@ -16,7 +16,7 @@ import Api from '@site/src/components/rest/Api';
 
 # Shipping Zone API
 
-A shipping zone is a set of countries (optionally narrowed to provinces). Zones no longer own methods directly — they own **provider attachments**. Configuring shipping is three steps:
+A shipping zone is a set of countries, optionally narrowed to regions within a country (states, provinces, or any level a country enumerates — the keys an address stores, such as `US-CA` or `VN-SG`). Zones no longer own methods directly — they own **provider attachments**. Configuring shipping is three steps:
 
 1. Create a **zone** — the geography.
 2. Attach a **provider** to the zone (`core`, or one supplied by an extension).
@@ -54,8 +54,22 @@ requestSchema={{
       "type": "string",
       "description": "Legacy single-country field. New clients should send countries"
     },
-    "provinces": {
-      "description": "Either a legacy array of province codes (paired with country), or an array of { country, province } pairs for multi-country zones"
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "country": { "type": "string", "minLength": 2, "maxLength": 2 },
+          "level": {
+            "type": "string",
+            "enum": ["administrative_area", "locality", "dependent_locality"],
+            "description": "The region level of the key. Defaults to administrative_area"
+          },
+          "key": { "type": "string", "minLength": 1, "description": "An active region key of that country, for example US-CA" }
+        },
+        "required": ["country", "key"]
+      },
+      "description": "Region restrictions per country. A country with no entries is covered whole"
     }
   },
   "required": ["name"],
@@ -70,29 +84,31 @@ responseSample={`{
 }`}
 />
 
-A multi-country zone with province restrictions:
+A multi-country zone with region restrictions:
 
 ```json
 {
   "name": "North America",
   "countries": ["US", "CA"],
-  "provinces": [
-    { "country": "US", "province": "CA" },
-    { "country": "US", "province": "OR" },
-    { "country": "CA", "province": "BC" }
+  "regions": [
+    { "country": "US", "key": "US-CA" },
+    { "country": "US", "key": "US-OR" },
+    { "country": "CA", "key": "CA-BC" }
   ]
 }
 ```
 
+Every key must be an **active** region key of its country (`regions(country)` in GraphQL lists them). A key the data has retired — for example a Vietnamese province absorbed in the 2025 merger — is rejected with `400`. When a zone covers a country the store does not sell to, the zone is still saved and the response carries a `warnings` array naming the conflict; nothing is deleted or rewritten.
+
 :::info `shipping_zone.country` was dropped
-Countries live in the `shipping_zone_country` table and provinces in `shipping_zone_province`, both keyed by zone. The zone row itself carries only `name`, so the create response does not echo the geography back.
+Countries live in the `shipping_zone_country` table and regions in `shipping_zone_region` (`zone_id`, `country`, `level`, `region_key`; unique per zone, country, level and key), both keyed by zone. The zone row itself carries only `name`, so the create response does not echo the geography back.
 :::
 
 <hr/>
 
 ### Update a Shipping Zone
 
-Replaces the zone's name, countries and provinces. Country and province rows are replaced wholesale, not merged — send the complete lists every time. The same "at least one country" rule applies.
+Replaces the zone's name, countries and regions. Country and region rows are replaced wholesale, not merged — send the complete lists every time. The same "at least one country" rule applies.
 
 <Api
 method="PATCH"
@@ -111,8 +127,18 @@ requestSchema={{
       "type": "string",
       "description": "Legacy single-country field"
     },
-    "provinces": {
-      "description": "Array of province codes, or array of { country, province } pairs"
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "country": { "type": "string" },
+          "level": { "type": "string", "enum": ["administrative_area", "locality", "dependent_locality"] },
+          "key": { "type": "string" }
+        },
+        "required": ["country", "key"]
+      },
+      "description": "Region restrictions per country: { country, level (default administrative_area), key }"
     }
   },
   "required": ["name"],
@@ -131,7 +157,7 @@ responseSample={`{
 
 ### Delete a Shipping Zone
 
-Permanently removes a shipping zone along with its country, province, provider-attachment and rate rows.
+Permanently removes a shipping zone along with its country, region, provider-attachment and rate rows.
 
 <Api
 method="DELETE"

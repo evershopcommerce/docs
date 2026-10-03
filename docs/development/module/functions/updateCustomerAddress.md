@@ -41,14 +41,22 @@ Address UUID.
 
 ```typescript
 {
-  full_name?: string;
-  address_1?: string;
-  address_2?: string;
-  city?: string;
-  province?: string;
-  postcode?: string;
+  recipient?: string;
+  given_name?: string;
+  family_name?: string;
+  organization?: string;
+  address_line_1?: string;
+  address_line_2?: string;
+  address_line_3?: string;
+  dependent_locality?: string;
+  locality?: string;
+  administrative_area?: string;
+  postal_code?: string;
+  sorting_code?: string;
   country?: string;
   telephone?: string;
+  extra?: Record<string, unknown>;
+  is_default?: boolean;
   is_default?: number;
 }
 ```

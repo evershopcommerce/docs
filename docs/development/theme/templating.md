@@ -74,7 +74,7 @@ node_modules/@evershop/evershop/dist/components/
 │   ├── metafield/   # <Metafield> renderer and its per-type renderers
 │   ├── page-builder/
 │   ├── modal/
-│   ├── locale/
+│   ├── customer/address/   # AddressSummary (prints `formatted`)
 │   └── context/
 │       └── app.js
 └── frontStore/      # Storefront-only shared components
@@ -89,6 +89,10 @@ node_modules/@evershop/evershop/dist/components/
 
 :::info
 `common/ui/` holds the shadcn-style primitives the storefront and admin share — including `Sonner.js`, which re-exports `toast` and the `<Toaster/>`. `common/metafield/` holds the `<Metafield>` component; see [Using Metafields in a Theme](./metafields.md).
+:::
+
+:::caution Removed in the address-format release
+`common/locale/` (`CountryOption`, `ProvinceOption`, `TimezoneOption`, `CurrencyOption`, `LanguageOption`) no longer exists; the language list moved to `@evershop/evershop/lib/locale/languages`. A theme that overrides `frontStore/customer/address/addressForm/Index.js` or the deleted `AddressForm`, `NameAndTelephone`, `ProvinceAndPostcode`, `AddressSummary.jsx` files renders the old field names and fails at submit — rebuild it over `AddressRendererProps` (see [Address Form](./components/AddressForm)).
 :::
 
 ## The `@components` Aliases

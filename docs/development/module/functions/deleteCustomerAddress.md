@@ -53,7 +53,7 @@ Returns `Promise<Address>` with deleted address data.
 import { deleteCustomerAddress } from "@evershop/evershop/customer/services";
 
 const deletedAddress = await deleteCustomerAddress('address-uuid');
-console.log(`Deleted address: ${deletedAddress.address_1}`);
+console.log(`Deleted address: ${deletedAddress.address_line_1}`);
 ```
 
 ## Hooks

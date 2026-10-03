@@ -91,11 +91,13 @@ requestSchema={{
 "country": {
 "type": "string"
 },
-"province": {
-"type": "string"
+"administrative_area": {
+"type": "string",
+"description": "Region key of the state or province (for example US-CA), or * for the whole country"
 },
-"postcode": {
-"type": "string"
+"postal_code": {
+"type": "string",
+"description": "Postal code, or * for any"
 },
 "rate": {
 "type": ["string", "number"],
@@ -120,8 +122,8 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "province": "CA",
-    "postcode": "90001",
+    "administrative_area": "US-CA",
+    "postal_code": "90001",
     "rate": "7.25",
     "is_compound": 0,
     "priority": 1
@@ -147,11 +149,13 @@ requestSchema={{
 "country": {
 "type": "string"
 },
-"province": {
-"type": "string"
+"administrative_area": {
+"type": "string",
+"description": "Region key of the state or province (for example US-CA), or * for the whole country"
 },
-"postcode": {
-"type": "string"
+"postal_code": {
+"type": "string",
+"description": "Postal code, or * for any"
 },
 "rate": {
 "type": ["string", "number"],
@@ -176,8 +180,8 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "province": "CA",
-    "postcode": "90001",
+    "administrative_area": "US-CA",
+    "postal_code": "90001",
     "rate": "7.25",
     "is_compound": 0,
     "priority": 1
@@ -201,8 +205,8 @@ responseSample={`{
     "name": "Taxable Goods",
     "tax_class_id": 1,
     "country": "US",
-    "province": "CA",
-    "postcode": "90001",
+    "administrative_area": "US-CA",
+    "postal_code": "90001",
     "rate": "7.25",
     "is_compound": 0,
     "priority": 1

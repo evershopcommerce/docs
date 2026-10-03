@@ -326,8 +326,10 @@ If you map `getShippingMethods()` results into your own state, carry `providerCo
 ```typescript
 interface ShippingAddressParams {
   country: string;
-  province?: string;
-  postcode?: string;
+  administrativeArea?: string;   // region key, e.g. US-CA
+  locality?: string;
+  dependentLocality?: string;
+  postalCode?: string;
 }
 ```
 
@@ -442,8 +444,9 @@ function ShippingMethods({ address }) {
       setLoading(true);
       getShippingMethods({
         country: address.country,
-        province: address.province,
-        postcode: address.postcode
+        administrativeArea: address.administrative_area,
+        locality: address.locality,
+        postalCode: address.postal_code
       })
         .then(setMethods)
         .finally(() => setLoading(false));

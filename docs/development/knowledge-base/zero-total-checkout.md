@@ -296,7 +296,7 @@ billing_address_id: billAddr ? billAddr.insertId : null,
 :::danger
 `order.billing_address_id` **can be null**. Any payment, invoicing, tax, fraud, export, or email code that assumed an order always has a billing address is now wrong.
 
-Core renderers were updated to tolerate the null, but the shared `AddressSummary` component was **not** — it dereferences the address. Always conditionalize at the call site:
+Core renderers were updated to tolerate the null. The shared `AddressSummary` component now prints `address.formatted` and renders nothing for a missing address, but keep conditionalizing at the call site so the surrounding heading disappears too:
 
 ```tsx
 {order.billingAddress ? <AddressSummary address={order.billingAddress} /> : null}

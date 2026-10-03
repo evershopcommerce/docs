@@ -60,19 +60,19 @@ Nine endpoints exist across the three modules:
       <td>Storefront checkout</td>
     </tr>
     <tr>
-      <td><code>POST /api/paypal/captureTransactions</code></td>
-      <td>public</td>
-      <td>Storefront PayPal return page</td>
-    </tr>
-    <tr>
-      <td><code>POST /api/paypal/authorizedTransactions</code></td>
-      <td>public</td>
-      <td>Storefront PayPal return page</td>
-    </tr>
-    <tr>
       <td><code>POST /api/paypal/authorizations/capture</code></td>
-      <td>public</td>
+      <td>private</td>
       <td>Admin order screen</td>
+    </tr>
+    <tr>
+      <td><code>POST /api/paypal/refunds</code></td>
+      <td>private</td>
+      <td>Admin order screen</td>
+    </tr>
+    <tr>
+      <td><code>POST /api/paypal/webhook</code></td>
+      <td>public</td>
+      <td>PayPal</td>
     </tr>
     <tr>
       <td><code>POST /api/cod/captures</code></td>
@@ -82,8 +82,8 @@ Nine endpoints exist across the three modules:
   </tbody>
 </table>
 
-:::warning `POST /api/paypal/authorizations/capture` is declared public
-It is the "Capture" button on the admin order screen, but its `route.json` says `access: "public"`, so the admin auth middleware never runs on it. Anyone who knows an order uuid can trigger the capture of an authorized PayPal payment. Compare with the COD equivalent (`/api/cod/captures`), which is correctly `private`. Put a network-level rule in front of it if that matters to you.
+:::info Removed endpoints
+Older releases exposed two more PayPal routes, `POST /api/paypal/captureTransactions` and `POST /api/paypal/authorizedTransactions`. They existed only as transport for the storefront's PayPal return page, which now captures and authorizes in-process, and they have been removed. Nothing in core calls them anymore; if an extension did, move it to the `finalizePaypalOrder` service in `modules/paypal/services/`.
 :::
 
 ## Credential Resolution
@@ -123,6 +123,16 @@ Every gateway handler resolves its keys the same way: a `config.json` value wins
       <td>PayPal client secret</td>
       <td><code>system.paypal.clientSecret</code></td>
       <td><code>paypalClientSecret</code></td>
+    </tr>
+    <tr>
+      <td>PayPal environment (API base URL)</td>
+      <td><code>system.paypal.environment</code></td>
+      <td><code>paypalEnvironment</code> (default <code>https://api-m.sandbox.paypal.com</code>)</td>
+    </tr>
+    <tr>
+      <td>PayPal webhook id</td>
+      <td><code>system.paypal.webhookId</code></td>
+      <td><code>paypalWebhookId</code></td>
     </tr>
     <tr>
       <td>PayPal intent</td>
@@ -312,7 +322,7 @@ The `order_placed` emit is guarded by the absence of an existing `payment_transa
 
 ## PayPal Endpoints
 
-All four PayPal endpoints take a single `order_id`, which is the order **uuid**, and all four return an empty or near-empty envelope — the meaningful state change is on the order row, not in the response.
+The buyer-facing capture/authorize step has no REST endpoint: the storefront's PayPal return page (`/paypal/processing/:order_id`) finalizes the payment in-process through the `finalizePaypalOrder` service. What remains on the REST surface is order creation (storefront), the two admin actions, and the webhook. The three order-scoped endpoints take a single `order_id`, which is the order **uuid**.
 
 ### Create A PayPal Order
 
@@ -344,73 +354,19 @@ responseSample={`{
 isPrivate={false}
 />
 
-The `intent` sent to PayPal comes from the `paypalPaymentIntent` setting (`CAPTURE` by default). Line item prices and the amount breakdown switch between tax-inclusive and tax-exclusive columns according to the store's catalog price setting. If PayPal returns no order id, the handler re-activates the cart so the customer is not stranded, and answers `500` with PayPal's message.
+The payload uses the current Orders v2 shape: buyer experience settings (return/cancel URLs, `PAY_NOW`, brand name) ride in `payment_source.paypal.experience_context`, the EverShop order number is sent as `purchase_units[0].invoice_id` (so captures show up reconciled in the PayPal dashboard and duplicate captures are rejected by PayPal itself), and the order uuid is sent as the `PayPal-Request-Id` idempotency key — a retried create returns the same PayPal order instead of minting a new one.
+
+The `intent` comes from the `paypalPaymentIntent` setting (`CAPTURE` by default). Line item prices switch between tax-inclusive and tax-exclusive columns according to the store's catalog price setting, and the amount breakdown is computed in integer minor units and verified to sum exactly to the grand total — when per-unit rounding makes that impossible, the itemized breakdown is dropped and a bare amount is sent (PayPal accepts it; a mismatched breakdown would be a `422`). Zero-decimal currencies (JPY, HUF, TWD) are sent as integers.
+
+If PayPal returns no order id or no approval link, the handler re-activates the cart so the customer is not stranded, and answers `500` with PayPal's message.
 
 Two registry keys let an extension rewrite the payload before it is sent — register a processor for either from `bootstrap.ts`: `paypalFinalAmount` (the amount breakdown) and `finalPaypalOrderData` (the whole request body).
 
 <hr />
 
-### Capture A PayPal Order
-
-Called by the storefront's PayPal return page when the store's intent is `CAPTURE`. Posts to PayPal's `/v2/checkout/orders/{integration_order_id}/capture`, inserts the resulting `payment_transaction` row and moves the order's payment status to `paypal_captured`.
-
-<Api
-method="POST"
-url="/api/paypal/captureTransactions"
-requestSchema={{
-  "type": "object",
-  "properties": {
-    "order_id": {
-      "type": "string"
-    }
-  },
-  "required": [
-    "order_id"
-  ],
-  "additionalProperties": true
-}}
-responseSample={`{
-  "data": {}
-}`}
-isPrivate={false}
-/>
-
-This handler looks the order up by uuid alone — unlike the other three PayPal endpoints it does not additionally require `payment_method = 'paypal'` or a pending payment status.
-
-<hr />
-
-### Authorize A PayPal Order
-
-Called by the storefront's PayPal return page when the store's intent is `AUTHORIZE`. Posts to PayPal's `/v2/checkout/orders/{integration_order_id}/authorize`, records the authorization as a `payment_transaction` with `payment_action: "authorize"`, and moves the payment status to `paypal_authorized`.
-
-The order must be `payment_method = 'paypal'` and `payment_status = 'pending'`.
-
-<Api
-method="POST"
-url="/api/paypal/authorizedTransactions"
-requestSchema={{
-  "type": "object",
-  "properties": {
-    "order_id": {
-      "type": "string"
-    }
-  },
-  "required": [
-    "order_id"
-  ],
-  "additionalProperties": true
-}}
-responseSample={`{
-  "data": {}
-}`}
-isPrivate={false}
-/>
-
-<hr />
-
 ### Capture An Authorized PayPal Payment
 
-The second half of the authorize flow, driven from the admin order screen. It reads the stored authorization from PayPal first: if PayPal already reports it as `CAPTURED`, EverShop simply syncs its own status rather than double-capturing; otherwise it posts to `/v2/payments/authorizations/{transaction_id}/capture`. Either way the payment status ends at `paypal_captured` and an activity log entry is written.
+The second half of the authorize flow, driven from the admin "Capture" button on the order screen. It reads the stored authorization from PayPal first: if PayPal already reports it as `CAPTURED`, EverShop simply syncs its own status rather than double-capturing; otherwise it posts to `/v2/payments/authorizations/{transaction_id}/capture` and records the resulting capture as its own `payment_transaction` row, with the authorization as its `parent_transaction_id`. Either way the payment status ends at `paypal_captured` and an activity log entry is written.
 
 <Api
 method="POST"
@@ -430,10 +386,98 @@ requestSchema={{
 responseSample={`{
   "data": {}
 }`}
-isPrivate={false}
 />
 
 Errors from PayPal are passed through with PayPal's own HTTP status and message rather than being flattened to `500`. A missing `payment_transaction` row answers `400` with `Can not find payment transaction`.
+
+<hr />
+
+### Refund A PayPal Payment
+
+Issues a full or partial refund against the order's capture, driven from the admin "Refund" button. The requested `amount` (major units) is validated against the remaining captured amount — the capture minus every refund already recorded — and then posted to PayPal's `/v2/payments/captures/{capture_id}/refund` with the order number as `invoice_id`. The refund is recorded as a `payment_transaction` row (`payment_action: "refund"`, parented to the capture), and the payment status moves to `paypal_refunded` when the cumulative refunded total reaches the captured amount, `paypal_partial_refunded` otherwise.
+
+The order must be `payment_method = 'paypal'` with payment status `paypal_captured` or `paypal_partial_refunded`.
+
+<Api
+method="POST"
+url="/api/paypal/refunds"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": ["number", "string"]
+    }
+  },
+  "required": [
+    "order_id",
+    "amount"
+  ],
+  "additionalProperties": true
+}}
+responseSample={`{
+  "data": {
+    "refundId": "1JU08902781691411",
+    "paymentStatus": "paypal_partial_refunded"
+  }
+}`}
+/>
+
+`order_id` is the order **uuid** (unlike the Stripe refund endpoint, which takes the numeric id). Orders captured through the authorize flow on releases before the capture transaction was recorded have no capture row to refund against — those answer `400` and must be refunded from the PayPal dashboard.
+
+<hr />
+
+### PayPal Webhook
+
+The endpoint PayPal calls. Create a webhook in the [PayPal developer dashboard](https://developer.paypal.com/) pointing at `https://<your domain>/api/paypal/webhook`, subscribe it to the five events below, and paste the webhook's **ID** (not a secret — PayPal webhooks are verified by id) into **Settings → Payment → Paypal → Webhook ID** (or `system.paypal.webhookId` in `config.json`).
+
+<Api
+method="POST"
+url="/api/paypal/webhook"
+responseSample={`{
+  "data": {}
+}`}
+isPrivate={false}
+/>
+
+Every delivery is verified through PayPal's `verify-webhook-signature` API using the configured webhook id; a failed verification answers `400`. While no webhook id is configured the endpoint answers `503` and logs a warning — the webhook feature is inert until you wire it. Transient processing failures answer `500`, which makes PayPal retry the delivery.
+
+The local order is resolved from the PayPal order id (`integration_order_id`) or the `invoice_id` (the order number); events for unknown orders are acknowledged and ignored.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th className="text-left">Event</th>
+      <th className="text-left">Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>CHECKOUT.ORDER.APPROVED</code></td>
+      <td>If the order is still <code>pending</code> (the buyer approved at PayPal but never completed the return redirect), captures or authorizes it server-side — the same finalization the return page runs.</td>
+    </tr>
+    <tr>
+      <td><code>PAYMENT.CAPTURE.COMPLETED</code></td>
+      <td>Upserts the <code>payment_transaction</code> row and sets payment status <code>paypal_captured</code>. Emits <code>order_placed</code> only if this is the first record of the capture.</td>
+    </tr>
+    <tr>
+      <td><code>PAYMENT.CAPTURE.PENDING</code></td>
+      <td>Records the capture and sets payment status <code>paypal_pending</code> (eCheck, manual review — money in flight, not yet settled). Never downgrades an already-settled order.</td>
+    </tr>
+    <tr>
+      <td><code>PAYMENT.CAPTURE.DENIED</code></td>
+      <td>Sets payment status <code>paypal_failed</code> and logs the denial for admin review. Deliberately does <strong>not</strong> auto-cancel the order.</td>
+    </tr>
+    <tr>
+      <td><code>PAYMENT.CAPTURE.REFUNDED</code></td>
+      <td>Records the refund and sets <code>paypal_refunded</code> / <code>paypal_partial_refunded</code> from the cumulative refunded total. A replay of a refund already recorded through the admin endpoint is a no-op.</td>
+    </tr>
+  </tbody>
+</table>
+
+All handlers share the same idempotency guard as the storefront return page (the `payment_transaction` row keyed on transaction id), so duplicate deliveries, out-of-order deliveries, and webhook-vs-return races cannot double-record a payment or fire `order_placed` twice.
 
 <hr />
 
@@ -441,7 +485,7 @@ Errors from PayPal are passed through with PayPal's own HTTP status and message 
 
 ### Capture A COD Payment
 
-Marks a cash-on-delivery order as paid. This is the admin "Capture" button on the order screen and it is the one gateway endpoint on this page that is correctly gated as `private`.
+Marks a cash-on-delivery order as paid. This is the admin "Capture" button on the order screen, gated as `private` like every other admin-driven gateway action.
 
 The order must exist with `payment_method = 'cod'` **and** `payment_status = 'pending'`; otherwise `400` with `Requested order does not exist or is not in pending payment status`.
 
