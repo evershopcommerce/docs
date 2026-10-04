@@ -67,7 +67,7 @@ The command is **interactive** — it prompts for the theme name and takes no ar
 There is no `--name` flag. `theme:create` never reads `argv`, so `npx evershop theme:create --name my-theme` still prompts you for a name and ignores the flag entirely.
 :::
 
-This generates a scaffold in `themes/<name>/` with a `package.json`, a `tsconfig.json`, and a starter homepage component at `src/pages/homepage/<Name>.tsx`.
+This generates a scaffold in `themes/<name>/` with a `package.json`, a `tsconfig.json`, a `tsconfig.build.json`, a `scripts/copy-assets.mjs` build helper, and a starter homepage component at `src/pages/homepage/<Name>.tsx`. `<Name>` is the theme name in capitalized words: `sweet-haven` becomes `SweetHaven.tsx`. The build files are explained under [The `package.json` File](#the-packagejson-file).
 
 After creating the theme, add `themes/*` to your root `package.json` workspaces (if not already there) and install dependencies:
 
@@ -110,8 +110,11 @@ The structure of an EverShop theme directory typically looks like the following:
     │           └── HomepageOnly.tsx  # Page-specific components.
     ├── theme.json   # Theme content manifest (optional). Widgets, placements, landing pages, metafield definitions.
     ├── layouts.json # Layout overrides (optional). Move core or extension page components without forking them.
+    ├── scripts
+    │   └── copy-assets.mjs # Build helper. Copies stylesheets and other non-TypeScript files from src to dist.
     ├── package.json # Theme package file.
-    └── tsconfig.json # TypeScript configuration file.
+    ├── tsconfig.json # TypeScript configuration for your editor.
+    └── tsconfig.build.json # TypeScript configuration used by `npm run build`.
 ```
 
 ### The `theme.json` File
@@ -203,17 +206,20 @@ Here's an example of a `package.json` file for a theme:
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "swc ./src -d dist --copy-files --strip-leading-paths"
+    "build": "tsc -p tsconfig.build.json --noCheck && node ./scripts/copy-assets.mjs"
   }
 }
 ```
 
-The `build` script compiles the source files from `src/` to `dist/`. You don't need to install EverShop, PostCSS, or Webpack as theme dependencies — the main EverShop project handles the build pipeline.
+The `build` script compiles the source files from `src/` to `dist/` in two steps. `tsc` compiles the TypeScript with `tsconfig.build.json`, and `scripts/copy-assets.mjs` then copies every other file under `src/`, such as stylesheets, into `dist/`. `--noCheck` skips type-checking, which your editor already does through `tsconfig.json`. You don't need to install EverShop, PostCSS, or Webpack as theme dependencies — the main EverShop project handles the build pipeline.
 
-:::warning `tsc` alone does not ship your stylesheets
-`theme:create` scaffolds `"build": "tsc"`. That is fine for a theme with no styles, but **bare `tsc` only emits `.js` — it does not copy `.css` or `.scss` files into `dist/`**. A theme with co-located stylesheets compiles cleanly and then ships a CSS-less `dist/`, and the missing styles only show up in production (`npm run start`), never in `npm run dev`.
+`theme:create` writes `tsconfig.build.json` and `scripts/copy-assets.mjs` for you and sets this `build` script. If your theme was scaffolded by an earlier release and its `build` script is just `"tsc"`, or an `swc` command, add the two files described in [The `tsconfig.build.json` File](#the-tsconfigbuildjson-file) and [The `scripts/copy-assets.mjs` File](#the-scriptscopy-assetsmjs-file), and replace the script.
 
-Use the swc form above instead — it is what the in-repo reference theme uses. `--copy-files` carries the non-TypeScript assets across, and `--strip-leading-paths` keeps the output tree rooted at `dist/` rather than `dist/src/`.
+:::warning Do not build with bare `tsc`, or with `swc` and no config
+Two builds look right and ship a broken theme:
+
+- **Bare `tsc`** emits `.js` files only. It does not copy `.css` or `.scss` files into `dist/`, so a theme with stylesheets compiles cleanly and then renders with no styles. This only shows in production (`npm run start`), never in `npm run dev`, because the dev server compiles the theme itself.
+- **`swc` with no `.swcrc`** uses an old default target (ES5) and rewrites `export const layout` to `export var layout`. EverShop reads each page component's `layout` from the compiled text with a pattern that requires `const`, so every page component in the theme silently disappears.
 :::
 
 :::info
@@ -272,7 +278,55 @@ The `tsconfig.json` file is used to configure the TypeScript compiler options fo
 The `@components/*` path here exists only so your editor and `tsc` can resolve the alias — it points at the core **TypeScript sources** (`.../@evershop/evershop/src/components/*`), which is what `theme:create` emits and what carries the type information.
 
 That is a different mapping from the one the **runtime** uses. At build time, webpack resolves `@components` against `dist/components/` in theme → extensions → core order. See [Templating](./templating.md#component-resolution-order).
+
+`npm run build` does not use this mapping either. See [The `tsconfig.build.json` File](#the-tsconfigbuildjson-file).
 :::
+
+### The `tsconfig.build.json` File
+
+`tsconfig.build.json` is the TypeScript configuration that `npm run build` uses. It sits next to `tsconfig.json` in the root directory of your theme:
+
+```json title="themes/yourtheme/tsconfig.build.json"
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {},
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["src"]
+}
+```
+
+It extends the editor configuration and empties `paths`. The `@components/*` mapping in `tsconfig.json` points at EverShop's TypeScript sources. If the build kept it, `tsc` would pull those sources into the program and write compiled files next to them instead of into your `dist/`.
+
+### The `scripts/copy-assets.mjs` File
+
+`tsc` only writes compiled JavaScript files. It leaves `.css`, `.scss`, image files and every other asset behind. `scripts/copy-assets.mjs` copies those from `src/` into `dist/`, keeping the folder layout:
+
+```js title="themes/yourtheme/scripts/copy-assets.mjs"
+import { cpSync, existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const src = resolve(root, 'src');
+const dist = resolve(root, 'dist');
+if (!existsSync(src)) process.exit(0);
+let copied = 0;
+cpSync(src, dist, {
+  recursive: true,
+  filter: (from) => {
+    if (/\.tsx?$/.test(from)) return false;
+    if (!/\.[a-z0-9]+$/i.test(from)) return true; // directory
+    copied += 1;
+    return true;
+  }
+});
+console.log(`copy-assets: ${copied} non-TypeScript file(s) copied into dist/`);
+```
+
+The `GlobalCss.tsx` and `TailwindCss.tsx` components of a theme import their stylesheets by relative path, so a `dist/` without these files builds a storefront with no styles at all.
 
 #### The `public` Folder
 
