@@ -84,7 +84,7 @@ import { getPaymentStatusList } from '@evershop/evershop/oms/services';
 const statuses = getPaymentStatusList();
 // {
 //   pending: { name: 'Pending', badge: 'default', isDefault: true, isCancelable: true },
-//   paid: { name: 'Paid', badge: 'success', isCancelable: false },
+//   paid: { name: 'Paid', badge: 'success', isCancelable: false, isRefundable: true },
 //   ...
 // }
 ```

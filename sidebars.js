@@ -358,6 +358,16 @@ const sidebars = {
         {
           type: "html",
           value:
+            '<a class="menu__link" href="/docs/api/order#capture-an-order"><span class="method POST">POST</span><span>Capture an order</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/order#refund-an-order"><span class="method POST">POST</span><span>Refund an order</span></a>',
+        },
+        {
+          type: "html",
+          value:
             '<a class="menu__link" href="/docs/api/order#mark-every-shipment-delivered"><span class="method POST">POST</span><span>Mark every shipment delivered</span></a>',
         },
       ],
@@ -513,16 +523,6 @@ const sidebars = {
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/payment-gateway#capture-a-payment-intent"><span class="method POST">POST</span><span>Capture a payment intent</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/payment-gateway#refund-a-payment-intent"><span class="method POST">POST</span><span>Refund a payment intent</span></a>',
-        },
-        {
-          type: "html",
-          value:
             '<a class="menu__link" href="/docs/api/payment-gateway#stripe-webhook"><span class="method POST">POST</span><span>Stripe webhook</span></a>',
         },
         {
@@ -533,22 +533,7 @@ const sidebars = {
         {
           type: "html",
           value:
-            '<a class="menu__link" href="/docs/api/payment-gateway#capture-an-authorized-paypal-payment"><span class="method POST">POST</span><span>Capture an authorized PayPal payment</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/payment-gateway#refund-a-paypal-payment"><span class="method POST">POST</span><span>Refund a PayPal payment</span></a>',
-        },
-        {
-          type: "html",
-          value:
             '<a class="menu__link" href="/docs/api/payment-gateway#paypal-webhook"><span class="method POST">POST</span><span>PayPal webhook</span></a>',
-        },
-        {
-          type: "html",
-          value:
-            '<a class="menu__link" href="/docs/api/payment-gateway#capture-a-cod-payment"><span class="method POST">POST</span><span>Capture a COD payment</span></a>',
         },
       ],
     },

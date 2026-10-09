@@ -49,7 +49,7 @@ After creating and connecting to your EC2 instance via SSH, install the necessar
 
 #### 1. Install Node.js and NPM
 
-EverShop requires Node.js version 20.x or higher and NPM version 9.x or higher:
+EverShop requires Node.js version 20.9 or higher and NPM version 9.x or higher:
 
 ```bash
 sudo apt update

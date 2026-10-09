@@ -50,6 +50,12 @@ Returns `Promise<PaymentMethodInfo[]>`:
 }[]
 ```
 
+## Errors
+
+Throws `Duplicate payment method code: <code>` when two registered methods return the same `code`, and the `Value checkoutPaymentMethods is invalid: false` error when a registered factory has no `validator`.
+
+The result contains only `{ code, name }`. It does not include the `capture`, `void` and `refund` handlers.
+
 ## Examples
 
 ### Basic Usage
@@ -66,5 +72,5 @@ methods.forEach(method => {
 
 ## See Also
 
-- [addProcessor](/docs/development/module/functions/addProcessor) - Register payment methods
+- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod) - Register payment methods
 - [createOrder](/docs/development/module/functions/createOrder) - Create orders

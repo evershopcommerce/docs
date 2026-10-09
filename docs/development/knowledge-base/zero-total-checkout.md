@@ -99,8 +99,12 @@ export type PaymentMethodFactory = {
   validator?: (
     context?: PaymentMethodValidationContext
   ) => boolean | Promise<boolean>;
+  // Also optional: capture, void, refund and supportsPartialRefund.
+  // See Payment Method Development.
 };
 ```
+
+`zero_checkout` registers none of the `capture`, `void` and `refund` handlers, so an order placed with it shows neither the **Capture** nor the **Refund** button.
 
 Both the parameter and its `cartTotal` field are optional, so existing zero-argument validators keep compiling and keep working. Opt in when you have a real minimum or maximum:
 

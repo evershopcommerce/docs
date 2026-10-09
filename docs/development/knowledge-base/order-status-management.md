@@ -15,7 +15,7 @@ description: Understand how EverShop manages order, payment, and shipment status
 
 EverShop tracks orders along three axes:
 
-1. **Payment Status** (`order.payment_status`) — The state of payment for the order (`pending`, `paid`, `canceled`).
+1. **Payment Status** (`order.payment_status`) — The state of payment for the order. Core ships `pending`, `paid` and `canceled`, and each payment method registers its own (for example `stripe_captured` or `cod_pending`).
 2. **Shipment Status** — This one has **two distinct layers**, and confusing them is the most common source of bugs:
    - the **per-shipment status** stored on each row of the `shipment` table (`shipped`, `delivered`, `canceled`, plus any custom statuses an extension registers), and
    - the **order-level shipment rollup** stored in `order.shipment_status`, which is *derived* from all of the order's shipments (`pending`, `partially_shipped`, `shipped`, `partially_delivered`, `delivered`, `partially_canceled`, `canceled`).
@@ -91,7 +91,7 @@ Each order status has:
 - **`isDefault`** — Whether this is the initial status for new orders.
 - **`next`** — Array of statuses this status can transition to. An empty array means the status is final.
 
-The `next` arrays define a topological ordering, and `changeOrderStatus` refuses to move an order backwards along it (`Can not revert the status of the order`).
+The `next` arrays define a topological ordering, and the order status only moves forward along it. When the status derived from a payment or shipment change would move an order backwards, or out of a final status (an empty `next`), `changeOrderStatus` keeps the current status and does not throw. A `closed` (fully refunded) or `canceled` order therefore stays that way, whatever happens to its shipments or payment afterwards.
 
 ### Payment Status
 
@@ -109,7 +109,8 @@ The `next` arrays define a topological ordering, and `changeOrderStatus` refuses
         "paid": {
           "name": "Paid",
           "badge": "success",
-          "isCancelable": false
+          "isCancelable": false,
+          "isRefundable": true
         },
         "canceled": {
           "name": "Canceled",
@@ -122,7 +123,35 @@ The `next` arrays define a topological ordering, and `changeOrderStatus` refuses
 }
 ```
 
-There is no built-in `failed` payment status. If your gateway needs one, register it (see below).
+There is no shared `failed` payment status. If your gateway needs one, register it (see below).
+
+#### Statuses registered by payment methods
+
+Each built-in payment method adds its own statuses. The flags control the admin actions: Cancel, Capture, Void (release an authorization when the order is canceled) and Refund. See [Status Properties](#status-properties).
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Name</th>
+      <th>Allows</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>cod_pending</code></td><td>Pending</td><td>Cancel, Capture</td></tr>
+    <tr><td><code>cod_captured</code></td><td>Paid</td><td>Refund</td></tr>
+    <tr><td><code>cod_refunded</code></td><td>Refunded</td><td>—</td></tr>
+    <tr><td><code>cod_partial_refunded</code></td><td>Partial Refunded</td><td>Refund</td></tr>
+    <tr><td><code>stripe_authorized</code>, <code>paypal_authorized</code></td><td>Authorized</td><td>Cancel, Capture, Void</td></tr>
+    <tr><td><code>stripe_captured</code>, <code>paypal_captured</code></td><td>Captured</td><td>Refund</td></tr>
+    <tr><td><code>stripe_failed</code>, <code>paypal_failed</code></td><td>Failed</td><td>Cancel</td></tr>
+    <tr><td><code>paypal_pending</code></td><td>Payment Pending</td><td>—</td></tr>
+    <tr><td><code>stripe_refunded</code>, <code>paypal_refunded</code></td><td>Refunded</td><td>—</td></tr>
+    <tr><td><code>stripe_partial_refunded</code>, <code>paypal_partial_refunded</code></td><td>Partial Refunded</td><td>Refund</td></tr>
+  </tbody>
+</table>
+
+Their PSO mappings follow one pattern. `<method>_authorized`, `<method>_captured` and `<method>_partial_refunded` map to `processing` (to `completed` once the shipments are `delivered`, for the captured and partial-refunded statuses), `<method>_failed` maps to `new`, and `<method>_refunded` maps to `closed`. `paypal_pending` and `cod_pending` map to `processing`, and `cod_pending` maps to `new` while nothing has shipped. Note that a `paypal_pending` order shows as `processing`, so check the payment status before you ship.
 
 ### Shipment Status
 
@@ -214,7 +243,6 @@ The PSO mapping connects the payment status and the shipment **rollup** to an or
         "paid:delivered": "completed",
         "*:partially_canceled": "processing",
         "*:canceled": "processing",
-        "canceled:canceled": "canceled",
         "canceled:*": "canceled"
       }
     }
@@ -225,14 +253,14 @@ The PSO mapping connects the payment status and the shipment **rollup** to an or
 The format is `{paymentStatus}:{shipmentRollup}` — the second segment is a **rollup value**, not a per-shipment status. The `*` wildcard matches anything, and lookups are resolved in this order:
 
 1. Exact match — `paid:delivered`
-2. Wildcard payment — `*:delivered`
-3. Wildcard rollup — `paid:*`
+2. Wildcard rollup — `paid:*`
+3. Wildcard payment — `*:delivered`
 4. Double wildcard — `*:*`
 
 :::info
-Note that `*:{rollup}` is checked **before** `{payment}:*`. Core ships **no** `*:*` entry: if no rule matches, `resolveOrderStatus` throws `Can not found a valid order status from the current shipment and payment status`. When you register a custom payment status, make sure at least one mapping covers it.
+Note that `{payment}:*` is checked **before** `*:{rollup}`, so a rule that names the payment status beats one that only names the shipment rollup. Core ships **no** `*:*` entry: if no rule matches, `resolveOrderStatus` throws `Can not found a valid order status from the current shipment and payment status`. When you register a custom payment status, make sure at least one mapping covers it.
 
-Shipment-side cancellation deliberately does **not** cancel the order (`*:canceled` → `processing`), so the merchant can re-ship or cancel explicitly. Payment-side cancellation (`canceled:*`) is what cancels an order. `canceled:canceled` is spelled out explicitly because the exact-match lookup runs before `*:canceled` would otherwise shadow `canceled:*`.
+Shipment-side cancellation deliberately does **not** cancel the order (`*:canceled` → `processing`), so the merchant can re-ship or cancel explicitly. Payment-side cancellation (`canceled:*`) is what cancels an order. Because the payment status is matched first, a terminal payment state wins: `canceled:*` beats `*:canceled`, and `<method>_refunded:*` beats it too, so canceling a shipment on a refunded order leaves the order `closed`.
 :::
 
 ## Registering Custom Statuses
@@ -247,12 +275,15 @@ All three registration functions **throw** on an empty ID, an ID containing whit
 import { registerPaymentStatus } from '@evershop/evershop/oms/services';
 
 export default async () => {
-  // Register with inline PSO mapping
+  // Register with inline PSO mapping. The flags decide which admin actions
+  // an order in this status can take.
   registerPaymentStatus('my_gateway_authorized', {
     name: 'Authorized',
     badge: 'warning',
     isDefault: false,
-    isCancelable: true
+    isCancelable: true,
+    isCapturable: true,
+    isVoidable: true
   }, {
     'my_gateway_authorized:*': 'processing'
   });
@@ -261,10 +292,23 @@ export default async () => {
     name: 'Captured',
     badge: 'success',
     isDefault: false,
-    isCancelable: false
+    isCancelable: false,
+    isRefundable: true
   }, {
     'my_gateway_captured:*': 'processing',
     'my_gateway_captured:delivered': 'completed'
+  });
+
+  // Keeps isRefundable so the rest can be refunded later
+  registerPaymentStatus('my_gateway_partial_refunded', {
+    name: 'Partial Refunded',
+    badge: 'destructive',
+    isDefault: false,
+    isCancelable: false,
+    isRefundable: true
+  }, {
+    'my_gateway_partial_refunded:*': 'processing',
+    'my_gateway_partial_refunded:delivered': 'completed'
   });
 
   registerPaymentStatus('my_gateway_refunded', {
@@ -470,7 +514,10 @@ You can also define statuses in config files. This is useful for store-level cus
     <tr><td><code>badge</code></td><td><code>string</code></td><td>All</td><td>Visual style (required). See below.</td></tr>
     <tr><td><code>phase</code></td><td><code>string</code></td><td>Shipment status</td><td><strong>Required.</strong> One of <code>shipped</code>, <code>delivered</code>, <code>canceled</code></td></tr>
     <tr><td><code>isDefault</code></td><td><code>boolean</code></td><td>Order, payment status</td><td>Whether this is the initial status for new orders</td></tr>
-    <tr><td><code>isCancelable</code></td><td><code>boolean</code></td><td>Payment status</td><td>When <code>true</code>, entering this status can trigger payment cancellation logic</td></tr>
+    <tr><td><code>isCancelable</code></td><td><code>boolean</code></td><td>Payment status</td><td>When <code>false</code>, <code>cancelOrder</code> refuses to cancel an order in this status (<code>Order is not cancelable at this status</code>). Leaving it out allows cancellation.</td></tr>
+    <tr><td><code>isCapturable</code></td><td><code>boolean</code></td><td>Payment status</td><td>Orders in this status can be captured. The <strong>Capture</strong> button also needs a <code>capture</code> handler on the payment method.</td></tr>
+    <tr><td><code>isRefundable</code></td><td><code>boolean</code></td><td>Payment status</td><td>Orders in this status can be refunded. The <strong>Refund</strong> button also needs a <code>refund</code> handler on the payment method.</td></tr>
+    <tr><td><code>isVoidable</code></td><td><code>boolean</code></td><td>Payment status</td><td>Canceling an order in this status releases the authorization through the payment method's <code>void</code> handler.</td></tr>
     <tr><td><code>next</code></td><td><code>string[]</code></td><td>Order status</td><td>Allowed transitions from this status</td></tr>
   </tbody>
 </table>
@@ -494,27 +541,31 @@ There is no `progress` property — it is not read anywhere. Shipment statuses a
     <tr><td><code>warning</code></td><td>Needs attention, in transit</td></tr>
     <tr><td><code>destructive</code></td><td>Canceled, refunded, failed</td></tr>
     <tr><td><code>outline</code></td><td>Closed / archived</td></tr>
+    <tr><td><code>secondary</code>, <code>ghost</code>, <code>link</code></td><td>Low-emphasis labels</td></tr>
   </tbody>
 </table>
 
-`attention` and `critical` are **not** valid badge values — they were never variants of the `Badge` component and fall back to the default style.
+`attention` and `critical` are **not** valid badge values — they are not variants of the `Badge` component and fall back to the default style. The built-in `stripe_failed` and `paypal_failed` statuses use `critical` and therefore render with that fallback, so do not copy it; use `destructive` for a failed payment.
 
 ### Reacting to Payment Status Changes
 
-Hook into `changePaymentStatus` to perform actions when a payment status changes (e.g., cancel an authorization):
+Hook into `changePaymentStatus` to perform actions when a payment status changes (e.g., notify an external system):
 
 ```ts title="extensions/my-payment/src/bootstrap.ts"
 import { hookAfter } from '@evershop/evershop/lib/util/hookable';
 
 export default async () => {
   hookAfter('changePaymentStatus', async (order, orderId, status) => {
-    if (status !== 'canceled') return;
     if (order.payment_method !== 'my_gateway') return;
 
-    await myProvider.cancelPayment(orderId);
+    await myErpSystem.syncPaymentStatus(orderId, status);
   });
 };
 ```
+
+:::note Do not use this hook to release an authorization
+Before 2.3, gateways canceled the provider's authorization from a `changePaymentStatus` hook. Core now does it: when an order in an `isVoidable` status is canceled, `cancelOrder` calls the payment method's `void` handler. See [Payment Operations](#payment-operations).
+:::
 
 ## Updating Statuses Programmatically
 
@@ -528,7 +579,9 @@ await updatePaymentStatus(orderId, 'paid', connection);
 // This automatically triggers order status resolution
 ```
 
-The `conn` argument is optional. When omitted, the function opens and commits its own transaction; when supplied, it joins the caller's transaction.
+The `conn` argument is optional. When omitted, the function opens and commits its own transaction; when supplied, it joins the caller's transaction. It throws `Invalid status` if the status is not registered.
+
+`updatePaymentStatus` only changes the status. It does not record a transaction or emit an event. To move money, use [`captureOrder`](/docs/development/module/functions/captureOrder), [`refundOrder`](/docs/development/module/functions/refundOrder) or [`recordRefund`](/docs/development/module/functions/recordRefund), which call it for you.
 
 ### Update Shipment Status
 
@@ -589,6 +642,45 @@ export default async function (data) {
   }
 }
 ```
+
+## Payment Operations
+
+Capture, void and refund are core services that work the same way for every payment method. They are driven by the status flags above and by the optional `capture`, `void` and `refund` handlers that a method registers with [`registerPaymentMethod`](/docs/development/module/functions/registerPaymentMethod).
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Operation</th>
+      <th>Needs</th>
+      <th>Resulting payment status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Capture (<code>POST /api/orders/:id/capture</code>)</td>
+      <td>A <code>capture</code> handler and an <code>isCapturable</code> status</td>
+      <td><code>&lt;method&gt;_captured</code></td>
+    </tr>
+    <tr>
+      <td>Refund (<code>POST /api/orders/:id/refunds</code>)</td>
+      <td>A <code>refund</code> handler and an <code>isRefundable</code> status</td>
+      <td><code>&lt;method&gt;_refunded</code> when the refunds reach the captured amount, otherwise <code>&lt;method&gt;_partial_refunded</code></td>
+    </tr>
+    <tr>
+      <td>Void (when the order is canceled)</td>
+      <td>A <code>void</code> handler and an <code>isVoidable</code> status</td>
+      <td><code>canceled</code></td>
+    </tr>
+  </tbody>
+</table>
+
+The resulting status codes are built from the method code, so register statuses with exactly these names. If one is missing, `updatePaymentStatus` throws `Invalid status` after the provider has already moved the money.
+
+Whether a refund is full or partial is decided from the recorded amounts: it is full when the sum of all refunds, including the new one, reaches the captured amount, compared in the currency's smallest unit.
+
+`cancelOrder` runs in one transaction. It checks the `isCancelable` flag of the payment status and the `shipmentRollupCancelable` setting for the shipment rollup (a `delivered` order cannot be canceled by default), voids a voidable authorization, sets the payment status to `canceled`, cancels the shipments that are not final, restocks and emits `order_canceled`. A canceled order does not refund captured money. Refund first.
+
+Two events report the outcome: `order_refunded`, with `{ orderId, amount, currency, isFullRefund, transactionId, paymentMethod }`, and `order_canceled`, with `{ orderId, reason? }`. See [Events and Subscribers](/docs/development/knowledge-base/events-and-subscribers).
 
 ## See Also
 
