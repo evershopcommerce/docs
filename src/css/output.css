@@ -1875,11 +1875,6 @@
   background-color: rgb(244 245 246 / var(--tw-bg-opacity));
 }
 
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
 .bg-black\/10 {
   background-color: rgb(0 0 0 / 0.1);
 }
@@ -1890,6 +1885,11 @@
 
 .bg-black\/80 {
   background-color: rgb(0 0 0 / 0.8);
+}
+
+.bg-card {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .bg-gray-100 {
@@ -1924,6 +1924,11 @@
 
 .bg-primary\/10 {
   background-color: rgb(0 128 96 / 0.1);
+}
+
+.bg-secondary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 245 246 / var(--tw-bg-opacity));
 }
 
 .bg-white {
@@ -2457,9 +2462,19 @@
   color: rgb(22 163 74 / var(--tw-text-opacity));
 }
 
+.text-muted-foreground {
+  --tw-text-opacity: 1;
+  color: rgb(71 84 103 / var(--tw-text-opacity));
+}
+
 .text-primary {
   --tw-text-opacity: 1;
   color: rgb(0 128 96 / var(--tw-text-opacity));
+}
+
+.text-secondary-foreground {
+  --tw-text-opacity: 1;
+  color: rgb(71 84 103 / var(--tw-text-opacity));
 }
 
 .text-slate-500 {
@@ -2601,21 +2616,28 @@
   border-color: rgb(0 128 96 / 0.5);
 }
 
+.hover\:bg-accent:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 245 246 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-black\/5:hover {
   background-color: rgb(0 0 0 / 0.05);
-}
-
-.hover\:bg-black\/70:hover {
-  background-color: rgb(0 0 0 / 0.7);
-}
-
-.hover\:bg-black\/90:hover {
-  background-color: rgb(0 0 0 / 0.9);
 }
 
 .hover\:bg-gray-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-primary-dark:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 115 86 / var(--tw-bg-opacity));
+}
+
+.hover\:text-accent-foreground:hover {
+  --tw-text-opacity: 1;
+  color: rgb(16 24 40 / var(--tw-text-opacity));
 }
 
 .hover\:text-black:hover {
@@ -3214,6 +3236,10 @@
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.dark\:hover\:bg-accent\/50:hover:where([data-theme="dark"], [data-theme="dark"] *) {
+  background-color: rgb(244 245 246 / 0.5);
+}
+
 .\[\&\:last-child\]\:pb-6:last-child {
   padding-bottom: 1.5rem;
 }
@@ -3238,4 +3264,8 @@
 
 .\[\&_svg\]\:shrink-0 svg {
   flex-shrink: 0;
+}
+
+a.\[a\&\]\:hover\:bg-secondary\/90:hover {
+  background-color: rgb(244 245 246 / 0.9);
 }

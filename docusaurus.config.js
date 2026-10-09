@@ -156,7 +156,7 @@ const config = {
       navbar: {
         title: "",
         logo: {
-          alt: "A Open-source NodeJS ecommerce platform",
+          alt: "EverShop",
           src: "img/logo.svg",
           width: 35,
           height: 35,
@@ -199,7 +199,7 @@ const config = {
       footer: {
         style: "light",
         logo: {
-          alt: "Evershop",
+          alt: "EverShop",
           src: "img/logo.svg",
           href: "https://evershop.io",
           className: "footer__logo",
@@ -238,7 +238,7 @@ const config = {
             ],
           },
         ],
-        copyright: `© Copyright © ${new Date().getFullYear()} Evershop. Deploys by <a href="https://www.netlify.com" target="_blank" rel="nofollow">Netlify</a>`,
+        copyright: `© ${new Date().getFullYear()} EverShop. Deploys by <a href="https://www.netlify.com" target="_blank" rel="noopener nofollow">Netlify</a>`,
       },
       // prism: {
       //   theme: darkTheme,

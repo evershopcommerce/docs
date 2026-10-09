@@ -54,9 +54,9 @@ function HomepageHeader() {
                 <path
                   d="M3.33301 8.00016H12.6663M12.6663 8.00016L7.99967 3.3335M12.6663 8.00016L7.99967 12.6668"
                   stroke="#008060"
-                  stroke-width="1.3333"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.3333"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>
@@ -68,13 +68,13 @@ function HomepageHeader() {
           </h1>
         </div>
         <div className="flex items-center justify-center">
-          <p className="text-lg md:text-xl text-center text-slate-500 mb-10">
+          <div className="text-lg md:text-xl text-center text-slate-500 mb-10">
             <p className="mb-0 max-w-3xl font-normal">
               Open-source, built on TypeScript, and designed for flexibility.
               Easily scale, customize, and manage your online store with
               powerful commerce features
             </p>
-          </p>
+          </div>
         </div>
         <div className="grid gap-5 grid-cols-2">
           <div className="flex justify-end">
@@ -101,9 +101,9 @@ function HomepageHeader() {
                     <path
                       d="M4.16699 11H18.8337M18.8337 11L13.3337 5.5M18.8337 11L13.3337 16.5"
                       stroke="white"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </span>
@@ -416,8 +416,8 @@ function CheckoutManagement() {
                   viewBox="0 0 24 24"
                   fill="none">
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M4 3C2.34315 3 1 4.34315 1 6V8H23V6C23 4.34315 21.6569 3 20 3H4ZM23 10H1V18C1 19.6569 2.34315 21 4 21H20C21.6569 21 23 19.6569 23 18V10ZM8 15.5C8 16.3284 7.32843 17 6.5 17C5.67157 17 5 16.3284 5 15.5C5 14.6716 5.67157 14 6.5 14C7.32843 14 8 14.6716 8 15.5ZM11.5 17C12.3284 17 13 16.3284 13 15.5C13 14.6716 12.3284 14 11.5 14C10.6716 14 10 14.6716 10 15.5C10 16.3284 10.6716 17 11.5 17Z"
                     fill="#008060"
                   />
@@ -446,8 +446,8 @@ function CheckoutManagement() {
                   viewBox="0 0 24 24"
                   fill="none">
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M5.41832 2.32488C5.71048 2.19898 6.01314 2.42747 6.09093 2.73594C6.41905 4.03699 7.59706 5 9 5H15C16.4029 5 17.5809 4.03699 17.9091 2.73594C17.9869 2.42747 18.2895 2.19898 18.5817 2.32488C20.0042 2.93791 21 4.35266 21 6V19C21 21.2091 19.2091 23 17 23H7C4.79086 23 3 21.2091 3 19V6C3 4.35266 3.99582 2.93791 5.41832 2.32488ZM9 10C9 10.5523 8.55228 11 8 11C7.44772 11 7 10.5523 7 10C7 9.44772 7.44772 9 8 9C8.55228 9 9 9.44772 9 10ZM11 10C11 9.44772 11.4477 9 12 9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H12C11.4477 11 11 10.5523 11 10ZM12 13C11.4477 13 11 13.4477 11 14C11 14.5523 11.4477 15 12 15H16C16.5523 15 17 14.5523 17 14C17 13.4477 16.5523 13 16 13H12ZM12 17C11.4477 17 11 17.4477 11 18C11 18.5523 11.4477 19 12 19H14C14.5523 19 15 18.5523 15 18C15 17.4477 14.5523 17 14 17H12ZM9 14C9 14.5523 8.55228 15 8 15C7.44772 15 7 14.5523 7 14C7 13.4477 7.44772 13 8 13C8.55228 13 9 13.4477 9 14ZM9 18C9 18.5523 8.55228 19 8 19C7.44772 19 7 18.5523 7 18C7 17.4477 7.44772 17 8 17C8.55228 17 9 17.4477 9 18Z"
                     fill="#008060"
                   />
@@ -541,9 +541,9 @@ function ElevateYourStore() {
                   <path
                     d="M3.33301 10H16.6663M16.6663 10L11.6663 5M16.6663 10L11.6663 15"
                     stroke="#008060"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </a>

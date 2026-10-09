@@ -29,11 +29,11 @@ Before beginning the deployment process, ensure you have:
 ## Step 1: Create a New Azure Web App
 
 1. Log in to the Azure portal at [https://portal.azure.com](https://portal.azure.com).
-<p align="center">
+<div align="center">
 
 ![Azure Create A Resource](./img/azure-create-resource.png "Azure Create A Resource")
 
-</p>
+</div>
 
 2. Click the "+ Create a resource" button in the Azure portal dashboard.
 
@@ -44,27 +44,27 @@ Before beginning the deployment process, ensure you have:
 
 5. Configure your web application with the following settings:
 
-<p align="center">
+<div align="center">
 
 ![Azure Configure Web App](./img/azure-configure-app.png "Azure Configure Web App")
 
-</p>
+</div>
 
 6. Configure your database with appropriate settings for your EverShop deployment:
 
-<p align="center">
+<div align="center">
 
 ![Azure Configure Database](./img/azure-configure-database.png "Azure Configure Database")
 
-</p>
+</div>
 
 7. Click "Review + create" and then "Create" to provision your web application and database. Once completed, you'll see your resources in the Azure portal:
 
-<p align="center">
+<div align="center">
 
 ![Azure Resource List](./img/azure-resouce-list.png "Azure Resource List")
 
-</p>
+</div>
 
 ## Step 2: Configure Deployment Options
 
@@ -78,21 +78,21 @@ Azure supports multiple deployment methods. For this guide, we'll use the local 
 
 4. Click the "Save" button to confirm your deployment configuration.
 
-<p align="center">
+<div align="center">
 
 ![Azure Configure Deployment Option](./img/azure-local-git-option.png "Azure Configure Deployment Option")
 
-</p>
+</div>
 
 ## Step 3: Add Git Remote to Your Local Project
 
 After configuring the deployment options, Azure will generate a Git URL for your repository:
 
-<p align="center">
+<div align="center">
 
 ![Azure Git Remote Url](./img/azure-local-git-url.png "Azure Git Remote Url")
 
-</p>
+</div>
 
 Add this Git remote to your local EverShop project:
 
@@ -201,11 +201,11 @@ EverShop requires specific environment variables for database connectivity. Conf
 
 1. Go to your web app in the Azure portal and navigate to the "Configuration" section.
 
-<p align="center">
+<div align="center">
 
 ![Azure Environment Variable List](./img/azure-env-list.png "Azure Environment Variable List")
 
-</p>
+</div>
 
 2. Rename the following default Azure PostgreSQL environment variables to match EverShop's expected names:
 
@@ -271,17 +271,17 @@ Set the full origin with a scheme and no trailing path. Leaving the variable uns
 
 An unset, empty or non-numeric value falls back to `1`. Count the hops that actually terminate and re-forward the connection, and set the variable to that number.
 
-<p align="center">
+<div align="center">
 
 ![Azure Configure Environment Variables](./img/azure-adding-ssl-mode.png "Azure Configure Environment Variables")
 
-</p>
+</div>
 
-<p align="center">
+<div align="center">
 
 ![Azure Configure Environment Variables](./img/azure-adding-port.png "Azure Configure Environment Variables")
 
-</p>
+</div>
 
 4. Save your configuration changes.
 
@@ -296,20 +296,20 @@ git push azure master
 :::caution
 During your first deployment, Azure will prompt you for Git credentials. You can find these in the "Deployment Center" section of your web app:
 
-<p align="center">
+<div align="center">
 
 ![Azure Git Credentials](./img/azure-git-credentials.png "Azure Git Credentials")
 
-</p>
+</div>
 :::
 
 The initial deployment may take several minutes. Once completed, your site will be accessible at the URL provided by Azure:
 
-<p align="center">
+<div align="center">
 
 ![Azure Default Domain](./img/azure-default-domain.png "Azure Default Domain")
 
-</p>
+</div>
 
 ## Step 7: Create an Administrator Account
 
@@ -317,11 +317,11 @@ After deploying your EverShop store, create an administrator account:
 
 1. Connect to your web app using the SSH feature in the Azure portal.
 
-<p align="center">
+<div align="center">
 
 ![Azure SSH](./img/azure-ssh.png "Azure SSH")
 
-</p>
+</div>
 
 2. Navigate to your application directory:
 

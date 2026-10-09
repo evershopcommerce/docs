@@ -27,7 +27,18 @@ module.exports = {
     extend: {
       colors: {
         primary: "#008060",
+        "primary-dark": "#007356",
         "primary-02": "#E5FFF9",
+        // shadcn-style names used by documentation.tsx and the DocCard /
+        // category-index components. They were never defined, so classes such
+        // as `bg-secondary` or `hover:bg-accent` silently did nothing. Mapped
+        // onto the site's own neutrals.
+        card: "#FFFFFF",
+        secondary: "#F4F5F6",
+        "secondary-foreground": "#475467",
+        accent: "#F4F5F6",
+        "accent-foreground": "#101828",
+        "muted-foreground": "#475467",
         "Neutrals-01": "#101828",
         "Neutrals-02": "#222630",
         "Neutrals-03": "#343946",

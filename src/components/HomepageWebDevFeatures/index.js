@@ -93,9 +93,9 @@ function Feature({ icon, title, description, readMore }) {
             <path
               d="M1.33301 6H14.6663M14.6663 6L9.66634 1M14.6663 6L9.66634 11"
               stroke="#008060"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </span>

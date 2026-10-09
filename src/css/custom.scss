@@ -478,7 +478,8 @@ body .button--secondary {
 .button--primary {
   color: #fff;
   &:hover {
-    background-color: #00a67d;
+    /* was #00a67d: white on it is only 3.1:1 (WCAG AA needs 4.5:1) */
+    background-color: var(--ifm-color-primary-dark);
     color: #fff;
   }
 }
@@ -623,6 +624,15 @@ html.docs-wrapper #__docusaurus {
 body .footer {
   padding-left: 0;
   padding-right: 0;
+}
+
+/* Footer: line up with the navbar content (a 1216px box inside a 16px gutter).
+   Without this the footer container was 1320px wide on large screens and sat
+   20px outside the header. Docs pages keep their own full-width footer above. */
+html:not(.docs-wrapper) #__docusaurus .footer > .container {
+  max-width: 1248px;
+  padding-left: var(--ifm-navbar-padding-horizontal);
+  padding-right: var(--ifm-navbar-padding-horizontal);
 }
 
 img {
@@ -910,8 +920,11 @@ html .pagination-nav__sublabel {
   
 }
 html .pagination-nav__sublabel {
-  font-weight: bold;
-  display: none;
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #687082;
 }
 html .pagination-nav__label {
   font-weight: 600;
@@ -985,4 +998,46 @@ html table table {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+
+/* Keyboard focus: the navbar search button and .button links had their outline
+   removed with no replacement, so tabbing onto them showed nothing. */
+.navbar__items--right .DocSearch-Button:focus-visible,
+body .button:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* "Support us" callout shown at the end of many docs (components/Sponsor) */
+.sponsor-callout {
+  margin: 3rem 0 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e6e8ec;
+  border-radius: 12px;
+  background: #f8f9fa;
+
+  p {
+    margin: 0;
+  }
+  .sponsor-callout__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--heading-font-color);
+  }
+  .sponsor-callout__text {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .sponsor-callout__link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ifm-color-primary);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
