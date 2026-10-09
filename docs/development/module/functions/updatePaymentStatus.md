@@ -14,7 +14,7 @@ description: Update order payment status.
 
 # updatePaymentStatus
 
-Update the payment status of an order.
+Update the payment status of an order. The order status is re-derived from the new payment status and the shipment rollup afterwards, and it never moves backwards.
 
 ## Import
 
@@ -46,11 +46,20 @@ New payment status.
 
 **Type:** `PoolClient`
 
-Database connection. If not provided, creates new connection.
+Database connection. If you pass one, the function joins your transaction and leaves committing to you. If not provided, it opens and commits its own transaction.
 
 ## Return Value
 
 Returns `Promise<void>`.
+
+## Errors
+
+Throws `Invalid status` when `status` is not a registered payment status.
+
+## Notes
+
+- `updatePaymentStatus` only changes the status. It writes no payment transaction and emits no event. To capture or refund, use [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) or [recordRefund](/docs/development/module/functions/recordRefund), which call it for you.
+- It is hookable. React to a change with `hookAfter('changePaymentStatus', ...)`.
 
 ## Examples
 

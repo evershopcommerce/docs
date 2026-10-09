@@ -343,7 +343,7 @@ validateMetafields(ownerType: string, input?: MetaData): Promise<MetaData>
 
 Validate a full values object against an owner's definitions and return **the object to persist**. Defaults applied, unknown keys dropped, repeater `_id` keys stripped.
 
-Blank values (`undefined`, `null`, `''`, structurally-empty rich text) are normalised to "not provided" rather than validated — the admin form serializes every field on submit, so without this a single untouched optional `date` would fail AJV and abort the whole save.
+Blank values (`undefined`, `null`, `''`, structurally-empty rich text) are normalized to "not provided" rather than validated — the admin form serializes every field on submit, so without this a single untouched optional `date` would fail AJV and abort the whole save.
 
 **Returns** a `MetaData` object safe to write into `meta_data`.
 

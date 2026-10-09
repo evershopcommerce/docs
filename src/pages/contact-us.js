@@ -40,10 +40,13 @@ function ContactForm() {
       <div className="container text-left pt-1">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-[100px] lg:gap-[170px]">
           <div className="">
-            <h2 className="mb-2 w-full lg:w-[525px]">
+            {/* The page's only h1. Keep the former h2 size so the look is unchanged. */}
+            <h1
+              className="mb-2 w-full lg:w-[525px]"
+              style={{ fontSize: "var(--ifm-h2-font-size)" }}>
               Let Us Help You Succeed -{" "}
               <span className="text-primary">Get in Touch</span> Today!
-            </h2>
+            </h1>
             <p>
               Have questions? Need tailored support? Our team is here to guide
               you every step of the way!
@@ -57,13 +60,13 @@ function ContactForm() {
                     height="20"
                     viewBox="0 0 20 20"
                     fill="none">
-                    <g clip-path="url(#clip0_4348_5806)">
+                    <g clipPath="url(#clip0_4348_5806)">
                       <path
                         d="M18.3327 9.23355V10.0002C18.3317 11.7972 17.7498 13.5458 16.6738 14.9851C15.5978 16.4244 14.0854 17.4773 12.3621 17.9868C10.6389 18.4963 8.79707 18.4351 7.11141 17.8124C5.42575 17.1896 3.98656 16.0386 3.00848 14.5311C2.0304 13.0236 1.56584 11.2403 1.68408 9.44714C1.80232 7.65402 2.49702 5.94715 3.66458 4.58111C4.83214 3.21506 6.41 2.26303 8.16284 1.867C9.91568 1.47097 11.7496 1.65216 13.391 2.38355M18.3327 3.33355L9.99935 11.6752L7.49935 9.17521"
                         stroke="#00764A"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </g>
                     <defs>
@@ -86,13 +89,13 @@ function ContactForm() {
                     height="20"
                     viewBox="0 0 20 20"
                     fill="none">
-                    <g clip-path="url(#clip0_4348_5806)">
+                    <g clipPath="url(#clip0_4348_5806)">
                       <path
                         d="M18.3327 9.23355V10.0002C18.3317 11.7972 17.7498 13.5458 16.6738 14.9851C15.5978 16.4244 14.0854 17.4773 12.3621 17.9868C10.6389 18.4963 8.79707 18.4351 7.11141 17.8124C5.42575 17.1896 3.98656 16.0386 3.00848 14.5311C2.0304 13.0236 1.56584 11.2403 1.68408 9.44714C1.80232 7.65402 2.49702 5.94715 3.66458 4.58111C4.83214 3.21506 6.41 2.26303 8.16284 1.867C9.91568 1.47097 11.7496 1.65216 13.391 2.38355M18.3327 3.33355L9.99935 11.6752L7.49935 9.17521"
                         stroke="#00764A"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </g>
                     <defs>
@@ -114,13 +117,13 @@ function ContactForm() {
                     height="20"
                     viewBox="0 0 20 20"
                     fill="none">
-                    <g clip-path="url(#clip0_4348_5806)">
+                    <g clipPath="url(#clip0_4348_5806)">
                       <path
                         d="M18.3327 9.23355V10.0002C18.3317 11.7972 17.7498 13.5458 16.6738 14.9851C15.5978 16.4244 14.0854 17.4773 12.3621 17.9868C10.6389 18.4963 8.79707 18.4351 7.11141 17.8124C5.42575 17.1896 3.98656 16.0386 3.00848 14.5311C2.0304 13.0236 1.56584 11.2403 1.68408 9.44714C1.80232 7.65402 2.49702 5.94715 3.66458 4.58111C4.83214 3.21506 6.41 2.26303 8.16284 1.867C9.91568 1.47097 11.7496 1.65216 13.391 2.38355M18.3327 3.33355L9.99935 11.6752L7.49935 9.17521"
                         stroke="#00764A"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </g>
                     <defs>
@@ -265,7 +268,7 @@ export default function ContactUs() {
   return (
     <Layout
       title="Contact Us"
-      description="Contact Us."
+      description="Questions about EverShop? Get in touch for help choosing hosting, finding vetted extensions, or upgrading your store."
       wrapperClassName="contact__us">
       <main>
         <ContactForm />

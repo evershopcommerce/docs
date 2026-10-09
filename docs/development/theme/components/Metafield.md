@@ -266,7 +266,7 @@ The second argument to `render` describes the field:
 />
 ```
 
-## Page builder behaviour
+## Page builder behavior
 
 Inside the page-builder iframe the component gains a violet **"Live data"** hover outline; clicking it opens an informational drawer describing the field, its definition status, and where its value is edited. A declared field that renders nothing on the storefront — hidden, or unset with no default — shows a dashed **ghost chip** instead, so it stays discoverable on the canvas.
 

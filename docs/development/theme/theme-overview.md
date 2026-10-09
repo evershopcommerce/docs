@@ -67,7 +67,7 @@ The command is **interactive** — it prompts for the theme name and takes no ar
 There is no `--name` flag. `theme:create` never reads `argv`, so `npx evershop theme:create --name my-theme` still prompts you for a name and ignores the flag entirely.
 :::
 
-This generates a scaffold in `themes/<name>/` with a `package.json`, a `tsconfig.json`, and a starter homepage component at `src/pages/homepage/<Name>.tsx`.
+This generates a scaffold in `themes/<name>/` with a `package.json`, a `tsconfig.json`, a `tsconfig.build.json`, a `scripts/copy-assets.mjs` build helper, and a starter homepage component at `src/pages/homepage/<Name>.tsx`. `<Name>` is the theme name in capitalized words: `sweet-haven` becomes `SweetHaven.tsx`. The build files are explained under [The `package.json` File](#the-packagejson-file).
 
 After creating the theme, add `themes/*` to your root `package.json` workspaces (if not already there) and install dependencies:
 
@@ -108,14 +108,18 @@ The structure of an EverShop theme directory typically looks like the following:
     │       │   └── CheckoutOnly.tsx  # Page-specific components.
     │       └── homepage
     │           └── HomepageOnly.tsx  # Page-specific components.
-    ├── theme.json   # Theme content manifest (optional). Widgets, placements, metafield definitions.
+    ├── theme.json   # Theme content manifest (optional). Widgets, placements, landing pages, metafield definitions.
+    ├── layouts.json # Layout overrides (optional). Move core or extension page components without forking them.
+    ├── scripts
+    │   └── copy-assets.mjs # Build helper. Copies stylesheets and other non-TypeScript files from src to dist.
     ├── package.json # Theme package file.
-    └── tsconfig.json # TypeScript configuration file.
+    ├── tsconfig.json # TypeScript configuration for your editor.
+    └── tsconfig.build.json # TypeScript configuration used by `npm run build`.
 ```
 
 ### The `theme.json` File
 
-`theme.json` is the theme's **content manifest**. Where `src/` ships the code, `theme.json` ships the data a theme needs in the database to look the way it is meant to look: the widget instances it defines, where those widgets are placed, and the metafield definitions its components read.
+`theme.json` is the theme's **content manifest**. Where `src/` ships the code, `theme.json` ships the data a theme needs in the database to look the way it is meant to look: the widget instances it defines, where those widgets are placed, the landing pages it ships, and the metafield definitions its components read.
 
 ```json title="themes/yourtheme/theme.json"
 {
@@ -202,17 +206,20 @@ Here's an example of a `package.json` file for a theme:
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "swc ./src -d dist --copy-files --strip-leading-paths"
+    "build": "tsc -p tsconfig.build.json --noCheck && node ./scripts/copy-assets.mjs"
   }
 }
 ```
 
-The `build` script compiles the source files from `src/` to `dist/`. You don't need to install EverShop, PostCSS, or Webpack as theme dependencies — the main EverShop project handles the build pipeline.
+The `build` script compiles the source files from `src/` to `dist/` in two steps. `tsc` compiles the TypeScript with `tsconfig.build.json`, and `scripts/copy-assets.mjs` then copies every other file under `src/`, such as stylesheets, into `dist/`. `--noCheck` skips type-checking, which your editor already does through `tsconfig.json`. You don't need to install EverShop, PostCSS, or Webpack as theme dependencies — the main EverShop project handles the build pipeline.
 
-:::warning `tsc` alone does not ship your stylesheets
-`theme:create` scaffolds `"build": "tsc"`. That is fine for a theme with no styles, but **bare `tsc` only emits `.js` — it does not copy `.css` or `.scss` files into `dist/`**. A theme with co-located stylesheets compiles cleanly and then ships a CSS-less `dist/`, and the missing styles only show up in production (`npm run start`), never in `npm run dev`.
+`theme:create` writes `tsconfig.build.json` and `scripts/copy-assets.mjs` for you and sets this `build` script. If your theme was scaffolded by an earlier release and its `build` script is just `"tsc"`, or an `swc` command, add the two files described in [The `tsconfig.build.json` File](#the-tsconfigbuildjson-file) and [The `scripts/copy-assets.mjs` File](#the-scriptscopy-assetsmjs-file), and replace the script.
 
-Use the swc form above instead — it is what the in-repo reference theme uses. `--copy-files` carries the non-TypeScript assets across, and `--strip-leading-paths` keeps the output tree rooted at `dist/` rather than `dist/src/`.
+:::warning Do not build with bare `tsc`, or with `swc` and no config
+Two builds look right and ship a broken theme:
+
+- **Bare `tsc`** emits `.js` files only. It does not copy `.css` or `.scss` files into `dist/`, so a theme with stylesheets compiles cleanly and then renders with no styles. This only shows in production (`npm run start`), never in `npm run dev`, because the dev server compiles the theme itself.
+- **`swc` with no `.swcrc`** uses an old default target (ES5) and rewrites `export const layout` to `export var layout`. EverShop reads each page component's `layout` from the compiled text with a pattern that requires `const`, so every page component in the theme silently disappears.
 :::
 
 :::info
@@ -271,7 +278,55 @@ The `tsconfig.json` file is used to configure the TypeScript compiler options fo
 The `@components/*` path here exists only so your editor and `tsc` can resolve the alias — it points at the core **TypeScript sources** (`.../@evershop/evershop/src/components/*`), which is what `theme:create` emits and what carries the type information.
 
 That is a different mapping from the one the **runtime** uses. At build time, webpack resolves `@components` against `dist/components/` in theme → extensions → core order. See [Templating](./templating.md#component-resolution-order).
+
+`npm run build` does not use this mapping either. See [The `tsconfig.build.json` File](#the-tsconfigbuildjson-file).
 :::
+
+### The `tsconfig.build.json` File
+
+`tsconfig.build.json` is the TypeScript configuration that `npm run build` uses. It sits next to `tsconfig.json` in the root directory of your theme:
+
+```json title="themes/yourtheme/tsconfig.build.json"
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {},
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["src"]
+}
+```
+
+It extends the editor configuration and empties `paths`. The `@components/*` mapping in `tsconfig.json` points at EverShop's TypeScript sources. If the build kept it, `tsc` would pull those sources into the program and write compiled files next to them instead of into your `dist/`.
+
+### The `scripts/copy-assets.mjs` File
+
+`tsc` only writes compiled JavaScript files. It leaves `.css`, `.scss`, image files and every other asset behind. `scripts/copy-assets.mjs` copies those from `src/` into `dist/`, keeping the folder layout:
+
+```js title="themes/yourtheme/scripts/copy-assets.mjs"
+import { cpSync, existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const src = resolve(root, 'src');
+const dist = resolve(root, 'dist');
+if (!existsSync(src)) process.exit(0);
+let copied = 0;
+cpSync(src, dist, {
+  recursive: true,
+  filter: (from) => {
+    if (/\.tsx?$/.test(from)) return false;
+    if (!/\.[a-z0-9]+$/i.test(from)) return true; // directory
+    copied += 1;
+    return true;
+  }
+});
+console.log(`copy-assets: ${copied} non-TypeScript file(s) copied into dist/`);
+```
+
+The `GlobalCss.tsx` and `TailwindCss.tsx` components of a theme import their stylesheets by relative path, so a `dist/` without these files builds a storefront with no styles at all.
 
 #### The `public` Folder
 
@@ -313,6 +368,104 @@ Check out the [Templating system](./templating.md) document to learn how to add 
 ### The `components` Folder
 
 The `components` folder stores shared components that can be used across multiple pages. For example, if you want to create a component that will be used on both the homepage and category pages, you should place it in the `components/common` folder.
+
+### The `layouts.json` File
+
+Every page component declares its own position:
+
+```tsx
+export const layout = {
+  areaId: 'headerMiddleCenter',
+  sortOrder: 10
+};
+```
+
+To move a component that the theme does not own, you do not need to copy its file. `layouts.json` at the theme root overrides the position of any storefront page component, keyed the same way page components are resolved, `<routeFolder>/<Name>`:
+
+```json title="themes/yourtheme/layouts.json"
+{
+  "all/SearchBox": { "areaId": "headerBottom", "sortOrder": 10 },
+  "all/Breadcrumb": { "sortOrder": 1 },
+  "productView/Description": { "areaId": "productPageMiddleRight", "sortOrder": 40 }
+}
+```
+
+The last entry moves the product description from its own block under the gallery into the summary column, after the product name (sortOrder 10) and the buy box (sortOrder 30).
+
+**Blocks you can move.** The product and category pages are built as a shell plus blocks. The shell (`ProductView`, `CategoryView`) owns the data, the context and the slots (Areas); each block is a page component that registers into a slot. These are the block keys and their default slots:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr><th>Block</th><th>Default area</th><th>Sort order</th><th>Renders</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>productView/ProductMedia</code></td><td><code>productPageMiddleLeft</code></td><td>0</td><td>Image gallery</td></tr>
+    <tr><td><code>productView/ProductName</code></td><td><code>productPageMiddleRight</code></td><td>10</td><td>Product name (with its <code>productNameBefore</code> / <code>productNameAfter</code> areas)</td></tr>
+    <tr><td><code>productView/ProductForm</code></td><td><code>productPageMiddleRight</code></td><td>30</td><td>Buy box: variant selector, quantity, add to cart</td></tr>
+    <tr><td><code>productView/ProductPrice</code></td><td><code>productSinglePageForm</code></td><td>5</td><td>Price row, inside the buy box by default</td></tr>
+    <tr><td><code>productView/ProductAttributes</code></td><td><code>productSinglePageForm</code></td><td>7</td><td>Attribute list, inside the buy box by default</td></tr>
+    <tr><td><code>productView/ProductDescription</code></td><td><code>productSingleDescription</code></td><td>10</td><td>Description (with its <code>productDescriptionBefore</code> / <code>productDescriptionAfter</code> areas)</td></tr>
+    <tr><td><code>categoryView/CategoryInfo</code></td><td><code>categoryInfo</code></td><td>10</td><td>Category name, description and image</td></tr>
+    <tr><td><code>categoryView/CategoryFilter</code></td><td><code>categoryLeftColumn</code></td><td>10</td><td>Filter navigation</td></tr>
+    <tr><td><code>categoryView/CategorySorting</code></td><td><code>categoryRightColumn</code></td><td>10</td><td>Sort control with the product count</td></tr>
+    <tr><td><code>categoryView/CategoryProducts</code></td><td><code>categoryRightColumn</code></td><td>20</td><td>Product list</td></tr>
+    <tr><td><code>categoryView/CategoryPagination</code></td><td><code>categoryRightColumn</code></td><td>30</td><td>Pagination</td></tr>
+    <tr><td><code>cart/CartTitle</code></td><td><code>shoppingCartHeader</code></td><td>10</td><td>Title and item count</td></tr>
+    <tr><td><code>cart/CartItems</code></td><td><code>shoppingCartItems</code></td><td>10</td><td>Item list</td></tr>
+    <tr><td><code>cart/CartSummary</code></td><td><code>shoppingCartSummary</code></td><td>10</td><td>Order summary card with the checkout button (and the <code>shoppingCartBeforeSummary</code>, <code>shoppingCartBeforeCheckoutButton</code>, <code>shoppingCartAfterSummary</code> areas)</td></tr>
+    <tr><td><code>checkout/CheckoutContact</code></td><td><code>checkoutSteps</code></td><td>10</td><td>Contact information step</td></tr>
+    <tr><td><code>checkout/CheckoutShipment</code></td><td><code>checkoutSteps</code></td><td>20</td><td>Shipping step</td></tr>
+    <tr><td><code>checkout/CheckoutPayment</code></td><td><code>checkoutSteps</code></td><td>30</td><td>Payment step</td></tr>
+    <tr><td><code>checkout/CheckoutShippingNote</code></td><td><code>checkoutSteps</code></td><td>40</td><td>Order note inside the form flow, shown on small screens only</td></tr>
+    <tr><td><code>checkout/CheckoutPlaceOrder</code></td><td><code>checkoutSteps</code></td><td>50</td><td>Place-order button</td></tr>
+    <tr><td><code>checkout/CheckoutSummary</code></td><td><code>checkoutSummary</code></td><td>10</td><td>Desktop summary rail: order note and order summary card</td></tr>
+    <tr><td><code>account+orderList/AccountHeader</code></td><td><code>accountPageHeader</code></td><td>10</td><td>Account header with the logout button (dashboard and order list)</td></tr>
+    <tr><td><code>account+orderList/AccountNav</code></td><td><code>accountPageHeader</code></td><td>20</td><td>Dashboard / Orders tabs (dashboard and order list)</td></tr>
+    <tr><td><code>account/AccountRecentOrders</code></td><td><code>accountPageContent</code></td><td>10</td><td>Recent orders section</td></tr>
+    <tr><td><code>account/AccountInfo</code></td><td><code>accountPageContent</code></td><td>20</td><td>Account information section</td></tr>
+    <tr><td><code>account/AccountAddressBook</code></td><td><code>accountPageContent</code></td><td>30</td><td>Address book section (with the <code>accountPageAddressBook</code> area)</td></tr>
+    <tr><td><code>orderList/CustomerOrders</code></td><td><code>accountPageContent</code></td><td>10</td><td>Order list</td></tr>
+    <tr><td><code>blogHome/BlogHomeHeader</code></td><td><code>blogListHeader</code></td><td>10</td><td>Blog title</td></tr>
+    <tr><td><code>blogCategoryView/BlogCategoryHeader</code></td><td><code>blogListHeader</code></td><td>10</td><td>Category name and description</td></tr>
+    <tr><td><code>blogTagView/BlogTagHeader</code></td><td><code>blogListHeader</code></td><td>10</td><td>Tag name</td></tr>
+    <tr><td><code>blogHome+blogCategoryView+blogTagView/BlogPosts</code></td><td><code>blogListContent</code></td><td>10</td><td>Post grid, or the empty message (blog home, category and tag pages)</td></tr>
+    <tr><td><code>blogHome+blogCategoryView+blogTagView/BlogListPagination</code></td><td><code>blogListContent</code></td><td>20</td><td>Pagination (blog home, category and tag pages)</td></tr>
+    <tr><td><code>blogPostView/BlogPostHeader</code></td><td><code>blogPostArticle</code></td><td>10</td><td>Back link, category, title and meta line</td></tr>
+    <tr><td><code>blogPostView/BlogPostThumbnail</code></td><td><code>blogPostArticle</code></td><td>20</td><td>Thumbnail</td></tr>
+    <tr><td><code>blogPostView/BlogPostBody</code></td><td><code>blogPostArticle</code></td><td>30</td><td>Post content</td></tr>
+    <tr><td><code>blogPostView/BlogPostTags</code></td><td><code>blogPostArticle</code></td><td>40</td><td>Tag chips</td></tr>
+    <tr><td><code>blogPostView/BlogPostReactions</code></td><td><code>blogPostArticle</code></td><td>50</td><td>Reaction bar</td></tr>
+    <tr><td><code>blogPostView/BlogPostShare</code></td><td><code>blogPostArticle</code></td><td>60</td><td>Share buttons</td></tr>
+    <tr><td><code>blogPostView/BlogPostRelated</code></td><td><code>blogPostBottom</code></td><td>10</td><td>Related posts</td></tr>
+    <tr><td><code>blogPostView/BlogPostComments</code></td><td><code>blogPostBottom</code></td><td>20</td><td>Comment section</td></tr>
+    <tr><td><code>catalogSearch/SearchInfo</code></td><td><code>searchPageContent</code></td><td>10</td><td>Search heading with the result count</td></tr>
+    <tr><td><code>catalogSearch/SearchProducts</code></td><td><code>searchPageContent</code></td><td>20</td><td>Result grid</td></tr>
+  </tbody>
+</table>
+
+A block reads its page's context (the product, the category, the cart, the checkout, the customer), so it must stay inside that page's areas. A block placed outside them throws at render time, because the context it reads is not there. That is intended: `layouts.json` is a developer file, and the error is the feedback. Two more constraints follow from the same rule: the checkout step blocks register fields on the checkout form, so they must stay inside the form's areas (`checkoutFormBefore`, `checkoutSteps`, `checkoutForm`, `checkoutFormAfter`), while the place-order button only reads the checkout context and can go anywhere in the page, the summary rail included. The variant selector and the add-to-cart controls are not blocks: they belong to the buy box form and stay inside it.
+
+Blocks in a `routeA+routeB` folder are shared by those routes, so one `layouts.json` entry moves them on every page that renders the slot, and one override file re-skins them everywhere. The blog listing pages also expose empty `blogListTop` and `blogListBottom` slots, and the post page a `blogPostTop` slot, for extensions and widgets. Blocks are route-scoped: an entry can change a block's area and order, never the page it belongs to.
+
+If your theme overrides one of these shells from an earlier version (`ProductView.tsx`, `CategoryView.tsx`, `ProductSingleForm.tsx`, `ShoppingCart.tsx`, `Checkout.tsx`, `MyAccount.tsx`, `OrderList.tsx`, `BlogHome.tsx`, `BlogCategoryView.tsx`, `BlogTagView.tsx`, `BlogPostView.tsx`, `SearchPage.tsx`), remove the inline pieces that core now ships as blocks from your copy, or your page renders them twice.
+
+How it behaves:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr><th>Rule</th><th>Meaning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Placement only</td><td>The map changes where a component renders, never which file renders. Component files are still resolved core → extensions → theme, and the map moves whichever file won that key. Props, queries and ids are untouched.</td></tr>
+    <tr><td>Partial values</td><td>Give <code>areaId</code>, <code>sortOrder</code>, or both. Anything omitted keeps the value from the component file.</td></tr>
+    <tr><td>Highest priority</td><td>An entry wins over the file's own <code>layout</code>, including files inside the theme itself. Placement for the whole theme is answered in this one file.</td></tr>
+    <tr><td>Theme only, storefront only</td><td>Only the active theme's file is read, and admin routes are never affected.</td></tr>
+    <tr><td>Loose</td><td>A missing or malformed file, a key that matches no component, or a value of the wrong shape is ignored silently.</td></tr>
+    <tr><td>Build-time, hot in development</td><td>The file is read when the storefront bundle is compiled. In development the dev server watches it: save the file and the storefront recompiles and reloads, no restart. In production, run the build again.</td></tr>
+  </tbody>
+</table>
+
+Widgets are not part of this file, they already have placements in `theme.json`. Components rendered inline through an Area's `coreComponents` prop have no key and cannot be moved this way.
 
 ## Activating a Theme
 

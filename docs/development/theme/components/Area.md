@@ -294,7 +294,7 @@ const components = getAreaComponents('productView');
 
 These two functions replaced the old `Area.defaultProps.components` channel. React 19 **ignores `defaultProps` on function components**, so any code still assigning to it hands `Area` nothing — and an Area with no components renders nothing, which shows up as a blank page section rather than an error.
 
-An explicit `components` prop is still honoured if one is passed directly, which is why the prop remains in the table above. It is not the path core uses.
+An explicit `components` prop is still honored if one is passed directly, which is why the prop remains in the table above. It is not the path core uses.
 
 :::warning Upgrading a theme
 If your theme or extension wrote to `Area.defaultProps.components`, switch it to `setAreaComponents`. See [Upgrading To React 19](/blog/upgrading-to-react-19) for the full list of changes that break silently.

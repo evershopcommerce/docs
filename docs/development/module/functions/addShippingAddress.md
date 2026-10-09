@@ -48,14 +48,19 @@ Address data object:
 
 ```typescript
 {
-  full_name: string;
-  telephone: string;
-  address_1: string;
-  address_2?: string;
-  city: string;
-  province: string;
-  postcode: string;
-  country: string;
+  recipient?: string;            // or given_name + family_name in split-name stores
+  telephone?: string;
+  organization?: string;
+  address_line_1?: string;
+  address_line_2?: string;
+  address_line_3?: string;
+  dependent_locality?: string;   // region key where the country enumerates the level
+  locality?: string;
+  administrative_area?: string;  // e.g. US-CA
+  postal_code?: string;
+  sorting_code?: string;
+  country: string;               // ISO 3166-1 alpha-2
+  extra?: Record<string, unknown>;
 }
 ```
 
@@ -77,14 +82,19 @@ Returns `Promise<Address>` with created/updated address including `cart_address_
 import { addShippingAddress } from "@evershop/evershop/checkout/services";
 
 const address = await addShippingAddress('cart-uuid-123', {
-  full_name: "John Doe",
-  telephone: "555-1234",
-  address_1: "123 Main St",
-  city: "New York",
-  province: "NY",
-  postcode: "10001",
+  recipient: "John Doe",
+  telephone: "+1 212 555 1234",
+  address_line_1: "123 Main St",
+  locality: "New York",
+  administrative_area: "US-NY",
+  postal_code: "10001",
   country: "US"
 });
+
+// Which fields are required follows the country's address schema (Hong Kong
+// has no postal code, Germany no administrative area). Invalid input throws an
+// AddressValidationError with `errors: [{ field, code, message }]`; a shipping
+// address must also be in a country a shipping zone covers.
 
 console.log(`Address ID: ${address.cart_address_id}`);
 ```

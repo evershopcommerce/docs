@@ -83,7 +83,7 @@ function SupportUs() {
           passionate about:
         </p>
         <ul>
-          <li>The future of Node.js and React in eCommerce.</li>
+          <li>The future of Node.js and React in ecommerce.</li>
           <li>Open-core business models.</li>
           <li>
             Building the modern alternative to legacy platforms like Magento and
@@ -116,7 +116,9 @@ function SupportUs() {
 export default function SupportPage() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title="Support" description="Support EverShop.">
+    <Layout
+      title="Support"
+      description="Help EverShop grow: contribute code, sponsor the open-source project, or spread the word.">
       <main>
         <SupportUs />
       </main>

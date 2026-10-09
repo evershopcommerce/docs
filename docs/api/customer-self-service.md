@@ -173,46 +173,33 @@ Adds an address to the calling customer's address book. `customer_id` is taken f
 
 Setting `is_default` to `true` clears the flag on every other address belonging to the same customer, in the same transaction.
 
+The body uses the shared address vocabulary (the same column names as cart and order addresses). Which fields are required depends on the country — see [Address Validation](#address-validation) below.
+
 <Api
 method="POST"
 url="/api/customers/me/addresses"
 requestSchema={{
   "type": "object",
   "properties": {
-    "full_name": {
-      "type": "string"
-    },
-    "telephone": {
-      "type": "string"
-    },
-    "address_1": {
-      "type": "string"
-    },
-    "address_2": {
-      "type": "string"
-    },
-    "city": {
-      "type": "string"
-    },
-    "province": {
-      "type": "string"
-    },
-    "country": {
-      "type": "string"
-    },
-    "postcode": {
-      "type": "string"
-    },
-    "is_default": {
-      "type": "boolean"
-    }
+    "recipient": { "type": ["string", "null"], "description": "Full name of the recipient (single name field)" },
+    "given_name": { "type": ["string", "null"], "description": "Given name, when the store collects split names" },
+    "family_name": { "type": ["string", "null"], "description": "Family name, when the store collects split names" },
+    "organization": { "type": ["string", "null"], "description": "Company" },
+    "address_line_1": { "type": ["string", "null"] },
+    "address_line_2": { "type": ["string", "null"] },
+    "address_line_3": { "type": ["string", "null"], "description": "Only when the store enables a third line" },
+    "dependent_locality": { "type": ["string", "null"], "description": "Ward or neighbourhood; a region key where the country enumerates the level" },
+    "locality": { "type": ["string", "null"], "description": "City; a region key where enumerated, free text elsewhere" },
+    "administrative_area": { "type": ["string", "null"], "description": "State or province as a region key, for example US-CA" },
+    "postal_code": { "type": ["string", "null"] },
+    "sorting_code": { "type": ["string", "null"] },
+    "country": { "type": "string", "minLength": 2, "maxLength": 2, "description": "ISO 3166-1 alpha-2. The only key the payload schema requires" },
+    "telephone": { "type": ["string", "null"], "description": "Normalized to E.164 with the country's dial code" },
+    "extra": { "type": ["object", "null"], "description": "Registered extra fields by id (top-level extra keys are folded in)" },
+    "is_default": { "type": ["boolean", "number", "string", "null"] }
   },
   "required": [
-    "full_name",
-    "address_1",
-    "province",
-    "country",
-    "postcode"
+    "country"
   ],
   "additionalProperties": true
 }}
@@ -221,14 +208,21 @@ responseSample={`{
     "customer_address_id": 42,
     "uuid": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
     "customer_id": 21,
-    "full_name": "John Smith",
-    "telephone": "+1 555 0100",
-    "address_1": "123 Main St",
-    "address_2": null,
-    "postcode": "10001",
-    "city": "New York",
-    "province": "US-NY",
+    "recipient": "John Smith",
+    "given_name": null,
+    "family_name": null,
+    "organization": null,
+    "address_line_1": "123 Main St",
+    "address_line_2": null,
+    "address_line_3": null,
+    "dependent_locality": null,
+    "locality": "New York",
+    "administrative_area": "US-NY",
+    "postal_code": "10001",
+    "sorting_code": null,
     "country": "US",
+    "telephone": "+15550100",
+    "extra": {},
     "is_default": true,
     "created_at": "2025-02-07T14:18:05.000Z",
     "updated_at": "2025-02-07T14:18:05.000Z",
@@ -267,7 +261,7 @@ Updates one address that belongs to the calling customer. `{address_id}` is the 
 
 The handler loads the row with `uuid = {address_id} AND customer_id = <current customer>` before writing anything. An address that exists but belongs to someone else is indistinguishable from one that does not exist: both answer `400` with `Invalid address`. The same four ownership columns (`customer_id`, `customer_address_id`, `uuid`, `address_id`) are stripped from the body.
 
-A partial patch is safe: the service merges your fields over the stored row and validates the **merged** address, so sending only `city` does not trip the "Full name is required" rule. Setting `is_default` to `true` here also clears the flag on the customer's other addresses.
+A partial patch is safe: the service merges your fields over the stored row and validates the **merged** address against the country's schema, so sending only `locality` does not trip a required-field rule. Country-scoped extra fields of the stored row survive a patch that omits `country`. Setting `is_default` to `true` here also clears the flag on the customer's other addresses.
 
 <Api
 method="PATCH"
@@ -275,33 +269,22 @@ url="/api/customers/me/addresses/a1b2c3d4-e5f6-4890-abcd-ef1234567890"
 requestSchema={{
   "type": "object",
   "properties": {
-    "full_name": {
-      "type": "string"
-    },
-    "telephone": {
-      "type": "string"
-    },
-    "address_1": {
-      "type": "string"
-    },
-    "address_2": {
-      "type": "string"
-    },
-    "city": {
-      "type": "string"
-    },
-    "province": {
-      "type": "string"
-    },
-    "country": {
-      "type": "string"
-    },
-    "postcode": {
-      "type": "string"
-    },
-    "is_default": {
-      "type": "boolean"
-    }
+    "recipient": { "type": ["string", "null"], "description": "Full name of the recipient (single name field)" },
+    "given_name": { "type": ["string", "null"], "description": "Given name, when the store collects split names" },
+    "family_name": { "type": ["string", "null"], "description": "Family name, when the store collects split names" },
+    "organization": { "type": ["string", "null"], "description": "Company" },
+    "address_line_1": { "type": ["string", "null"] },
+    "address_line_2": { "type": ["string", "null"] },
+    "address_line_3": { "type": ["string", "null"], "description": "Only when the store enables a third line" },
+    "dependent_locality": { "type": ["string", "null"], "description": "Ward or neighbourhood; a region key where the country enumerates the level" },
+    "locality": { "type": ["string", "null"], "description": "City; a region key where enumerated, free text elsewhere" },
+    "administrative_area": { "type": ["string", "null"], "description": "State or province as a region key, for example US-CA" },
+    "postal_code": { "type": ["string", "null"] },
+    "sorting_code": { "type": ["string", "null"] },
+    "country": { "type": "string", "minLength": 2, "maxLength": 2, "description": "ISO 3166-1 alpha-2. The only key the payload schema requires" },
+    "telephone": { "type": ["string", "null"], "description": "Normalized to E.164 with the country's dial code" },
+    "extra": { "type": ["object", "null"], "description": "Registered extra fields by id (top-level extra keys are folded in)" },
+    "is_default": { "type": ["boolean", "number", "string", "null"] }
   },
   "additionalProperties": true
 }}
@@ -310,14 +293,21 @@ responseSample={`{
     "customer_address_id": 42,
     "uuid": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
     "customer_id": 21,
-    "full_name": "John A. Smith",
-    "telephone": "+1 555 0100",
-    "address_1": "456 Oak Ave",
-    "address_2": null,
-    "postcode": "10001",
-    "city": "New York",
-    "province": "US-NY",
+    "recipient": "John A. Smith",
+    "given_name": null,
+    "family_name": null,
+    "organization": null,
+    "address_line_1": "456 Oak Ave",
+    "address_line_2": null,
+    "address_line_3": null,
+    "dependent_locality": null,
+    "locality": "New York",
+    "administrative_area": "US-NY",
+    "postal_code": "10001",
+    "sorting_code": null,
     "country": "US",
+    "telephone": "+15550100",
+    "extra": {},
     "is_default": true,
     "created_at": "2025-02-07T14:18:05.000Z",
     "updated_at": "2025-02-07T15:02:19.000Z",
@@ -358,14 +348,21 @@ responseSample={`{
     "customer_address_id": 42,
     "uuid": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
     "customer_id": 21,
-    "full_name": "John A. Smith",
-    "telephone": "+1 555 0100",
-    "address_1": "456 Oak Ave",
-    "address_2": null,
-    "postcode": "10001",
-    "city": "New York",
-    "province": "US-NY",
+    "recipient": "John A. Smith",
+    "given_name": null,
+    "family_name": null,
+    "organization": null,
+    "address_line_1": "456 Oak Ave",
+    "address_line_2": null,
+    "address_line_3": null,
+    "dependent_locality": null,
+    "locality": "New York",
+    "administrative_area": "US-NY",
+    "postal_code": "10001",
+    "sorting_code": null,
     "country": "US",
+    "telephone": "+15550100",
+    "extra": {},
     "is_default": true,
     "created_at": "2025-02-07T14:18:05.000Z",
     "updated_at": "2025-02-07T15:02:19.000Z"
@@ -378,44 +375,73 @@ isPrivate={false}
 
 ## Address Validation
 
-The three address endpoints have **no** `payloadSchema.json`. Nothing is validated by AJV at the router level — validation happens inside the `createCustomerAddress` / `updateCustomerAddress` services, driven by the shared `addressValidator` rule set:
+The payload schemas above only check the shape of the keys and require `country`. Everything else is validated by the `createCustomerAddress` / `updateCustomerAddress` services against the **country's address schema** — the same `addressSchema(country)` the storefront form renders from — after the input has been normalized (trimmed, country upper-cased, telephone converted to E.164 with the country's dial code).
 
 <table className="table-auto not-prose">
   <thead>
     <tr>
-      <th className="text-left">Rule</th>
-      <th className="text-left">Message</th>
+      <th className="text-left">Check</th>
+      <th className="text-left"><code>code</code></th>
+      <th className="text-left">Example message</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>full_name</code> present and not blank</td>
-      <td>Full name is required</td>
+      <td>A key that is neither a shared column nor a registered extra field</td>
+      <td><code>unknown_field</code></td>
+      <td>province is not a known address field</td>
     </tr>
     <tr>
-      <td><code>address_1</code> present and not blank</td>
-      <td>Address is required</td>
+      <td>A field the country requires (or the store requires through the address settings) is empty</td>
+      <td><code>required</code></td>
+      <td>ZIP code is required</td>
     </tr>
     <tr>
-      <td><code>province</code> present and not blank</td>
-      <td>Province is required</td>
+      <td>A value does not match the country's pattern (postal code, telephone, an extra field's pattern)</td>
+      <td><code>pattern</code></td>
+      <td>ZIP code is not valid</td>
     </tr>
     <tr>
-      <td><code>country</code> present and not blank</td>
-      <td>Country is required</td>
+      <td>A region key the country's provider does not list as active, at any enumerated level</td>
+      <td><code>region_invalid</code></td>
+      <td>State is not a valid region</td>
     </tr>
     <tr>
-      <td><code>postcode</code> present and not blank</td>
-      <td>Postcode is required</td>
+      <td>A value of the wrong JSON type</td>
+      <td><code>type</code></td>
+      <td>Company has the wrong type</td>
+    </tr>
+    <tr>
+      <td>A country outside the merchant's sell-to list</td>
+      <td><code>country_not_allowed</code></td>
+      <td>We do not sell to Narnia</td>
+    </tr>
+    <tr>
+      <td>A rule added by an extension with <code>addAddressValidationRule</code></td>
+      <td>the rule's own code</td>
+      <td>the rule's own message</td>
     </tr>
   </tbody>
 </table>
 
-Extensions add to this list from `bootstrap.ts` with `addAddressValidationRule(...)`, so a live store may enforce more than the five rules above.
+Messages are translated into the request locale with the field's label interpolated, so a storefront can show them next to the input.
 
-:::caution Validation failures come back as `500`, not `400`
-A failed address rule is thrown by the service and caught by the generic `catch` in the handler, which answers `500` with the joined rule messages as the error text (for example `Full name is required, Postcode is required`). Only the ownership and authentication checks produce `400` / `401`. Treat a `500` from these endpoints as "possibly your payload" rather than "the server is broken".
-:::
+Failures answer `400` with every failing field at once:
+
+```json
+{
+  "error": {
+    "status": 400,
+    "message": "Invalid address",
+    "errors": [
+      { "field": "postal_code", "code": "pattern", "message": "ZIP code is not valid" },
+      { "field": "telephone", "code": "required", "message": "Telephone is required" }
+    ]
+  }
+}
+```
+
+Extensions add rules from `bootstrap.ts` with [`addAddressValidationRule`](/docs/development/module/functions/addAddressValidationRule); the rules run after the schema checks, with the resolved schema as their second argument. The field vocabulary, region keys and the eight store settings that change what is required are explained in the [Address formats guide](/docs/development/knowledge-base/address-formats).
 
 ## Error Responses
 

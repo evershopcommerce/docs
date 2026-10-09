@@ -1,37 +1,39 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+import React from "react";
+import LinkItem from "@theme/Footer/LinkItem";
+import type { Props } from "@theme/Footer/Links/MultiColumn";
 
-import React from 'react';
-import LinkItem from '@theme/Footer/LinkItem';
-import type {Props} from '@theme/Footer/Links/MultiColumn';
+type ColumnType = Props["columns"][number];
+type ColumnItemType = ColumnType["items"][number];
 
-type ColumnType = Props['columns'][number];
-type ColumnItemType = ColumnType['items'][number];
-
-function ColumnLinkItem({item}: {item: ColumnItemType}) {
+function ColumnLinkItem({ item }: { item: ColumnItemType }) {
   return item.html ? (
     <li
       className="footer__item"
       // Developer provided the HTML, so assume it's safe.
       // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{__html: item.html}}
+      dangerouslySetInnerHTML={{ __html: item.html }}
     />
   ) : (
-    <li key={item.href ?? item.to} className="footer__item flex-[50%] md:flex-auto">
-      <LinkItem item={item}/>
+    <li className="footer__item">
+      <LinkItem item={item} />
     </li>
   );
 }
 
-function Column({column}: {column: ColumnType}) {
+function Column({ column, index }: { column: ColumnType; index: number }) {
+  // The title is a paragraph, not a heading: the footer should not add an
+  // h2 to the outline of every page. The list is named after it instead.
+  const titleId = `footer-column-${index}`;
   return (
-    <div className="col footer__col">
-      <div className="footer__title">{column.title}</div>
-      <ul className="footer__items clean-list flex-wrap">
+    <div className="footer__col">
+      {column.title && (
+        <p className="footer__title" id={titleId}>
+          {column.title}
+        </p>
+      )}
+      <ul
+        className="footer__items clean-list"
+        aria-labelledby={column.title ? titleId : undefined}>
         {column.items.map((item, i) => (
           <ColumnLinkItem key={i} item={item} />
         ))}
@@ -40,12 +42,14 @@ function Column({column}: {column: ColumnType}) {
   );
 }
 
-export default function FooterLinksMultiColumn({columns}: Props): JSX.Element {
+export default function FooterLinksMultiColumn({
+  columns,
+}: Props): JSX.Element {
   return (
-    <div className="row footer__links">
+    <nav className="footer__links" aria-label="Footer">
       {columns.map((column, i) => (
-        <Column key={i} column={column} />
+        <Column key={i} column={column} index={i} />
       ))}
-    </div>
+    </nav>
   );
 }

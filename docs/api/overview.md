@@ -110,7 +110,7 @@ REST API paths are **never** locale-prefixed — there is no `/fr/api/...`. Stor
 X-Locale: fr
 ```
 
-The header is honoured **only when it names a currently enabled locale**; anything else (a disabled language, an unknown tag, a malformed value, or no header at all) falls back to the store's default language. This is deliberate — a header must not be able to request an arbitrary or disabled language.
+The header is honored **only when it names a currently enabled locale**; anything else (a disabled language, an unknown tag, a malformed value, or no header at all) falls back to the store's default language. This is deliberate — a header must not be able to request an arbitrary or disabled language.
 
 Admin API requests under `/api/admin/**` ignore `X-Locale` and always run in the configured admin language.
 

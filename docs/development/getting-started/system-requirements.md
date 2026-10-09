@@ -5,7 +5,7 @@ keywords:
   - Node.js requirements
   - PostgreSQL requirements
   - Server requirements
-sidebar_label: System requirements
+sidebar_label: System Requirements
 title: System Requirements
 description: Complete system requirements for running EverShop. Review the hardware, software, and environment prerequisites before installing EverShop.
 ---
@@ -18,7 +18,7 @@ Before installing EverShop, ensure your system meets the following requirements.
 
 ## Overview
 
-EverShop is a modern e-commerce platform built on Node.js and PostgreSQL. It requires specific system configurations to run efficiently and securely.
+EverShop is a modern ecommerce platform built on Node.js and PostgreSQL. It requires specific system configurations to run efficiently and securely.
 
 ## Operating System
 
@@ -36,18 +36,19 @@ For production environments, we recommend using **Linux-based systems** (Ubuntu 
 
 ### Node.js
 
-**Required Version:** Node.js 20.x or higher
+**Required Version:** Node.js 20.9 or higher
 
 - Download from [nodejs.org](https://nodejs.org/)
 - We recommend using the **LTS (Long Term Support)** version
 - Verify installation: `node --version`
+- EverShop 2.2.2 and later need Node.js **20.9 or newer**, because the image library it uses (`sharp` 0.35) requires it
 
 :::info Tested versions
 EverShop's continuous integration builds and runs the test suite on **Node.js 20 and Node.js 22**. Both are supported; either one is a safe choice for production. Newer majors may work but are not covered by CI.
 :::
 
 :::caution Version Compatibility
-Node.js versions below 20.x are not supported and may cause compatibility issues.
+Node.js versions below 20.9 are not supported and may cause compatibility issues.
 :::
 
 ### NPM (Node Package Manager)

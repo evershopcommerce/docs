@@ -14,7 +14,9 @@ description: Record a payment transaction for an order.
 
 # addPaymentTransaction
 
-Record a payment transaction (capture, refund, authorization) for an order.
+Record a payment transaction (an authorization, a capture or a refund) for an order. It is a plain `INSERT` into the `payment_transaction` table.
+
+Use it to save the **first** transaction of an order from your own return page, webhook or order-creation hook. Core does not create that row for you, and [captureOrder](/docs/development/module/functions/captureOrder) and [refundOrder](/docs/development/module/functions/refundOrder) need it. For a refund, call [recordRefund](/docs/development/module/functions/recordRefund) instead, and for a capture call [captureOrder](/docs/development/module/functions/captureOrder): they record the transaction, set the status and emit the events.
 
 ## Import
 
@@ -49,78 +51,93 @@ addPaymentTransaction(
   </thead>
   <tbody>
     <tr>
-      <td>`connection`</td>
-      <td>`Pool | PoolClient`</td>
+      <td><code>connection</code></td>
+      <td><code>Pool | PoolClient</code></td>
       <td>Database connection</td>
     </tr>
     <tr>
-      <td>`orderId`</td>
-      <td>`number`</td>
-      <td>Order database ID</td>
+      <td><code>orderId</code></td>
+      <td><code>number</code></td>
+      <td>Order database ID (<code>order_id</code>, not the uuid)</td>
     </tr>
     <tr>
-      <td>`amount`</td>
-      <td>`number`</td>
-      <td>Transaction amount</td>
+      <td><code>amount</code></td>
+      <td><code>number</code></td>
+      <td>Transaction amount, in major currency units</td>
     </tr>
     <tr>
-      <td>`transactionId`</td>
-      <td>`string | number`</td>
-      <td>Provider's transaction ID</td>
+      <td><code>transactionId</code></td>
+      <td><code>string | number</code></td>
+      <td>The provider's transaction ID. Together with the order it must be unique.</td>
     </tr>
     <tr>
-      <td>`transactionType`</td>
-      <td>`string`</td>
-      <td>e.g., `'capture'`, `'refund'`, `'authorization'`</td>
+      <td><code>transactionType</code></td>
+      <td><code>string</code></td>
+      <td><code>'online'</code> when a payment provider was involved, <code>'offline'</code> when it was not (Cash On Delivery)</td>
     </tr>
     <tr>
-      <td>`paymentAction`</td>
-      <td>`string`</td>
-      <td>e.g., `'Capture'`, `'Refund'`</td>
+      <td><code>paymentAction</code></td>
+      <td><code>string</code></td>
+      <td><code>'authorize'</code>, <code>'capture'</code> or <code>'refund'</code>. Core matches these exact lowercase values when it looks for the authorization, the capture and the refunds of an order.</td>
     </tr>
     <tr>
-      <td>`additionalInformation`</td>
-      <td>`string` (optional)</td>
+      <td><code>additionalInformation</code></td>
+      <td><code>string</code> (optional)</td>
       <td>Extra details (JSON string)</td>
     </tr>
     <tr>
-      <td>`parentTransactionId`</td>
-      <td>`string | number` (optional)</td>
-      <td>Parent transaction for refunds</td>
+      <td><code>parentTransactionId</code></td>
+      <td><code>string | number</code> (optional)</td>
+      <td>The <code>transactionId</code> of the transaction this one follows, for example the authorization a capture settles</td>
     </tr>
   </tbody>
 </table>
 
+## Return Value
+
+Returns `Promise<PaymentTransactionRow>`, the inserted row.
+
+## Notes
+
+- **Not idempotent.** The table has a unique constraint on the order and the transaction id, so inserting the same transaction twice throws. When a webhook can deliver the same event twice, use `insertOnUpdate` on `transaction_id` and `payment_transaction_order_id` instead, as the Stripe and PayPal modules do.
+- It does not change the payment status and emits no event. Call [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) for that.
+- It is not wrapped in `hookable`.
+
 ## Examples
+
+Record the amount to collect when a Cash On Delivery order is created. The Cash On Delivery module does this inside order creation:
 
 ```typescript
 import { addPaymentTransaction } from "@evershop/evershop/oms/services";
 
-// Record a capture
+await addPaymentTransaction(
+  connection,
+  order.insertId,
+  Number(order.grand_total),
+  `cod-authorize-${order.uuid}`,
+  "offline",
+  "authorize"
+);
+```
+
+Record a capture that settles an authorization, with the provider's response attached:
+
+```typescript
 await addPaymentTransaction(
   connection,
   orderId,
   99.99,
-  "pi_1234567890",
+  "cap_1234567890",
+  "online",
   "capture",
-  "Capture",
-  JSON.stringify({ provider: "stripe" }),
-);
-
-// Record a refund linked to the capture
-await addPaymentTransaction(
-  connection,
-  orderId,
-  49.99,
-  "re_0987654321",
-  "refund",
-  "Refund",
-  null,
-  "pi_1234567890", // parent transaction
+  JSON.stringify({ provider: "my-gateway" }),
+  "auth_1234567890" // parent transaction: the authorization
 );
 ```
 
 ## See Also
 
 - [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) — Update payment status
+- [captureOrder](/docs/development/module/functions/captureOrder) — Capture an authorized payment
+- [recordRefund](/docs/development/module/functions/recordRefund) — Record a refund
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — Payment gateway guide

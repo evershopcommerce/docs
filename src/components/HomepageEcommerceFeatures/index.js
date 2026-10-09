@@ -124,7 +124,7 @@ export default function HomepageEcommerceFeatures() {
     <section className="pt-10">
       <h1 className="text-center largest font-semibold">Ecommerce features</h1>
       <div className="text-center mb-10">
-        EverShop eCommerce platforms provides rich e-commerce features that help
+        The EverShop ecommerce platform provides rich ecommerce features that help
         you build online stores faster.
       </div>
       <div className="grid grid-cols-1 divide-y border-y-[#E3E6E9] border-y">

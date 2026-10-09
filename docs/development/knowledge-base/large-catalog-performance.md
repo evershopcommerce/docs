@@ -160,7 +160,7 @@ ORDER BY attribute.attribute_id, product_attribute_value_index.option_id
 
 `= ANY($1::int[])` sends the whole set as **one** parameter, so neither the O(n²) loop nor the 65,535 limit applies. 214 ms on a 17,000-product category.
 
-There is a deliberate non-obvious choice here. The recursive category-subtree CTE is resolved in Node **first**, then passed as an array — rather than inlined into the facet query. Inlining hides the category-set size from the planner, which then abandons the `PRODUCT_CATEGORY_ID_INDEX` bitmap plan in favour of a 500k-row sequential-scan join. That first attempt was 6× slower than the version it replaced. Resolving the (tiny, bounded) list first and passing an array keeps the planner's estimates honest.
+There is a deliberate non-obvious choice here. The recursive category-subtree CTE is resolved in Node **first**, then passed as an array — rather than inlined into the facet query. Inlining hides the category-set size from the planner, which then abandons the `PRODUCT_CATEGORY_ID_INDEX` bitmap plan in favor of a 500k-row sequential-scan join. That first attempt was 6× slower than the version it replaced. Resolving the (tiny, bounded) list first and passing an array keeps the planner's estimates honest.
 
 ## The `.addNode()` WHERE-precedence trap
 
@@ -228,7 +228,7 @@ The full-text index (`PRODUCT_SEARCH_INDEX`, a GIN index added in catalog migrat
 
 With the `to_tsvector(...) @@ websearch_to_tsquery(...)` predicate inlined in the main query, the outer `ORDER BY product.product_id DESC LIMIT 20` convinces the planner it can walk the primary-key index and evaluate the match row by row, stopping after 20 hits. For a common term that is fine (~130 ms). For a rare or unmatched term it degenerates into a full 500k-row scan — 6.4 seconds, because every row parses the product description JSON to build a tsvector on the fly.
 
-The fix (`modules/catalog/services/registerDefaultProductCollectionFilters.js`) evaluates the match inside a `WITH ... AS MATERIALIZED` CTE nested in an `IN` subquery. `MATERIALIZED` is an optimisation fence: it stops PostgreSQL from inlining the CTE into the outer query, so the match must be evaluated on its own — which is exactly when the GIN index wins.
+The fix (`modules/catalog/services/registerDefaultProductCollectionFilters.js`) evaluates the match inside a `WITH ... AS MATERIALIZED` CTE nested in an `IN` subquery. `MATERIALIZED` is an optimization fence: it stops PostgreSQL from inlining the CTE into the outer query, so the match must be evaluated on its own — which is exactly when the GIN index wins.
 
 ```js
 const bindingKey = `keyword_${uniqid()}`;

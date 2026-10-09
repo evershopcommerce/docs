@@ -7,7 +7,7 @@ keywords:
   - EVERSHOP_HOME_URL
   - TRUST_PROXY_HOPS
   - production deployment
-sidebar_label: Production checklist
+sidebar_label: Production Checklist
 title: Production Checklist
 description: Every environment variable EverShop reads at boot, the built-in per-IP rate limits, and the build and start sequence — the page to run down before you put a store live.
 ---

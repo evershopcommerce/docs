@@ -165,16 +165,11 @@ interface SelectOption {
 import { Form } from '@components/common/form/Form';
 import { SelectField } from '@components/common/form/SelectField';
 
-function AddressForm() {
-  const countries = [
-    { value: 'us', label: 'United States' },
-    { value: 'ca', label: 'Canada' },
-    { value: 'uk', label: 'United Kingdom' },
-    { value: 'au', label: 'Australia' }
-  ];
-
+function WarehouseForm({ countries }) {
+  // countries: [{ value: 'US', label: 'United States' }, ...] — from the
+  // GraphQL query `countries(scope: ALL) { value: code label: name }`
   return (
-    <Form action="/api/address">
+    <Form action="/api/warehouses">
       <SelectField
         name="country"
         label="Country"
@@ -186,6 +181,10 @@ function AddressForm() {
   );
 }
 ```
+
+:::info Customer addresses do not hand-roll this
+The storefront address form renders its country and region selects from the country's address schema, with options from `countries(scope:)` and `regions(country, parentPath)`. Override the renderer map instead of rebuilding the form — see [Address Form](./AddressForm).
+:::
 
 ## Example: With Disabled Options
 

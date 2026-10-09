@@ -250,6 +250,28 @@ export interface LabelResult {
 }
 ```
 
+### `CarrierAddress`
+
+Both `shipFrom` and `shipTo` are a `CarrierAddress`. The field names are the carrier vocabulary (unchanged by the address-format release); the **values** now come from `toIntegrationAddress`, so `company` is filled and the ward or neighbourhood below the city arrives as `dependentLocality`:
+
+```ts
+export interface CarrierAddress {
+  fullName: string;
+  company?: string;            // the address's organization — filled since the address-format release
+  address1: string;
+  address2?: string;           // remaining street lines joined with ", "
+  dependentLocality?: string;  // ward, district or neighbourhood below the city, where a country has one
+  city: string;                // resolved region name where the level is enumerated
+  province?: string;           // the ISO suffix (CA for US-CA) when the key is an ISO code, else the resolved name
+  postcode: string;
+  country: string;             // ISO 3166-1 alpha-2
+  phone?: string;
+  email?: string;
+}
+```
+
+See [toIntegrationAddress](../module/functions/toIntegrationAddress) for the mapping rules.
+
 Note there is **no `shipmentId`** on the input. `createLabel` is called *before* the shipment row is inserted — the network call happens outside the transaction so a failed insert can void the label cleanly. Correlate via `orderNumber` / `orderId`.
 
 `CarrierItem` carries per-unit `weight` (from `order_item.product_weight`, in the store weight unit), per-unit `unitPrice` (from `order_item.final_price` — the tax-exclusive post-discount transaction value, the correct customs basis, in the order's currency), and `dimensions` snapshotted on the order item at placement. Customs-aware carriers never have to guess declared values.

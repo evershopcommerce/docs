@@ -54,7 +54,7 @@ Note that `render.ts` calls `error(e)` itself before forwarding. The shared erro
 
 **What this means for you:** a component that throws during server-side rendering now produces a 500 you can see in logs and in monitoring, rather than a mysterious timeout. Note that the client-side `ErrorBoundary` (section 4) does **not** apply here — SSR uses `renderToString` with no boundary, so an SSR throw is fatal to the request by design. The boundary is for the hydrated tree.
 
-If you write a middleware that calls `render` directly, pass `next` through as the third argument. Without it the old hanging behaviour returns.
+If you write a middleware that calls `render` directly, pass `next` through as the third argument. Without it the old hanging behavior returns.
 
 ## 2. GraphQL field errors no longer 500 the page
 
@@ -89,7 +89,7 @@ Three consequences worth being precise about:
   <thead>
     <tr>
       <th>Error kind</th>
-      <th>Behaviour</th>
+      <th>Behavior</th>
     </tr>
   </thead>
   <tbody>
@@ -174,7 +174,7 @@ if (data.errors) {
 }
 ```
 
-This asymmetry is deliberate, and the reasoning is worth internalising because it tells you which behaviour to copy in your own endpoints:
+This asymmetry is deliberate, and the reasoning is worth internalising because it tells you which behavior to copy in your own endpoints:
 
 <table className="table-auto not-prose">
   <thead>
@@ -201,14 +201,14 @@ This asymmetry is deliberate, and the reasoning is worth internalising because i
       <td>Silent wrong answer: a mutation that half-succeeded returns HTTP 200</td>
     </tr>
     <tr>
-      <td>Behaviour</td>
+      <td>Behavior</td>
       <td>Partial data, errors logged at <code>debug</code></td>
       <td><code>next(error)</code> → 500 with the message</td>
     </tr>
   </tbody>
 </table>
 
-The rule generalises: **degrade when the response aggregates many independent things; fail loudly when it answers one question.**
+The rule generalizes: **degrade when the response aggregates many independent things; fail loudly when it answers one question.**
 
 Practically, urql receives a proper error on the client and your `useQuery` hook's `error` field is populated — so client-fetched data has real error state you can render, while SSR data does not.
 

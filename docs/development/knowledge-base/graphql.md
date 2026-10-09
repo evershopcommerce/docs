@@ -13,7 +13,7 @@ description: This document explains how the EverShop GraphQL system works, how t
 
 [GraphQL](https://graphql.org/) is a query language for your API and a server-side runtime for executing queries using a type system you define for your data.
 
-In EverShop, we use [GraphQL](https://graphql.org/) for server-side data fetching and as an API for the front-end to consume.
+In EverShop, we use [GraphQL](https://graphql.org/) for server-side data fetching and as an API for the frontend to consume.
 
 ## GraphQL Organization in EverShop
 

@@ -29,12 +29,12 @@ import Api from '@site/src/components/rest/Api';
 
 ## List Available Shipping Methods (GraphQL)
 
-Query `Cart.availableShippingMethods` against the storefront endpoint `POST /graphql`. The destination arguments are optional — when omitted the cart's saved shipping address is used.
+Query `Cart.availableShippingMethods` against the storefront endpoint `POST /graphql`. The destination arguments (`country`, `administrativeArea`, `locality`, `dependentLocality`, `postalCode`) are optional — when omitted the cart's saved shipping address is used. Region arguments take region keys (`US-CA`), the same values an address stores.
 
 ```graphql
 query AvailableShippingMethods($cartId: String!) {
   cart(id: $cartId) {
-    availableShippingMethods(country: "US", province: "CA", postcode: "90001") {
+    availableShippingMethods(country: "US", administrativeArea: "US-CA", locality: "Cupertino", postalCode: "95014") {
       id
       providerCode
       code

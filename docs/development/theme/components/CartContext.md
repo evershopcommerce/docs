@@ -158,20 +158,18 @@ Add shipping address:
 const { addShippingAddress } = useCartDispatch();
 
 await addShippingAddress({
-  full_name: 'John Doe',
-  address_1: '123 Main St',
-  city: 'New York',
-  province: 'NY',
-  postcode: '10001',
+  recipient: 'John Doe',
+  address_line_1: '123 Main St',
+  locality: 'New York',
+  administrative_area: 'US-NY',
+  postal_code: '10001',
   country: 'US',
-  telephone: '555-0100'
+  telephone: '+1 212 555 0100'
 });
 ```
 
-:::warning The `Address` type is snake_case
-The keys are `full_name`, `address_1`, `address_2`, `city`, `province`, `postcode`,
-`country`, `telephone`. Passing camelCase (`fullName`, `address1`) does not silently
-save the wrong shape — `validateAddress` rejects the call with `Full name is required`.
+:::warning The `Address` type is snake_case and country-dependent
+The keys are the shared address columns: `recipient` (or `given_name` + `family_name`), `organization`, `address_line_1..3`, `dependent_locality`, `locality`, `administrative_area`, `postal_code`, `sorting_code`, `country`, `telephone`, `extra`. Which ones are required follows the country's address schema. Passing an unknown key (`fullName`, `province`) is rejected with `unknown_field`; a validation failure throws an `Error` whose `errors` property is the server's `[{ field, code, message }]` array, which the address form maps onto its inputs with `form.setError`.
 :::
 
 ### addBillingAddress
@@ -182,14 +180,17 @@ Add billing address:
 const { addBillingAddress } = useCartDispatch();
 
 await addBillingAddress({
-  full_name: 'John Doe',
-  address_1: '123 Main St',
-  city: 'New York',
-  province: 'NY',
-  postcode: '10001',
+  recipient: 'John Doe',
+  address_line_1: '123 Main St',
+  locality: 'New York',
+  administrative_area: 'US-NY',
+  postal_code: '10001',
   country: 'US',
-  telephone: '555-0100'
+  telephone: '+1 212 555 0100'
 });
+
+// A logged-in customer can reuse a saved address instead:
+await addBillingAddress({ customerAddressUuid: savedAddress.uuid });
 ```
 
 ### addPaymentMethod
@@ -262,9 +263,15 @@ const { data } = useCartState();
 
 await fetchAvailableShippingMethods({
   country: 'US',
-  province: 'CA',   // optional
-  postcode: '90210' // optional
+  administrativeArea: 'US-CA', // optional, a region key
+  locality: 'Cupertino',       // optional
+  dependentLocality: undefined, // optional (wards, neighbourhoods)
+  postalCode: '95014'          // optional
 });
+
+// The checkout derives these from the country's address schema: every
+// geographic field of the schema (C, S, Z, D tokens) plus the country, and
+// re-fetches only when one of them changes — never on a name or telephone edit.
 
 // The result is written back onto cart state:
 data.availableShippingMethods.forEach((method) => {

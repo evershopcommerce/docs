@@ -13,7 +13,11 @@ description: Learn about the middleware system in EverShop. How middlewares work
 
 Let's examine the diagram below:
 
+<div className="wide-diagram">
+
 ![EverShop Middleware System](./img/middleware-flow.png "EverShop Middleware System")
+
+</div>
 
 In the above flow, a request is triggered from the end-user. This request is received and processed by a series of middleware functions. After all middleware functions are executed, a response object containing the webpage data is sent to the client.
 

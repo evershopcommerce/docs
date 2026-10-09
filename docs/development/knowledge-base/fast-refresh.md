@@ -1,10 +1,10 @@
 ---
 sidebar_position: 50
 keywords:
-  - Evershop fast refresh
+  - EverShop fast refresh
 sidebar_label: Fast Refresh
 title: Fast Refresh
-description: Fast Refresh is a Evershop feature that gives you instantaneous update on edits made to your code. It is enabled by default in the development mode.
+description: Fast Refresh is an EverShop feature that gives you instantaneous update on edits made to your code. It is enabled by default in the development mode.
 ---
 
 # Fast Refresh

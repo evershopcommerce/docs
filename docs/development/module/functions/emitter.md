@@ -54,7 +54,7 @@ Use a hierarchical naming convention with underscores to separate levels:
 
 - `order_placed` - When a new order is created
 - `order_updated` - When an order is modified
-- `order_cancelled` - When an order is cancelled
+- `order_cancelled` - When an order is canceled
 - `customer_registered` - When a new customer signs up
 - `product_created` - When a new product is added
 - `inventory_updated` - When inventory levels change

@@ -59,7 +59,7 @@ export function getStoreCurrency(): string {
 
 Read that inside-out: `getLegacyConfig('shop.currency', 'USD')` computes the fallback — the config value if the store still declares one, otherwise `'USD'` — and `getSettingSync` overrides it with the `storeCurrency` row when one exists.
 
-This ordering is what makes the config→setting move a **non-breaking** change. A store that never touches the admin keeps the exact behaviour it had when the value was config-driven; the moment a merchant saves the setting, the DB row wins.
+This ordering is what makes the config→setting move a **non-breaking** change. A store that never touches the admin keeps the exact behavior it had when the value was config-driven; the moment a merchant saves the setting, the DB row wins.
 
 :::warning[One exception: file-storage credentials invert the order]
 The storage **credential** getters (`getS3StorageConfig`, `getAzureStorageConfig`, `getGcsStorageConfig`) resolve **config → environment variable → setting**, so config *wins* over the DB row. That is deliberate: an operator who pins S3 credentials in config or the environment must not have them silently overridden from the admin UI. `getFileStorageConfigOverrides()` reports which keys are currently pinned, which is how the admin form knows to render them read-only.
@@ -188,7 +188,7 @@ export function getSettingSync<T>(name: string, defaultValue: T): T {
 }
 ```
 
-A cold cache therefore yields the config fallback — precisely the behaviour those paths had before the value moved to the database. Moving a value from config to a setting never adds a DB dependency to a previously synchronous path.
+A cold cache therefore yields the config fallback — precisely the behavior those paths had before the value moved to the database. Moving a value from config to a setting never adds a DB dependency to a previously synchronous path.
 
 :::tip
 The rule for your own code: **prefer async `getSetting`**. Reach for `getSettingSync` only when you are in a genuinely synchronous path, and accept that a cold cache gives you the default.
@@ -287,6 +287,33 @@ export function getMyFeatureLimit(): number {
 ```
 
 Note the coercion — the DB hands you a string even when the config default is a number.
+
+## Address settings
+
+Eight rows shape every address form (storefront address book, checkout shipping and billing). They are plain `setting` rows — `getSettingSync('addressTelephone', 'required')` — read inside the address schema resolution, so a change is live on the next request. The **Addresses** section of **Settings → Customer** (`/admin/setting/customer`) edits seven of them: name format, telephone, company, lines 2 and 3, a tighten-only list of required fields, and the default country. **Sell to countries** is a card above the zones on **Settings → Shipping**, because that is what it interacts with: it names the zones a narrower list would strand before saving, and the zones list reloads its badges afterwards. The Customer page is one form whose sections register into Area `customerSettingSections` (Addresses is `sortOrder` 10; its fields are Area `customerAddressSetting`), so a module adds a section without forking the page. There are no config keys and no `getX()` helpers, because the resolver is the only reader.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Values</th>
+      <th>Default</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>addressNameFormat</code></td><td><code>single</code> | <code>split</code></td><td><code>single</code></td><td>One "Full name" field, or given + family name. No data migration either way.</td></tr>
+    <tr><td><code>addressTelephone</code></td><td><code>required</code> | <code>optional</code> | <code>hidden</code></td><td><code>required</code></td><td>Same on all three surfaces.</td></tr>
+    <tr><td><code>addressOrganization</code></td><td><code>hidden</code> | <code>optional</code> | <code>required</code></td><td><code>optional</code></td><td>The company line.</td></tr>
+    <tr><td><code>addressLine2</code></td><td><code>shown</code> | <code>hidden</code></td><td><code>shown</code></td><td>Second street line.</td></tr>
+    <tr><td><code>addressLine3</code></td><td><code>enabled</code> | <code>disabled</code></td><td><code>disabled</code></td><td>Third street line.</td></tr>
+    <tr><td><code>addressRequired</code></td><td>JSON object, field → <code>required</code></td><td><code>{'{}'}</code></td><td>Tighten only: require a postal field the country leaves optional.</td></tr>
+    <tr><td><code>addressDefaultCountry</code></td><td><code>store</code> | <code>none</code> | country code</td><td><code>store</code></td><td>Pre-selected country on a new address.</td></tr>
+    <tr><td><code>addressSellToCountries</code></td><td><code>all</code> | JSON array of codes</td><td><code>all</code></td><td>The address book and billing offer this list; shipping offers its intersection with the zone countries. Zones outside the list are flagged, never deleted.</td></tr>
+  </tbody>
+</table>
+
+See [Address Formats](./address-formats#settings) for how the settings enter the schema.
 
 ## config → setting migration table
 
@@ -539,7 +566,7 @@ Related branding keys that are settings and never had a config equivalent: `favi
 `themeConfig` still exists and still holds `headTags` (`links`, `metas`, `scripts`, `bases`) and `copyRight`.
 
 :::danger
-A theme that still reads `themeConfig.logo` renders **no logo** — it does not fall back and it does not warn. This is the one migration on this page that silently changes behaviour, so grep your themes for it.
+A theme that still reads `themeConfig.logo` renders **no logo** — it does not fall back and it does not warn. This is the one migration on this page that silently changes behavior, so grep your themes for it.
 :::
 
 ## Units are relabel, not convert

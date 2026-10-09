@@ -153,7 +153,7 @@ npm run start
 
 ### Overriding the dictionary source
 
-`composeLocaleDictionary()` passes each freshly-loaded dictionary through the `localeDictionary` registry value before it is stored. With no processor registered the behaviour is identity. Registering one from your extension's `bootstrap` file lets you layer database-managed or remote translations on top of the disk files without touching any call site:
+`composeLocaleDictionary()` passes each freshly-loaded dictionary through the `localeDictionary` registry value before it is stored. With no processor registered the behavior is identity. Registering one from your extension's `bootstrap` file lets you layer database-managed or remote translations on top of the disk files without touching any call site:
 
 ```ts title="extensions/my-extension/bootstrap.ts"
 import { addProcessor } from '@evershop/evershop/lib/util/registry';
@@ -317,6 +317,26 @@ Product names, descriptions, and CMS copy are **content**, not interface strings
 ### Test with the target locale actually served
 
 Because the dictionary is chosen per request, the only reliable test is to load the store under the target locale prefix and walk the real pages — checking that strings are translated, that special characters render, and that longer translations do not break layout.
+
+## Address labels and messages
+
+Address field labels are keyed by **label type**, not by field, so one translation serves every country that uses the type. The storefront translates them with `_()` through a literal switch (`components/frontStore/customer/address/labelTypes.ts`) and the server with `translate()` through `lib/address/labels.ts`; a unit test keeps the two maps identical. The English source strings to translate are:
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr><th>Group</th><th>Source strings</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Name, company, street, phone, country</td><td><code>Full name</code>, <code>Given name</code>, <code>Family name</code>, <code>Company</code>, <code>Address</code>, <code>Address 2</code>, <code>Address line 3</code>, <code>Telephone</code>, <code>Country</code></td></tr>
+    <tr><td>State level</td><td><code>Province</code>, <code>State</code>, <code>Prefecture</code>, <code>Area</code>, <code>County</code>, <code>Emirate</code>, <code>Department</code>, <code>District</code>, <code>Do/Si</code>, <code>Island</code>, <code>Oblast</code>, <code>Parish</code>, <code>Region</code></td></tr>
+    <tr><td>City level</td><td><code>City</code>, <code>Post town</code>, <code>Suburb</code></td></tr>
+    <tr><td>Below the city</td><td><code>Neighborhood</code>, <code>Village</code>, <code>Village/Township</code>, <code>Townland</code>, <code>Ward</code></td></tr>
+    <tr><td>Postal</td><td><code>Postcode</code>, <code>ZIP code</code>, <code>PIN code</code>, <code>Eircode</code>, <code>Sorting code</code></td></tr>
+    <tr><td>Messages (interpolated)</td><td><code>{'${field} is required'}</code>, <code>{'${field} is not valid'}</code>, <code>{'${field} is not a valid region'}</code>, <code>{'${field} has the wrong type'}</code>, <code>{'${field} is not a known address field'}</code>, <code>{'We do not sell to ${country}'}</code>, <code>{'Select ${field}'}</code>, <code>no longer available</code>, <code>Please check the highlighted fields</code></td></tr>
+  </tbody>
+</table>
+
+The bundled locales carry all of them in `account.csv`. The old per-field rows (`Full name is required`, `Postcode is required`, …) were removed with the address-format release; `Country is required` moved to `admin.csv` for the tax-rate form. Extra fields registered by extensions carry their own English label and translate through the same dictionary once a merchant adds the row — extensions cannot ship dictionaries yet.
 
 ## See also
 

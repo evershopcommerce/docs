@@ -129,7 +129,7 @@ Two vocabularies, deliberately separate.
 export type ShipmentPhase = 'shipped' | 'delivered' | 'canceled';
 ```
 
-There is no `pending` phase. Stock is deducted at order placement, so a shipment row exists **if and only if** something was actually shipped — modelling a pre-shipped reservation would be state without meaning. `createShipment` hardcodes the new row's status to `shipped`. "Nothing shipped yet" is expressed at the order level by the rollup value `pending`, not by a shipment row.
+There is no `pending` phase. Stock is deducted at order placement, so a shipment row exists **if and only if** something was actually shipped — modeling a pre-shipped reservation would be state without meaning. `createShipment` hardcodes the new row's status to `shipped`. "Nothing shipped yet" is expressed at the order level by the rollup value `pending`, not by a shipment row.
 
 **Status** is the human-visible label and is extensible. The built-in set is three entries:
 
@@ -425,7 +425,7 @@ Everything below is exported from `@evershop/evershop/oms/services`.
 ### Never write `order.shipment_status` yourself
 
 :::danger
-`order.shipment_status` is a cached projection. `createShipment`, `updateShipmentStatus`, and order creation all call `recomputeOrderShipmentStatus` — and `cancelOrder` reaches it too, by cancelling each shipment through `updateShipmentStatus` — which overwrites the column with the freshly computed rollup. A direct `update('order').given({ shipment_status: ... })` is not rejected — it is simply **silently overwritten** by the next shipment write, and until then it makes `order.shipment_status` disagree with the item math.
+`order.shipment_status` is a cached projection. `createShipment`, `updateShipmentStatus`, and order creation all call `recomputeOrderShipmentStatus` — and `cancelOrder` reaches it too, by canceling each shipment through `updateShipmentStatus` — which overwrites the column with the freshly computed rollup. A direct `update('order').given({ shipment_status: ... })` is not rejected — it is simply **silently overwritten** by the next shipment write, and until then it makes `order.shipment_status` disagree with the item math.
 
 To move fulfillment state, change a shipment: `updateShipmentStatus(shipmentUuid, status)`.
 :::
@@ -524,7 +524,7 @@ Allowed phase transitions:
 
 Same-phase moves are always allowed, which is how a carrier extension advances `shipped → in_transit → out_for_delivery` without leaving the phase. Anything else throws `Cannot transition shipment from phase X to phase Y`.
 
-Timestamps are first-occurrence and never cleared, so a shipment that was relabelled several times inside the `shipped` phase keeps its original `shipped_at`.
+Timestamps are first-occurrence and never cleared, so a shipment that was relabeled several times inside the `shipped` phase keeps its original `shipped_at`.
 
 ### `markDelivered`
 

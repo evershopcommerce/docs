@@ -119,6 +119,30 @@ EverShop automatically adds `storeInfo` to every email's template data:
 
 This data is pulled from the admin settings (store name, email, phone, address, logo).
 
+### Addresses in email data
+
+Address data follows the Address Format Registry: every address object carries the shared column names (`recipient`, `address_line_1`, `locality`, `administrative_area`, `postal_code`, `country`, `telephone`, …) **plus** the display helpers the template should use instead of naming fields:
+
+```handlebars
+{{#if shippingAddress}}
+  <p>{{t "Shipping to"}}</p>
+  <p>{{#each shippingAddress.formatted}}{{this}}<br>{{/each}}</p>
+{{/if}}
+```
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr><th>Key</th><th>Meaning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>formatted</code></td><td>The printed lines for the address's country and the store language, country included.</td></tr>
+    <tr><td><code>country_name</code>, <code>administrative_area_name</code>, <code>locality_name</code>, <code>dependent_locality_name</code></td><td>Resolved names of the stored keys, for templates that build their own layout.</td></tr>
+    <tr><td><code>given_name</code>, <code>family_name</code></td><td>Derived from <code>recipient</code> when the store collects a single name field.</td></tr>
+  </tbody>
+</table>
+
+The order confirmation, shipment created and shipment delivered emails pass `shippingAddress` this way (the confirmation also passes `billingAddress`) (`billingAddress` is `null` for a zero-total order); `storeInfo.address` also carries a `formatted` array. The pre-2026 keys `full_name`, `address_1`, `province_name` and `postcode` no longer exist — a custom `templatePath` template that printed them must switch to `formatted`.
+
 ## Customizing Emails with Processors
 
 Extensions can modify email arguments or template data using processors:

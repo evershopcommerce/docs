@@ -41,14 +41,22 @@ Customer UUID.
 
 ```typescript
 {
-  full_name: string;      // Recipient name
-  address_1: string;      // Address line 1
-  address_2?: string;     // Address line 2
-  city?: string;          // City
-  province: string;       // Province/State
-  postcode: string;       // Postal code
-  country: string;        // Country code
-  telephone?: string;     // Phone number
+  recipient?: string;            // Full name (single-field name mode)
+  given_name?: string;           // With family_name when the store collects split names
+  family_name?: string;
+  organization?: string;         // Company
+  address_line_1?: string;
+  address_line_2?: string;
+  address_line_3?: string;
+  dependent_locality?: string;   // Ward / neighbourhood (region key where enumerated)
+  locality?: string;             // City (region key where enumerated)
+  administrative_area?: string;  // State / province region key, e.g. US-CA
+  postal_code?: string;
+  sorting_code?: string;
+  country: string;               // ISO 3166-1 alpha-2 — the only key always required
+  telephone?: string;            // Normalized to E.164
+  extra?: Record<string, unknown>; // Registered extra fields
+  is_default?: boolean;
   is_default?: number;    // Default address (0 or 1)
 }
 ```
@@ -71,18 +79,22 @@ Returns `Promise<Address>` with created address.
 import { createCustomerAddress } from "@evershop/evershop/customer/services";
 
 const address = await createCustomerAddress('customer-uuid', {
-  full_name: 'John Doe',
-  address_1: '123 Main St',
-  province: 'CA',
-  postcode: '90001',
+  recipient: 'John Doe',
+  telephone: '+1 408 555 1234',
+  address_line_1: '123 Main St',
+  locality: 'Cupertino',
+  administrative_area: 'US-CA',
+  postal_code: '95014',
   country: 'US'
 });
 ```
 
 ## Hooks
 
+Which fields are required depends on the country's address schema; the service normalizes the input (trim, upper-case country, E.164 telephone), validates it with [`validateAddress`](/docs/development/module/functions/validateAddress) and throws an `AddressValidationError` whose `errors` array lists every failing field.
+
 Supports hooks via registry:
-- `customerAddressDataBeforeCreate` - Modify data before creation
+- `customerAddressDataBeforeCreate` - Modify data before creation (the normalization seam runs here at priority 0)
 - `insertCustomerAddressData` - Hook address insertion
 
 ## See Also

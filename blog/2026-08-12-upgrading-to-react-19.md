@@ -237,7 +237,7 @@ useEffect(() => {
 
 ## Verifying the upgrade
 
-A clean build proves almost nothing here, so check behaviour:
+A clean build proves almost nothing here, so check behavior:
 
 1. **Open a storefront page and watch the browser console.** Hydration mismatches are logged as errors. Core installs a root error boundary plus `onRecoverableError` reporting, so a mismatch is reported rather than silently swallowed.
 2. **Load a page in a non-default language.** Module-scope `_()` calls surface here first.

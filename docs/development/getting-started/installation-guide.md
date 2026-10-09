@@ -2,8 +2,8 @@
 sidebar_position: 10
 keywords:
   - EverShop installation
-sidebar_label: Installation guide
-title: Evershop installation guide.
+sidebar_label: Installation Guide
+title: EverShop Installation Guide
 description: This document will guide you through the installation process of EverShop. The quick installation guide is also available to help you install EverShop template quickly.
 ---
 

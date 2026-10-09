@@ -12,7 +12,7 @@ description: A comprehensive guide for deploying EverShop to Amazon Web Services
 
 # Deploy EverShop to AWS
 
-This comprehensive guide walks you through the process of deploying EverShop to Amazon Web Services (AWS) using EC2 for application hosting and RDS for PostgreSQL database management. This approach provides a scalable, reliable production environment for your e-commerce platform.
+This comprehensive guide walks you through the process of deploying EverShop to Amazon Web Services (AWS) using EC2 for application hosting and RDS for PostgreSQL database management. This approach provides a scalable, reliable production environment for your ecommerce platform.
 
 :::tip
 Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.
@@ -49,7 +49,7 @@ After creating and connecting to your EC2 instance via SSH, install the necessar
 
 #### 1. Install Node.js and NPM
 
-EverShop requires Node.js version 20.x or higher and NPM version 9.x or higher:
+EverShop requires Node.js version 20.9 or higher and NPM version 9.x or higher:
 
 ```bash
 sudo apt update
@@ -481,7 +481,7 @@ For more advanced monitoring, consider integrating with AWS CloudWatch.
 
 ## Conclusion
 
-You've successfully deployed EverShop to AWS using EC2 for hosting the application and RDS for managing the PostgreSQL database. This setup provides a robust, scalable foundation for your e-commerce platform.
+You've successfully deployed EverShop to AWS using EC2 for hosting the application and RDS for managing the PostgreSQL database. This setup provides a robust, scalable foundation for your ecommerce platform.
 
 For production environments, consider implementing additional best practices:
 

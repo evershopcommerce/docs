@@ -1,11 +1,44 @@
+// In Markdown, only read class="..." / className="..." attributes. Scanning the
+// whole text turns ordinary English words ("outline", "sticky", "collapse",
+// "transition") into global utility classes.
+const classAttributes = (content) => {
+  const classes = [];
+  for (const match of content.matchAll(/class(?:Name)?=["']([^"']*)["']/g)) {
+    classes.push(...match[1].split(/\s+/).filter(Boolean));
+  }
+  return classes;
+};
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.js", "./src/**/*.tsx", "./docs/**/*.md"],
+  content: {
+    files: [
+      "./src/**/*.{js,jsx,ts,tsx,md,mdx}",
+      "./docs/**/*.{md,mdx}",
+      "./blog/**/*.{md,mdx}",
+    ],
+    extract: { md: classAttributes, mdx: classAttributes },
+  },
+  // The site is light-only (colorMode.disableSwitch). Follow Docusaurus's own
+  // theme switch for `dark:` variants, not the visitor's OS setting, so the
+  // pages that carry `dark:` classes do not turn dark for OS dark-mode users.
+  darkMode: ["selector", '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
         primary: "#008060",
+        "primary-dark": "#007356",
         "primary-02": "#E5FFF9",
+        // shadcn-style names used by documentation.tsx and the DocCard /
+        // category-index components. They were never defined, so classes such
+        // as `bg-secondary` or `hover:bg-accent` silently did nothing. Mapped
+        // onto the site's own neutrals.
+        card: "#FFFFFF",
+        secondary: "#F4F5F6",
+        "secondary-foreground": "#475467",
+        accent: "#F4F5F6",
+        "accent-foreground": "#101828",
+        "muted-foreground": "#475467",
         "Neutrals-01": "#101828",
         "Neutrals-02": "#222630",
         "Neutrals-03": "#343946",

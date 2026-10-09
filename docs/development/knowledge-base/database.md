@@ -1,7 +1,7 @@
 ---
 sidebar_position: 35
 keywords:
-  - Evershop database
+  - EverShop database
   - query builder
   - PostgreSQL
   - typed queries
@@ -364,7 +364,7 @@ await insert('product').given({ price: 29.99 }).execute(connection);
 
 The following tables have full type support with column autocompletion. The authoritative list is the `TableName` union in `lib/postgres/query.ts` — check there if you suspect this list has drifted.
 
-`admin_user`, `attribute`, `attribute_group`, `attribute_group_link`, `attribute_option`, `cart`, `cart_address`, `cart_item`, `category`, `category_description`, `changeset`, `changeset_operation`, `cms_page`, `cms_page_description`, `collection`, `core_shipping_method`, `core_shipping_method_rate`, `coupon`, `customer`, `customer_address`, `customer_group`, `event`, `migration`, `order`, `order_activity`, `order_address`, `order_item`, `payment_transaction`, `product`, `product_attribute_value_index`, `product_category`, `product_collection`, `product_custom_option`, `product_custom_option_value`, `product_description`, `product_image`, `product_inventory`, `reset_password_token`, `rollout_plan`, `session`, `setting`, `shipment`, `shipment_item`, `shipping_zone`, `shipping_zone_country`, `shipping_zone_province`, `shipping_zone_provider`, `tax_class`, `tax_rate`, `url_rewrite`, `variant_group`, `widget_instance`, `widget_placement`
+`admin_user`, `attribute`, `attribute_group`, `attribute_group_link`, `attribute_option`, `cart`, `cart_address`, `cart_item`, `category`, `category_description`, `changeset`, `changeset_operation`, `cms_page`, `cms_page_description`, `collection`, `core_shipping_method`, `core_shipping_method_rate`, `coupon`, `customer`, `customer_address`, `customer_group`, `event`, `landing_page`, `migration`, `order`, `order_activity`, `order_address`, `order_item`, `payment_transaction`, `product`, `product_attribute_value_index`, `product_category`, `product_collection`, `product_custom_option`, `product_custom_option_value`, `product_description`, `product_image`, `product_inventory`, `reset_password_token`, `rollout_plan`, `session`, `setting`, `shipment`, `shipment_item`, `shipping_zone`, `shipping_zone_country`, `shipping_zone_provider`, `shipping_zone_region`, `tax_class`, `tax_rate`, `url_rewrite`, `user_token_secret`, `variant_group`, `widget_instance`, `widget_placement`
 
 :::warning
 Three tables that older documentation lists **no longer exist**:

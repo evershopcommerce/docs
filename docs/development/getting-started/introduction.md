@@ -17,7 +17,7 @@ description: Discover EverShop, a free, open-source ecommerce platform built wit
 
 Welcome to EverShop, a modern, open-source Node.js ecommerce platform built with **TypeScript**, React, and GraphQL.
 
-EverShop is designed to help developers create powerful and flexible e-commerce stores. It features a modular architecture that allows for extensive customization of both the admin panel and the front store, giving you complete control over your application.
+EverShop is designed to help developers create powerful and flexible ecommerce stores. It features a modular architecture that allows for extensive customization of both the admin panel and the front store, giving you complete control over your application.
 
 EverShop is free and open-source. The source code is available on [GitHub](https://github.com/evershopcommerce/evershop).
 
@@ -73,7 +73,7 @@ EverShop's highly modular structure is a result of several open source technolog
 
 EverShop is written in [TypeScript](https://www.typescriptlang.org/), a statically typed superset of JavaScript. This provides better tooling, scalability, and code quality.
 
-### NodeJS
+### Node.js
 
 [Node.js](https://nodejs.org/en/) is an open-source server side runtime environment built on Chrome's V8 JavaScript engine. It provides an event driven, non-blocking (asynchronous) I/O and cross-platform runtime environment for building highly scalable server-side application using JavaScript.
 
@@ -83,11 +83,11 @@ EverShop is written in [TypeScript](https://www.typescriptlang.org/), a statical
 
 ### React
 
-[React](https://reactjs.org/) is a free and open-source front-end JavaScript library for building user interfaces based on UI components. EverShop implements server-side rendering of React components with hydration to provide a fast, performant experience and SEO optimization.
+[React](https://reactjs.org/) is a free and open-source frontend JavaScript library for building user interfaces based on UI components. EverShop implements server-side rendering of React components with hydration to provide a fast, performant experience and SEO optimization.
 
 ### GraphQL
 
-[GraphQL](https://graphql.org/) is a query language for APIs and a runtime for fulfilling those queries with your existing data. EverShop uses GraphQL and React to build a flexible and extensible front-end.
+[GraphQL](https://graphql.org/) is a query language for APIs and a runtime for fulfilling those queries with your existing data. EverShop uses GraphQL and React to build a flexible and extensible frontend.
 
 :::info
 

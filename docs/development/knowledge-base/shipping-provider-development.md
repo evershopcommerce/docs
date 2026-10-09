@@ -26,7 +26,7 @@ The flat `Zone → Method → Rate` model is gone. The `shipping_method` and `sh
 
 ```
 shipping_zone ──< shipping_zone_country      (multi-country zones)
-      │        ──< shipping_zone_province
+      │        ──< shipping_zone_region        (country, level, region_key — restrictions)
       │
       └──< shipping_zone_provider ──> (registered provider, by code)
                     │
@@ -262,7 +262,7 @@ export interface ShippingItem {
     </tr>
     <tr>
       <td><code>destination</code></td>
-      <td>The cart's shipping address, or the <code>country</code>/<code>province</code>/<code>postcode</code> overrides passed to the rate calculator.</td>
+      <td>The cart's shipping address, or the <code>country</code>/<code>administrativeArea</code>/<code>locality</code>/<code>dependentLocality</code>/<code>postalCode</code> overrides passed to the rate calculator. Keys are <code>country</code>, <code>administrative_area</code>, <code>locality</code>, <code>dependent_locality</code>, <code>postal_code</code>, <code>address_line_1</code>; region values are region keys (<code>US-CA</code>).</td>
     </tr>
     <tr>
       <td><code>zone</code></td>
@@ -386,9 +386,9 @@ Both calls must be **safe to repeat with the same inputs**. Results are memoized
 
 ## The orchestrator, timeouts, and failure isolation
 
-`getAvailableShippingMethods(cartId, country?, province?, postcode?)` in `modules/checkout/services/getAvailableShippingMethods.ts` drives listing:
+`getAvailableShippingMethods(cartId, destination?)` in `modules/checkout/services/getAvailableShippingMethods.ts` drives listing — `destination` is `{ country, administrativeArea?, locality?, dependentLocality?, postalCode? }` and defaults to the cart's shipping address:
 
-1. Resolve every zone covering the destination. Overlapping coverage is allowed — all matching zones contribute.
+1. Resolve every zone covering the destination (`resolveZonesForAddress({ country, administrativeArea, postalCode })`: the country must be in the zone's `shipping_zone_country` rows, and the zone either has no `shipping_zone_region` rows for that country or one of them matches the address's region key). Overlapping coverage is allowed — all matching zones contribute.
 2. Load enabled `shipping_zone_provider` rows for those zones.
 3. Cross-reference each attachment's `provider_code` against the registry. **Attachments whose provider is not registered are silently skipped** — an uninstalled extension leaves inert rows, not errors.
 4. Fan out over every (zone, provider) pair **in parallel** with `Promise.allSettled`, each wrapped in a timeout.
@@ -409,9 +409,9 @@ A rejected or timed-out provider is logged and skipped. **One broken provider ne
 
 ```ts
 async getMethods(ctx) {
-  if (!ctx.origin?.country || !ctx.origin?.postcode) {
+  if (!ctx.origin?.country || !ctx.origin?.postal_code) {
     throw new Error(
-      'my-shipping requires a store origin address (country + postcode). ' +
+      'my-shipping requires a store origin address (country + postal code). ' +
       'Set it under Settings → Store.'
     );
   }
@@ -434,8 +434,10 @@ const origin = await getOriginAddress(); // Promise<Address>
 There is no dedicated `shop.origin_address` setting. `getOriginAddress` composes the shop's ship-from address from the existing store settings — `getStoreCountry`, `getStoreProvince`, `getStoreCity`, `getStoreAddress`, `getStorePostalCode` — and returns:
 
 ```ts
-{ country, province, city, address_1, postcode }
+{ country, administrative_area, locality, address_line_1, postal_code }
 ```
+
+The keys follow the shared address vocabulary (see [Address Formats](./address-formats)); `administrative_area` holds the region key the store setting stores (`US-CA`).
 
 It always returns a defined object, possibly with null fields. Providers that need specific fields validate them themselves.
 
@@ -703,8 +705,8 @@ Because the provider only ever sees a plain `ShippingContext`, testing it needs 
 
 ```ts title="extensions/regional-courier/tests/regionalCourier.test.ts"
 const ctx = {
-  origin: { country: 'DE', postcode: '10115' },
-  destination: { country: 'DE', postcode: '80331' },
+  origin: { country: 'DE', postal_code: '10115' },
+  destination: { country: 'DE', postal_code: '80331' },
   zone: { shipping_zone_id: 1, uuid: 'z1', name: 'Germany' },
   items: [
     {
@@ -758,7 +760,7 @@ Once installed, the provider appears in **Settings → Shipping** and an admin a
     </tr>
     <tr>
       <td><code>shipping_zone.country</code> (one country per zone)</td>
-      <td><strong>Dropped.</strong> Replaced by the <code>shipping_zone_country</code> junction — a zone can cover many countries. <code>shipping_zone_province</code> gained a <code>country</code> column, and its unique constraint became <code>(zone_id, country, province)</code> so a province can belong to more than one zone.</td>
+      <td><strong>Dropped.</strong> Replaced by the <code>shipping_zone_country</code> junction — a zone can cover many countries. <code>shipping_zone_province</code> gained a <code>country</code> column, and its unique constraint became <code>(zone_id, country, province)</code> so a province can belong to more than one zone. It has since been renamed <code>shipping_zone_region</code> (<code>zone_id, country, level, region_key</code>) by the address-format release — see <a href="./address-formats#upgrading">Address Formats</a>.</td>
     </tr>
     <tr>
       <td><code>cart.shipping_method</code>, <code>cart.shipping_method_name</code></td>

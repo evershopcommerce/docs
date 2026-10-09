@@ -89,12 +89,12 @@ Records one insert / update / delete against `widget_instance` or `widget_placem
 
 The operation type is inferred from the payloads: `(null, set)` is an INSERT, `(set, set)` an UPDATE, `(set, null)` a DELETE. Sending both as `null` is rejected.
 
-Server-side behaviour you cannot override:
+Server-side behavior you cannot override:
 
 <table className="table-auto not-prose">
   <thead>
     <tr>
-      <th>Behaviour</th>
+      <th>Behavior</th>
       <th>Detail</th>
     </tr>
   </thead>
@@ -308,7 +308,7 @@ responseSample={`{
 
 ## Rollout plan endpoints
 
-A rollout plan makes a changeset visible for a scheduled window **without writing to the source tables**. There is no scheduler: `loadActiveOps` evaluates `start_time <= NOW() AND (end_time IS NULL OR end_time > NOW())` on every storefront request, so creating, editing or cancelling a plan takes effect on the very next request.
+A rollout plan makes a changeset visible for a scheduled window **without writing to the source tables**. There is no scheduler: `loadActiveOps` evaluates `start_time <= NOW() AND (end_time IS NULL OR end_time > NOW())` on every storefront request, so creating, editing or canceling a plan takes effect on the very next request.
 
 ### Create A Rollout Plan
 

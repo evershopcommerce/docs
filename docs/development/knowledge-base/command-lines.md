@@ -153,8 +153,10 @@ npm run theme:create
 This command is **interactive only** — it has no flags. It prompts you for the theme name, then:
 
 - Creates a new theme folder in the `themes/` directory
-- Creates the `src/pages/homepage/` structure with a starter component
-- Writes the theme's `package.json`
+- Creates the `src/pages/homepage/` structure with a starter component named after the theme (`sweet-haven` becomes `SweetHaven.tsx`)
+- Writes the theme's `package.json`, `tsconfig.json`, `tsconfig.build.json` and `scripts/copy-assets.mjs`
+
+Run `npm run build` in the theme's folder to compile it into `dist/`. See [The `package.json` File](../theme/theme-overview.md#the-packagejson-file) for how the build works.
 
 The name must contain only letters, numbers, dashes or underscores. The command aborts if a theme with that name already exists.
 

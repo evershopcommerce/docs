@@ -57,7 +57,7 @@ const order = await loadOrderById(2070);
 if (order) {
   console.log(order.order_number);       // '12070'
   console.log(order.items.length);        // 3
-  console.log(order.shippingAddress);     // { full_name: 'John', ... }
+  console.log(order.shippingAddress);     // { recipient: 'John', address_line_1: '...', locality: '...', administrative_area: 'US-CA', postal_code: '...', country: 'US', ... }
 }
 ```
 

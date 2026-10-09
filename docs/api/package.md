@@ -191,7 +191,7 @@ Two guards stand in the way:
 - The default package cannot be deleted — `The default package cannot be deleted. Set another package as default first.`
 - `product.package_id` is a foreign key with `ON DELETE RESTRICT`. A package still assigned to products is refused with a message that counts them: `This package is used by N product(s). Assign those products to another package first.`
 
-Orders are never blocked by this. Order rows carry a *copy* of the dimensions rather than a reference, so deleting a package cannot alter fulfilment history.
+Orders are never blocked by this. Order rows carry a *copy* of the dimensions rather than a reference, so deleting a package cannot alter fulfillment history.
 
 Errors: `Package not found: {uuid}`, plus the two guards above.
 

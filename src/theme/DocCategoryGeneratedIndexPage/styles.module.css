@@ -1,8 +1,6 @@
+/* The Docusaurus default capped this page at 75% width, which left a large
+   empty column on the right. The page now uses the full content width. */
 @media (min-width: 997px) {
-  .generatedIndexPage {
-    max-width: 75% !important;
-  }
-
   .list article:nth-last-child(-n + 2) {
     margin-bottom: 0 !important;
   }

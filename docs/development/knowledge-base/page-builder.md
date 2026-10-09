@@ -151,7 +151,7 @@ widget_instance      the thing        (type, name, settings JSONB, status, theme
 widget_placement     where it appears (widget_instance_id, route, area, sort_order, entity_urn, theme)
 ```
 
-`widget_placement.sort_order` is `REAL`, not `INT`, precisely so the editor can drop a widget between two neighbours by midpoint arithmetic without renumbering the rest of the area. A unique index `widget_placement_unique` on `(widget_instance_id, route, area, COALESCE(entity_urn, ''))` prevents duplicate cells while still allowing several entity-scoped placements of the same widget.
+`widget_placement.sort_order` is `REAL`, not `INT`, precisely so the editor can drop a widget between two neighbors by midpoint arithmetic without renumbering the rest of the area. A unique index `widget_placement_unique` on `(widget_instance_id, route, area, COALESCE(entity_urn, ''))` prevents duplicate cells while still allowing several entity-scoped placements of the same widget.
 
 One instance can carry many placements — that is how "show this banner on cart and checkout too" works, and why editing the widget's settings changes it everywhere at once.
 
@@ -281,9 +281,9 @@ The editor iframe loads a **storefront** URL, which gets the storefront session 
 Treat preview tokens as secrets. A leaked `?changeset=<token>` link lets an anonymous visitor see unpublished content (it does not let them modify anything — every write goes through the authenticated API). If you build tooling that logs full URLs, strip the `changeset` parameter.
 :::
 
-A second guard runs before the overlay: the `frontStore/all` middleware backed by `modules/pageBuilder/services/enforcePreviewThemeMatch.ts` compares the changeset's theme with the active theme and responds 409 (JSON) or 302 (browser) on a mismatch. `loadWidgetInstances` re-checks it and keeps the overlay inert as defence in depth.
+A second guard runs before the overlay: the `frontStore/all` middleware backed by `modules/pageBuilder/services/enforcePreviewThemeMatch.ts` compares the changeset's theme with the active theme and responds 409 (JSON) or 302 (browser) on a mismatch. `loadWidgetInstances` re-checks it and keeps the overlay inert as defense in depth.
 
-Two behaviours ride on the same possession-based trust:
+Two behaviors ride on the same possession-based trust:
 
 - `modules/pageBuilder/services/isValidPreviewToken.ts` lets a **scheduled or draft landing page** render inside the editor before its publish window opens — without the bypass, the canvas would show a 404 for exactly the page you are building.
 - The overlay applies on any route, so previewing a widget added to `all` shows it on every page you navigate to inside the iframe.
@@ -303,7 +303,7 @@ Two consequences worth knowing:
 
 ### Rollout plan — scheduled overlay, never baked in
 
-A rollout plan does not modify source tables at all. It is a window during which `loadActiveOps` folds the changeset's operations into every storefront request. Cancelling the plan (`DELETE /api/page-builder/rollout-plans/:id`) stops it on the very next request — there is no scheduler and no cron job — and preserves the changeset.
+A rollout plan does not modify source tables at all. It is a window during which `loadActiveOps` folds the changeset's operations into every storefront request. Canceling the plan (`DELETE /api/page-builder/rollout-plans/:id`) stops it on the very next request — there is no scheduler and no cron job — and preserves the changeset.
 
 Overlaps are rejected: `createRolloutPlan` and `updateRolloutPlan` both refuse a window that intersects an existing active-or-upcoming plan (the PATCH excludes the plan being edited so an in-place edit can keep its own window). Scope is global for v1.
 
@@ -332,7 +332,7 @@ A rollout-backed changeset stays editable, which creates a problem: the editor's
 
 `createRolloutPlan` snapshots the changeset's cursors into the plan. From then on the editor advances `changeset.route_cursors` freely, and `POST /rollout-plans/:id/sync` is the explicit "Save" that promotes the editor's cursors to the live ones.
 
-Two behaviours follow from the snapshot being live:
+Two behaviors follow from the snapshot being live:
 
 - **Undo has a floor.** `moveCurrentChange` refuses to move a route's cursor below `rollout_plan.route_cursors[route]` — that state is what shoppers currently see.
 - **Discard means revert, not delete.** On a rollout-backed changeset, `discardChangeset` restores the cursors to the rollout's snapshot and deletes only the operations above it. The response carries `rollout: true` and `changesetDeleted: false`; API consumers must branch on that flag rather than assuming the changeset is gone.
@@ -351,7 +351,7 @@ An operation is applied **iff `op.change_order <= route_cursors[op.route]`**, de
 - `moveCurrentChange` walks to the next/previous `change_order` restricted to the given route, and returns post-move `canUndo` / `canRedo`.
 - `publishChangeset` and the preview branch of `loadActiveOps` filter with `op.change_order <= COALESCE((cs.route_cursors ->> op.route)::int, 0)`, so an undone operation never renders and never publishes.
 
-Concurrency is handled by a `SELECT ... FROM changeset WHERE changeset_id = $1 FOR UPDATE` at the top of `addChangesetOperation`, which serialises parallel auto-save requests on the same changeset. `Version-1.2.0.ts` adds a belt-and-braces unique index on `(changeset_id, change_order)` after collapsing any duplicate pairs left behind by pre-lock builds.
+Concurrency is handled by a `SELECT ... FROM changeset WHERE changeset_id = $1 FOR UPDATE` at the top of `addChangesetOperation`, which serializes parallel auto-save requests on the same changeset. `Version-1.2.0.ts` adds a belt-and-braces unique index on `(changeset_id, change_order)` after collapsing any duplicate pairs left behind by pre-lock builds.
 
 :::note `change_order` is server-allocated
 The endpoint requires a `change_order` in the body and validates it as a non-negative integer, then **discards it** and allocates its own under the row lock. Do not rely on the value you sent coming back.

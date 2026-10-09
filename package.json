@@ -1,5 +1,5 @@
 {
-  "name": "my-website",
+  "name": "evershop-docs",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,13 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "tailwind": "npx tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch"
+    "tailwind": "npx tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch",
+    "check:sidebar": "node scripts/check-api-sidebar-links.js",
+    "tailwind:build": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css || echo Tailwind not available, keeping the committed src/css/output.css",
+    "prestart": "npm run tailwind:build",
+    "prebuild": "npm run tailwind:build",
+    "prebuildacc": "npm run tailwind:build",
+    "prebuildlocal": "npm run tailwind:build"
   },
   "dependencies": {
     "@docusaurus/core": "^3.5.2",

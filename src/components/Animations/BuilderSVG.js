@@ -2009,9 +2009,9 @@ const BuilderSVG = () => {
               <path
                 d="M5 7.5L10 12.5L15 7.5"
                 stroke="#101828"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-medium text-sm md:text-base text-Neutrals-01">
@@ -2028,9 +2028,9 @@ const BuilderSVG = () => {
               <path
                 d="M5 7.5L10 12.5L15 7.5"
                 stroke="#101828"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
             <span className="font-medium text-sm md:text-base text-Neutrals-01">
@@ -2048,9 +2048,9 @@ const BuilderSVG = () => {
                 <path
                   d="M5 7.5L10 12.5L15 7.5"
                   stroke="#101828"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               <span className="font-medium text-sm md:text-base text-Neutrals-01">
@@ -2068,9 +2068,9 @@ const BuilderSVG = () => {
                   <path
                     d="M1.66699 9.99997L9.70218 14.0176C9.8115 14.0722 9.86616 14.0996 9.92349 14.1103C9.97427 14.1198 10.0264 14.1198 10.0772 14.1103C10.1345 14.0996 10.1891 14.0722 10.2985 14.0176L18.3337 9.99997M1.66699 14.1666L9.70218 18.1842C9.8115 18.2389 9.86616 18.2662 9.92349 18.277C9.97427 18.2865 10.0264 18.2865 10.0772 18.277C10.1345 18.2662 10.1891 18.2389 10.2985 18.1842L18.3337 14.1666M1.66699 5.83331L9.70218 1.81571C9.8115 1.76105 9.86616 1.73372 9.92349 1.72297C9.97427 1.71344 10.0264 1.71344 10.0772 1.72297C10.1345 1.73372 10.1891 1.76105 10.2985 1.81571L18.3337 5.83331L10.2985 9.8509C10.1891 9.90556 10.1345 9.93289 10.0772 9.94365C10.0264 9.95317 9.97427 9.95317 9.92349 9.94365C9.86616 9.93289 9.8115 9.90556 9.70218 9.8509L1.66699 5.83331Z"
                     stroke="#008060"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
                 <span className="text-Neutrals-01 font-semibold text-base">
@@ -2101,9 +2101,9 @@ const BuilderSVG = () => {
                 <path
                   d="M5 7.5L10 12.5L15 7.5"
                   stroke="#101828"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               <span className="font-medium text-sm md:text-base text-Neutrals-01">
@@ -2121,9 +2121,9 @@ const BuilderSVG = () => {
                   <path
                     d="M1.66699 9.99997L9.70218 14.0176C9.8115 14.0722 9.86616 14.0996 9.92349 14.1103C9.97427 14.1198 10.0264 14.1198 10.0772 14.1103C10.1345 14.0996 10.1891 14.0722 10.2985 14.0176L18.3337 9.99997M1.66699 14.1666L9.70218 18.1842C9.8115 18.2389 9.86616 18.2662 9.92349 18.277C9.97427 18.2865 10.0264 18.2865 10.0772 18.277C10.1345 18.2662 10.1891 18.2389 10.2985 18.1842L18.3337 14.1666M1.66699 5.83331L9.70218 1.81571C9.8115 1.76105 9.86616 1.73372 9.92349 1.72297C9.97427 1.71344 10.0264 1.71344 10.0772 1.72297C10.1345 1.73372 10.1891 1.76105 10.2985 1.81571L18.3337 5.83331L10.2985 9.8509C10.1891 9.90556 10.1345 9.93289 10.0772 9.94365C10.0264 9.95317 9.97427 9.95317 9.92349 9.94365C9.86616 9.93289 9.8115 9.90556 9.70218 9.8509L1.66699 5.83331Z"
                     stroke="#008060"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
                 <span className="text-Neutrals-01 font-semibold text-base">

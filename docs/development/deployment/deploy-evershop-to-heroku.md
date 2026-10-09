@@ -7,7 +7,7 @@ keywords:
   - Node.js cloud hosting
 sidebar_label: Deploy to Heroku
 title: Deploy EverShop to Heroku
-description: A comprehensive guide for deploying your EverShop e-commerce application to Heroku with PostgreSQL database integration.
+description: A comprehensive guide for deploying your EverShop ecommerce application to Heroku with PostgreSQL database integration.
 ---
 
 # Deploy EverShop to Heroku
@@ -33,11 +33,11 @@ Before beginning the deployment process, ensure you have:
 2. Click the "New" button and select "Create new app" from the dropdown menu.
 3. Enter a unique app name, select your preferred region, and click "Create app".
 
-<p align="center">
+<div align="center">
 
 ![Heroku Create New App](./img/heroku-create-app.png "Heroku Create New App")
 
-</p>
+</div>
 
 ## Step 2: Install and Configure Heroku CLI
 
@@ -291,11 +291,11 @@ Once deployed, you can access your application at:
 https://YOUR_APP_NAME.herokuapp.com
 ```
 
-<p align="center">
+<div align="center">
 
 ![Heroku Default Domain](./img/heroku-default-domain.png "Heroku Default Domain")
 
-</p>
+</div>
 
 ## Step 6: Create an Administrator Account
 
@@ -353,4 +353,4 @@ git push heroku main
 
 ## Conclusion
 
-Congratulations! You've successfully deployed EverShop to Heroku. Your e-commerce application is now accessible to customers worldwide, backed by Heroku's reliable cloud infrastructure.
+Congratulations! You've successfully deployed EverShop to Heroku. Your ecommerce application is now accessible to customers worldwide, backed by Heroku's reliable cloud infrastructure.

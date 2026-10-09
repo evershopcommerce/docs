@@ -226,7 +226,78 @@ At render time a placement is a candidate when `placement.route === 'all'` or `p
 
 ### Nested widgets
 
-A widget placed inside a `columns` container uses a synthetic area id of the form `columnsContainer_<parent-widget-uuid>_col_<index>`. Validation enforces that the embedded parent uuid exists in `widgets[]` **and** that its `type` is `columns`. You do not build these by hand — [export the content](#authoring-workflow) after arranging it in the page builder.
+A widget placed inside a container uses a synthetic area id of the form `columnsContainer_<parent-widget-uuid>_col_<index>`. Both `columns` (one area per column) and `section` (one area, index 0) emit these. Validation enforces that the embedded parent uuid exists in `widgets[]`; the parent's *type* is not checked, so container types added later work without a validator change. You do not build these by hand — [export the content](#authoring-workflow) after arranging it in the page builder.
+
+## Landing pages
+
+A theme can ship whole landing pages, each with its own body, in a `landingPages[]` section:
+
+```json
+{
+  "landingPages": [
+    {
+      "uuid": "2f7c1e4a-5b6d-4c8e-9f0a-1b2c3d4e5f60",
+      "name": "Black Friday",
+      "description": "Doorbusters, one day only.",
+      "meta_title": "Black Friday | Editions",
+      "meta_description": "Our biggest deals of the year.",
+      "status": false,
+      "placements": [
+        {
+          "uuid": "7b1d9c30-2e45-4a61-8f03-9c5d2e1a4b78",
+          "widget_instance_uuid": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+          "area": "landing_page_content",
+          "sort_order": 10
+        }
+      ]
+    }
+  ]
+}
+```
+
+The widgets themselves stay in the shared top-level `widgets[]`; only the placements are nested. Because the nesting already says which page a placement belongs to, the manifest never spells an `entity_urn` — the installer derives it.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>uuid</code></td>
+      <td>Required, UUID v4. The page's identity across installs and upgrades — author it once and never change it.</td>
+    </tr>
+    <tr>
+      <td><code>name</code></td>
+      <td>Required. The URL is generated from it (see below).</td>
+    </tr>
+    <tr>
+      <td><code>description</code>, <code>meta_title</code>, <code>meta_description</code></td>
+      <td>Optional strings or null.</td>
+    </tr>
+    <tr>
+      <td><code>status</code></td>
+      <td>Optional boolean, default <code>false</code>. A shipped page arrives as a draft so publishing is the merchant's decision.</td>
+    </tr>
+    <tr>
+      <td><code>placements[]</code></td>
+      <td>Same shape as a top-level placement minus <code>route</code>: <code>uuid</code>, <code>widget_instance_uuid</code>, <code>area</code>, <code>sort_order</code>. The usual body area is <code>landing_page_content</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+### Pages are not theme property
+
+A landing page has no theme column. That has consequences worth knowing before you ship one:
+
+- **The URL is generated per store.** `url_key` is deliberately absent from the manifest: it is derived from `name` at install (`Black Friday` → `black-friday`), suffixed with five digits when that slug is already taken or would be shadowed by a static route or a locale prefix. Two stores may end up with different URLs for the same page, so a theme cannot promise one. Nothing inside the theme depends on it — widget links target a page by URN and resolve at request time.
+- **A theme switch keeps the page and empties it.** The page row survives, but its body is theme-bucketed placements, so under another theme it renders header and footer only. Such pages are excluded from the sitemap rather than advertised as empty URLs.
+- **Uninstall leaves the page in place.** The widgets go with the theme; the page rows stay, now empty, and the command lists them. Delete them from the admin grid if you do not want them.
+- **A page that already exists is adopted, never overwritten.** On install the uuid is matched first: an existing page keeps its name, url_key and SEO fields, and only the body is installed.
+
+On upgrade, a page's fields merge with [the same three-way rules](#upgrades-preserve-merchant-customizations) as widget settings: the merchant's edits win, a page the merchant deleted is never re-created, and a page you drop from a later version keeps its row and loses only its theme-owned body.
 
 ## Strict theme bucketing
 
@@ -354,7 +425,8 @@ Validation covers structure, UUID format, cross-references, and DB collisions. I
 
 - **Settings are not schema-validated at install.** The CLI never bootstraps the widget registry, so a settings object with the wrong shape installs cleanly and then fails (or silently renders nothing) at request time. Test your manifest by actually loading the storefront.
 - **Unknown widget types produce a soft warning, not an error.** If a type in your manifest has never been instantiated on this install, you get a `[WARN]` line — legitimate when the module providing that type is brand new, a typo otherwise. The warning is suppressed on a completely empty database, where typos and new modules are indistinguishable.
-- **A uuid already owned by a different theme is a hard error.** This is the one DB check: `widget 'a1b2…' already exists under theme 'other', cannot install it under 'mine'`.
+- **A uuid already owned by a different theme is a hard error.** This is the one DB check: `widget 'a1b2…' already exists under theme 'other', cannot install it under 'mine'`. It applies to widgets only — a landing page uuid that already exists is adopted, because pages are not owned by a theme.
+- **A landing page name with no Latin characters is a warning, not an error.** The generated URL falls back to `landing-page-<uuid-prefix>`; rename the page in the admin afterwards if you want something readable.
 
 Validation errors are collected and printed together, then activation aborts with exit code 1 without touching `config/default.json`.
 
@@ -487,6 +559,7 @@ Serializes the theme's live content into `themes/<id>/theme.json`.
 - **Only `status = TRUE` widgets are exported.** A widget you disabled in the page builder is not part of the shipped theme, and its placements are dropped with it.
 - **`theme_name` is preserved** from an existing `theme.json`; otherwise it defaults to the theme id.
 - **Metafield definitions attributed to the theme are exported too** — both manifest-declared ones and any created lazily through the page builder — sanitized to the strict manifest shape.
+- **Landing pages the theme has content on are exported with their bodies**, without `url_key` (it is per store). In a terminal you get a checklist to deselect any you do not want to ship — useful for test pages, or for a Duplicate copy of a page you already ship. `--pages <uuid,uuid>` pins the set for scripts and `--no-pages` skips the section; a non-interactive run exports every page it found and says which.
 - Refuses to overwrite an existing `theme.json` without `--force`.
 
 ## Authoring workflow
@@ -494,7 +567,7 @@ Serializes the theme's live content into `themes/<id>/theme.json`.
 The intended loop for building a theme's content is to arrange it visually and export, not to hand-write UUIDs:
 
 1. Activate the theme with `--content-only` (or with no manifest at all) so it is the active theme.
-2. Build the storefront content in the [page builder](../knowledge-base/page-builder.md): add widgets, place them, configure them, publish.
+2. Build the storefront content in the [page builder](../knowledge-base/page-builder.md): add widgets, place them, configure them, publish. Landing pages count — create them in the admin and build their bodies the same way.
 3. `npm run theme:export-content -- my-theme 1.0.0` to capture it.
 4. Commit `theme.json`.
 5. For the next release, edit or re-export, **bump `version`**, and ship.

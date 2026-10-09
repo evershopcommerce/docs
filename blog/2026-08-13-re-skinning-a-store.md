@@ -15,9 +15,9 @@ There are four ways to change how the storefront looks, and they are not equal. 
 
 {/* truncate */}
 
-![A default EverShop storefront showing a featured product grid and a collection section. Everything visible here — the type scale, colours, card layout and grid — is reachable from steps 1 and 2 without forking a single component.](/img/blog/v2.2.1/storefront.jpg)
+![A default EverShop storefront showing a featured product grid and a collection section. Everything visible here — the type scale, colors, card layout and grid — is reachable from steps 1 and 2 without forking a single component.](/img/blog/v2.2.1/storefront.jpg)
 
-Everything visible above — type scale, colours, card layout, grid columns — is reachable from steps 1 and 2. Reach for step 4 only when the *structure* has to change.
+Everything visible above — type scale, colors, card layout, grid columns — is reachable from steps 1 and 2. Reach for step 4 only when the *structure* has to change.
 
 <table className="table-auto not-prose">
   <thead>
@@ -33,7 +33,7 @@ Everything visible above — type scale, colours, card layout, grid columns — 
       <td>1</td>
       <td>Design tokens</td>
       <td>None</td>
-      <td>Colour, radius, spacing, type scale</td>
+      <td>Color, radius, spacing, type scale</td>
     </tr>
     <tr>
       <td>2</td>
@@ -51,7 +51,7 @@ Everything visible above — type scale, colours, card layout, grid columns — 
       <td>4</td>
       <td>Component override</td>
       <td>High — you own it forever</td>
-      <td>The markup or behaviour itself must change</td>
+      <td>The markup or behavior itself must change</td>
     </tr>
   </tbody>
 </table>
@@ -110,7 +110,7 @@ Useful storefront Areas include `productNameBefore`, `productNameAfter`, `produc
 
 ## Step 4 — Component override
 
-Only when the markup or behaviour itself must change. `npm run theme:twizz` ejects a core component and its relative-import closure into your theme, after which **you own that file permanently** — it stops receiving fixes, accessibility improvements and framework migrations.
+Only when the markup or behavior itself must change. `npm run theme:twizz` ejects a core component and its relative-import closure into your theme, after which **you own that file permanently** — it stops receiving fixes, accessibility improvements and framework migrations.
 
 Before overriding, check whether steps 1–3 get you there. If you must override:
 
@@ -120,9 +120,9 @@ Before overriding, check whether steps 1–3 get you there. If you must override
 
 ## A worked decision
 
-Say the design calls for product cards with a coloured badge, tighter grid spacing and the price above the title.
+Say the design calls for product cards with a colored badge, tighter grid spacing and the price above the title.
 
-- Badge colour and card radius → **step 1**, tokens.
+- Badge color and card radius → **step 1**, tokens.
 - Grid spacing → **step 2**, `.product__grid { gap: … }`.
 - Adding the badge → **step 3**, a component in `productNameBefore`.
 - Moving the price above the title → **step 4**. Reordering is a markup change, so this one genuinely needs an override — and it is the only part of the design that costs you on upgrades.

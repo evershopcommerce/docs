@@ -102,13 +102,13 @@ try {
     })
     .execute(connection, false);
   
-  // The street columns are `address_1` / `address_2` — there is no `address`
-  // column, and `country` is NOT NULL.
+  // The street columns are `address_line_1` / `address_line_2` — there is no
+  // `address` column, the city is `locality`, and `country` is NOT NULL.
   await insert('customer_address')
     .given({
       customer_id: customer.insertId,
-      address_1: '123 Main St',
-      city: 'New York',
+      address_line_1: '123 Main St',
+      locality: 'New York',
       country: 'US'
     })
     .execute(connection, false);

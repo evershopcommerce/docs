@@ -9,7 +9,7 @@ function WelcomeSection() {
           Welcome to EverShop Documentation
         </h1>
         <p className="text-muted-foreground mb-8 text-lg">
-          Everything you need to build, customize, and scale your e-commerce
+          Everything you need to build, customize, and scale your ecommerce
           platform with EverShop. From getting started to advanced
           customization.
         </p>
@@ -71,7 +71,7 @@ function GettingStartedCard() {
     <section className="container mx-auto px-4 pb-16">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="mb-3 text-4xl">Start Your Journey</h1>
+          <h2 className="mb-3 text-4xl">Start Your Journey</h2>
           <p className="text-muted-foreground text-lg">
             Master the fundamentals of EverShop. From installation to
             deployment, learn everything you need to build a successful online
@@ -111,7 +111,7 @@ function GettingStartedCard() {
                 <p
                   data-slot="card-description"
                   className="text-muted-foreground text-base">
-                  Your comprehensive guide to building a modern e-commerce
+                  Your comprehensive guide to building a modern ecommerce
                   platform. Learn the fundamentals, installation process, and
                   core concepts to get your store up and running.
                 </p>
@@ -123,7 +123,7 @@ function GettingStartedCard() {
             className="px-6 [&:last-child]:pb-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {items.map((item) => (
-                <div className="flex items-start gap-3">
+                <div key={item.link} className="flex items-start gap-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width={24}
@@ -150,7 +150,7 @@ function GettingStartedCard() {
             <a
               href="/docs/development/getting-started/installation-guide"
               data-slot="button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-black/80 text-white hover:text-white hover:bg-black/70 h-9 px-4 py-2 has-[>svg]:px-3 w-full md:w-auto group/btn cursor-pointer">
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-white hover:text-white hover:bg-primary-dark h-9 px-4 py-2 has-[>svg]:px-3 w-full md:w-auto group/btn cursor-pointer">
               Start Learning
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -231,7 +231,7 @@ function CustomizationSection() {
         </svg>
       ),
       description:
-        "Create beautiful, responsive themes for your e-commerce store using our flexible theming system and components.",
+        "Create beautiful, responsive themes for your ecommerce store using our flexible theming system and components.",
     },
     {
       title: "Extension Development",
@@ -263,7 +263,7 @@ function CustomizationSection() {
     <section className="container mx-auto px-4 pb-16">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="mb-3 text-4xl">Customize Your Store</h1>
+          <h2 className="mb-3 text-4xl">Customize Your Store</h2>
           <p className="text-muted-foreground text-lg">
             Unlock the full potential of EverShop. Build custom APIs, design
             unique themes, and create powerful extensions tailored to your
@@ -273,6 +273,7 @@ function CustomizationSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {cards.map((card) => (
             <div
+              key={card.title}
               data-slot="card"
               className="bg-card text-card-foreground flex flex-col gap-3 rounded-xl border group transition-all duration-300 hover:shadow-lg hover:border-primary/50 h-full">
               <div
@@ -295,7 +296,7 @@ function CustomizationSection() {
                 </p>
                 <div className="flex flex-col gap-3">
                   {card.links.map((item) => (
-                    <div className="flex items-start gap-3">
+                    <div key={item.link} className="flex items-start gap-3">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width={24}
@@ -367,7 +368,7 @@ function MarketplaceSection() {
                   <a
                     href="/extensions"
                     data-slot="button"
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-black text-white hover:text-white hover:bg-black/90 h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer">
+                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-white hover:text-white hover:bg-primary-dark h-9 px-4 py-2 has-[>svg]:px-3 cursor-pointer">
                     Browse Extensions
                   </a>
                   <a
@@ -537,7 +538,7 @@ function MarketplaceSection() {
 export default function DocumentationPage() {
   return (
     <Layout
-      title="Documentation - EverShop"
+      title="Documentation"
       description="Comprehensive guides and documentation to help you start working with EverShop as quickly as possible."
       wrapperClassName="documentation">
       <main className="flex flex-col gap-16">

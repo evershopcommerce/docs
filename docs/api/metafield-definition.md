@@ -222,7 +222,7 @@ responseSample={`{
 }`}
 />
 
-`additionalProperties` is `false` — an unrecognised key is rejected with `Unknown property in body — check the payload keys`.
+`additionalProperties` is `false` — an unrecognized key is rejected with `Unknown property in body — check the payload keys`.
 
 Defaults: `namespace` `"custom"`, `isList` `false`, `required` `false`, `translatable` `false`, `visibleToCustomer` `true`, `validations` `[]`, `appearance` `{}`, `subFields` `[]`, `position` `0`.
 
@@ -373,7 +373,7 @@ An array of rule objects compiled into the JSON Schema used to validate values.
   </tbody>
 </table>
 
-Unrecognised rule types are ignored rather than rejected. Validations do not apply to `group` fields — nest them on the sub-fields instead — and `rich_text` is validated only as an array.
+Unrecognized rule types are ignored rather than rejected. Validations do not apply to `group` fields — nest them on the sub-fields instead — and `rich_text` is validated only as an array.
 
 ### `appearance`
 
@@ -488,7 +488,7 @@ Every other property can be changed freely, including `required` — tightening 
 
 When `validations` or `subFields` change, the whole descriptor is recompiled first; a result that will not compile (depth overflow, a malformed group) is rejected with `400` and nothing is written.
 
-Errors: `404 Metafield definition "<uuid>" not found`, `400` for immutability and compilation failures, and `Unknown property in body — check the payload keys` for an unrecognised key.
+Errors: `404 Metafield definition "<uuid>" not found`, `400` for immutability and compilation failures, and `Unknown property in body — check the payload keys` for an unrecognized key.
 
 <hr />
 

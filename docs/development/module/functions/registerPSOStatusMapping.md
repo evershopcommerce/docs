@@ -67,15 +67,17 @@ Registering a mapping against a status you added with `registerShipmentStatus` (
 `resolveOrderStatus` looks up, in this order, and takes the first hit:
 
 1. `<paymentStatus>:<rollup>` — exact match
-2. `*:<rollup>`
-3. `<paymentStatus>:*`
+2. `<paymentStatus>:*`
+3. `*:<rollup>`
 4. `*:*`
+
+The payment status is matched before the shipment rollup, so a rule that names the payment status beats one that only names the rollup. A terminal payment state therefore wins: `canceled:*` beats `*:canceled`, and `<method>_refunded:*` does too.
 
 Mappings registered through `registerPSOStatusMapping` run as `psoMapping` processors, so they are applied on top of the module defaults and later registrations override earlier ones for the same key.
 
 ## Core defaults
 
-Core registers these (from `modules/oms/bootstrap.ts`) — check them before adding your own, so you do not silently change checkout behaviour:
+Core registers these (from `modules/oms/bootstrap.ts`) — check them before adding your own, so you do not silently change checkout behavior:
 
 ```json
 {
@@ -88,7 +90,6 @@ Core registers these (from `modules/oms/bootstrap.ts`) — check them before add
   "paid:delivered": "completed",
   "*:partially_canceled": "processing",
   "*:canceled": "processing",
-  "canceled:canceled": "canceled",
   "canceled:*": "canceled"
 }
 ```
@@ -104,8 +105,9 @@ export default () => {
   // Exact match: fully delivered and paid → completed
   registerPSOStatusMapping('paid', 'delivered', 'completed');
 
-  // Wildcard rollup: a refunded payment closes the order whatever shipped
-  registerPSOStatusMapping('refunded', '*', 'closed');
+  // Wildcard rollup: a refunded payment closes the order whatever shipped.
+  // There is no shared `refunded` status: use your method's own, such as my_gateway_refunded.
+  registerPSOStatusMapping('my_gateway_refunded', '*', 'closed');
 
   // Wildcard payment: treat a partially-shipped order as processing
   registerPSOStatusMapping('*', 'partially_shipped', 'processing');

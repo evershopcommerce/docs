@@ -31,7 +31,7 @@ getAvailablePaymentMethods(context?: PaymentMethodValidationContext): Promise<Pa
 
 **`context`** — `PaymentMethodValidationContext` (optional, defaults to `{}`)
 
-Forwarded to every registered factory's `validator`. Its `cartTotal` field is the one core reads: when `cartTotal` is `0` or less, the returned list collapses to the built-in `zero_checkout` method regardless of what any validator returned. Omitting the argument keeps the legacy behaviour.
+Forwarded to every registered factory's `validator`. Its `cartTotal` field is the one core reads: when `cartTotal` is `0` or less, the returned list collapses to the built-in `zero_checkout` method regardless of what any validator returned. Omitting the argument keeps the legacy behavior.
 
 ```typescript
 interface PaymentMethodValidationContext {
@@ -50,6 +50,12 @@ Returns `Promise<PaymentMethodInfo[]>`:
 }[]
 ```
 
+## Errors
+
+Throws `Duplicate payment method code: <code>` when two registered methods return the same `code`, and the `Value checkoutPaymentMethods is invalid: false` error when a registered factory has no `validator`.
+
+The result contains only `{ code, name }`. It does not include the `capture`, `void` and `refund` handlers.
+
 ## Examples
 
 ### Basic Usage
@@ -66,5 +72,5 @@ methods.forEach(method => {
 
 ## See Also
 
-- [addProcessor](/docs/development/module/functions/addProcessor) - Register payment methods
+- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod) - Register payment methods
 - [createOrder](/docs/development/module/functions/createOrder) - Create orders

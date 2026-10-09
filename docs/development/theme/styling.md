@@ -121,7 +121,7 @@ Core's `tailwind.css` declares dark mode as a **class-based** variant:
 @custom-variant dark (&:is(.dark *));
 ```
 
-A theme that overrides `TailwindCss.tsx` and writes its own `tailwind.css` must carry that line over. Drop it and Tailwind v4 falls back to its default `prefers-color-scheme` behaviour, so every `dark:` utility inside the shared `@components/common/ui/*` primitives activates for any visitor whose OS is in dark mode — while no `.dark` tokens exist in core to answer them. The result is half-dark components on a light page: dark borders and muted text over a white background. It renders, nothing errors, and it only reproduces on an OS set to dark.
+A theme that overrides `TailwindCss.tsx` and writes its own `tailwind.css` must carry that line over. Drop it and Tailwind v4 falls back to its default `prefers-color-scheme` behavior, so every `dark:` utility inside the shared `@components/common/ui/*` primitives activates for any visitor whose OS is in dark mode — while no `.dark` tokens exist in core to answer them. The result is half-dark components on a light page: dark borders and muted text over a white background. It renders, nothing errors, and it only reproduces on an OS set to dark.
 :::
 
 **Step 2:** Edit the `tailwind.css` file in your theme to customize the configuration. For example, to add a custom Tailwind plugin or additional theme values:

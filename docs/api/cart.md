@@ -261,6 +261,8 @@ isPrivate={false}
 
 Adds a shipping or billing address to the cart. Both address types are required to complete the checkout process.
 
+The payload uses the Address Format Registry vocabulary (one set of column names shared by customer, cart and order addresses). A logged-in customer can also reuse a saved address by sending `customerAddressUuid` instead of the fields: the row is copied verbatim, `extra` included.
+
 <Api
   method="POST"
   url="/api/carts/{id}/addresses"
@@ -271,51 +273,74 @@ Adds a shipping or billing address to the cart. Both address types are required 
       "type": "object",
       "description": "Address information",
       "properties": {
-        "full_name": {
-          "type": "string",
-          "description": "Full name of the recipient"
+        "recipient": {
+          "type": ["string", "null"],
+          "description": "Full name of the recipient. Used when the store collects a single name field."
         },
-        "telephone": {
-          "type": [
-            "string",
-            "number"
-          ],
-          "description": "Contact telephone number"
+        "given_name": {
+          "type": ["string", "null"],
+          "description": "Given name, when the store collects split names (setting addressNameFormat = split)."
         },
-        "address_1": {
-          "type": "string",
-          "description": "Street address, line 1"
+        "family_name": {
+          "type": ["string", "null"],
+          "description": "Family name, when the store collects split names."
         },
-        "address_2": {
-          "type": "string",
-          "description": "Street address, line 2 (optional)"
+        "organization": {
+          "type": ["string", "null"],
+          "description": "Company name (optional unless the store requires it)."
         },
-        "city": {
-          "type": "string",
-          "description": "City name"
+        "address_line_1": {
+          "type": ["string", "null"],
+          "description": "Street address, line 1."
         },
-        "province": {
-          "type": "string",
-          "description": "State/Province/Region"
+        "address_line_2": {
+          "type": ["string", "null"],
+          "description": "Street address, line 2."
+        },
+        "address_line_3": {
+          "type": ["string", "null"],
+          "description": "Street address, line 3 (only when the store enables a third line)."
+        },
+        "dependent_locality": {
+          "type": ["string", "null"],
+          "description": "Ward, neighbourhood or district below the city. A region key where the country enumerates this level."
+        },
+        "locality": {
+          "type": ["string", "null"],
+          "description": "City or town. A region key where the country enumerates this level, free text elsewhere."
+        },
+        "administrative_area": {
+          "type": ["string", "null"],
+          "description": "State, province or region as a region key, for example US-CA or VN-SG. Free text for countries with no region list."
+        },
+        "postal_code": {
+          "type": ["string", "null"],
+          "description": "Postal or ZIP code, validated against the country's pattern."
+        },
+        "sorting_code": {
+          "type": ["string", "null"],
+          "description": "Sorting code (CEDEX), for the few countries that use one."
         },
         "country": {
           "type": "string",
-          "description": "Country code (e.g., US, CA)"
+          "minLength": 2,
+          "maxLength": 2,
+          "description": "ISO 3166-1 alpha-2 country code. The only key the payload schema itself requires."
         },
-        "postcode": {
+        "telephone": {
+          "type": ["string", "null"],
+          "description": "Telephone number. Normalized to E.164 using the country's dial code."
+        },
+        "extra": {
+          "type": ["object", "null"],
+          "description": "Values of extra fields registered by extensions, keyed by field id. Extra fields may also be sent as top-level keys; the service folds them into extra."
+        },
+        "customerAddressUuid": {
           "type": "string",
-          "description": "Postal or ZIP code"
+          "description": "Reuse a saved address of the logged-in customer instead of the fields above."
         }
       },
-      "required": [
-        "full_name",
-        "telephone",
-        "address_1",
-        "city",
-        "province",
-        "country",
-        "postcode"
-      ],
+      "required": ["country"],
       "additionalProperties": true
     },
     "type": {
@@ -344,18 +369,46 @@ responseSample={`{
   "data": {
     "cart_address_id": 461,
     "uuid": "9c79451aa63211edb46b60d819134f39",
-    "full_name": "John Doe",
-    "postcode": "5000",
-    "telephone": "123456",
+    "recipient": "John Doe",
+    "given_name": null,
+    "family_name": null,
+    "organization": null,
+    "address_line_1": "1234 Main St",
+    "address_line_2": null,
+    "address_line_3": null,
+    "dependent_locality": null,
+    "locality": "Cupertino",
+    "administrative_area": "US-CA",
+    "postal_code": "95014",
+    "sorting_code": null,
     "country": "US",
-    "province": "CA",
-    "city": "California",
-    "address_1": "1234 Main St",
-    "address_2": null
+    "telephone": "+14085551234",
+    "extra": {}
   }
 }`}
 isPrivate={false}
 />
+
+Which keys are required, which patterns apply and which region keys are accepted depend on the **country's address schema**: `country` is the only key the payload schema requires, and the service then validates the whole address against `addressSchema(country)` — the same schema the storefront form renders from. A key that is neither one of the columns above nor a registered extra field is rejected with `unknown_field`. See the [Address formats guide](/docs/development/knowledge-base/address-formats) for the field vocabulary, region keys and the settings that change what is required.
+
+Validation failures answer `400` with one entry per field:
+
+```json
+{
+  "error": {
+    "status": 400,
+    "message": "Invalid address",
+    "errors": [
+      { "field": "postal_code", "code": "pattern", "message": "ZIP code is not valid" },
+      { "field": "administrative_area", "code": "region_invalid", "message": "State is not a valid region" }
+    ]
+  }
+}
+```
+
+`code` is one of `required`, `pattern`, `region_invalid`, `type`, `unknown_field` or `country_not_allowed`; `message` is already translated into the request locale.
+
+A shipping address must also be in a country the store ships to (a country covered by a shipping zone and in the sell-to list); otherwise the error code is `country_not_allowed`.
 
 <hr/>
 

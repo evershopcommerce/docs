@@ -23,7 +23,7 @@ A **landing page** is a first-class entity in the `promotion` module, intended f
 
 The thing that makes it different from a [CMS page](./cms-page.md) is that **there is no content field**. A landing page has no `content` column and no editor payload. Its body is a set of entity-scoped `widget_placement` rows, built in the page builder, addressed by the URN `urn:evershop:promotion:landing_page:<uuid>`. Creating a landing page over REST creates an empty shell; the body is composed afterwards at `/admin/page-builder/edit/landingPageView?entity=<uuid>`. See [Page Builder](/docs/development/knowledge-base/page-builder) for how entity-scoped placements render.
 
-There are **four endpoints**, all `access: private` — every one requires an admin access token (see [Authentication](./authentication.md)). Every `{id}` path parameter is the landing page's **uuid**, not its integer primary key.
+There are **six endpoints**, all `access: private` — every one requires an admin access token (see [Authentication](./authentication.md)). Every `{id}` path parameter is the landing page's **uuid**, not its integer primary key.
 
 ## Endpoints
 
@@ -237,8 +237,8 @@ Removes the page and everything that points at it, in one transaction. Responds 
   </tbody>
 </table>
 
-:::note Widget instances are not deleted
-Only the placements are removed. The `widget_instance` rows that were used exclusively by this page survive as orphans. They render nowhere (a widget with no placement has no area to attach to), but they remain in the database and in the legacy widget grid.
+:::note Widget instances that belonged only to this page are deleted too
+After the placements are removed, every `widget_instance` that was placed **only** on this page is deleted. An instance that is still placed somewhere else (another route, another landing page) survives. The candidate set is this page's own instances, never a global sweep.
 :::
 
 <Api
@@ -318,6 +318,115 @@ responseSample={`{
   }
 }`}
 />
+
+<hr />
+
+### Replace Homepage — Preflight
+
+Read-only checks for the admin dialog behind **Replace homepage with this page**. Returns everything the dialog shows: whether the action is blocked, what will be discarded or canceled, warnings about the chosen page, the backup name, and two **fingerprints** the execute call must echo back.
+
+<Api
+method="GET"
+url="/api/landing-pages/c81e7f2a-9b31-4d0c-8b6e-1a5f7c3d9042/replace-homepage"
+responseSample={`{
+  "data": {
+    "landingPage": {
+      "uuid": "c81e7f2a-9b31-4d0c-8b6e-1a5f7c3d9042",
+      "name": "Black Friday 2026",
+      "status": true,
+      "publishStart": null,
+      "publishEnd": null,
+      "isLive": true,
+      "bodyPlacementCount": 7,
+      "renderablePlacementCount": 6,
+      "hiddenPlacementCount": 1,
+      "sharedRouteLevelCount": 0,
+      "selfLinkCount": 0,
+      "unpublishedOperationCount": 0,
+      "rolloutPlans": []
+    },
+    "homepage": { "placementCount": 4, "allRouteContentCount": 0 },
+    "backup": { "willCreate": true, "name": "Homepage backup 2026-09-12 14:03" },
+    "drafts": { "operationCount": 3, "byCurrentAdmin": 2, "otherAdminCount": 1, "detachedRolloutOperationCount": 0 },
+    "pastPlansToCancel": [],
+    "blockers": { "rolloutPlans": [], "entityScopedHomepage": false },
+    "fingerprints": {
+      "homepage": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "landingPage": "fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9"
+    },
+    "backupsTotal": 2,
+    "warnings": ["LANDING_PAGE_HAS_HIDDEN_WIDGETS", "DRAFTS_WILL_BE_DISCARDED"]
+  }
+}`}
+/>
+
+`blockers.rolloutPlans` non-empty (an **active or upcoming** rollout plan changes the homepage) or `blockers.entityScopedHomepage: true` means the execute call would be refused. Warning codes: `LANDING_PAGE_HAS_NO_BODY`, `LANDING_PAGE_NOT_LIVE`, `LANDING_PAGE_HAS_UNPUBLISHED_CHANGES`, `LANDING_PAGE_HAS_ROLLOUT`, `LANDING_PAGE_HAS_SHARED_ROUTE_LEVEL_WIDGETS`, `LANDING_PAGE_HAS_HIDDEN_WIDGETS`, `LANDING_PAGE_LINKS_TO_ITSELF`, `HOMEPAGE_HAS_ALL_ROUTE_CONTENT_WIDGETS`, `DRAFTS_WILL_BE_DISCARDED`, `PAST_PLANS_WILL_BE_CANCELLED`.
+
+<hr />
+
+### Replace Homepage — Execute
+
+Permanently makes the homepage show this landing page's widgets. In one transaction: the current homepage widgets (instances **and** placements) are copied into a new **disabled** backup landing page with fresh uuids, the homepage placements are removed, originals left with no placement are deleted, and this page's body is cloned onto route `homepage`. Unpublished page-builder changes that touch the homepage are discarded (the draft rows are kept); ended rollout plans that changed the homepage are canceled. Restore is the same call made from the backup.
+
+The body must carry the two fingerprints from the preflight response; if the homepage or the landing page changed since, the call returns `409 HOMEPAGE_CHANGED` and the client runs preflight again.
+
+<Api
+method="POST"
+url="/api/landing-pages/c81e7f2a-9b31-4d0c-8b6e-1a5f7c3d9042/replace-homepage"
+requestSchema={{
+  "type": "object",
+  "properties": {
+    "confirm": { "type": "boolean", "enum": [true] },
+    "homepageFingerprint": { "type": "string" },
+    "landingPageFingerprint": { "type": "string" }
+  },
+  "required": ["confirm", "homepageFingerprint", "landingPageFingerprint"]
+}}
+responseSample={`{
+  "data": {
+    "backup": {
+      "uuid": "0f1a9d8e-5b3c-4c2e-9a7d-6e4f2b1c8d90",
+      "name": "Homepage backup 2026-09-12 14:03",
+      "editUrl": "/admin/landing-page/edit/0f1a9d8e-5b3c-4c2e-9a7d-6e4f2b1c8d90"
+    },
+    "backedUpInstances": 4,
+    "backedUpPlacements": 4,
+    "deletedInstances": 3,
+    "clonedInstances": 6,
+    "clonedPlacements": 7,
+    "discardedChangesets": [
+      { "changesetId": 12, "createdBy": 1, "kind": "draft", "operationsRemoved": 2 }
+    ],
+    "cancelledPastPlans": [],
+    "backupsTotal": 3,
+    "links": [
+      { "rel": "pageBuilderHomepage", "href": "/admin/page-builder/edit/homepage", "action": "GET", "types": ["text/xml"] },
+      { "rel": "backup", "href": "/admin/landing-page/edit/0f1a9d8e-5b3c-4c2e-9a7d-6e4f2b1c8d90", "action": "GET", "types": ["text/xml"] }
+    ]
+  }
+}`}
+/>
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th><code>error.code</code></th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>404</td><td><code>LANDING_PAGE_NOT_FOUND</code></td><td>Unknown or malformed uuid.</td></tr>
+    <tr><td>409</td><td><code>HOMEPAGE_ROLLOUT_ACTIVE</code></td><td>An active or upcoming rollout plan changes the homepage. <code>error.rolloutPlans</code> lists them with an <code>editUrl</code>.</td></tr>
+    <tr><td>409</td><td><code>HOMEPAGE_CHANGED</code></td><td>The fingerprints no longer match, or another writer changed the homepage during the transaction. Nothing was changed.</td></tr>
+    <tr><td>409</td><td><code>HOMEPAGE_ENTITY_SCOPED</code></td><td>The homepage route is entity-scoped, or has entity-scoped placements. Not supported.</td></tr>
+    <tr><td>409</td><td><code>REPLACE_IN_PROGRESS</code></td><td>Another replace is running. Try again in a moment.</td></tr>
+  </tbody>
+</table>
+
+:::note Role lists
+Route ids are permission keys. A restricted role needs both `replaceHomepagePreflight` and `replaceHomepage`. Granting `replaceHomepage` effectively also grants publishing the homepage, discarding any admin's homepage draft changes, and creating a landing page.
+:::
 
 <hr />
 
