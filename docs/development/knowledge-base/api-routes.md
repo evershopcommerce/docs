@@ -308,7 +308,7 @@ When a limit is exceeded, an API request gets `429 Too Many Requests` with EverS
 
 Two response headers matter to clients:
 
-- **`Retry-After`** — seconds until the window resets. Honour it rather than retrying immediately.
+- **`Retry-After`** — seconds until the window resets. Honor it rather than retrying immediately.
 - **`RateLimit-*`** — the standard limit/remaining/reset triple, so a well-behaved client can back off *before* it gets rejected.
 
 Page routes get the same status with a plain-text body instead of JSON.

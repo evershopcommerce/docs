@@ -110,7 +110,7 @@ Every gateway handler resolves its keys the same way: a `config.json` value wins
       <td><code>stripeEndpointSecret</code></td>
     </tr>
     <tr>
-      <td>Stripe capture behaviour</td>
+      <td>Stripe capture behavior</td>
       <td>—</td>
       <td><code>stripePaymentMode</code> (<code>capture</code> or <code>authorize</code>)</td>
     </tr>

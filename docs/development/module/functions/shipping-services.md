@@ -400,7 +400,7 @@ interface ShippingItem {
 }
 ```
 
-Numeric fields are coerced from PostgreSQL's `numeric` (which arrives as a string) and default to `0`. `dimensions` is present only when the item's package has both a length and a width; the unit follows the store's dimension setting, normalised to `cm | mm | in`.
+Numeric fields are coerced from PostgreSQL's `numeric` (which arrives as a string) and default to `0`. `dimensions` is present only when the item's package has both a length and a width; the unit follows the store's dimension setting, normalized to `cm | mm | in`.
 
 ---
 

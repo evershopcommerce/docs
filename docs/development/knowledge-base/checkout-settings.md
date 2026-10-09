@@ -73,7 +73,7 @@ Three layers, highest priority first:
 Two implementation details that matter if you call this yourself:
 
 - **It is synchronous and cache-only.** `getSettingSync` reads the in-memory settings cache, never the database. That is what makes it safe to call from the order validator and from request handlers without an `await`.
-- **The result is coerced.** The `setting` table stores scalars as strings, so the raw value may be `'false'`, `'0'`, `'true'` or `'1'`, and the config fallback may be a real boolean. `toBoolean` normalises all of those. Never compare the raw setting value against `true` yourself.
+- **The result is coerced.** The `setting` table stores scalars as strings, so the raw value may be `'false'`, `'0'`, `'true'` or `'1'`, and the config fallback may be a real boolean. `toBoolean` normalizes all of those. Never compare the raw setting value against `true` yourself.
 
 ### Enforcement point 1 — the checkout page
 
@@ -205,7 +205,7 @@ Order validation is a registry-backed rule list. Two functions form the public s
     <tr>
       <td><code>validateBeforeCreateOrder</code></td>
       <td><code>(cart: Cart) =&gt; Promise&lt;&#123; valid: boolean; errors: string[] &#125;&gt;</code></td>
-      <td>Run every rule. Core already calls it inside <code>orderCreator</code>; call it yourself only to pre-flight a cart (e.g. to grey out a button).</td>
+      <td>Run every rule. Core already calls it inside <code>orderCreator</code>; call it yourself only to pre-flight a cart (e.g. to gray out a button).</td>
     </tr>
   </tbody>
 </table>

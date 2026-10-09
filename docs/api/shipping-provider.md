@@ -91,7 +91,7 @@ responseSample={`{
 
 `config` holds per-zone provider configuration, whose shape the provider declares through `zoneConfigFields` — a per-zone markup percentage, for example. The endpoint accepts any object; the admin UI is what validates it against the declared fields. The `core` provider declares no zone config fields, so its attachments carry `{}`.
 
-Defaults: `config` `{}`, `is_enabled` `true`, `sort_order` `0`. `additionalProperties` is `false`, so an unrecognised key is rejected.
+Defaults: `config` `{}`, `is_enabled` `true`, `sort_order` `0`. `additionalProperties` is `false`, so an unrecognized key is rejected.
 
 Errors: `400 Invalid zone id`, `400 Shipping provider "x" is not registered`, `400 Provider "x" is already attached to this zone`.
 
@@ -356,7 +356,7 @@ Tiers are sorted by their minimum and the highest tier whose minimum is less tha
   <thead>
     <tr>
       <th className="text-left">Value</th>
-      <th className="text-left">Behaviour</th>
+      <th className="text-left">Behavior</th>
     </tr>
   </thead>
   <tbody>

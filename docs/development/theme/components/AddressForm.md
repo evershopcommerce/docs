@@ -50,7 +50,7 @@ import CustomerAddressForm from '@components/frontStore/customer/address/address
 
 The container fetches the countries for the scope and the schema for the current country, keeps the last schema mounted while the next loads, and hands everything to the renderer. The field values submit as the shared address columns (`recipient`, `address_line_1`, `locality`, `administrative_area`, `postal_code`, `country`, `telephone`, …) plus registered extra fields.
 
-## Behaviour
+## Behavior
 
 - **Country first, then the country's fields.** Hong Kong shows an area select and no postal code; Germany no administrative area; the United States a state select and a ZIP code with its pattern.
 - **One country offered, no select.** When the surface offers exactly one country (a sell-to list of one, or a single zone country for shipping) the country renders as a read-only line with that value, still inside `addressField.country`, and the schema fetched is already that country's.

@@ -48,7 +48,7 @@ Three ideas drive every endpoint on this page:
 </table>
 
 :::info The `carrier` code must be registered
-`carrier` is not a free-text label. It must match the `code` of a carrier registered with `registerCarrier(...)` from a module's `bootstrap.ts`; an unrecognised code fails with `Unknown carrier '<code>'. Install or register the carrier extension first.` Core registers exactly one out of the box — `custom` ("Custom / Other"), a capability-free fallback for shipping without a carrier integration.
+`carrier` is not a free-text label. It must match the `code` of a carrier registered with `registerCarrier(...)` from a module's `bootstrap.ts`; an unrecognized code fails with `Unknown carrier '<code>'. Install or register the carrier extension first.` Core registers exactly one out of the box — `custom` ("Custom / Other"), a capability-free fallback for shipping without a carrier integration.
 :::
 
 ## Endpoints
@@ -178,7 +178,7 @@ The presence of `tracking_number` decides whether the carrier's API is called:
   <thead>
     <tr>
       <th className="text-left">Request</th>
-      <th className="text-left">Behaviour</th>
+      <th className="text-left">Behavior</th>
       <th className="text-left"><code>labelCreated</code></th>
     </tr>
   </thead>

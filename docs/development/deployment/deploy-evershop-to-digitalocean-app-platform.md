@@ -7,12 +7,12 @@ keywords:
   - Node.js PostgreSQL deployment
 sidebar_label: Deploy to DigitalOcean App Platform
 title: Deploy EverShop to DigitalOcean App Platform
-description: A comprehensive, step-by-step guide on deploying your EverShop e-commerce application to DigitalOcean App Platform with PostgreSQL database integration.
+description: A comprehensive, step-by-step guide on deploying your EverShop ecommerce application to DigitalOcean App Platform with PostgreSQL database integration.
 ---
 
 # Deploy EverShop to DigitalOcean App Platform
 
-This guide provides detailed instructions for deploying EverShop to DigitalOcean App Platform with a managed PostgreSQL database. Follow these steps to get your e-commerce store running in a production environment.
+This guide provides detailed instructions for deploying EverShop to DigitalOcean App Platform with a managed PostgreSQL database. Follow these steps to get your ecommerce store running in a production environment.
 
 :::tip
 Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.

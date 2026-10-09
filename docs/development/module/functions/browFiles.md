@@ -35,7 +35,7 @@ browFiles(path: string): Promise<{ files: FileBrowser[]; folders: string[] }>
 
 **Type:** `string`
 
-The path to list. This is a **storage key prefix**, not necessarily a local directory — see [Storage providers](#storage-providers). Leading and trailing slashes are normalised away.
+The path to list. This is a **storage key prefix**, not necessarily a local directory — see [Storage providers](#storage-providers). Leading and trailing slashes are normalized away.
 
 ## Return Value
 

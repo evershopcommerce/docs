@@ -1,5 +1,5 @@
 {
-  "label": "Advanced guides",
+  "label": "Advanced Guides",
   "position": 30,
   "collapsible": false,
   "collapsed": false,
@@ -8,6 +8,6 @@
     "type": "generated-index",
     "slug": "development/advanced",
     "title": "Advanced Tutorials",
-    "description": "This section contains advanced tutorials for developers. It covers topics such as cart and checkout, intergrating with payment gateways, and more."
+    "description": "This section contains advanced tutorials for developers. It covers topics such as cart and checkout, integrating with payment gateways, and more."
   }
 }

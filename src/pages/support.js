@@ -83,7 +83,7 @@ function SupportUs() {
           passionate about:
         </p>
         <ul>
-          <li>The future of Node.js and React in eCommerce.</li>
+          <li>The future of Node.js and React in ecommerce.</li>
           <li>Open-core business models.</li>
           <li>
             Building the modern alternative to legacy platforms like Magento and

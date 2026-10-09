@@ -142,7 +142,7 @@ const Users: Extension[] = [
   {
     title: 'SweetDream Bakery',
     description:
-      'A SweetDream Bakery theme for EverShop e-commerce platform.',
+      'A SweetDream Bakery theme for EverShop ecommerce platform.',
     preview: require('./extension/sweetdreambakery.png'),
     demo: 'https://arcturus1235.evershop.app/',
     source: 'https://github.com/evershopcommerce/evershop',

@@ -153,7 +153,7 @@ npm run start
 
 ### Overriding the dictionary source
 
-`composeLocaleDictionary()` passes each freshly-loaded dictionary through the `localeDictionary` registry value before it is stored. With no processor registered the behaviour is identity. Registering one from your extension's `bootstrap` file lets you layer database-managed or remote translations on top of the disk files without touching any call site:
+`composeLocaleDictionary()` passes each freshly-loaded dictionary through the `localeDictionary` registry value before it is stored. With no processor registered the behavior is identity. Registering one from your extension's `bootstrap` file lets you layer database-managed or remote translations on top of the disk files without touching any call site:
 
 ```ts title="extensions/my-extension/bootstrap.ts"
 import { addProcessor } from '@evershop/evershop/lib/util/registry';

@@ -7,12 +7,12 @@ keywords:
   - Node.js deployment
 sidebar_label: Deploy to Azure
 title: Deploy EverShop to Microsoft Azure
-description: Follow this comprehensive guide to deploy your EverShop e-commerce platform to Microsoft Azure using Azure App Service with step-by-step instructions.
+description: Follow this comprehensive guide to deploy your EverShop ecommerce platform to Microsoft Azure using Azure App Service with step-by-step instructions.
 ---
 
 # Deploy EverShop to Microsoft Azure
 
-This comprehensive guide walks you through the process of deploying your EverShop e-commerce platform to Microsoft Azure using Azure App Service and Azure Database for PostgreSQL.
+This comprehensive guide walks you through the process of deploying your EverShop ecommerce platform to Microsoft Azure using Azure App Service and Azure Database for PostgreSQL.
 
 :::tip
 Before you go live, run down the [Production Checklist](./production-checklist) — it lists every environment variable EverShop reads at boot, the built-in per-IP rate limits, and what the build and start sequence actually does.

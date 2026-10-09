@@ -6,7 +6,7 @@ keywords:
   - EverShop architecture
 sidebar_label: Extension Overview
 title: EverShop Extension System Overview
-description: A comprehensive overview of EverShop's extension system, explaining the structure and functionality of extensions and how they work together to create a flexible e-commerce platform.
+description: A comprehensive overview of EverShop's extension system, explaining the structure and functionality of extensions and how they work together to create a flexible ecommerce platform.
 ---
 
 # Extension Overview
@@ -145,7 +145,7 @@ Extensions must be registered in your configuration to be loaded. Add them to th
 After enabling or disabling an extension, you must rebuild your project (`npm run build`) for the changes to take effect.
 :::
 
-## Typescript configuration
+## TypeScript configuration
 
 Each extension has its own `tsconfig.json` file to configure TypeScript compilation settings specific to that extension. The `src` directory contains the TypeScript source files, while the `dist` directory is where the compiled JavaScript files are output. 
 

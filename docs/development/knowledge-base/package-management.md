@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS "package" (
 
 Note `height >= 0` while length and width must be positive: **height 0 is a valid flat envelope**, and the packing heuristic handles it explicitly.
 
-`weight` is the **tare** — the empty package's own weight, not the goods. It defaults to 0, so a merchant who never fills it in gets exactly pre-2.2.1 behaviour.
+`weight` is the **tare** — the empty package's own weight, not the goods. It defaults to 0, so a merchant who never fills it in gets exactly pre-2.2.1 behavior.
 
 ### The single-default partial unique index
 
@@ -108,7 +108,7 @@ Four columns, not three — `package_weight` carries the tare forward too, so la
   <thead>
     <tr>
       <th>Row</th>
-      <th>Refresh behaviour</th>
+      <th>Refresh behavior</th>
       <th>Reason</th>
     </tr>
   </thead>
@@ -202,7 +202,7 @@ export function buildDefaultParcels(
 ): Parcel[];
 ```
 
-The default strategy is: **one parcel, sized by the largest candidate by volume**, carrying that package's tare and the whole cart's goods weight. Its edge behaviour:
+The default strategy is: **one parcel, sized by the largest candidate by volume**, carrying that package's tare and the whole cart's goods weight. Its edge behavior:
 
 - Candidates with non-finite or non-positive length/width are dropped.
 - If nothing survives (an all-legacy or all-virtual cart) it returns `[]`, and tare contributes nothing.
@@ -324,9 +324,9 @@ Both come from `@evershop/evershop/setting/services` and are synchronous cache r
 
 **The stored numbers are unit-less.** `package.length` is `30`, not `30 cm`. There are no per-row unit columns anywhere in the chain — not on `package`, not on `cart_item`, not on `order_item`. The setting is applied at the boundary where a DTO is built, which is why `serializeItems` and `buildCreateLabelInput` each call the getter and tag the value.
 
-The consequence: **changing a unit setting reinterprets existing data, it does not convert it.** A store that switches `dimensionUnit` from `cm` to `in` turns every 30 × 25 × 10 box into a 30 × 25 × 10 *inch* box overnight. This is the same behaviour `product.weight` has always had, and the admin form is explicit about it — but it is worth knowing before you write a migration that flips it.
+The consequence: **changing a unit setting reinterprets existing data, it does not convert it.** A store that switches `dimensionUnit` from `cm` to `in` turns every 30 × 25 × 10 box into a 30 × 25 × 10 *inch* box overnight. This is the same behavior `product.weight` has always had, and the admin form is explicit about it — but it is worth knowing before you write a migration that flips it.
 
-Both readers normalise defensively at the point of use: an unrecognised value falls back to `cm` / `kg` rather than reaching a carrier API as garbage.
+Both readers normalize defensively at the point of use: an unrecognized value falls back to `cm` / `kg` rather than reaching a carrier API as garbage.
 
 ## Admin surfaces
 

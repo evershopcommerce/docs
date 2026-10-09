@@ -184,7 +184,7 @@ export default function MyWidgetSetting({ myWidget }) {
     <tr>
       <th>Helper</th>
       <th>Signature</th>
-      <th>Behaviour</th>
+      <th>Behavior</th>
     </tr>
   </thead>
   <tbody>
@@ -368,7 +368,7 @@ The same barrel exports the building blocks core's own setting forms are made of
   <tbody>
     <tr>
       <td><code>Section</code>, <code>Field</code></td>
-      <td>Collapsible group and labelled row layout.</td>
+      <td>Collapsible group and labeled row layout.</td>
     </tr>
     <tr>
       <td><code>Segmented</code>, <code>Slider</code>, <code>Toggle</code></td>

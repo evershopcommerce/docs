@@ -210,7 +210,7 @@ When you need an image to fill a container whose shape you control — a hero ba
 Core uses exactly this in `CategoryInfo` (the category hero), `BentoGrid`, `Section`, `BrandStory`, `CategoryMosaic`, `TieredCategories`, `TrustStrip` and `CollectionSpotlight`.
 
 :::note Do not "fix" this in `<Image>` itself
-A theme that overrides `@components/common/Image.js` to drop the inline ratio globally will break every catalog grid at once, since the uniform-box behaviour is what the ratio lock exists for. Clear it per call site.
+A theme that overrides `@components/common/Image.js` to drop the inline ratio globally will break every catalog grid at once, since the uniform-box behavior is what the ratio lock exists for. Clear it per call site.
 :::
 
 For art-directed `<picture>` markup (a portrait mobile asset swapped for a landscape desktop one), the inline ratio must go entirely — pass `aspectRatio: undefined` and put real `width` / `height` attributes on each `<source>` so the browser derives the box from the matched source. Core's `Slideshow` widget does this.

@@ -8,12 +8,12 @@ keywords:
   - theme:twizz
 sidebar_label: Accessibility
 title: Accessibility Contracts A Theme Must Preserve
-description: Core components carry accessibility behaviour that a theme silently reverts when it forks them. This page documents each contract and how to keep it.
+description: Core components carry accessibility behavior that a theme silently reverts when it forks them. This page documents each contract and how to keep it.
 ---
 
 # Accessibility Contracts A Theme Must Preserve
 
-Most accessibility guidance for themes is generic: use real headings, label your controls, keep contrast up. This page is not that. It documents the accessibility behaviour that is **already implemented in core components** — behaviour a theme inherits for free right up until it forks the component that carries it.
+Most accessibility guidance for themes is generic: use real headings, label your controls, keep contrast up. This page is not that. It documents the accessibility behavior that is **already implemented in core components** — behavior a theme inherits for free right up until it forks the component that carries it.
 
 That matters because forking is the normal workflow. `theme:twizz` exists precisely to copy a core component into your theme:
 
@@ -21,7 +21,7 @@ That matters because forking is the normal workflow. `theme:twizz` exists precis
 npm run theme:twizz
 ```
 
-It lists every `.tsx` / `.jsx` file under core's `components/common/`, `components/frontStore/`, and every module's `pages/frontStore/`, lets you pick one, and copies it — plus its relative-import closure — into `themes/<active-theme>/src/`. From that moment your copy is frozen. Core can fix an accessibility bug in its version and your store will never see the fix, and if you restructure the markup while forking you can drop the behaviour on the spot.
+It lists every `.tsx` / `.jsx` file under core's `components/common/`, `components/frontStore/`, and every module's `pages/frontStore/`, lets you pick one, and copies it — plus its relative-import closure — into `themes/<active-theme>/src/`. From that moment your copy is frozen. Core can fix an accessibility bug in its version and your store will never see the fix, and if you restructure the markup while forking you can drop the behavior on the spot.
 
 The contracts below are the ones that are easy to lose and expensive to notice.
 

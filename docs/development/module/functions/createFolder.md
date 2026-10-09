@@ -39,7 +39,7 @@ Path where the folder should be created. This is a **storage key prefix**, not n
 
 ## Return Value
 
-Returns `Promise<string>` with the created folder path (the normalised storage key).
+Returns `Promise<string>` with the created folder path (the normalized storage key).
 
 ## Storage providers
 

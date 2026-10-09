@@ -5,7 +5,7 @@ keywords:
   - Node.js requirements
   - PostgreSQL requirements
   - Server requirements
-sidebar_label: System requirements
+sidebar_label: System Requirements
 title: System Requirements
 description: Complete system requirements for running EverShop. Review the hardware, software, and environment prerequisites before installing EverShop.
 ---
@@ -18,7 +18,7 @@ Before installing EverShop, ensure your system meets the following requirements.
 
 ## Overview
 
-EverShop is a modern e-commerce platform built on Node.js and PostgreSQL. It requires specific system configurations to run efficiently and securely.
+EverShop is a modern ecommerce platform built on Node.js and PostgreSQL. It requires specific system configurations to run efficiently and securely.
 
 ## Operating System
 

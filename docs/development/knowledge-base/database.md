@@ -1,7 +1,7 @@
 ---
 sidebar_position: 35
 keywords:
-  - Evershop database
+  - EverShop database
   - query builder
   - PostgreSQL
   - typed queries

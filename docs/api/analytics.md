@@ -204,7 +204,7 @@ Six buckets are always returned, indexed oldest to newest, with the current peri
     <tr>
       <td><code>time</code></td>
       <td>string</td>
-      <td>Label for the bucket, formatted <code>MMM DD</code> from the bucket's <b>end</b> date — so a monthly bucket is labelled with the last day of the month, not the first.</td>
+      <td>Label for the bucket, formatted <code>MMM DD</code> from the bucket's <b>end</b> date — so a monthly bucket is labeled with the last day of the month, not the first.</td>
     </tr>
   </tbody>
 </table>

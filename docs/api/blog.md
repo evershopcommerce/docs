@@ -542,7 +542,7 @@ responseSample={`{
 
 ### Delete A Blog Category
 
-Permanently removes a category. Posts in the category are **not** deleted — `blog_post.category_id` is `ON DELETE SET NULL`, so those posts become uncategorised and fall back to the default `moderated` comment policy.
+Permanently removes a category. Posts in the category are **not** deleted — `blog_post.category_id` is `ON DELETE SET NULL`, so those posts become uncategorized and fall back to the default `moderated` comment policy.
 
 <Api
 method="DELETE"
@@ -763,7 +763,7 @@ The three endpoints below carry `"access": "public"` in their `route.json`. They
 The module ships these defences out of the box:
 
 - **Moderation by default.** A category's `comment_policy` defaults to `moderated`, so submitted comments land as `pending` and never reach the storefront until an admin approves them. A post with no category also falls back to `moderated`.
-- **Strict sanitisation.** `name` and `comment` are run through `sanitizeHtml` with **no allowed tags or attributes**, whitespace-collapsed, and truncated to 120 and 5000 characters respectively.
+- **Strict sanitization.** `name` and `comment` are run through `sanitizeHtml` with **no allowed tags or attributes**, whitespace-collapsed, and truncated to 120 and 5000 characters respectively.
 - **A honeypot field.** The optional `website` field is hidden in the storefront form. Any submission that fills it is stored as `spam`.
 - **A link heuristic.** A comment containing more than three `http(s)://` occurrences is stored as `spam`.
 - **Cookie-scoped reactions.** Reactions are de-duplicated by a signed, `httpOnly` `blog_visitor` cookie, and the unique constraint on `blog_reaction` caps a visitor at one reaction per post and one like per comment.

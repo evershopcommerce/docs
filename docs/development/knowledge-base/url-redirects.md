@@ -93,7 +93,7 @@ Not a 301. This is a decision, not an oversight.
 
 A 301 is effectively irreversible at the edge: browsers and CDNs cache it hard, so a later revert — or a redirect row that gets cleaned up — stays invisible to clients stuck on the cached response. Renames are routine and frequently undone, so a 302 keeps them revertible. There is no `type` column in the table; if a manual-redirect UI ever wants permanent redirects, adding `type smallint DEFAULT 302` is a trivial additive migration.
 
-**The one 301 in the system** is structural, not a `url_redirect` row: retiring the legacy `/page/<key>` CMS URL in favour of the root-level `/<key>`. That is a permanent scheme change, so it is hardcoded in `modules/cms/pages/frontStore/cmsPageView/index.ts`:
+**The one 301 in the system** is structural, not a `url_redirect` row: retiring the legacy `/page/<key>` CMS URL in favor of the root-level `/<key>`. That is a permanent scheme change, so it is hardcoded in `modules/cms/pages/frontStore/cmsPageView/index.ts`:
 
 ```ts
 const incomingPath = request.localePath ?? request.originalUrl.split('?')[0];
@@ -143,12 +143,12 @@ Only a literal `/page/*` request reaches the handler with a `/page/` path — th
   </tbody>
 </table>
 
-A product's URL is `/<category-path>/<url_key>` when it is categorised and `/<url_key>` when it is not, so **a category change moves the URL exactly as a rename does**. Same for a category: its URL is its ancestors' keys plus its own, so a reparent moves the whole subtree. Both are captured.
+A product's URL is `/<category-path>/<url_key>` when it is categorized and `/<url_key>` when it is not, so **a category change moves the URL exactly as a rename does**. Same for a category: its URL is its ancestors' keys plus its own, so a reparent moves the whole subtree. Both are captured.
 
 Two consequences worth knowing:
 
-- A product has exactly **one** `url_rewrite` row. A categorised product is reachable only at its nested path; the root `/<key>` was never live for it. Capture therefore reads the entity's *current* `request_path` as the old path and builds the new path structurally from the new category prefix plus the new key — it never assumes a root `/<key>` old path.
-- Nothing is captured at **creation**. A product born categorised — for example through the duplicate flow, which prefills the source's category — never had a root URL, so no redirect exists for it. The [bare-slug fallback](#the-bare-slug-fallback) covers that case instead.
+- A product has exactly **one** `url_rewrite` row. A categorized product is reachable only at its nested path; the root `/<key>` was never live for it. Capture therefore reads the entity's *current* `request_path` as the old path and builds the new path structurally from the new category prefix plus the new key — it never assumes a root `/<key>` old path.
+- Nothing is captured at **creation**. A product born categorized — for example through the duplicate flow, which prefills the source's category — never had a root URL, so no redirect exists for it. The [bare-slug fallback](#the-bare-slug-fallback) covers that case instead.
 
 ### Capture runs inside the write transaction
 
@@ -171,7 +171,7 @@ Recording a redirect is three steps, in this order, so that reads are always a *
 
 Self-redirects (`from == to`) are dropped before any of this runs.
 
-Fan-out cases — a category subtree, a variant group — use a batched form that performs the same reclaim, collapse and upsert **set-based in three statements regardless of how many rows move**, instead of one round trip per descendant holding row locks for the length of the transaction. Inputs are de-duplicated on `from_path`, last one wins, matching the upsert's conflict behaviour.
+Fan-out cases — a category subtree, a variant group — use a batched form that performs the same reclaim, collapse and upsert **set-based in three statements regardless of how many rows move**, instead of one round trip per descendant holding row locks for the length of the transaction. Inputs are de-duplicated on `from_path`, last one wins, matching the upsert's conflict behavior.
 
 The subtree path math itself is a pure, unit-tested module (`modules/catalog/services/redirect/pathRemap.ts`). Remapping is **boundary-anchored and leading-prefix only**, which fixes two classic substring bugs: renaming `/shoe` never sweeps the sibling `/shoe-sale`, and a descendant that repeats the segment maps `/cat/cat-toy` to `/animal/cat-toy` rather than mangling it to `/animal/animal-toy`. The `category_updated` subscriber's `url_rewrite` cascade uses the same remap in SQL, so the recorded targets always equal the paths `url_rewrite` actually ends up with.
 
@@ -182,7 +182,7 @@ Deleting an entity clears its historical aliases, keyed on `entity_urn`. Without
 - `clearRedirectsForEntity(connection, entityUrn)` — one entity. Called from `deleteProduct`, `deletePage` and `deleteLandingPage`.
 - `clearRedirectsForEntities(connection, entityUrns)` — many, in one statement.
 
-The multi-entity form exists because a category delete cascades **in the database, outside the service**: an `AFTER DELETE` trigger recursively removes every descendant sub-category without ever calling `deleteCategory`, and `product.category_id` is `ON DELETE SET NULL`, uncategorising every product in the subtree. So `deleteCategory` first walks the subtree with a recursive CTE and clears the aliases of the category *and* all descendants, and — before the delete lands, while `url_rewrite` still holds the nested paths — records a nested-to-root redirect for every product about to be uncategorised. The `AFTER UPDATE` product trigger rebuilds each rewrite to the root path post-commit, so the recorded target matches what the store will actually serve.
+The multi-entity form exists because a category delete cascades **in the database, outside the service**: an `AFTER DELETE` trigger recursively removes every descendant sub-category without ever calling `deleteCategory`, and `product.category_id` is `ON DELETE SET NULL`, uncategorizing every product in the subtree. So `deleteCategory` first walks the subtree with a recursive CTE and clears the aliases of the category *and* all descendants, and — before the delete lands, while `url_rewrite` still holds the nested paths — records a nested-to-root redirect for every product about to be uncategorized. The `AFTER UPDATE` product trigger rebuilds each rewrite to the root path post-commit, so the recorded target matches what the store will actually serve.
 
 Keying cleanup on `from_path` would be a no-op: the reclaim step already guarantees no row exists whose `from_path` is an entity's *current* path. Only `entity_urn` identifies the historical aliases.
 
@@ -225,7 +225,7 @@ Lookup order:
 
 After a `url_redirect` miss, a **single-segment** would-be-404 `/<key>` is matched against the tail of live `url_rewrite` rows (`LIKE '%/<key>'`, with LIKE wildcards in the slug escaped so `_` and `%` match literally) and 302s to that canonical path.
 
-This exists because bare-slug reachability would otherwise be history-dependent: only entities that once lived at the root earn a captured redirect. A product born categorised never had a root URL. The fallback makes `/<key>` behave the same either way, always targets the **current** canonical path — so it can never go stale — and needs no new rows.
+This exists because bare-slug reachability would otherwise be history-dependent: only entities that once lived at the root earn a captured redirect. A product born categorized never had a root URL. The fallback makes `/<key>` behave the same either way, always targets the **current** canonical path — so it can never go stale — and needs no new rows.
 
 Deliberate limits:
 
@@ -235,7 +235,7 @@ Deliberate limits:
 
 ## Locale-agnostic by design
 
-EverShop localises URLs with a **path prefix** (`/de/<slug>`), not by translating slugs. A given entity has one slug across every locale.
+EverShop localizes URLs with a **path prefix** (`/de/<slug>`), not by translating slugs. A given entity has one slug across every locale.
 
 That is why `url_redirect` has no `language` column: `from_path` alone is both the unique key and the lookup key. Capture stores the canonical unprefixed path and the middleware re-adds the prefix with `localizeUrl` at request time. For the same reason `url_rewrite.language` was **dropped** — it was always `'en'` and never read.
 

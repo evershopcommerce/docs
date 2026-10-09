@@ -117,7 +117,7 @@ config.util.setModuleDefaults('oms', {
 });
 ```
 
-The module also hooks order cancellation so a cancelled order releases its authorization:
+The module also hooks order cancellation so a canceled order releases its authorization:
 
 ```ts
 import { hookAfter } from '@evershop/evershop/lib/util/hookable';

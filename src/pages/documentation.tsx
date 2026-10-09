@@ -9,7 +9,7 @@ function WelcomeSection() {
           Welcome to EverShop Documentation
         </h1>
         <p className="text-muted-foreground mb-8 text-lg">
-          Everything you need to build, customize, and scale your e-commerce
+          Everything you need to build, customize, and scale your ecommerce
           platform with EverShop. From getting started to advanced
           customization.
         </p>
@@ -111,7 +111,7 @@ function GettingStartedCard() {
                 <p
                   data-slot="card-description"
                   className="text-muted-foreground text-base">
-                  Your comprehensive guide to building a modern e-commerce
+                  Your comprehensive guide to building a modern ecommerce
                   platform. Learn the fundamentals, installation process, and
                   core concepts to get your store up and running.
                 </p>
@@ -231,7 +231,7 @@ function CustomizationSection() {
         </svg>
       ),
       description:
-        "Create beautiful, responsive themes for your e-commerce store using our flexible theming system and components.",
+        "Create beautiful, responsive themes for your ecommerce store using our flexible theming system and components.",
     },
     {
       title: "Extension Development",

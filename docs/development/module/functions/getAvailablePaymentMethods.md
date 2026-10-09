@@ -31,7 +31,7 @@ getAvailablePaymentMethods(context?: PaymentMethodValidationContext): Promise<Pa
 
 **`context`** — `PaymentMethodValidationContext` (optional, defaults to `{}`)
 
-Forwarded to every registered factory's `validator`. Its `cartTotal` field is the one core reads: when `cartTotal` is `0` or less, the returned list collapses to the built-in `zero_checkout` method regardless of what any validator returned. Omitting the argument keeps the legacy behaviour.
+Forwarded to every registered factory's `validator`. Its `cartTotal` field is the one core reads: when `cartTotal` is `0` or less, the returned list collapses to the built-in `zero_checkout` method regardless of what any validator returned. Omitting the argument keeps the legacy behavior.
 
 ```typescript
 interface PaymentMethodValidationContext {

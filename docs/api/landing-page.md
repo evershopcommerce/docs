@@ -323,7 +323,7 @@ responseSample={`{
 
 ### Replace Homepage — Preflight
 
-Read-only checks for the admin dialog behind **Replace homepage with this page**. Returns everything the dialog shows: whether the action is blocked, what will be discarded or cancelled, warnings about the chosen page, the backup name, and two **fingerprints** the execute call must echo back.
+Read-only checks for the admin dialog behind **Replace homepage with this page**. Returns everything the dialog shows: whether the action is blocked, what will be discarded or canceled, warnings about the chosen page, the backup name, and two **fingerprints** the execute call must echo back.
 
 <Api
 method="GET"
@@ -366,7 +366,7 @@ responseSample={`{
 
 ### Replace Homepage — Execute
 
-Permanently makes the homepage show this landing page's widgets. In one transaction: the current homepage widgets (instances **and** placements) are copied into a new **disabled** backup landing page with fresh uuids, the homepage placements are removed, originals left with no placement are deleted, and this page's body is cloned onto route `homepage`. Unpublished page-builder changes that touch the homepage are discarded (the draft rows are kept); ended rollout plans that changed the homepage are cancelled. Restore is the same call made from the backup.
+Permanently makes the homepage show this landing page's widgets. In one transaction: the current homepage widgets (instances **and** placements) are copied into a new **disabled** backup landing page with fresh uuids, the homepage placements are removed, originals left with no placement are deleted, and this page's body is cloned onto route `homepage`. Unpublished page-builder changes that touch the homepage are discarded (the draft rows are kept); ended rollout plans that changed the homepage are canceled. Restore is the same call made from the backup.
 
 The body must carry the two fingerprints from the preflight response; if the homepage or the landing page changed since, the call returns `409 HOMEPAGE_CHANGED` and the client runs preflight again.
 

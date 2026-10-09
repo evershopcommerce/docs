@@ -75,7 +75,7 @@ Mappings registered through `registerPSOStatusMapping` run as `psoMapping` proce
 
 ## Core defaults
 
-Core registers these (from `modules/oms/bootstrap.ts`) — check them before adding your own, so you do not silently change checkout behaviour:
+Core registers these (from `modules/oms/bootstrap.ts`) — check them before adding your own, so you do not silently change checkout behavior:
 
 ```json
 {

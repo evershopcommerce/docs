@@ -76,11 +76,11 @@ interface LandingPageData {
     </tr>
     <tr>
       <td><code>status</code></td>
-      <td>Accepts <code>true</code>, <code>false</code>, <code>0</code>, <code>1</code>, <code>'0'</code>, <code>'1'</code>. Normalised to a boolean before the write.</td>
+      <td>Accepts <code>true</code>, <code>false</code>, <code>0</code>, <code>1</code>, <code>'0'</code>, <code>'1'</code>. Normalized to a boolean before the write.</td>
     </tr>
     <tr>
       <td><code>publish_start</code> / <code>publish_end</code></td>
-      <td>Timestamps bounding the publish window. An empty string is normalised to <code>null</code> (a cleared datetime field posts <code>''</code>, which <code>TIMESTAMPTZ</code> rejects). <code>null</code> bounds mean open-ended.</td>
+      <td>Timestamps bounding the publish window. An empty string is normalized to <code>null</code> (a cleared datetime field posts <code>''</code>, which <code>TIMESTAMPTZ</code> rejects). <code>null</code> bounds mean open-ended.</td>
     </tr>
   </tbody>
 </table>
@@ -125,7 +125,7 @@ The inserted `landing_page` row.
 
 ### What it does
 
-1. Runs the inbound data through the `landingPageDataBeforeCreate` registry value, then normalises it.
+1. Runs the inbound data through the `landingPageDataBeforeCreate` registry value, then normalizes it.
 2. Validates against the landing-page JSON schema with `name` and `url_key` required.
 3. Asserts the `url_key` is not already taken by another URL owner.
 4. Inserts the row.
@@ -180,7 +180,7 @@ Patch a landing page. Every field is optional — an update with no changed colu
 
 ### What it does
 
-1. Runs the data through `landingPageDataBeforeUpdate`, normalises and validates it.
+1. Runs the data through `landingPageDataBeforeUpdate`, normalizes and validates it.
 2. Loads the current row.
 3. If `url_key` changed, asserts the new slug is free.
 4. Updates the row.

@@ -1,11 +1,11 @@
 ---
 slug: release-notes-v2-1-1
-title: "Announcing Evershop v2.1.1: Digital Products, Shadcn UI, and Improved DX"
+title: "Announcing EverShop v2.1.1: Digital Products, Shadcn UI, and Improved DX"
 authors: [evershop]
 image: /img/release-v2.1.1.svg
 ---
 
-We are excited to announce the release of **Evershop v2.1.1**! This release brings highly requested features like reusable UI components based on Shadcn UI, support for digital products, and a significant upgrade to Tailwind CSS v4.
+We are excited to announce the release of **EverShop v2.1.1**! This release brings highly requested features like reusable UI components based on Shadcn UI, support for digital products, and a significant upgrade to Tailwind CSS v4.
 
 <!-- truncate -->
 
@@ -19,11 +19,11 @@ Alongside this, we've updated dependencies to use **Tailwind CSS v4**, taking ad
 
 ### 📦 Digital Products Support
 
-Selling non-physical goods just got easier. V2.1.1 introduces native support for **Digital Products**. You can now manage downloadable files, license keys, and other digital assets directly within Evershop.
+Selling non-physical goods just got easier. V2.1.1 introduces native support for **Digital Products**. You can now manage downloadable files, license keys, and other digital assets directly within EverShop.
 
 ### ⚡ Improved Developer Experience
 
-We've streamlined the development environment: Evershop now runs with just two Webpack instances — one for the backend and one for the frontend—instead of multiple processes. This reduces memory usage and speeds up hot module replacement (HMR), resulting in a faster, smoother development workflow.
+We've streamlined the development environment: EverShop now runs with just two Webpack instances — one for the backend and one for the frontend—instead of multiple processes. This reduces memory usage and speeds up hot module replacement (HMR), resulting in a faster, smoother development workflow.
 
 ---
 
@@ -31,7 +31,7 @@ We've streamlined the development environment: Evershop now runs with just two W
 
 ### How to Upgrade
 
-To update your Evershop project to v2.1.1, run the standard update command:
+To update your EverShop project to v2.1.1, run the standard update command:
 
 ```bash
 npm update @evershop/evershop
@@ -214,7 +214,7 @@ The email service architecture has been simplified to use a single instance.
 
 ##### What Changed
 
-- **Unified Email Service**: Previously, Evershop supported multiple email service instances, which could lead to configuration complexity and maintenance overhead. In v2.1.1, the architecture has been refactored to use a single, centralized email service instance for all transactional and notification emails.
+- **Unified Email Service**: Previously, EverShop supported multiple email service instances, which could lead to configuration complexity and maintenance overhead. In v2.1.1, the architecture has been refactored to use a single, centralized email service instance for all transactional and notification emails.
 - **Simplified Configuration**: Email provider configuration is now streamlined. Instead of configuring multiple services, you only need to specify your provider (e.g., Sendgrid, Resend) and credentials in one place.
 
 ##### Migration Steps

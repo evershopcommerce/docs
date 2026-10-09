@@ -212,7 +212,7 @@ Eight rows of the `setting` table shape every form. The **Addresses** section of
   </tbody>
 </table>
 
-A sell-to list of exactly one country is also the default country, whatever the Default country setting says, and the storefront shows the country as a read-only line instead of a select — there is nothing to choose. The same happens on the shipping step when the zones cover a single sold-to country. Switching the name format needs no data migration: a store moving to `split` still displays every stored `recipient`, pre-fills a legacy address with a labelled best-effort split when the customer edits it, and stores real parts from then on. The sell-to list is intent: a zone that covers a country outside the list is kept and flagged in the admin, never deleted.
+A sell-to list of exactly one country is also the default country, whatever the Default country setting says, and the storefront shows the country as a read-only line instead of a select — there is nothing to choose. The same happens on the shipping step when the zones cover a single sold-to country. Switching the name format needs no data migration: a store moving to `split` still displays every stored `recipient`, pre-fills a legacy address with a labeled best-effort split when the customer edits it, and stores real parts from then on. The sell-to list is intent: a zone that covers a country outside the list is kept and flagged in the admin, never deleted.
 
 ## Extra fields
 

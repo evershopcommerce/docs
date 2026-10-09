@@ -24,7 +24,7 @@ description: Read merchant-configured store settings, synchronously or asynchron
 
 # Store Settings Getters
 
-Store-wide values a merchant can change from the admin panel — currency, units, address, rounding, catalog behaviour — live in the `setting` table, not in `config/`. These getters read them.
+Store-wide values a merchant can change from the admin panel — currency, units, address, rounding, catalog behavior — live in the `setting` table, not in `config/`. These getters read them.
 
 Every getter follows the same three-step resolution: **admin setting → config fallback → hard default**. That is why an upgraded store behaves exactly as it did before the merchant ever opens the settings page.
 
@@ -286,7 +286,7 @@ All **asynchronous**.
     <tr>
       <td><code>getStoreLanguage()</code></td>
       <td><code>Promise&lt;string&gt;</code></td>
-      <td>The default storefront locale. <code>storeLanguage</code> (normalised) → config <code>shop.language</code> → <code>'en'</code>.</td>
+      <td>The default storefront locale. <code>storeLanguage</code> (normalized) → config <code>shop.language</code> → <code>'en'</code>.</td>
     </tr>
     <tr>
       <td><code>getEnabledLanguages()</code></td>
@@ -301,7 +301,7 @@ All **asynchronous**.
     <tr>
       <td><code>getAdminLanguage()</code></td>
       <td><code>Promise&lt;string&gt;</code></td>
-      <td>The admin panel locale, independent of the storefront. <code>adminLanguage</code> (normalised) → <code>'en'</code>.</td>
+      <td>The admin panel locale, independent of the storefront. <code>adminLanguage</code> (normalized) → <code>'en'</code>.</td>
     </tr>
   </tbody>
 </table>
@@ -356,11 +356,11 @@ All three are **synchronous** — they are read inside `toPrice`, the promotion 
   </tbody>
 </table>
 
-`getPriceRounding()` returns one of `'round' | 'ceil' | 'floor' | 'up' | 'down'`. `round`, `ceil` and `floor` are the admin values; `up` and `down` are accepted legacy aliases so a pre-existing config value still flows through unchanged. An unrecognised value falls back to `'round'`.
+`getPriceRounding()` returns one of `'round' | 'ceil' | 'floor' | 'up' | 'down'`. `round`, `ceil` and `floor` are the admin values; `up` and `down` are accepted legacy aliases so a pre-existing config value still flows through unchanged. An unrecognized value falls back to `'round'`.
 
 ---
 
-## Catalog behaviour settings
+## Catalog behavior settings
 
 ```ts
 import {
@@ -408,7 +408,7 @@ const limit = getCollectionPageSize(); // 20
 ## See Also
 
 - [Store Settings](/docs/development/knowledge-base/store-settings) — The settings model and the admin UI
-- [Checkout Settings](/docs/development/knowledge-base/checkout-settings) — Guest checkout and pricing behaviour
+- [Checkout Settings](/docs/development/knowledge-base/checkout-settings) — Guest checkout and pricing behavior
 - [Multi-language](/docs/development/knowledge-base/multi-language) — How the locale list drives routing and translation
 - [getSetting](/docs/development/module/functions/getSetting) — Standalone page for the raw reader
 - [refreshSetting](/docs/development/module/functions/refreshSetting) — Standalone page for the cache refresh

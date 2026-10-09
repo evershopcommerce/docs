@@ -59,7 +59,7 @@ export function getStoreCurrency(): string {
 
 Read that inside-out: `getLegacyConfig('shop.currency', 'USD')` computes the fallback — the config value if the store still declares one, otherwise `'USD'` — and `getSettingSync` overrides it with the `storeCurrency` row when one exists.
 
-This ordering is what makes the config→setting move a **non-breaking** change. A store that never touches the admin keeps the exact behaviour it had when the value was config-driven; the moment a merchant saves the setting, the DB row wins.
+This ordering is what makes the config→setting move a **non-breaking** change. A store that never touches the admin keeps the exact behavior it had when the value was config-driven; the moment a merchant saves the setting, the DB row wins.
 
 :::warning[One exception: file-storage credentials invert the order]
 The storage **credential** getters (`getS3StorageConfig`, `getAzureStorageConfig`, `getGcsStorageConfig`) resolve **config → environment variable → setting**, so config *wins* over the DB row. That is deliberate: an operator who pins S3 credentials in config or the environment must not have them silently overridden from the admin UI. `getFileStorageConfigOverrides()` reports which keys are currently pinned, which is how the admin form knows to render them read-only.
@@ -188,7 +188,7 @@ export function getSettingSync<T>(name: string, defaultValue: T): T {
 }
 ```
 
-A cold cache therefore yields the config fallback — precisely the behaviour those paths had before the value moved to the database. Moving a value from config to a setting never adds a DB dependency to a previously synchronous path.
+A cold cache therefore yields the config fallback — precisely the behavior those paths had before the value moved to the database. Moving a value from config to a setting never adds a DB dependency to a previously synchronous path.
 
 :::tip
 The rule for your own code: **prefer async `getSetting`**. Reach for `getSettingSync` only when you are in a genuinely synchronous path, and accept that a cold cache gives you the default.
@@ -566,7 +566,7 @@ Related branding keys that are settings and never had a config equivalent: `favi
 `themeConfig` still exists and still holds `headTags` (`links`, `metas`, `scripts`, `bases`) and `copyRight`.
 
 :::danger
-A theme that still reads `themeConfig.logo` renders **no logo** — it does not fall back and it does not warn. This is the one migration on this page that silently changes behaviour, so grep your themes for it.
+A theme that still reads `themeConfig.logo` renders **no logo** — it does not fall back and it does not warn. This is the one migration on this page that silently changes behavior, so grep your themes for it.
 :::
 
 ## Units are relabel, not convert

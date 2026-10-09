@@ -49,7 +49,7 @@ The name of the table to update. Known EverShop tables are suggested by name; an
 Returns a `TypedUpdateQuery<T>` that can be chained with additional methods. When `T` is a known table, `.given()`, `.prime()` and `.where()` only accept that table's columns.
 
 :::warning No raw SQL in `.given()`
-`UpdateQuery.given` / `InsertQuery.given` stringify every value, so the `{ isSQL: true, value: '...' }` raw-escape convention — which only works inside `.where()` — is **not** honoured on the write side. A value like `COALESCE(col, NOW())`, `col + 1` or `gen_random_uuid()` will be bound as a literal string and fail with `invalid input syntax for type …`. Drop to `connection.query()` with bind parameters for those.
+`UpdateQuery.given` / `InsertQuery.given` stringify every value, so the `{ isSQL: true, value: '...' }` raw-escape convention — which only works inside `.where()` — is **not** honored on the write side. A value like `COALESCE(col, NOW())`, `col + 1` or `gen_random_uuid()` will be bound as a literal string and fail with `invalid input syntax for type …`. Drop to `connection.query()` with bind parameters for those.
 :::
 
 ## Examples
