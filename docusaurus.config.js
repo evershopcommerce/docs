@@ -11,6 +11,40 @@ const config = {
   customFields: {
     // Put your custom environment here
     where_is_this: process.env.WHERE_IS_THIS || "production", // "local", "acc", "production"
+    // Footer content that is not part of the standard footer config:
+    // the brand block (tagline + social icons) and the legal links in the bottom bar.
+    // The link columns live in themeConfig.footer.links. Rendered by src/theme/Footer/Layout.
+    footer: {
+      tagline:
+        "Open-source TypeScript ecommerce platform. Built with React, modular and fully customizable.",
+      social: [
+        {
+          label: "GitHub",
+          icon: "github",
+          href: "https://github.com/evershopcommerce/evershop",
+        },
+        {
+          label: "Discord",
+          icon: "discord",
+          href: "https://discord.com/invite/GSzt7dt7RM",
+        },
+        { label: "X (Twitter)", icon: "x", href: "https://twitter.com/evershopjs" },
+        {
+          label: "LinkedIn",
+          icon: "linkedin",
+          href: "https://www.linkedin.com/company/evershop-io",
+        },
+      ],
+      legal: [
+        { label: "Privacy", to: "/privacy" },
+        { label: "Terms", to: "/tos" },
+        {
+          label: "License",
+          href: "https://github.com/evershopcommerce/evershop/blob/main/LICENSE",
+        },
+        { label: "Code of Conduct", to: "/code-of-conduct" },
+      ],
+    },
   },
   tagline:
     "TypeScript ecommerce platform with essential commerce features. Built with React, modular and fully customizable",
@@ -201,40 +235,49 @@ const config = {
         logo: {
           alt: "EverShop",
           src: "img/logo.svg",
-          href: "https://evershop.io",
+          href: "/",
           className: "footer__logo",
         },
         links: [
           {
+            title: "Product",
             items: [
-              {
-                to: "/blog",
-                label: "Blog",
-              },
-              {
-                label: "Support Us",
-                to: "/support",
-              },
-              {
-                label: "License",
-                to: "https://github.com/evershopcommerce/evershop/blob/main/LICENSE",
-              },
-              {
-                label: "Privacy",
-                to: "/privacy",
-              },
-              {
-                label: "Terms",
-                to: "/tos",
-              },
-              {
-                label: "Code of Conduct",
-                to: "/code-of-conduct",
-              },
-              {
-                label: "Discord",
-                href: "https://discord.com/invite/GSzt7dt7RM",
-              },
+              { label: "Documentation", to: "/documentation" },
+              { label: "Marketplace", to: "/extensions" },
+              { label: "Release Notes", to: "/blog/tags/release" },
+            ],
+          },
+          {
+            title: "Developers",
+            items: [
+              { label: "Getting Started", to: "/docs/development/getting-started/introduction" },
+              { label: "Installation Guide", to: "/docs/development/getting-started/installation-guide" },
+              { label: "REST API", to: "/docs/api/overview" },
+              { label: "GraphQL", to: "/docs/development/knowledge-base/graphql" },
+              { label: "Extension Development", to: "/docs/development/module/extension-overview" },
+              { label: "Theme Development", to: "/docs/development/theme/theme-overview" },
+              { label: "Function Reference", to: "/docs/development/module/functions" },
+            ],
+          },
+          {
+            title: "Resources",
+            items: [
+              { label: "Blog", to: "/blog" },
+              { label: "Knowledge Base", to: "/docs/development/knowledge-base" },
+              { label: "Architecture Overview", to: "/docs/development/knowledge-base/architecture-overview" },
+              { label: "Deployment Guides", to: "/docs/development/deployment" },
+              { label: "Production Checklist", to: "/docs/development/deployment/production-checklist" },
+            ],
+          },
+          {
+            title: "Community",
+            items: [
+              { label: "GitHub", href: "https://github.com/evershopcommerce/evershop" },
+              { label: "Discord", href: "https://discord.com/invite/GSzt7dt7RM" },
+              { label: "Contribute", href: "https://github.com/evershopcommerce/evershop/blob/main/CONTRIBUTING.md" },
+              { label: "Report an Issue", href: "https://github.com/evershopcommerce/evershop/issues/new" },
+              { label: "Support Us", to: "/support" },
+              { label: "Contact Us", to: "/contact-us" },
             ],
           },
         ],

@@ -36,7 +36,7 @@ function HomepageHeader() {
                   height={18}
                 />
               </div>
-              <span>Version 2.2</span>
+              <span>Version 2.3</span>
             </div>
             <div className="flex gap-[5px] items-center justify-center">
               <a
@@ -506,7 +506,7 @@ function ElevateYourStore() {
           }}
           subheading={{
             className: "max-w-[730px]",
-            text: "Unlock the potential of your e-commerce business with powerful solutions tailored for seamless growth.",
+            text: "Unlock the potential of your ecommerce business with powerful solutions tailored for seamless growth.",
           }}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-9 lg:gap-[68px]">
