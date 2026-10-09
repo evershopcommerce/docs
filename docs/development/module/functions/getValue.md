@@ -34,7 +34,7 @@ async getValue<T>(
 ): Promise<T>
 ```
 
-#### Parameters
+### Parameters
 
 **`name`**
 

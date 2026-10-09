@@ -1,6 +1,7 @@
 ---
 sidebar_position: 92
 title: removeCartItem
+description: Removes an item from the cart by its UUID. A hookable checkout service.
 hide_table_of_contents: true
 keywords:
   - EverShop removeCartItem

@@ -4,11 +4,11 @@ EverShop values your privacy and is committed to protecting your personal inform
 
 ---
 
-### 1. Information We Collect
+## 1. Information We Collect
 
 We collect and process information to provide and improve our services. This includes data you provide directly, data collected automatically, and information gathered through tracking technologies.
 
-#### **1.1 Personal Information**
+### **1.1 Personal Information**
 
 This includes details that you provide when signing up, making a purchase, or contacting support. These may include:
 
@@ -16,7 +16,7 @@ This includes details that you provide when signing up, making a purchase, or co
 - Billing details necessary for processing transactions (excluding payment card information)
 - Any information voluntarily provided through support inquiries or feedback forms
 
-#### **1.2 Automatically Collected Information**
+### **1.2 Automatically Collected Information**
 
 When you use our services, certain data is collected automatically to enhance security, troubleshoot issues, and improve functionality. This may include:
 
@@ -24,7 +24,7 @@ When you use our services, certain data is collected automatically to enhance se
 - Browser type, operating system, and device information
 - Log files, timestamps, and interaction data related to service usage
 
-#### **1.3 Cookies & Tracking Technologies**
+### **1.3 Cookies & Tracking Technologies**
 
 We use cookies and similar tracking technologies to improve performance, personalize content, and analyze usage trends. These technologies help us:
 
@@ -36,7 +36,7 @@ You can manage cookie preferences through your browser settings.
 
 ---
 
-### 2. How We Use Your Information
+## 2. How We Use Your Information
 
 We process your data for the following purposes:
 
@@ -48,7 +48,7 @@ We process your data for the following purposes:
 
 ---
 
-### 3. Sharing and Disclosure of Information
+## 3. Sharing and Disclosure of Information
 
 We do not sell or rent your personal information. However, we may share your data with:
 
@@ -57,13 +57,13 @@ We do not sell or rent your personal information. However, we may share your dat
 
 ---
 
-### 4. Payment Security
+## 4. Payment Security
 
 Your payment transactions are processed securely by third-party payment processors. **We do not store or have access to your credit card or banking details.** Our payment partners comply with industry security standards, such as PCI-DSS, to protect your financial information.
 
 ---
 
-### 5. Your Rights & Choices
+## 5. Your Rights & Choices
 
 You have the following rights regarding your personal information:
 
@@ -75,7 +75,7 @@ To exercise these rights, please contact **[support@evershop.io](mailto\:support
 
 ---
 
-### 6. Data Retention
+## 6. Data Retention
 
 We retain personal data only for as long as necessary to provide our services, comply with legal obligations, resolve disputes, and enforce our policies. The retention period varies based on the type of data:
 
@@ -87,7 +87,7 @@ Once the retention period expires, we securely delete or anonymize the data to e
 
 ---
 
-### 7. Security Measures
+## 7. Security Measures
 
 We implement industry-standard security measures to protect your data, including:
 
@@ -99,25 +99,25 @@ However, no method of transmission over the Internet is 100% secure, and we enco
 
 ---
 
-### 8. International Data Transfers
+## 8. International Data Transfers
 
 If you access our services from outside your country, your data may be transferred and processed in different jurisdictions. We take steps to ensure appropriate data protection safeguards are in place.
 
 ---
 
-### 9. Children’s Privacy
+## 9. Children’s Privacy
 
 Our services are **not intended for children under 13 years of age**, and we do not knowingly collect personal information from minors.
 
 ---
 
-### 10. Changes to This Privacy Policy
+## 10. Changes to This Privacy Policy
 
 We may update this Privacy Policy periodically. Any changes will be posted on this page. Continued use of our services after changes implies acceptance of the updated policy.
 
 ---
 
-### 11. Contact Us
+## 11. Contact Us
 
 If you have any questions or concerns about this Privacy Policy, please contact us at:
 

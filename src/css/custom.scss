@@ -3,7 +3,7 @@
  * bundles Infima by default. Infima is a CSS framework designed to
  * work well for content-centric websites.
  */
-//@import url('https://fonts.googleapis.com/css?family=Inter:400,500,600&display=swap');
+// Inter is self-hosted: see fonts.css (loaded before this file in docusaurus.config.js).
 
 $mobile-width: 640px;
 $tablet-width: 768px;
@@ -41,10 +41,8 @@ $desktop-width: 1024px;
   --ifm-font-size-base: 1rem;
   --ifm-font-family-base: "Inter", -apple-system, BlinkMacSystemFont, Segoe UI,
     Helvetica, Arial, sans-serif;
-  --ifm-font-family-monospace: system-ui, -apple-system, Segoe UI, Roboto,
-    Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, "Segoe UI",
-    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol";
+  --ifm-font-family-monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
   --ifm-navbar-link-color: #101828;
   --heading-font-color: #101828;
   --ifm-font-color-base: #475467;
@@ -505,8 +503,26 @@ body .button--secondary {
   pointer-events: none;
 }
 
-body code {
-  font-family: monospace !important;
+/* Tailwind typography (the .prose wrapper) adds decorative backticks around
+   inline code. Infima already draws a pill around it, so drop the backticks. */
+.prose :where(code)::before,
+.prose :where(code)::after {
+  content: none;
+}
+
+/* Very wide diagrams: wrap the image in <div className="wide-diagram">. On
+   phones it scrolls sideways at a readable size instead of shrinking to a thin
+   strip. Desktop and tablet are unchanged. */
+@media (max-width: 767px) {
+  .wide-diagram {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+  }
+  .wide-diagram img {
+    max-width: none;
+    width: 800px;
+  }
 }
 
 main[class*="docMainContainer"] .container {
@@ -599,6 +615,9 @@ html.docs-wrapper #__docusaurus {
 * {
   border-style: solid;
   border-width: 0;
+  /* Default border colour, as Tailwind's preflight would set it. Without it a
+     bare `border` / `border-2` utility falls back to currentColor (dark text). */
+  border-color: #e6e8ec;
 }
 
 body .footer {
@@ -960,8 +979,10 @@ html table table {
   }
 }
 
-@media (min-width: 997px) {
-    html .generatedIndexPage_src-theme-DocCategoryGeneratedIndexPage-styles-module {
-        max-width: 100% !important;
-    }
+/* Category index pages (DocCardList): fill the available width instead of a
+   fixed two columns. 300px is the narrowest card that still reads well. */
+.doc-card-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
 }

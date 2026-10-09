@@ -3,6 +3,7 @@ sidebar_position: 94
 groups:
 - checkout
 title: addCartItem
+description: Adds an item to the cart, merging quantities when the same SKU is already there. A hookable checkout service.
 hide_table_of_contents: true
 keywords:
   - EverShop addCartItem

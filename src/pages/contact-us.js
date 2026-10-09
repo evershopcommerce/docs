@@ -40,10 +40,13 @@ function ContactForm() {
       <div className="container text-left pt-1">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-[100px] lg:gap-[170px]">
           <div className="">
-            <h2 className="mb-2 w-full lg:w-[525px]">
+            {/* The page's only h1. Keep the former h2 size so the look is unchanged. */}
+            <h1
+              className="mb-2 w-full lg:w-[525px]"
+              style={{ fontSize: "var(--ifm-h2-font-size)" }}>
               Let Us Help You Succeed -{" "}
               <span className="text-primary">Get in Touch</span> Today!
-            </h2>
+            </h1>
             <p>
               Have questions? Need tailored support? Our team is here to guide
               you every step of the way!
@@ -265,7 +268,7 @@ export default function ContactUs() {
   return (
     <Layout
       title="Contact Us"
-      description="Contact Us."
+      description="Questions about EverShop? Get in touch for help choosing hosting, finding vetted extensions, or upgrading your store."
       wrapperClassName="contact__us">
       <main>
         <ContactForm />

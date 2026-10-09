@@ -71,7 +71,7 @@ function GettingStartedCard() {
     <section className="container mx-auto px-4 pb-16">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="mb-3 text-4xl">Start Your Journey</h1>
+          <h2 className="mb-3 text-4xl">Start Your Journey</h2>
           <p className="text-muted-foreground text-lg">
             Master the fundamentals of EverShop. From installation to
             deployment, learn everything you need to build a successful online
@@ -263,7 +263,7 @@ function CustomizationSection() {
     <section className="container mx-auto px-4 pb-16">
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">
-          <h1 className="mb-3 text-4xl">Customize Your Store</h1>
+          <h2 className="mb-3 text-4xl">Customize Your Store</h2>
           <p className="text-muted-foreground text-lg">
             Unlock the full potential of EverShop. Build custom APIs, design
             unique themes, and create powerful extensions tailored to your
@@ -537,7 +537,7 @@ function MarketplaceSection() {
 export default function DocumentationPage() {
   return (
     <Layout
-      title="Documentation - EverShop"
+      title="Documentation"
       description="Comprehensive guides and documentation to help you start working with EverShop as quickly as possible."
       wrapperClassName="documentation">
       <main className="flex flex-col gap-16">

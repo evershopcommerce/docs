@@ -1,3 +1,8 @@
+---
+title: Code of Conduct
+description: The Contributor Covenant Code of Conduct for the EverShop community. How we expect contributors and maintainers to behave, and how we enforce it.
+---
+
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

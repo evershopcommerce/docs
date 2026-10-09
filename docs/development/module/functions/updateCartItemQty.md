@@ -1,6 +1,7 @@
 ---
 sidebar_position: 93
 title: updateCartItemQty
+description: Increases or decreases the quantity of a cart item, and removes the item when it reaches zero. A hookable checkout service.
 hide_table_of_contents: true
 keywords:
   - EverShop updateCartItemQty

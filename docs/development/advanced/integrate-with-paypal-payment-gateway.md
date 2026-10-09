@@ -276,4 +276,4 @@ Both processors receive context as `this` (the order, its items, and — for `fi
 
 - [Payment Gateway REST API](/docs/api/payment-gateway) — the endpoint reference for everything above.
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — the registration contract for building your own gateway.
-- [Integrating Stripe Payment Gateway](/docs/development/advanced/intergrate-with-stripe-payment-gateway) — the embedded-form counterpart to this redirect flow.
+- [Integrating Stripe Payment Gateway](/docs/development/advanced/integrate-with-stripe-payment-gateway) — the embedded-form counterpart to this redirect flow.

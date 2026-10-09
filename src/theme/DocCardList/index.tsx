@@ -20,7 +20,7 @@ export default function DocCardList(props: Props): JSX.Element {
   const filteredItems = filterDocCardListItems(items);
   const links = filteredItems.filter((item) => item.type === 'link');
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <section className="doc-card-grid">
       {links.map((item, index) => (
         <DocCard item={item} key={index} />
       ))}

@@ -5,7 +5,9 @@
 const config = {
   noIndex: process.env.WHERE_IS_THIS === "acc" ? true : false,
   title: "EverShop",
-  titleDelimiter: " - ",
+  // Docusaurus already adds a space on each side of the delimiter, so keep it
+  // as a bare dash. A padded " - " produced "Page  -  EverShop" (double spaces).
+  titleDelimiter: "-",
   customFields: {
     // Put your custom environment here
     where_is_this: process.env.WHERE_IS_THIS || "production", // "local", "acc", "production"
@@ -129,7 +131,10 @@ const config = {
           editUrl: "https://github.com/evershopcommerce/docs/tree/main/",
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.scss"),
+          customCss: [
+            require.resolve("./src/css/fonts.css"),
+            require.resolve("./src/css/custom.scss"),
+          ],
         },
       }),
     ],
@@ -271,48 +276,6 @@ const config = {
         //... other Algolia params
       },
     }),
-  ssrTemplate: `<!DOCTYPE html>
-<html <%~ it.htmlAttributes %>>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="generator" content="Docusaurus v<%= it.version %>">
-    <% it.metaAttributes.forEach((metaAttribute) => { %>
-      <%~ metaAttribute %>
-    <% }); %>
-    <%~ it.headTags %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-    rel="preload"
-    href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap"
-    as="style"
-    onload="this.onload=null;this.rel='stylesheet'"
-/>
-<noscript>
-    <link
-        href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap"
-        rel="stylesheet"
-        type="text/css"
-    />
-</noscript>
-    <% it.stylesheets.forEach((stylesheet) => { %>
-      <link rel="stylesheet" href="<%= it.baseUrl %><%= stylesheet %>" />
-    <% }); %>
-    <% it.scripts.forEach((script) => { %>
-      <link rel="preload" href="<%= it.baseUrl %><%= script %>" as="script">
-    <% }); %>
-  </head>
-  <body <%~ it.bodyAttributes %>>
-    <%~ it.preBodyTags %>
-    <div id="__docusaurus">
-      <%~ it.appHtml %>
-    </div>
-    <% it.scripts.forEach((script) => { %>
-      <script src="<%= it.baseUrl %><%= script %>"></script>
-    <% }); %>
-    <%~ it.postBodyTags %>
-  </body>
-</html>`,
 };
 
 export default config;

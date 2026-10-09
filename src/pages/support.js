@@ -116,7 +116,9 @@ function SupportUs() {
 export default function SupportPage() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title="Support" description="Support EverShop.">
+    <Layout
+      title="Support"
+      description="Help EverShop grow: contribute code, sponsor the open-source project, or spread the word.">
       <main>
         <SupportUs />
       </main>

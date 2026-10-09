@@ -7,7 +7,18 @@ export default function Sponsor() {
       <hr />
       <br />
       <div className="">
-        <h2 className="text-3xl">Support us</h2>
+        {/* Not a heading: this block is shown at the end of ~50 docs and would
+            otherwise add an extra h2 to each page's outline. Styled like the h2
+            it replaces. */}
+        <p
+          className="text-3xl"
+          style={{
+            margin: "1.6em 0 0.8em",
+            fontWeight: 600,
+            color: "var(--heading-font-color)",
+          }}>
+          Support us
+        </p>
         <br />
         <p>
           EverShop is an open-source project that relies on community support.
