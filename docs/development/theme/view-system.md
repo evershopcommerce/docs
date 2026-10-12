@@ -6,7 +6,7 @@ keywords:
   - server-side rendering
 sidebar_label: The View System
 title: EverShop View System
-description: EverShop utilizes React to render views with server-side rendering followed by client-side hydration. This architecture creates interactive pages while enabling developers to extend the view system without modifying core code.
+description: "How EverShop renders views: React server-side rendering with hydration, module view structure, the Area component and per-component data fetching."
 ---
 
 ![EverShop view system](./img/the-view-system.jpg "EverShop view system")

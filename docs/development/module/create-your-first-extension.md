@@ -6,7 +6,7 @@ keywords:
   - ecommerce extensions
 sidebar_label: Create Your First Extension
 title: Creating Your First EverShop Extension
-description: This step-by-step tutorial demonstrates how to create a custom extension for EverShop by implementing a product comment feature.
+description: "Build your first EverShop extension step by step: a product comment feature with an npm workspace, a database table and a form on the product page."
 ---
 
 # Creating Your First Extension

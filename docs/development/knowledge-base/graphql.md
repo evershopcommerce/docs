@@ -4,7 +4,7 @@ keywords:
   - graphql, evershop graphql
 sidebar_label: GraphQL
 title: GraphQL System
-description: This document explains how the EverShop GraphQL system works, how to create a GraphQL type, and how to extend existing GraphQL types.
+description: "How GraphQL works in EverShop: how types and resolvers are organized, how to add new types, extend existing ones, and define admin-only types."
 ---
 
 ![EverShop GraphQL system](./img/evershop-graphql.jpg "EverShop GraphQL system")

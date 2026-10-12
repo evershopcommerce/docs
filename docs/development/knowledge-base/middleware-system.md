@@ -4,7 +4,7 @@ keywords:
   - Middleware
 sidebar_label: The Middleware System
 title: EverShop Middleware System Overview
-description: Learn about the middleware system in EverShop. How middlewares work and how to create, add, and remove middleware functions from a route.
+description: "How middleware works in EverShop: middleware types, the core middleware that runs first, adding or removing middleware on a route, and dependency order."
 ---
 
 # Middleware System

@@ -7,7 +7,7 @@ keywords:
   - typed queries
 sidebar_label: The Database
 title: Database and Query Builder
-description: Learn how to connect to the database, build type-safe queries, and manage transactions in EverShop.
+description: "Query PostgreSQL in EverShop: connect, build type-safe SELECT, INSERT, UPDATE, DELETE and upsert queries, run raw SQL and manage transactions."
 ---
 
 # Database and Query Builder

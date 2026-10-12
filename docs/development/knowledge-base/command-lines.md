@@ -6,7 +6,7 @@ keywords:
   - Store setup commands
 sidebar_label: Command-Line Interface
 title: Command-Line Interface
-description: Comprehensive guide to EverShop's command-line interface with detailed explanations of commands for building, developing, and managing your online store.
+description: "EverShop CLI reference: commands to install, develop, debug, build and start your store, seed demo data and manage themes, with what each one does."
 ---
 
 # EverShop Command-Line Interface

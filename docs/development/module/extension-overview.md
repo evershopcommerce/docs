@@ -6,7 +6,7 @@ keywords:
   - EverShop architecture
 sidebar_label: Extension Overview
 title: EverShop Extension System Overview
-description: A comprehensive overview of EverShop's extension system, explaining the structure and functionality of extensions and how they work together to create a flexible ecommerce platform.
+description: "How EverShop extensions work: folder structure, where extensions live, TypeScript setup, lifecycle and best practices for extending your Node.js store."
 ---
 
 # Extension Overview

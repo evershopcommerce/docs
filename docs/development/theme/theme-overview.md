@@ -4,7 +4,7 @@ keywords:
   - Theme overview
 sidebar_label: Theme Overview
 title: Theme Overview
-description: EverShop theme overview document. Learn what themes are, where they're located, and how to develop custom themes for your store.
+description: "How EverShop themes work: where themes live, how to create, structure and activate one, and the CLI commands for building a custom React storefront."
 ---
 
 # Theme Overview

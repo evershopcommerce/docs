@@ -9,7 +9,7 @@ keywords:
   - REST API
 sidebar_label: Payment Methods
 title: Payment Method API
-description: List the payment methods available to an EverShop cart with GraphQL, and apply one to the cart with the REST API.
+description: "List the payment methods available to an EverShop cart with GraphQL, apply one with the REST API, and register your own payment method."
 ---
 
 # Payment Method API
