@@ -284,12 +284,9 @@ const config = {
       // prism: {
       //   theme: darkTheme,
       // },
-      metadata: [
-        {
-          name: "og:image",
-          content: "https://evershop.io/img/social-card.jpg",
-        },
-      ],
+      // Default share image for every page (emits og:image and twitter:image
+      // with the correct `property` attribute). Pages can override it.
+      image: "img/social-card.jpg",
       algolia: {
         // The application ID provided by Algolia
         appId: "YOUP0U3MFZ",
