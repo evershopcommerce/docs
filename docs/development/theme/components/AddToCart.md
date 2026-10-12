@@ -1,4 +1,5 @@
 ---
+slug: addtocart
 sidebar_position: 34
 title: AddToCart
 description: A headless render props component that provides add-to-cart logic without rendering any UI.
@@ -303,11 +304,14 @@ The theme version completely replaces the core `ProductSingleForm` UI, but reuse
 - **Validation**: Checks stock availability and quantity
 - **Callbacks**: onSuccess and onError hooks for parent composition
 - **Type Safe**: Full TypeScript support
+On a product card, do not wire AddToCart yourself: use [ProductListAddToCart](ProductListAddToCart.md), which also handles products with variants by linking to their page instead of adding an unselected variant.
+
 - **Cart Integration**: Uses CartContext automatically
 
 ## Related Components
 
 - [CartContext](CartContext.md) - Shopping cart context
+- [ProductListAddToCart](ProductListAddToCart.md) - The action under a product card
 - [CartItems](CartItems.md) - Cart items display component
 - [Coupon](Coupon.md) - Coupon management component
 

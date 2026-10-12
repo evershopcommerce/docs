@@ -1,4 +1,5 @@
 ---
+slug: productlist
 sidebar_position: 42
 title: ProductList
 description: A component for displaying product listings in grid or list layout with loading and empty states.
@@ -104,8 +105,8 @@ function CategoryPage({ products }) {
       <td>showAddToCart</td>
       <td>boolean</td>
       <td>No</td>
-      <td>false</td>
-      <td>Show add to cart buttons</td>
+      <td>true</td>
+      <td>Offer an Add to Cart button on each card. Leave it out: <code>ProductList</code> decides, and a theme changes it everywhere by overriding this component. Pass <code>false</code> only for a list that must never have the button. It is offered only inside the storefront's cart provider.</td>
     </tr>
     <tr>
       <td>customAddToCartRenderer</td>
@@ -207,7 +208,7 @@ function CategoryPage() {
 }
 ```
 
-### With Add to Cart
+### With Add to Cart (the default)
 
 ```tsx
 import { ProductList } from '@components/frontStore/catalog/ProductList';
@@ -216,7 +217,6 @@ function ShopPage({ products }) {
   return (
     <ProductList
       products={products}
-      showAddToCart={true}
       gridColumns={4}
     />
   );
@@ -285,7 +285,6 @@ function ProductGrid({ products }) {
   return (
     <ProductList
       products={products}
-      showAddToCart={true}
       customAddToCartRenderer={(product) => (
         <AddToCart 
           product={{ sku: product.sku, isInStock: product.inventory.isInStock }}
@@ -357,7 +356,6 @@ function CategoryProducts() {
         products={category.products.items}
         layout={layout}
         gridColumns={columns}
-        showAddToCart={true}
         emptyMessage="No products in this category"
         className="mt-8"
       />
@@ -365,6 +363,22 @@ function CategoryProducts() {
   );
 }
 ```
+
+## Showing or hiding Add to Cart
+
+`ProductList` is the one place that decides. The category, search and all-products pages, the "Collection products" and "Collection stack" widgets, the recommendation shelves, the collection spotlight and a rich-text product block all leave `showAddToCart` out, so they all follow it. To change it for the whole storefront, override this component in your theme (the `@components` alias looks in the theme first) and change the default:
+
+```tsx
+// themes/<your-theme>/src/components/frontStore/catalog/ProductList.tsx
+// A copy of core's ProductList.tsx with one line changed:
+  showAddToCart = false,
+```
+
+Three rules the component keeps for you:
+
+- An extension that needs one list to differ can still opt out for it: `<ProductList showAddToCart={false} />`. No list in core does.
+- A product with variants (colour, size...) gets "Select options", a link to its page, instead of "Add to Cart": the customer has to choose, and a card cannot ask. [ProductListAddToCart](ProductListAddToCart.md) makes that choice. A list of your own must select `variantGroupId` in its `Product` fragment for it to work.
+- The button is offered only where a cart exists. `AddToCart` needs the storefront's cart provider and throws without one, and a widget can be placed in an area above it, so outside the provider the list simply has no button.
 
 ## Grid Columns
 
@@ -405,7 +419,7 @@ Renders product items using default or custom renderer.
 - **Loading Skeleton**: Animated placeholders
 - **Empty State**: Customizable no-results message
 - **Custom Rendering**: Full control over product display
-- **Add to Cart**: Built-in or custom add to cart
+- **Add to Cart**: On by default, built-in or custom; decided here, overridable in one place
 - **Image Sizing**: Height derived from the store's configured aspect ratio; `imageWidth` overridable per placement
 - **Type Safe**: Full TypeScript support
 
@@ -414,4 +428,5 @@ Renders product items using default or custom renderer.
 - [ProductContext](ProductContext.md) - Product data interface
 - [CategoryContext](CategoryContext.md) - Category page context
 - [AddToCart](AddToCart.md) - Add to cart component
+- [ProductListAddToCart](ProductListAddToCart.md) - The action under each card (Add to Cart, or Select options for variants)
 - [Image](Image.md) - Image component
