@@ -1,4 +1,5 @@
 ---
+slug: registerpaymentstatus
 sidebar_position: 110
 keywords:
 - registerPaymentStatus
@@ -71,8 +72,8 @@ export default async () => {
 
 ## See Also
 
-- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod)
-- [registerShipmentStatus](/docs/development/module/functions/registerShipmentStatus)
-- [registerOrderStatus](/docs/development/module/functions/registerOrderStatus)
-- [registerPSOStatusMapping](/docs/development/module/functions/registerPSOStatusMapping)
+- [registerPaymentMethod](/docs/development/module/functions/registerpaymentmethod)
+- [registerShipmentStatus](/docs/development/module/functions/registershipmentstatus)
+- [registerOrderStatus](/docs/development/module/functions/registerorderstatus)
+- [registerPSOStatusMapping](/docs/development/module/functions/registerpsostatusmapping)
 - [Order Status Management](/docs/development/knowledge-base/order-status-management)

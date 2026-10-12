@@ -1,4 +1,5 @@
 ---
+slug: updatecategory
 sidebar_position: 51
 keywords:
 - updateCategory
@@ -90,5 +91,5 @@ const updated = await updateCategory('category-uuid-123', {
 
 ## See Also
 
-- [createCategory](/docs/development/module/functions/createCategory) - Create category
-- [deleteCategory](/docs/development/module/functions/deleteCategory) - Delete category
+- [createCategory](/docs/development/module/functions/createcategory) - Create category
+- [deleteCategory](/docs/development/module/functions/deletecategory) - Delete category

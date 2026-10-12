@@ -1,4 +1,5 @@
 ---
+slug: createcustomeraddress
 sidebar_position: 78
 keywords:
 - createCustomerAddress
@@ -91,7 +92,7 @@ const address = await createCustomerAddress('customer-uuid', {
 
 ## Hooks
 
-Which fields are required depends on the country's address schema; the service normalizes the input (trim, upper-case country, E.164 telephone), validates it with [`validateAddress`](/docs/development/module/functions/validateAddress) and throws an `AddressValidationError` whose `errors` array lists every failing field.
+Which fields are required depends on the country's address schema; the service normalizes the input (trim, upper-case country, E.164 telephone), validates it with [`validateAddress`](/docs/development/module/functions/validateaddress) and throws an `AddressValidationError` whose `errors` array lists every failing field.
 
 Supports hooks via registry:
 - `customerAddressDataBeforeCreate` - Modify data before creation (the normalization seam runs here at priority 0)
@@ -99,7 +100,7 @@ Supports hooks via registry:
 
 ## See Also
 
-- [updateCustomerAddress](/docs/development/module/functions/updateCustomerAddress) - Update address
-- [deleteCustomerAddress](/docs/development/module/functions/deleteCustomerAddress) - Delete address
-- [validateAddress](/docs/development/module/functions/validateAddress) - Validate address data
-- [addAddressValidationRule](/docs/development/module/functions/addAddressValidationRule) - Add validation rules
+- [updateCustomerAddress](/docs/development/module/functions/updatecustomeraddress) - Update address
+- [deleteCustomerAddress](/docs/development/module/functions/deletecustomeraddress) - Delete address
+- [validateAddress](/docs/development/module/functions/validateaddress) - Validate address data
+- [addAddressValidationRule](/docs/development/module/functions/addaddressvalidationrule) - Add validation rules

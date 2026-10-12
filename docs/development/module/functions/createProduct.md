@@ -1,4 +1,5 @@
 ---
+slug: createproduct
 sidebar_position: 47
 keywords:
 - createProduct
@@ -201,6 +202,6 @@ try {
 
 ## See Also
 
-- [updateProduct](/docs/development/module/functions/updateProduct) - Update existing product
-- [deleteProduct](/docs/development/module/functions/deleteProduct) - Delete product
-- [getProductsBaseQuery](/docs/development/module/functions/getProductsBaseQuery) - Query products
+- [updateProduct](/docs/development/module/functions/updateproduct) - Update existing product
+- [deleteProduct](/docs/development/module/functions/deleteproduct) - Delete product
+- [getProductsBaseQuery](/docs/development/module/functions/getproductsbasequery) - Query products

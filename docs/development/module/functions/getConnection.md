@@ -1,4 +1,5 @@
 ---
+slug: getconnection
 sidebar_position: 13
 keywords:
 - getConnection
@@ -176,5 +177,5 @@ const products = await select()
 ## See Also
 
 - [pool](/docs/development/module/functions/pool) - PostgreSQL connection pool instance
-- [startTransaction](/docs/development/module/functions/startTransaction) - Start a transaction
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration values
+- [startTransaction](/docs/development/module/functions/starttransaction) - Start a transaction
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration values

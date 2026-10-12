@@ -382,4 +382,4 @@ Checklist when a link resolves to `null`:
 - [URN](/docs/development/module/functions/urn) — The identifier format and its registry
 - [Widget Link Fields](/docs/development/module/widget-link-fields) — The admin link picker that produces these values
 - [Widget Development](/docs/development/module/widget-development) — Building widgets
-- [registerWidget](/docs/development/module/functions/registerWidget) — Widget registration
+- [registerWidget](/docs/development/module/functions/registerwidget) — Widget registration

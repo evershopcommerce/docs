@@ -1,4 +1,5 @@
 ---
+slug: textareafield
 sidebar_position: 6
 title: TextareaField
 description: A multi-line text input field component with validation and error handling.

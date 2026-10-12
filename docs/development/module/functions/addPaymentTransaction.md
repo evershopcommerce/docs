@@ -1,4 +1,5 @@
 ---
+slug: addpaymenttransaction
 sidebar_position: 126
 keywords:
   - addPaymentTransaction
@@ -16,7 +17,7 @@ description: Record a payment transaction for an order.
 
 Record a payment transaction (an authorization, a capture or a refund) for an order. It is a plain `INSERT` into the `payment_transaction` table.
 
-Use it to save the **first** transaction of an order from your own return page, webhook or order-creation hook. Core does not create that row for you, and [captureOrder](/docs/development/module/functions/captureOrder) and [refundOrder](/docs/development/module/functions/refundOrder) need it. For a refund, call [recordRefund](/docs/development/module/functions/recordRefund) instead, and for a capture call [captureOrder](/docs/development/module/functions/captureOrder): they record the transaction, set the status and emit the events.
+Use it to save the **first** transaction of an order from your own return page, webhook or order-creation hook. Core does not create that row for you, and [captureOrder](/docs/development/module/functions/captureorder) and [refundOrder](/docs/development/module/functions/refundorder) need it. For a refund, call [recordRefund](/docs/development/module/functions/recordrefund) instead, and for a capture call [captureOrder](/docs/development/module/functions/captureorder): they record the transaction, set the status and emit the events.
 
 ## Import
 
@@ -100,7 +101,7 @@ Returns `Promise<PaymentTransactionRow>`, the inserted row.
 ## Notes
 
 - **Not idempotent.** The table has a unique constraint on the order and the transaction id, so inserting the same transaction twice throws. When a webhook can deliver the same event twice, use `insertOnUpdate` on `transaction_id` and `payment_transaction_order_id` instead, as the Stripe and PayPal modules do.
-- It does not change the payment status and emits no event. Call [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) for that.
+- It does not change the payment status and emits no event. Call [updatePaymentStatus](/docs/development/module/functions/updatepaymentstatus) for that.
 - It is not wrapped in `hookable`.
 
 ## Examples
@@ -137,7 +138,7 @@ await addPaymentTransaction(
 
 ## See Also
 
-- [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) — Update payment status
-- [captureOrder](/docs/development/module/functions/captureOrder) — Capture an authorized payment
-- [recordRefund](/docs/development/module/functions/recordRefund) — Record a refund
+- [updatePaymentStatus](/docs/development/module/functions/updatepaymentstatus) — Update payment status
+- [captureOrder](/docs/development/module/functions/captureorder) — Capture an authorized payment
+- [recordRefund](/docs/development/module/functions/recordrefund) — Record a refund
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — Payment gateway guide

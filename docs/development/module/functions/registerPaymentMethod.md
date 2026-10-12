@@ -1,4 +1,5 @@
 ---
+slug: registerpaymentmethod
 sidebar_position: 20
 keywords:
   - payment methods
@@ -88,11 +89,11 @@ type PaymentRefundHandler = (c: PaymentRefundContext) => Promise<PaymentOperatio
     -   If it returns `false`, the method will be hidden.
     -   This is useful for conditionally showing payment methods based on cart total, customer group, or specific items in the cart.
 
--   **`capture(context)`**: (Optional) Captures an authorized payment at the provider. Receives `{ order, transaction }`, where `transaction` is the authorization, and returns `{ transactionId, amount, currency?, offline?, raw? }`. Called by [`captureOrder`](/docs/development/module/functions/captureOrder).
+-   **`capture(context)`**: (Optional) Captures an authorized payment at the provider. Receives `{ order, transaction }`, where `transaction` is the authorization, and returns `{ transactionId, amount, currency?, offline?, raw? }`. Called by [`captureOrder`](/docs/development/module/functions/captureorder).
 
--   **`void(context)`**: (Optional) Releases an authorization that was never captured. Returns nothing. Called by [`cancelOrder`](/docs/development/module/functions/cancelOrder) when the order's payment status is flagged `isVoidable`. If it throws, the cancellation is rolled back.
+-   **`void(context)`**: (Optional) Releases an authorization that was never captured. Returns nothing. Called by [`cancelOrder`](/docs/development/module/functions/cancelorder) when the order's payment status is flagged `isVoidable`. If it throws, the cancellation is rolled back.
 
--   **`refund(context)`**: (Optional) Refunds a captured payment at the provider. Receives `{ order, transaction, amount, currency }`, where `transaction` is the capture, and returns the refund the provider made. Called by [`refundOrder`](/docs/development/module/functions/refundOrder).
+-   **`refund(context)`**: (Optional) Refunds a captured payment at the provider. Receives `{ order, transaction, amount, currency }`, where `transaction` is the capture, and returns the refund the provider made. Called by [`refundOrder`](/docs/development/module/functions/refundorder).
 
 Handlers only do the provider-specific step. Core validates the request, records the `payment_transaction`, moves the payment status and emits `order_refunded`. For this to work, the method must also register payment statuses named `<code>_captured`, `<code>_refunded` and `<code>_partial_refunded`, flagged `isCapturable`, `isRefundable` and `isVoidable` as needed. See [Supporting Capture, Void and Refund](/docs/development/knowledge-base/payment-method-development#supporting-capture-void-and-refund).
 
@@ -151,6 +152,6 @@ The full module, including its statuses and order-creation hooks, is in [Payment
 
 ## See Also
 
--   [getAvailablePaymentMethods](/docs/development/module/functions/getAvailablePaymentMethods) — List the methods available for a checkout
--   [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) and [recordRefund](/docs/development/module/functions/recordRefund) — The services that call the handlers
+-   [getAvailablePaymentMethods](/docs/development/module/functions/getavailablepaymentmethods) — List the methods available for a checkout
+-   [captureOrder](/docs/development/module/functions/captureorder), [refundOrder](/docs/development/module/functions/refundorder) and [recordRefund](/docs/development/module/functions/recordrefund) — The services that call the handlers
 -   [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — The full guide

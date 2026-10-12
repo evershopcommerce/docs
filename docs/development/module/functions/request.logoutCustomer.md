@@ -1,4 +1,5 @@
 ---
+slug: request.logoutcustomer
 sidebar_position: 39
 keywords:
 - logoutCustomer
@@ -67,6 +68,6 @@ export default async function logoutMiddleware(request, response) {
 
 ## See Also
 
-- [request.loginCustomerWithEmail](/docs/development/module/functions/request.loginCustomerWithEmail) - Login customer
-- [request.isCustomerLoggedIn](/docs/development/module/functions/request.isCustomerLoggedIn) - Check login status
-- [request.getCurrentCustomer](/docs/development/module/functions/request.getCurrentCustomer) - Get current customer
+- [request.loginCustomerWithEmail](/docs/development/module/functions/request.logincustomerwithemail) - Login customer
+- [request.isCustomerLoggedIn](/docs/development/module/functions/request.iscustomerloggedin) - Check login status
+- [request.getCurrentCustomer](/docs/development/module/functions/request.getcurrentcustomer) - Get current customer

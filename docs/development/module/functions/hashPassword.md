@@ -1,4 +1,5 @@
 ---
+slug: hashpassword
 sidebar_position: 104
 keywords:
 - hashPassword
@@ -113,5 +114,5 @@ export default function () {
 
 ## See Also
 
-- [request.loginCustomerWithEmail](/docs/development/module/functions/request.loginCustomerWithEmail) - Customer login
-- [updatePassword](/docs/development/module/functions/updatePassword) - Update customer password
+- [request.loginCustomerWithEmail](/docs/development/module/functions/request.logincustomerwithemail) - Customer login
+- [updatePassword](/docs/development/module/functions/updatepassword) - Update customer password

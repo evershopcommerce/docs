@@ -1,4 +1,5 @@
 ---
+slug: cartcontext
 sidebar_position: 33
 title: Cart Context
 description: React context for managing shopping cart state and operations.

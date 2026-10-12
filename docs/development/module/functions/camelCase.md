@@ -1,4 +1,5 @@
 ---
+slug: camelcase
 sidebar_position: 103
 keywords:
 - camelCase

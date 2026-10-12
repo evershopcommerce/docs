@@ -1,4 +1,5 @@
 ---
+slug: registeremailservice
 sidebar_position: 116
 keywords:
 - registerEmailService
@@ -68,5 +69,5 @@ export default () => {
 
 ## See Also
 
-- [sendEmail](/docs/development/module/functions/sendEmail) — Send an email
+- [sendEmail](/docs/development/module/functions/sendemail) — Send an email
 - [Email System](/docs/development/knowledge-base/email-system) — Full email system guide

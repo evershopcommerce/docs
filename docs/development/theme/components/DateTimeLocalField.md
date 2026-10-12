@@ -1,4 +1,5 @@
 ---
+slug: datetimelocalfield
 sidebar_position: 13
 title: DateTimeLocalField
 description: A date and time picker input field with validation.

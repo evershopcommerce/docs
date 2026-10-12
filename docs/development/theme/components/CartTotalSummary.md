@@ -1,4 +1,5 @@
 ---
+slug: carttotalsummary
 sidebar_position: 48
 title: CartTotalSummary
 description: A headless render props component that provides cart totals data for custom summary displays.

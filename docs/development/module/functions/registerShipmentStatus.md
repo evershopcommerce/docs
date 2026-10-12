@@ -1,4 +1,5 @@
 ---
+slug: registershipmentstatus
 sidebar_position: 111
 keywords:
 - registerShipmentStatus
@@ -79,7 +80,7 @@ They are no longer part of `ShipmentStatus`. The starting status is decided by `
 **`psoMapping`** (optional) — Extra `{paymentStatus}:{orderShipmentRollup}` → `orderStatus` entries merged into `oms.order.psoMapping`.
 
 :::caution The second segment is the rollup, not this status
-`psoMapping` keys match `order.shipment_status`, which holds an order-level **rollup** value (`pending`, `partially_shipped`, `shipped`, `partially_delivered`, `delivered`, `partially_canceled`, `canceled`) — never a per-shipment status code. A mapping written against your custom status id will never match. See [registerPSOStatusMapping](/docs/development/module/functions/registerPSOStatusMapping).
+`psoMapping` keys match `order.shipment_status`, which holds an order-level **rollup** value (`pending`, `partially_shipped`, `shipped`, `partially_delivered`, `delivered`, `partially_canceled`, `canceled`) — never a per-shipment status code. A mapping written against your custom status id will never match. See [registerPSOStatusMapping](/docs/development/module/functions/registerpsostatusmapping).
 :::
 
 ## Examples
@@ -138,8 +139,8 @@ The constant covers `in_transit`, `out_for_delivery`, `attempt_fail`, `available
 
 ## See Also
 
-- [registerPaymentStatus](/docs/development/module/functions/registerPaymentStatus)
-- [registerOrderStatus](/docs/development/module/functions/registerOrderStatus)
-- [registerPSOStatusMapping](/docs/development/module/functions/registerPSOStatusMapping)
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus)
+- [registerPaymentStatus](/docs/development/module/functions/registerpaymentstatus)
+- [registerOrderStatus](/docs/development/module/functions/registerorderstatus)
+- [registerPSOStatusMapping](/docs/development/module/functions/registerpsostatusmapping)
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus)
 - [Order Status Management](/docs/development/knowledge-base/order-status-management)

@@ -1,4 +1,5 @@
 ---
+slug: recordrefund
 sidebar_position: 140
 keywords:
   - recordRefund
@@ -16,7 +17,7 @@ description: Record a refund that already happened at the payment provider, set 
 
 Record a refund against an order. `recordRefund` never calls a payment provider: it writes down a refund that has already happened. It is the one place that saves refund transactions and emits the `order_refunded` event, so every payment method gets the same bookkeeping.
 
-[refundOrder](/docs/development/module/functions/refundOrder) calls it after an admin refund. Call it yourself from a webhook to record a refund that was made outside EverShop, such as one issued from the provider's dashboard.
+[refundOrder](/docs/development/module/functions/refundorder) calls it after an admin refund. Call it yourself from a webhook to record a refund that was made outside EverShop, such as one issued from the provider's dashboard.
 
 ## Import
 
@@ -161,6 +162,6 @@ await recordRefund(
 
 ## See Also
 
-- [refundOrder](/docs/development/module/functions/refundOrder) — Refund through the payment method's handler
-- [addPaymentTransaction](/docs/development/module/functions/addPaymentTransaction) — Record any other payment transaction
+- [refundOrder](/docs/development/module/functions/refundorder) — Refund through the payment method's handler
+- [addPaymentTransaction](/docs/development/module/functions/addpaymenttransaction) — Record any other payment transaction
 - [Events and Subscribers](/docs/development/knowledge-base/events-and-subscribers) — React to `order_refunded`

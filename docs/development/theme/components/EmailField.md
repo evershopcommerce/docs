@@ -1,4 +1,5 @@
 ---
+slug: emailfield
 sidebar_position: 8
 title: EmailField
 description: An email input field with automatic email validation.

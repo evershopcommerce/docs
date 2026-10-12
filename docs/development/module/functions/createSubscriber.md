@@ -1,4 +1,5 @@
 ---
+slug: createsubscriber
 sidebar_position: 105
 keywords:
 - createSubscriber

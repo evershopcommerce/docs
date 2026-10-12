@@ -410,6 +410,6 @@ const limit = getCollectionPageSize(); // 20
 - [Store Settings](/docs/development/knowledge-base/store-settings) — The settings model and the admin UI
 - [Checkout Settings](/docs/development/knowledge-base/checkout-settings) — Guest checkout and pricing behavior
 - [Multi-language](/docs/development/knowledge-base/multi-language) — How the locale list drives routing and translation
-- [getSetting](/docs/development/module/functions/getSetting) — Standalone page for the raw reader
-- [refreshSetting](/docs/development/module/functions/refreshSetting) — Standalone page for the cache refresh
-- [getConfig](/docs/development/module/functions/getConfig) — Reading `config/` values, which is a different thing
+- [getSetting](/docs/development/module/functions/getsetting) — Standalone page for the raw reader
+- [refreshSetting](/docs/development/module/functions/refreshsetting) — Standalone page for the cache refresh
+- [getConfig](/docs/development/module/functions/getconfig) — Reading `config/` values, which is a different thing

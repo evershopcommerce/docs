@@ -1,4 +1,5 @@
 ---
+slug: getorderstatuslist
 sidebar_position: 114
 keywords:
 - getOrderStatusList
@@ -91,7 +92,7 @@ const statuses = getPaymentStatusList();
 
 ## See Also
 
-- [registerPaymentStatus](/docs/development/module/functions/registerPaymentStatus)
-- [registerShipmentStatus](/docs/development/module/functions/registerShipmentStatus)
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus)
+- [registerPaymentStatus](/docs/development/module/functions/registerpaymentstatus)
+- [registerShipmentStatus](/docs/development/module/functions/registershipmentstatus)
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus)
 - [Order Status Management](/docs/development/knowledge-base/order-status-management)

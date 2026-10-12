@@ -1,4 +1,5 @@
 ---
+slug: createcoupon
 sidebar_position: 80
 keywords:
 - createCoupon
@@ -85,4 +86,4 @@ const coupon = await createCoupon({
 
 ## See Also
 
-- [cancelOrder](/docs/development/module/functions/cancelOrder) - Cancel an order
+- [cancelOrder](/docs/development/module/functions/cancelorder) - Cancel an order

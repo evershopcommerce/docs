@@ -1,4 +1,5 @@
 ---
+slug: coupon
 sidebar_position: 49
 title: Coupon
 description: A headless render props component for managing coupon application and removal.

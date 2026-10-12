@@ -1,4 +1,5 @@
 ---
+slug: refreshsetting
 sidebar_position: 118
 keywords:
   - refreshSetting
@@ -115,4 +116,4 @@ const storeEmail = await getStoreEmail(); // 'contact@myshop.com'
 
 ## See Also
 
-- [getSetting](/docs/development/module/functions/getSetting) — Get any setting by name
+- [getSetting](/docs/development/module/functions/getsetting) — Get any setting by name

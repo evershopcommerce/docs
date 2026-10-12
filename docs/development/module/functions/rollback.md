@@ -226,8 +226,8 @@ try {
 
 ## See Also
 
-- [startTransaction](/docs/development/module/functions/startTransaction) - Start a transaction
+- [startTransaction](/docs/development/module/functions/starttransaction) - Start a transaction
 - [commit](/docs/development/module/functions/commit) - Commit a transaction
-- [getConnection](/docs/development/module/functions/getConnection) - Get database connection
+- [getConnection](/docs/development/module/functions/getconnection) - Get database connection
 - [insert](/docs/development/module/functions/insert) - Insert records
 - [update](/docs/development/module/functions/update) - Update records

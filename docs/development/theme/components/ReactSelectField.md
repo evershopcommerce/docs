@@ -1,4 +1,5 @@
 ---
+slug: reactselectfield
 sidebar_position: 20
 title: ReactSelectField
 description: An enhanced select dropdown using react-select library with search, multi-select, and custom styling.

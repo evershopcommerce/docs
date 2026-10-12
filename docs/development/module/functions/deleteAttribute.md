@@ -1,4 +1,5 @@
 ---
+slug: deleteattribute
 sidebar_position: 58
 keywords:
 - deleteAttribute
@@ -75,5 +76,5 @@ try {
 
 ## See Also
 
-- [createAttribute](/docs/development/module/functions/createAttribute) - Create attribute
-- [updateAttribute](/docs/development/module/functions/updateAttribute) - Update attribute
+- [createAttribute](/docs/development/module/functions/createattribute) - Create attribute
+- [updateAttribute](/docs/development/module/functions/updateattribute) - Update attribute

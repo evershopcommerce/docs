@@ -1,4 +1,5 @@
 ---
+slug: addcartitem
 sidebar_position: 94
 groups:
 - checkout

@@ -1,4 +1,5 @@
 ---
+slug: pagination
 sidebar_position: 50
 title: Pagination
 description: A headless render props component for building paginated navigation with URL sync and page data fetching.

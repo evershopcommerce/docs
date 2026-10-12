@@ -1,4 +1,5 @@
 ---
+slug: request.iscustomerloggedin
 sidebar_position: 40
 keywords:
 - isCustomerLoggedIn
@@ -153,6 +154,6 @@ export default async function cartMiddleware(
 
 ## See Also
 
-- [request.loginCustomerWithEmail](/docs/development/module/functions/request.loginCustomerWithEmail) - Login customer
-- [request.logoutCustomer](/docs/development/module/functions/request.logoutCustomer) - Logout customer
-- [request.getCurrentCustomer](/docs/development/module/functions/request.getCurrentCustomer) - Get current customer
+- [request.loginCustomerWithEmail](/docs/development/module/functions/request.logincustomerwithemail) - Login customer
+- [request.logoutCustomer](/docs/development/module/functions/request.logoutcustomer) - Logout customer
+- [request.getCurrentCustomer](/docs/development/module/functions/request.getcurrentcustomer) - Get current customer

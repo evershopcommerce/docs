@@ -1,4 +1,5 @@
 ---
+slug: updatepaymentstatus
 sidebar_position: 88
 keywords:
 - updatePaymentStatus
@@ -58,7 +59,7 @@ Throws `Invalid status` when `status` is not a registered payment status.
 
 ## Notes
 
-- `updatePaymentStatus` only changes the status. It writes no payment transaction and emits no event. To capture or refund, use [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) or [recordRefund](/docs/development/module/functions/recordRefund), which call it for you.
+- `updatePaymentStatus` only changes the status. It writes no payment transaction and emits no event. To capture or refund, use [captureOrder](/docs/development/module/functions/captureorder), [refundOrder](/docs/development/module/functions/refundorder) or [recordRefund](/docs/development/module/functions/recordrefund), which call it for you.
 - It is hookable. React to a change with `hookAfter('changePaymentStatus', ...)`.
 
 ## Examples
@@ -73,5 +74,5 @@ await updatePaymentStatus(123, 'paid');
 
 ## See Also
 
-- [cancelOrder](/docs/development/module/functions/cancelOrder) - Cancel order
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus) - Update shipment status
+- [cancelOrder](/docs/development/module/functions/cancelorder) - Cancel order
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus) - Update shipment status

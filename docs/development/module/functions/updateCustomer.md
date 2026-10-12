@@ -1,4 +1,5 @@
 ---
+slug: updatecustomer
 sidebar_position: 75
 keywords:
 - updateCustomer
@@ -100,7 +101,7 @@ const customer = await updateCustomer(
 
 ## See Also
 
-- [createCustomer](/docs/development/module/functions/createCustomer) - Create customer
-- [deleteCustomer](/docs/development/module/functions/deleteCustomer) - Delete customer
-- [updatePassword](/docs/development/module/functions/updatePassword) - Change password
-- [getCustomersBaseQuery](/docs/development/module/functions/getCustomersBaseQuery) - Query customers
+- [createCustomer](/docs/development/module/functions/createcustomer) - Create customer
+- [deleteCustomer](/docs/development/module/functions/deletecustomer) - Delete customer
+- [updatePassword](/docs/development/module/functions/updatepassword) - Change password
+- [getCustomersBaseQuery](/docs/development/module/functions/getcustomersbasequery) - Query customers

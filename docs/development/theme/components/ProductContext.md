@@ -1,4 +1,5 @@
 ---
+slug: productcontext
 sidebar_position: 40
 title: ProductContext
 description: Context for accessing product page data including variants, pricing, and inventory.

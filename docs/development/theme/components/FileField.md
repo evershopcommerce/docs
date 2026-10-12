@@ -1,4 +1,5 @@
 ---
+slug: filefield
 sidebar_position: 23
 title: FileField
 description: A file upload input field with size validation and multiple file support.

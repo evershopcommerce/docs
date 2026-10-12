@@ -1,4 +1,5 @@
 ---
+slug: updatepage
 sidebar_position: 121
 keywords:
 - updatePage
@@ -57,4 +58,4 @@ await updatePage('a1b2c3d4-e5f6-7890-abcd-ef1234567890', {
 
 ## See Also
 
-- [createPage](/docs/development/module/functions/createPage) — Create a CMS page
+- [createPage](/docs/development/module/functions/createpage) — Create a CMS page

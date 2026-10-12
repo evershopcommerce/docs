@@ -1,4 +1,5 @@
 ---
+slug: savecart
 sidebar_position: 64
 keywords:
 - saveCart
@@ -68,5 +69,5 @@ await saveCart(cart);
 
 ## See Also
 
-- [getMyCart](/docs/development/module/functions/getMyCart) - Get cart
-- [createNewCart](/docs/development/module/functions/createNewCart) - Create cart
+- [getMyCart](/docs/development/module/functions/getmycart) - Get cart
+- [createNewCart](/docs/development/module/functions/createnewcart) - Create cart

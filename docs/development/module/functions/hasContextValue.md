@@ -1,4 +1,5 @@
 ---
+slug: hascontextvalue
 sidebar_position: 86
 keywords:
 - hasContextValue
@@ -133,6 +134,6 @@ export default {
 
 ## See Also
 
-- [getContextValue](/docs/development/module/functions/getContextValue) - Get context value
-- [setContextValue](/docs/development/module/functions/setContextValue) - Set context value
-- [getContext](/docs/development/module/functions/getContext) - Get all context
+- [getContextValue](/docs/development/module/functions/getcontextvalue) - Get context value
+- [setContextValue](/docs/development/module/functions/setcontextvalue) - Set context value
+- [getContext](/docs/development/module/functions/getcontext) - Get all context

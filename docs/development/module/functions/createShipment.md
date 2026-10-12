@@ -1,4 +1,5 @@
 ---
+slug: createshipment
 sidebar_position: 82
 keywords:
 - createShipment
@@ -260,6 +261,6 @@ If the transaction fails after a label was purchased, `createShipment` makes a b
 
 ## See Also
 
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus) - Advance a single shipment's status
-- [registerShipmentStatus](/docs/development/module/functions/registerShipmentStatus) - Register a custom per-shipment status
-- [cancelOrder](/docs/development/module/functions/cancelOrder) - Cancel an order
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus) - Advance a single shipment's status
+- [registerShipmentStatus](/docs/development/module/functions/registershipmentstatus) - Register a custom per-shipment status
+- [cancelOrder](/docs/development/module/functions/cancelorder) - Cancel an order

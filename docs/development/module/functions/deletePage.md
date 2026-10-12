@@ -1,4 +1,5 @@
 ---
+slug: deletepage
 sidebar_position: 122
 keywords:
 - deletePage
@@ -43,5 +44,5 @@ await deletePage('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
 
 ## See Also
 
-- [createPage](/docs/development/module/functions/createPage) — Create a CMS page
-- [updatePage](/docs/development/module/functions/updatePage) — Update a CMS page
+- [createPage](/docs/development/module/functions/createpage) — Create a CMS page
+- [updatePage](/docs/development/module/functions/updatepage) — Update a CMS page

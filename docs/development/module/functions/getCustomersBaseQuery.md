@@ -1,4 +1,5 @@
 ---
+slug: getcustomersbasequery
 sidebar_position: 73
 keywords:
 - getCustomersBaseQuery
@@ -45,5 +46,5 @@ const customers = await query.execute(pool);
 ## See Also
 
 - [select](/docs/development/module/functions/select) - Query builder
-- [createCustomer](/docs/development/module/functions/createCustomer) - Create customer
-- [updateCustomer](/docs/development/module/functions/updateCustomer) - Update customer
+- [createCustomer](/docs/development/module/functions/createcustomer) - Create customer
+- [updateCustomer](/docs/development/module/functions/updatecustomer) - Update customer

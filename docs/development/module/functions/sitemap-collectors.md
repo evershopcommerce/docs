@@ -444,5 +444,5 @@ console.log(result.generated, result.urlCount, result.files.length);
 ## See Also
 
 - [Sitemap](/docs/development/knowledge-base/sitemap) — The full sitemap guide (config keys, storage, cron, robots.txt)
-- [addProcessor](/docs/development/module/functions/addProcessor) — The registry primitive `registerSitemapCollector` is built on
+- [addProcessor](/docs/development/module/functions/addprocessor) — The registry primitive `registerSitemapCollector` is built on
 - [Settings Getters](/docs/development/module/functions/settings-getters) — `getEnabledLanguages` / `getStoreLanguage`, where the locale expansion gets its list

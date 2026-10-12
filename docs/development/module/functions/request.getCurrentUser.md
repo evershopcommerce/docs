@@ -1,4 +1,5 @@
 ---
+slug: request.getcurrentuser
 sidebar_position: 37
 keywords:
 - getCurrentUser
@@ -112,6 +113,6 @@ export default async function auditMiddleware(request, response, next) {
 
 ## See Also
 
-- [request.loginUserWithEmail](/docs/development/module/functions/request.loginUserWithEmail) - Login admin user
-- [request.logoutUser](/docs/development/module/functions/request.logoutUser) - Logout admin user
-- [request.isUserLoggedIn](/docs/development/module/functions/request.isUserLoggedIn) - Check login status
+- [request.loginUserWithEmail](/docs/development/module/functions/request.loginuserwithemail) - Login admin user
+- [request.logoutUser](/docs/development/module/functions/request.logoutuser) - Logout admin user
+- [request.isUserLoggedIn](/docs/development/module/functions/request.isuserloggedin) - Check login status

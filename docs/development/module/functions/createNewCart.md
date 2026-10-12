@@ -1,4 +1,5 @@
 ---
+slug: createnewcart
 sidebar_position: 61
 keywords:
 - createNewCart
@@ -105,5 +106,5 @@ export default async function ensureCart(
 
 ## See Also
 
-- [getMyCart](/docs/development/module/functions/getMyCart) - Get existing cart
-- [saveCart](/docs/development/module/functions/saveCart) - Save cart
+- [getMyCart](/docs/development/module/functions/getmycart) - Get existing cart
+- [saveCart](/docs/development/module/functions/savecart) - Save cart

@@ -1,4 +1,5 @@
 ---
+slug: staticimage
 sidebar_position: 28
 title: StaticImage
 description: A wrapper component for rendering static images from the theme or public assets folder.

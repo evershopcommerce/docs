@@ -287,4 +287,4 @@ const products2 = await select().from('product').execute(connection);
 - [update](/docs/development/module/functions/update) - Update records
 - [del](/docs/development/module/functions/del) - Delete records
 - [pool](/docs/development/module/functions/pool) - Database connection pool
-- [getConnection](/docs/development/module/functions/getConnection) - Get database connection
+- [getConnection](/docs/development/module/functions/getconnection) - Get database connection

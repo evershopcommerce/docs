@@ -1,4 +1,5 @@
 ---
+slug: setcontextvalue
 sidebar_position: 84
 keywords:
 - setContextValue
@@ -156,6 +157,6 @@ setContextValue(app, 'apiKey', 'key123');
 
 ## See Also
 
-- [getContextValue](/docs/development/module/functions/getContextValue) - Get context value
-- [getContext](/docs/development/module/functions/getContext) - Get all context
-- [hasContextValue](/docs/development/module/functions/hasContextValue) - Check if key exists
+- [getContextValue](/docs/development/module/functions/getcontextvalue) - Get context value
+- [getContext](/docs/development/module/functions/getcontext) - Get all context
+- [hasContextValue](/docs/development/module/functions/hascontextvalue) - Check if key exists

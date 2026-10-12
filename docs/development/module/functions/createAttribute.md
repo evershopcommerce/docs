@@ -1,4 +1,5 @@
 ---
+slug: createattribute
 sidebar_position: 56
 keywords:
 - createAttribute
@@ -96,5 +97,5 @@ const attribute = await createAttribute({
 
 ## See Also
 
-- [updateAttribute](/docs/development/module/functions/updateAttribute) - Update attribute
-- [deleteAttribute](/docs/development/module/functions/deleteAttribute) - Delete attribute
+- [updateAttribute](/docs/development/module/functions/updateattribute) - Update attribute
+- [deleteAttribute](/docs/development/module/functions/deleteattribute) - Delete attribute

@@ -1,4 +1,5 @@
 ---
+slug: createcategory
 sidebar_position: 50
 keywords:
 - createCategory
@@ -84,6 +85,6 @@ const subcategory = await createCategory({
 
 ## See Also
 
-- [updateCategory](/docs/development/module/functions/updateCategory) - Update category
-- [deleteCategory](/docs/development/module/functions/deleteCategory) - Delete category
-- [getCategoriesBaseQuery](/docs/development/module/functions/getCategoriesBaseQuery) - Query categories
+- [updateCategory](/docs/development/module/functions/updatecategory) - Update category
+- [deleteCategory](/docs/development/module/functions/deletecategory) - Delete category
+- [getCategoriesBaseQuery](/docs/development/module/functions/getcategoriesbasequery) - Query categories

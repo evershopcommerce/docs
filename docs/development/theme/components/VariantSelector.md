@@ -1,4 +1,5 @@
 ---
+slug: variantselector
 sidebar_position: 46
 title: VariantSelector
 description: A component for selecting product variants with availability detection and custom rendering.

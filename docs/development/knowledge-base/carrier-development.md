@@ -270,7 +270,7 @@ export interface CarrierAddress {
 }
 ```
 
-See [toIntegrationAddress](../module/functions/toIntegrationAddress) for the mapping rules.
+See [toIntegrationAddress](../module/functions/tointegrationaddress) for the mapping rules.
 
 Note there is **no `shipmentId`** on the input. `createLabel` is called *before* the shipment row is inserted — the network call happens outside the transaction so a failed insert can void the label cleanly. Correlate via `orderNumber` / `orderId`.
 

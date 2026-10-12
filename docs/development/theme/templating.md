@@ -92,7 +92,7 @@ node_modules/@evershop/evershop/dist/components/
 :::
 
 :::caution Removed in the address-format release
-`common/locale/` (`CountryOption`, `ProvinceOption`, `TimezoneOption`, `CurrencyOption`, `LanguageOption`) no longer exists; the language list moved to `@evershop/evershop/lib/locale/languages`. A theme that overrides `frontStore/customer/address/addressForm/Index.js` or the deleted `AddressForm`, `NameAndTelephone`, `ProvinceAndPostcode`, `AddressSummary.jsx` files renders the old field names and fails at submit — rebuild it over `AddressRendererProps` (see [Address Form](./components/AddressForm)).
+`common/locale/` (`CountryOption`, `ProvinceOption`, `TimezoneOption`, `CurrencyOption`, `LanguageOption`) no longer exists; the language list moved to `@evershop/evershop/lib/locale/languages`. A theme that overrides `frontStore/customer/address/addressForm/Index.js` or the deleted `AddressForm`, `NameAndTelephone`, `ProvinceAndPostcode`, `AddressSummary.jsx` files renders the old field names and fails at submit — rebuild it over `AddressRendererProps` (see [Address Form](./components/addressform)).
 :::
 
 ## The `@components` Aliases

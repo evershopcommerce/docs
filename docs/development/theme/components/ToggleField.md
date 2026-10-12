@@ -1,4 +1,5 @@
 ---
+slug: togglefield
 sidebar_position: 19
 title: ToggleField
 description: A toggle switch input field for boolean or binary values.

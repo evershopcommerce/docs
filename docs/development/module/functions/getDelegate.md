@@ -1,4 +1,5 @@
 ---
+slug: getdelegate
 sidebar_position: 101
 keywords:
 - getDelegate
@@ -72,5 +73,5 @@ If you need to call `response.json()` / `.send()` / `.redirect()`, declare the t
 
 ## See Also
 
-- [setDelegate](/docs/development/module/functions/setDelegate) - Store a delegate value
-- [hasDelegate](/docs/development/module/functions/hasDelegate) - Check if a delegate exists
+- [setDelegate](/docs/development/module/functions/setdelegate) - Store a delegate value
+- [hasDelegate](/docs/development/module/functions/hasdelegate) - Check if a delegate exists

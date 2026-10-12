@@ -1,4 +1,5 @@
 ---
+slug: addresssummary
 sidebar_position: 53
 title: Address Summary
 description: Prints a saved address from its server-formatted lines.
@@ -63,5 +64,5 @@ Do not reach for `address.addressLine1` or `address.locality.name` to rebuild th
 
 ## Related
 
-- [Address Form](./AddressForm) — collecting the address
-- [formatAddress](../../module/functions/formatAddress) — how the lines are produced
+- [Address Form](./addressform) — collecting the address
+- [formatAddress](../../module/functions/formataddress) — how the lines are produced

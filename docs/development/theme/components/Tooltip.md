@@ -1,4 +1,5 @@
 ---
+slug: tooltip
 sidebar_position: 25
 title: Tooltip
 description: A tooltip component for displaying helpful information on hover or focus.

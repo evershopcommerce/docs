@@ -1,4 +1,5 @@
 ---
+slug: updateshipmentstatus
 sidebar_position: 89
 keywords:
 - updateShipmentStatus
@@ -151,6 +152,6 @@ After the shipment row is written, `recomputeOrderShipmentStatus()` recalculates
 
 ## See Also
 
-- [createShipment](/docs/development/module/functions/createShipment) - Create a shipment
-- [registerShipmentStatus](/docs/development/module/functions/registerShipmentStatus) - Register a custom shipment status
-- [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) - Update payment status
+- [createShipment](/docs/development/module/functions/createshipment) - Create a shipment
+- [registerShipmentStatus](/docs/development/module/functions/registershipmentstatus) - Register a custom shipment status
+- [updatePaymentStatus](/docs/development/module/functions/updatepaymentstatus) - Update payment status

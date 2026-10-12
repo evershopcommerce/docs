@@ -1,4 +1,5 @@
 ---
+slug: hookbefore
 sidebar_position: 5
 keywords:
 - hookBefore
@@ -101,4 +102,4 @@ export default function bootstrap() {
 ## See Also
 
 - [hookable](/docs/development/module/functions/hookable) - Make functions hookable
-- [hookAfter](/docs/development/module/functions/hookAfter) - Hook after function execution
+- [hookAfter](/docs/development/module/functions/hookafter) - Hook after function execution

@@ -1,4 +1,5 @@
 ---
+slug: removejob
 sidebar_position: 23
 keywords:
 - removeJob
@@ -79,5 +80,5 @@ export default function bootstrap() {
 
 ## See Also
 
-- [registerJob](/docs/development/module/functions/registerJob) - Register a new job
-- [updateJobSchedule](/docs/development/module/functions/updateJobSchedule) - Update job schedule
+- [registerJob](/docs/development/module/functions/registerjob) - Register a new job
+- [updateJobSchedule](/docs/development/module/functions/updatejobschedule) - Update job schedule

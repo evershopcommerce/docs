@@ -1,4 +1,5 @@
 ---
+slug: getalljobs
 sidebar_position: 120
 keywords:
 - getAllJobs
@@ -77,7 +78,7 @@ if (hasJob('sync-inventory')) {
 
 ## See Also
 
-- [registerJob](/docs/development/module/functions/registerJob) — Register a cron job
-- [removeJob](/docs/development/module/functions/removeJob) — Remove a cron job
-- [updateJobSchedule](/docs/development/module/functions/updateJobSchedule) — Update schedule
+- [registerJob](/docs/development/module/functions/registerjob) — Register a cron job
+- [removeJob](/docs/development/module/functions/removejob) — Remove a cron job
+- [updateJobSchedule](/docs/development/module/functions/updatejobschedule) — Update schedule
 - [Cron Jobs](/docs/development/knowledge-base/cron-jobs) — Full cron job guide

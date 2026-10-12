@@ -1,4 +1,5 @@
 ---
+slug: getavailablepaymentmethods
 sidebar_position: 63
 keywords:
 - getAvailablePaymentMethods
@@ -72,5 +73,5 @@ methods.forEach(method => {
 
 ## See Also
 
-- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod) - Register payment methods
-- [createOrder](/docs/development/module/functions/createOrder) - Create orders
+- [registerPaymentMethod](/docs/development/module/functions/registerpaymentmethod) - Register payment methods
+- [createOrder](/docs/development/module/functions/createorder) - Create orders

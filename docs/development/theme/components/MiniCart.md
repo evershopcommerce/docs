@@ -1,4 +1,5 @@
 ---
+slug: minicart
 sidebar_position: 38
 title: MiniCart
 description: A floating cart widget with icon and dropdown for quick cart access.

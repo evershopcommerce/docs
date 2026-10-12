@@ -1,4 +1,5 @@
 ---
+slug: patchaddressformat
 sidebar_position: 83
 keywords:
 - patchAddressFormat
@@ -87,11 +88,11 @@ patchAddressFormat('DE', { require: 'ACZO' });
 
 - Patches stack: several extensions may patch the same country; later registrations win field by field.
 - Labels follow the `*_name_type` values and are translated by core (`ward` → "Ward" / "Phường"); a patch ships no translation file.
-- A new `%D` or `%S` token is a free-text field until a region provider enumerates that level — see [registerRegionProvider](/docs/development/module/functions/registerRegionProvider).
+- A new `%D` or `%S` token is a free-text field until a region provider enumerates that level — see [registerRegionProvider](/docs/development/module/functions/registerregionprovider).
 - Resolution is cached per `(country, locale)` and invalidated by every registry change, so the patch is visible immediately after bootstrap.
 
 ## See Also
 
-- [registerRegionProvider](/docs/development/module/functions/registerRegionProvider) - Enumerate the levels the layout collects
-- [resolveAddressSchema](/docs/development/module/functions/resolveAddressSchema) - The schema derived from the record
+- [registerRegionProvider](/docs/development/module/functions/registerregionprovider) - Enumerate the levels the layout collects
+- [resolveAddressSchema](/docs/development/module/functions/resolveaddressschema) - The schema derived from the record
 - [Address formats](/docs/development/knowledge-base/address-formats) - Records, tokens and the bundled data

@@ -1,4 +1,5 @@
 ---
+slug: request.logoutuser
 sidebar_position: 35
 keywords:
 - logoutUser
@@ -66,6 +67,6 @@ export default async function logoutMiddleware(request, response) {
 
 ## See Also
 
-- [request.loginUserWithEmail](/docs/development/module/functions/request.loginUserWithEmail) - Login admin user
-- [request.isUserLoggedIn](/docs/development/module/functions/request.isUserLoggedIn) - Check login status
-- [request.getCurrentUser](/docs/development/module/functions/request.getCurrentUser) - Get current user
+- [request.loginUserWithEmail](/docs/development/module/functions/request.loginuserwithemail) - Login admin user
+- [request.isUserLoggedIn](/docs/development/module/functions/request.isuserloggedin) - Check login status
+- [request.getCurrentUser](/docs/development/module/functions/request.getcurrentuser) - Get current user

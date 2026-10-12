@@ -1,4 +1,5 @@
 ---
+slug: resolveaddressschema
 sidebar_position: 86
 keywords:
 - resolveAddressSchema
@@ -98,6 +99,6 @@ The storefront form and the server validation both read the processed schema, so
 
 ## See Also
 
-- [validateAddress](/docs/development/module/functions/validateAddress) - Validate a row against the schema
-- [formatAddress](/docs/development/module/functions/formatAddress) - Print lines with the same layout
+- [validateAddress](/docs/development/module/functions/validateaddress) - Validate a row against the schema
+- [formatAddress](/docs/development/module/functions/formataddress) - Print lines with the same layout
 - [Address formats](/docs/development/knowledge-base/address-formats#resolution) - The resolution pipeline

@@ -1,4 +1,5 @@
 ---
+slug: request.logincustomerwithemail
 sidebar_position: 38
 keywords:
 - loginCustomerWithEmail
@@ -238,6 +239,6 @@ try {
 
 ## See Also
 
-- [request.logoutCustomer](/docs/development/module/functions/request.logoutCustomer) - Logout customer
-- [request.isCustomerLoggedIn](/docs/development/module/functions/request.isCustomerLoggedIn) - Check login status
-- [request.getCurrentCustomer](/docs/development/module/functions/request.getCurrentCustomer) - Get current customer
+- [request.logoutCustomer](/docs/development/module/functions/request.logoutcustomer) - Logout customer
+- [request.isCustomerLoggedIn](/docs/development/module/functions/request.iscustomerloggedin) - Check login status
+- [request.getCurrentCustomer](/docs/development/module/functions/request.getcurrentcustomer) - Get current customer

@@ -1,4 +1,5 @@
 ---
+slug: getenv
 sidebar_position: 3
 keywords:
 - getEnv
@@ -157,5 +158,5 @@ STRIPE_PUBLIC_KEY=pk_test_xxxxx
 
 ## See Also
 
-- [getConfig](/docs/development/module/functions/getConfig) - Read configuration values
+- [getConfig](/docs/development/module/functions/getconfig) - Read configuration values
 - [Configuration Guide](../../knowledge-base/configuration-guide.md) - Comprehensive guide on application configuration

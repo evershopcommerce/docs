@@ -1,4 +1,5 @@
 ---
+slug: updatepassword
 sidebar_position: 77
 keywords:
 - updatePassword
@@ -70,5 +71,5 @@ Supports hooks via registry:
 
 ## See Also
 
-- [createCustomer](/docs/development/module/functions/createCustomer) - Create customer
-- [updateCustomer](/docs/development/module/functions/updateCustomer) - Update profile
+- [createCustomer](/docs/development/module/functions/createcustomer) - Create customer
+- [updateCustomer](/docs/development/module/functions/updatecustomer) - Update profile

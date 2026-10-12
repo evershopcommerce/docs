@@ -1,4 +1,5 @@
 ---
+slug: categorycontext
 sidebar_position: 39
 title: CategoryContext
 description: Context for accessing category page data including products, filters, and metadata.

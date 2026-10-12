@@ -1,4 +1,5 @@
 ---
+slug: addfinalprocessor
 sidebar_position: 8
 keywords:
 - addFinalProcessor
@@ -61,7 +62,7 @@ export default function () {
 
 :::tip Registering an email service
 To replace the email service, use
-[`registerEmailService`](/docs/development/module/functions/registerEmailService) rather
+[`registerEmailService`](/docs/development/module/functions/registeremailservice) rather
 than a final processor on `emailService`. The registry validates that key against the
 `EmailService` interface, which requires a **`sendEmail(args)`** method — a value exposing
 `send(to, subject, html)` is rejected, and the next `sendEmail()` call throws
@@ -94,5 +95,5 @@ export default function () {
 
 ## See Also
 
-- [addProcessor](/docs/development/module/functions/addProcessor) - Register a regular processor
-- [getValue](/docs/development/module/functions/getValue) - Retrieve processed values
+- [addProcessor](/docs/development/module/functions/addprocessor) - Register a regular processor
+- [getValue](/docs/development/module/functions/getvalue) - Retrieve processed values

@@ -33,7 +33,7 @@ const product = await select()
 Query builders come from `@evershop/evershop/lib/postgres/query` — EverShop's first-party typed wrapper around `@evershop/postgres-query-builder`, adding column types for every known EverShop table. The raw package is still available as an untyped lower-level fallback. The `pool` itself always comes from `@evershop/evershop/lib/postgres`.
 :::
 
-The pool never needs releasing: the query builder's auto-release is a no-op on a `Pool`. Use it for reads and single statements, and reserve [`getConnection()`](/docs/development/module/functions/getConnection) for transactions.
+The pool never needs releasing: the query builder's auto-release is a no-op on a `Pool`. Use it for reads and single statements, and reserve [`getConnection()`](/docs/development/module/functions/getconnection) for transactions.
 
 ## Type
 
@@ -61,5 +61,5 @@ The pool is configured using environment variables or configuration file:
 
 ## See Also
 
-- [getConnection](/docs/development/module/functions/getConnection) - Get a dedicated database connection
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration values
+- [getConnection](/docs/development/module/functions/getconnection) - Get a dedicated database connection
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration values

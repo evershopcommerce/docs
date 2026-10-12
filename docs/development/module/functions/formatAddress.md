@@ -1,4 +1,5 @@
 ---
+slug: formataddress
 sidebar_position: 87
 keywords:
 - formatAddress
@@ -89,6 +90,6 @@ const lines = await formatAddressRow(orderAddressRow, 'vi');
 
 ## See Also
 
-- [resolveAddressSchema](/docs/development/module/functions/resolveAddressSchema) - Where `format` comes from
-- [toIntegrationAddress](/docs/development/module/functions/toIntegrationAddress) - Field-by-field mapping for payment and carrier APIs
+- [resolveAddressSchema](/docs/development/module/functions/resolveaddressschema) - Where `format` comes from
+- [toIntegrationAddress](/docs/development/module/functions/tointegrationaddress) - Field-by-field mapping for payment and carrier APIs
 - [Address formats](/docs/development/knowledge-base/address-formats#formatting-and-display) - Display rules

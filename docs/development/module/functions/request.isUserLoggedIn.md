@@ -1,4 +1,5 @@
 ---
+slug: request.isuserloggedin
 sidebar_position: 36
 keywords:
 - isUserLoggedIn
@@ -53,6 +54,6 @@ export default async function protectedMiddleware(request, response, next) {
 
 ## See Also
 
-- [request.loginUserWithEmail](/docs/development/module/functions/request.loginUserWithEmail) - Login admin user
-- [request.logoutUser](/docs/development/module/functions/request.logoutUser) - Logout admin user
-- [request.getCurrentUser](/docs/development/module/functions/request.getCurrentUser) - Get current user
+- [request.loginUserWithEmail](/docs/development/module/functions/request.loginuserwithemail) - Login admin user
+- [request.logoutUser](/docs/development/module/functions/request.logoutuser) - Logout admin user
+- [request.getCurrentUser](/docs/development/module/functions/request.getcurrentuser) - Get current user

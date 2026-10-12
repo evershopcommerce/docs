@@ -1,4 +1,5 @@
 ---
+slug: itemquantity
 sidebar_position: 37
 title: ItemQuantity
 description: A headless render props component and hook for managing cart item quantities with debouncing and validation.

@@ -1,4 +1,5 @@
 ---
+slug: getcartbyuuid
 sidebar_position: 62
 keywords:
 - getCartByUUID
@@ -52,5 +53,5 @@ console.log(`Cart has ${cart.getItems().length} items`);
 
 ## See Also
 
-- [getMyCart](/docs/development/module/functions/getMyCart) - Get cart by session
-- [createNewCart](/docs/development/module/functions/createNewCart) - Create new cart
+- [getMyCart](/docs/development/module/functions/getmycart) - Get cart by session
+- [createNewCart](/docs/development/module/functions/createnewcart) - Create new cart

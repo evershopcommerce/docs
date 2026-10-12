@@ -1,4 +1,5 @@
 ---
+slug: selectfield
 sidebar_position: 16
 title: SelectField
 description: A dropdown select field for choosing one option.
@@ -183,7 +184,7 @@ function WarehouseForm({ countries }) {
 ```
 
 :::info Customer addresses do not hand-roll this
-The storefront address form renders its country and region selects from the country's address schema, with options from `countries(scope:)` and `regions(country, parentPath)`. Override the renderer map instead of rebuilding the form — see [Address Form](./AddressForm).
+The storefront address form renders its country and region selects from the country's address schema, with options from `countries(scope:)` and `regions(country, parentPath)`. Override the renderer map instead of rebuilding the form — see [Address Form](./addressform).
 :::
 
 ## Example: With Disabled Options

@@ -1,4 +1,5 @@
 ---
+slug: browfiles
 sidebar_position: 69
 keywords:
 - browFiles
@@ -68,6 +69,6 @@ So the same call browses the local media directory on one deployment and an S3 b
 
 ## See Also
 
-- [createFolder](/docs/development/module/functions/createFolder) - Create folder
-- [uploadFile](/docs/development/module/functions/uploadFile) - Upload files
-- [deleteFile](/docs/development/module/functions/deleteFile) - Delete files
+- [createFolder](/docs/development/module/functions/createfolder) - Create folder
+- [uploadFile](/docs/development/module/functions/uploadfile) - Upload files
+- [deleteFile](/docs/development/module/functions/deletefile) - Delete files

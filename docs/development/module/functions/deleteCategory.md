@@ -1,4 +1,5 @@
 ---
+slug: deletecategory
 sidebar_position: 52
 keywords:
 - deleteCategory
@@ -73,5 +74,5 @@ try {
 
 ## See Also
 
-- [createCategory](/docs/development/module/functions/createCategory) - Create category
-- [updateCategory](/docs/development/module/functions/updateCategory) - Update category
+- [createCategory](/docs/development/module/functions/createcategory) - Create category
+- [updateCategory](/docs/development/module/functions/updatecategory) - Update category

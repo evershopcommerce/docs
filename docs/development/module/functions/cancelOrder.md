@@ -1,4 +1,5 @@
 ---
+slug: cancelorder
 sidebar_position: 87
 keywords:
 - cancelOrder
@@ -57,7 +58,7 @@ Everything runs in one database transaction, in this order:
 6. Returns the stock of the canceled items.
 7. Emits `order_canceled` with `{ orderId, reason }`. The customer receives the cancellation email, which can be switched off with `system.notification_emails.order_canceled.enabled`.
 
-`cancelOrder` does not refund money that was already captured. A captured order is not cancelable: refund it first with [refundOrder](/docs/development/module/functions/refundOrder).
+`cancelOrder` does not refund money that was already captured. A captured order is not cancelable: refund it first with [refundOrder](/docs/development/module/functions/refundorder).
 
 ## Errors
 
@@ -80,7 +81,7 @@ await cancelOrder('order-uuid-123', 'Customer requested cancellation');
 
 ## See Also
 
-- [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) - Update payment status
-- [refundOrder](/docs/development/module/functions/refundOrder) - Refund a captured payment
+- [updatePaymentStatus](/docs/development/module/functions/updatepaymentstatus) - Update payment status
+- [refundOrder](/docs/development/module/functions/refundorder) - Refund a captured payment
 - [Order API: Cancel An Order](/docs/api/order#cancel-an-order) - The REST endpoint
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus) - Update shipment status
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus) - Update shipment status

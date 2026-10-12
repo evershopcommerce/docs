@@ -1,4 +1,5 @@
 ---
+slug: useappstate
 sidebar_position: 2
 title: useAppState
 description: A React hook that provides access to the global application state.

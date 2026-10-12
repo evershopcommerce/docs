@@ -1,4 +1,5 @@
 ---
+slug: loadorderbyid
 sidebar_position: 125
 keywords:
 - loadOrderById
@@ -63,5 +64,5 @@ if (order) {
 
 ## See Also
 
-- [cancelOrder](/docs/development/module/functions/cancelOrder) — Cancel an order
-- [createShipment](/docs/development/module/functions/createShipment) — Create a shipment
+- [cancelOrder](/docs/development/module/functions/cancelorder) — Cancel an order
+- [createShipment](/docs/development/module/functions/createshipment) — Create a shipment

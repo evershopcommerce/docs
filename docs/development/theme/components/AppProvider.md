@@ -1,4 +1,5 @@
 ---
+slug: appprovider
 sidebar_position: 1
 title: AppProvider
 description: A React context provider that manages global application state.

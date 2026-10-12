@@ -1,4 +1,5 @@
 ---
+slug: request.loginuserwithemail
 sidebar_position: 34
 keywords:
 - loginUserWithEmail
@@ -111,6 +112,6 @@ try {
 
 ## See Also
 
-- [request.logoutUser](/docs/development/module/functions/request.logoutUser) - Logout admin user
-- [request.isUserLoggedIn](/docs/development/module/functions/request.isUserLoggedIn) - Check login status
-- [request.getCurrentUser](/docs/development/module/functions/request.getCurrentUser) - Get current user
+- [request.logoutUser](/docs/development/module/functions/request.logoutuser) - Logout admin user
+- [request.isUserLoggedIn](/docs/development/module/functions/request.isuserloggedin) - Check login status
+- [request.getCurrentUser](/docs/development/module/functions/request.getcurrentuser) - Get current user

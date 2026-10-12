@@ -1,4 +1,5 @@
 ---
+slug: productnothumbnail
 sidebar_position: 30
 title: ProductNoThumbnail
 description: A placeholder SVG icon displayed when a product has no thumbnail image.

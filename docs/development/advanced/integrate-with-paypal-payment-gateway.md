@@ -366,5 +366,5 @@ Both processors receive context as `this` (the order, its items, and — for `fi
 
 - [Payment Gateway REST API](/docs/api/payment-gateway) — the endpoint reference for everything above.
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — the registration contract for building your own gateway.
-- [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) and [recordRefund](/docs/development/module/functions/recordRefund) — the core services behind capture and refund.
+- [captureOrder](/docs/development/module/functions/captureorder), [refundOrder](/docs/development/module/functions/refundorder) and [recordRefund](/docs/development/module/functions/recordrefund) — the core services behind capture and refund.
 - [Integrating Stripe Payment Gateway](/docs/development/advanced/integrate-with-stripe-payment-gateway) — the embedded-form counterpart to this redirect flow.
