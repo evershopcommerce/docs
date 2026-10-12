@@ -7,7 +7,7 @@ keywords:
   - Template Overriding
 sidebar_label: Templating
 title: Templating
-description: A comprehensive guide on customizing EverShop's default templates using React components. Learn how to override existing components or add new ones to create a unique store appearance.
+description: "Customize EverShop's storefront templates with React: override default components, add new ones with @components aliases, and make your theme translatable."
 ---
 
 # Templating

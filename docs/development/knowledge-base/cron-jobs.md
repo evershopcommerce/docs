@@ -6,7 +6,7 @@ keywords:
   - scheduling tasks
 sidebar_label: Cron Jobs
 title: Cron Jobs
-description: EverShop provides a powerful cron job system that allows you to schedule tasks to run at specific intervals.
+description: "Schedule recurring tasks in EverShop with cron jobs: create a job, set its schedule, use the bootstrap context, and change or remove built-in jobs."
 ---
 
 ![Cron Jobs In EverShop](./img/cron-jobs-evershop.webp "Cron Jobs In EverShop")

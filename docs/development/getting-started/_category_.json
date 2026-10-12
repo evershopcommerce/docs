@@ -7,6 +7,6 @@
     "type": "generated-index",
     "slug": "development/getting-started",
     "title": "Getting Started Documentation",
-    "description": "Learn how to install EverShop and get started with the basics of the platform."
+    "description": "Get started with EverShop, the open-source Node.js ecommerce platform: introduction, system requirements and installation with npx or Docker."
   }
 }

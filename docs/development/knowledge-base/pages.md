@@ -4,7 +4,7 @@ keywords:
   - EverShop Pages
 sidebar_label: Pages
 title: Pages
-description: EverShop pages are located in the `pages` folder of each module. Learn how to create pages in your extension.
+description: "Create pages in EverShop: the pages folder structure, admin vs storefront pages, single-page folders, file naming and SEO-friendly URL rewrites."
 ---
 
 # Pages

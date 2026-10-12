@@ -8,7 +8,7 @@ keywords:
   - translate function
 sidebar_label: Translation
 title: Translating Your EverShop Application
-description: Author translations for EverShop as CSV dictionaries loaded at runtime, and look them up with translate() on the server and _() on the client.
+description: "Translate EverShop with CSV dictionaries loaded at runtime: file locations, how files merge, translate() on the server and _() on the client."
 ---
 
 # Translation

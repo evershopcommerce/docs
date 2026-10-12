@@ -7,7 +7,7 @@ keywords:
   - Request validation
 sidebar_label: RESTful API Routes
 title: RESTful API Routes
-description: Learn how to build and manage RESTful API endpoints in EverShop to provide robust backend functionality with proper authentication and validation.
+description: "Build REST API endpoints in EverShop: folder structure, route definitions, authentication, request validation, middleware and built-in rate limiting."
 ---
 
 # RESTful API Routes

@@ -6,7 +6,7 @@ keywords:
   - custom modules
 sidebar_label: Extension Development
 title: Developing Extensions for EverShop
-description: Learn how to develop custom extensions for EverShop, from setup to deployment, including structure, naming conventions, and best practices.
+description: "Develop EverShop extensions: environment setup, naming, structure, tsconfig, the bootstrap function, activation, and publishing your extension to npm."
 ---
 
 ![EverShop extension development](./img/evershop-extension-development.jpg "EverShop extension development")

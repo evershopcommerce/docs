@@ -10,7 +10,7 @@ keywords:
   - Directory organization
 sidebar_label: Architecture Overview
 title: 'Architecture Deep Dive: The EverShop Platform'
-description: A deep dive into the EverShop platform architecture. Learn about our modular monolith design, request lifecycle, module system, and the distinction between the source code and project folder structures.
+description: "EverShop's architecture explained: a modular monolith on Node.js, the module system, request and bootstrap lifecycles, extension points and the build."
 ---
 
 # Architecture Deep Dive

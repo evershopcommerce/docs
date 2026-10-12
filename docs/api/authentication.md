@@ -10,7 +10,7 @@ keywords:
   - User Management
 sidebar_label: User
 title: User REST API
-description: Use the EverShop REST API to manage user authentication and account operations for admin users.
+description: "EverShop authentication API: get and refresh admin and customer access tokens, and mint admin tokens from a session, using the REST API."
 ---
 
 # Authentication API

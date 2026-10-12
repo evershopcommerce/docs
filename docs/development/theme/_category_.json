@@ -7,6 +7,6 @@
     "type": "generated-index",
     "slug": "development/theme",
     "title": "EverShop Theme Development Documentation",
-    "description": "Learn about the theme structure of EverShop and how to build your own theme to customize the look and feel of your store."
+    "description": "Build EverShop themes: theme structure, React templating, styling with Tailwind CSS or SCSS, and the view system that renders your storefront."
   }
 }

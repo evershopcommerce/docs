@@ -4,7 +4,7 @@ keywords:
   - event
 sidebar_label: Events and Subscribers
 title: Events and Subscribers
-description: EverShop provides a powerful event system that allows you to subscribe to the event and execute your code when the event is triggered.
+description: "Use EverShop's event system: emit events, subscribe to one or all events, send events to external systems, and write type-safe subscribers."
 ---
 
 ![Event and Subscribers In EverShop](./img/event-subscriber.png "Event and Subscribers In EverShop")

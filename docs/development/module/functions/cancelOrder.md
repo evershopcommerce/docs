@@ -9,7 +9,7 @@ groups:
 - oms
 sidebar_label: cancelOrder
 title: cancelOrder
-description: Cancel an order, release an uncaptured authorization and restock inventory.
+description: "cancelOrder() reference for EverShop: cancel an order, release an uncaptured payment authorization and restock inventory. Syntax, hooks and examples."
 ---
 
 # cancelOrder

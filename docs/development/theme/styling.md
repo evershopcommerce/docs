@@ -8,7 +8,7 @@ keywords:
   - Sass
 sidebar_label: Styling
 title: Styling Your EverShop Theme
-description: Learn how to style your EverShop themes using CSS, SCSS, and TailwindCSS v4. This guide explains different styling approaches and how to implement them in your components and pages.
+description: "Style EverShop themes with Tailwind CSS v4, SCSS or plain CSS: how styling works, adding global CSS, and best practices for components and pages."
 ---
 
 # Styling Your EverShop Theme

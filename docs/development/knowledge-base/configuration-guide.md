@@ -7,7 +7,7 @@ keywords:
   - Database configuration
 sidebar_label: Configuration Guide
 title: 'Configuration Deep Dive'
-description: A comprehensive guide to configuring an EverShop application. Learn about configuration layers, environment variables, and all the key settings for your store.
+description: "Configure an EverShop store: configuration layers, environment variables, reading config in code, and a reference of the core settings."
 ---
 
 # Configuration Deep Dive

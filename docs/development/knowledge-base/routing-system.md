@@ -8,7 +8,7 @@ keywords:
   - Route declaration
 sidebar_label: The Routing System
 title: 'Routing Deep Dive: How EverShop Handles Requests'
-description: A deep dive into the EverShop routing system. Learn how routes are defined for API endpoints and pages, how the folder structure works, and how to generate URLs.
+description: "How routing works in EverShop: file-based routes for pages and APIs, route.json, route IDs, URL generation, admin and locale prefixes, and URL rewrites."
 ---
 
 # Routing Deep Dive

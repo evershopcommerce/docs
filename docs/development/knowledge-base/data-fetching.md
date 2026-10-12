@@ -4,7 +4,7 @@ keywords:
   - evershop data loading, evershop data fetching, evershop graphql
 sidebar_label: Data Fetching
 title: Data Fetching
-description: EverShop allows you to fetch data from the server using the GraphQL query language. This document explains how to fetch data from the server and pass it to React Component using GraphQL.
+description: "Fetch server data for React components in EverShop with GraphQL queries: how server-side data fetching works, plus client-side fetching."
 ---
 
 ![Data Fetching In EverShop](./img/data-fetching-evershop.png "Data Fetching In EverShop")
