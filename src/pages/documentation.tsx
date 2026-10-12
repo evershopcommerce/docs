@@ -539,7 +539,7 @@ export default function DocumentationPage() {
   return (
     <Layout
       title="Documentation"
-      description="Comprehensive guides and documentation to help you start working with EverShop as quickly as possible."
+      description="EverShop docs: install the open-source Node.js ecommerce platform, configure it, build themes and extensions, and use the REST and GraphQL APIs."
       wrapperClassName="documentation">
       <main className="flex flex-col gap-16">
         <WelcomeSection />

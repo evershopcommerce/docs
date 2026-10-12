@@ -7,7 +7,7 @@ keywords:
   - e-commerce payments
 sidebar_label: PayPal Payment Integration
 title: Integrating PayPal Payment Gateway
-description: How to set up EverShop's built-in PayPal module — credentials, webhook, capture modes, refunds and the abandoned-order reconciliation — and how the redirect flow and the capture, void and refund handlers are wired together.
+description: "Set up PayPal in EverShop: REST credentials, webhook, capture modes and refunds, plus how the redirect checkout and capture, void and refund handlers work."
 ---
 
 # Integrating PayPal Payment Gateway

@@ -6,7 +6,7 @@ keywords:
   - e-commerce payments
 sidebar_label: Stripe Payment Integration
 title: Integrating Stripe Payment Gateway
-description: How EverShop's built-in Stripe module is wired together — registration, the capture, void and refund handlers, the payment component, the payment intent API and the webhook — as a blueprint for building your own payment gateway.
+description: "How EverShop's built-in Stripe module works: payment intents, the checkout card form, capture, void, refund and webhooks. A blueprint for any gateway."
 ---
 
 # Integrating Stripe Payment Gateway
