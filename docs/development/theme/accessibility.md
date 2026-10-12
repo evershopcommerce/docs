@@ -165,8 +165,8 @@ After `theme:twizz` copies a component into your theme, before you start restyli
 
 - [Templating](./templating.md) — the override ladder, and why most changes should not be forks
 - [Theme Overview](./theme-overview.md) — `theme:twizz` and the theme directory layout
-- [InputField](./components/InputField.md) — the field component reference
-- [ProductList](./components/ProductList.md) — the listing component that renders product cards
+- [InputField](/docs/development/theme/components/inputfield) — the field component reference
+- [ProductList](/docs/development/theme/components/productlist) — the listing component that renders product cards
 
 import Sponsors from '@site/src/components/Sponsor';
 
