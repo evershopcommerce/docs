@@ -905,8 +905,8 @@ function Testimonials() {
 export default function Home() {
   return (
     <Layout
-      title="Open source TypeScript ecommerce platform"
-      description="EverShop ecommerce platform provides the best developer experience and rich ecommerce features that help build online stores and start selling online.">
+      title="Open Source Node.js Ecommerce Platform"
+      description="EverShop is a modern open source ecommerce platform written in TypeScript. React storefront, GraphQL API, PostgreSQL. No transaction fees, no lock-in.">
       <HomepageHeader />
       <main>
         <Logos />
