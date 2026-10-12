@@ -10,7 +10,7 @@ keywords:
   - e-commerce platform
 sidebar_label: Introduction
 title: 'EverShop: Open-Source Node.js & TypeScript Ecommerce Platform'
-description: Discover EverShop, a free, open-source ecommerce platform built with Node.js, TypeScript, React, and GraphQL. Create flexible, high-performance online stores with an extensible admin panel and customizable storefront.
+description: "EverShop is a free, open-source ecommerce platform built with Node.js, TypeScript, React and GraphQL. Learn how it works and start your first store."
 ---
 
 # EverShop: An Open-Source TypeScript Ecommerce Platform

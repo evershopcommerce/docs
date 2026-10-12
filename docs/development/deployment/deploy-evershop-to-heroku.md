@@ -7,7 +7,7 @@ keywords:
   - Node.js cloud hosting
 sidebar_label: Deploy to Heroku
 title: Deploy EverShop to Heroku
-description: A comprehensive guide for deploying your EverShop ecommerce application to Heroku with PostgreSQL database integration.
+description: "Deploy EverShop to Heroku: create the app, add a PostgreSQL database, pin Node.js versions, set build scripts and environment variables, then push."
 ---
 
 # Deploy EverShop to Heroku

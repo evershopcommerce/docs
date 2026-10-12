@@ -7,7 +7,7 @@ keywords:
   - Node.js production deployment
 sidebar_label: Deploy to AWS
 title: Deploy EverShop to AWS
-description: A comprehensive guide for deploying EverShop to Amazon Web Services using EC2 for application hosting and RDS for PostgreSQL database management.
+description: "Deploy EverShop to AWS: run the Node.js app on EC2 with PM2 and Nginx, host PostgreSQL on RDS, and ship updates with a simple deployment script."
 ---
 
 # Deploy EverShop to AWS

@@ -7,7 +7,7 @@ keywords:
   - Node.js deployment
 sidebar_label: Deploy to Azure
 title: Deploy EverShop to Microsoft Azure
-description: Follow this comprehensive guide to deploy your EverShop ecommerce platform to Microsoft Azure using Azure App Service with step-by-step instructions.
+description: "Deploy EverShop to Microsoft Azure App Service step by step: Git deployment, PM2, environment variables, an admin account and an optional custom domain."
 ---
 
 # Deploy EverShop to Microsoft Azure

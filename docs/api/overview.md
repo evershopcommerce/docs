@@ -9,7 +9,7 @@ keywords:
   - E-commerce API
 sidebar_label: Overview
 title: API Overview
-description: Comprehensive overview of the EverShop API architecture. Learn about REST and GraphQL APIs, authentication methods, error handling, and best practices for integration.
+description: "Overview of the EverShop REST and GraphQL APIs: authentication, request and response formats, error handling and best practices for integrating your store."
 ---
 
 # API Overview

@@ -7,7 +7,7 @@ keywords:
   - Server requirements
 sidebar_label: System Requirements
 title: System Requirements
-description: Complete system requirements for running EverShop. Review the hardware, software, and environment prerequisites before installing EverShop.
+description: "EverShop requires Node.js 20.9+ (tested on 20 and 22) and PostgreSQL 13+. Check OS, hardware, network and browser requirements before you install."
 ---
 
 # System Requirements

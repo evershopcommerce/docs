@@ -4,7 +4,7 @@ keywords:
   - EverShop installation
 sidebar_label: Installation Guide
 title: EverShop Installation Guide
-description: This document will guide you through the installation process of EverShop. The quick installation guide is also available to help you install EverShop template quickly.
+description: "Install EverShop in minutes with npx create-evershop-app or Docker. Step-by-step setup for the open-source Node.js and PostgreSQL ecommerce platform."
 ---
 
 # Installation guide

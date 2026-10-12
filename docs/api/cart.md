@@ -9,7 +9,7 @@ keywords:
   - Checkout Process
 sidebar_label: Cart
 title: Cart REST API
-description: Comprehensive guide to managing shopping carts in EverShop using the Cart REST API. Learn how to create carts, add items, manage customer information, and configure checkout options.
+description: "EverShop Cart REST API reference: create carts, add and update items, set customer details, addresses, shipping and payment methods, then check out."
 ---
 
 # Cart API
