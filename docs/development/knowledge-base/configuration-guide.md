@@ -235,6 +235,7 @@ This section controls core system settings, such as the active theme, file stora
     <tr><td><code>system.upload_max_file_size</code></td><td>number</td><td>Global upload size ceiling in bytes.</td></tr>
     <tr><td><code>system.upload_max_file_size_per_type</code></td><td>object</td><td>Per-MIME-type overrides, in bytes.</td></tr>
     <tr><td><code>system.admin_collection_size</code></td><td>number</td><td>Default page size for admin grids.</td></tr>
+    <tr><td><code>system.webhook.allowPrivateNetworks</code></td><td>boolean</td><td>Allow <a href="/docs/development/knowledge-base/webhooks">webhook</a> URLs that use <code>http://</code> or point to a private or loopback address. Defaults to <code>false</code> (HTTPS and public addresses only). Meant for local development and self-hosted receivers.</td></tr>
   </tbody>
 </table>
 

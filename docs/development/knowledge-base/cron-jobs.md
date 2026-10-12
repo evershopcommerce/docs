@@ -155,7 +155,7 @@ EverShop upgraded from `node-cron` 3 to `node-cron` 4. Schedule validation (`cro
 
 ## Built-in Cron Jobs
 
-Core registers two jobs out of the box:
+Core registers three jobs out of the box:
 
 <table className="table-auto not-prose">
   <thead>
@@ -179,10 +179,16 @@ Core registers two jobs out of the box:
       <td><code>modules/catalog/bootstrap.js</code></td>
       <td>Recomputes the cross-sell / product recommendation statistics. Enabled via <code>catalog.crossSell.recomputeEnabled</code> (default <code>true</code>).</td>
     </tr>
+    <tr>
+      <td><code>webhookProcessDeliveries</code></td>
+      <td><code>* * * * *</code> (every minute, fixed)</td>
+      <td><code>modules/webhook/bootstrap.js</code></td>
+      <td>Sends due <a href="/docs/development/knowledge-base/webhooks">webhook</a> retries, recovers deliveries interrupted by a crash, cancels deliveries of disabled webhooks, and trims the delivery log.</td>
+    </tr>
   </tbody>
 </table>
 
-Both schedules are plain configuration, so you can retune them without code:
+The schedules of the first two jobs are plain configuration, so you can retune them without code. The webhook job runs every minute and is not configurable:
 
 ```json title="config/default.json"
 {
