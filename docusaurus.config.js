@@ -148,6 +148,7 @@ const config = {
           blogSidebarTitle: "Recent posts",
           blogSidebarCount: 10,
           postsPerPage: 10,
+          archiveBasePath: null,
           showReadingTime: true,
           // Posts without a <!-- truncate --> marker render in full on the list
           // page. Warn rather than throw so a missing marker is visible in CI
@@ -170,13 +171,10 @@ const config = {
             require.resolve("./src/css/custom.scss"),
           ],
         },
+        sitemap: {
+          ignorePatterns: ["/docs/tags/**", "/blog/authors"],
+        },
       }),
-    ],
-    [
-      "@docusaurus/plugin-sitemap",
-      {
-        ignorePatterns: ["/docs/tags/**"], // Adjust path if your tags are elsewhere
-      },
     ],
   ],
   themeConfig:
@@ -314,7 +312,8 @@ const config = {
         //searchParameters: {},
 
         // Optional: path for search page that enabled by default (`false` to disable it)
-        //searchPagePath: "search",
+        // No full search results page: the search pop-up is enough.
+        searchPagePath: false,
 
         //... other Algolia params
       },
