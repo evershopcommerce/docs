@@ -1,4 +1,5 @@
 ---
+slug: deletecustomer
 sidebar_position: 76
 keywords:
 - deleteCustomer
@@ -77,6 +78,6 @@ hookBefore('deleteCustomerData', async (uuid, connection) => {
 
 ## See Also
 
-- [createCustomer](/docs/development/module/functions/createCustomer) - Create customer
-- [updateCustomer](/docs/development/module/functions/updateCustomer) - Update customer
-- [getCustomersBaseQuery](/docs/development/module/functions/getCustomersBaseQuery) - Query customers
+- [createCustomer](/docs/development/module/functions/createcustomer) - Create customer
+- [updateCustomer](/docs/development/module/functions/updatecustomer) - Update customer
+- [getCustomersBaseQuery](/docs/development/module/functions/getcustomersbasequery) - Query customers

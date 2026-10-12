@@ -1,4 +1,5 @@
 ---
+slug: removecartitem
 sidebar_position: 92
 title: removeCartItem
 description: Removes an item from the cart by its UUID. A hookable checkout service.

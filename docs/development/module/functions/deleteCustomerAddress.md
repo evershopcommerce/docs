@@ -1,4 +1,5 @@
 ---
+slug: deletecustomeraddress
 sidebar_position: 80
 keywords:
 - deleteCustomerAddress
@@ -74,6 +75,6 @@ hookBefore('deleteCustomerAddressData', async (uuid, connection) => {
 
 ## See Also
 
-- [createCustomerAddress](/docs/development/module/functions/createCustomerAddress) - Create address
-- [updateCustomerAddress](/docs/development/module/functions/updateCustomerAddress) - Update address
-- [validateAddress](/docs/development/module/functions/validateAddress) - Validate address
+- [createCustomerAddress](/docs/development/module/functions/createcustomeraddress) - Create address
+- [updateCustomerAddress](/docs/development/module/functions/updatecustomeraddress) - Update address
+- [validateAddress](/docs/development/module/functions/validateaddress) - Validate address

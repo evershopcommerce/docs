@@ -1,4 +1,5 @@
 ---
+slug: registerregionprovider
 sidebar_position: 84
 keywords:
 - registerRegionProvider
@@ -97,5 +98,5 @@ registerRegionProvider('JP', {
 
 ## See Also
 
-- [patchAddressFormat](/docs/development/module/functions/patchAddressFormat) - Add the token the level is printed with
+- [patchAddressFormat](/docs/development/module/functions/patchaddressformat) - Add the token the level is printed with
 - [Address formats](/docs/development/knowledge-base/address-formats#region-providers) - The default provider and the key rules

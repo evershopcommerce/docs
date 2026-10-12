@@ -1,4 +1,5 @@
 ---
+slug: buildurl
 sidebar_position: 31
 keywords:
   - buildUrl
@@ -236,5 +237,5 @@ const filteredUrl = buildUrl(
 
 ## See Also
 
-- [buildAbsoluteUrl](/docs/development/module/functions/buildAbsoluteUrl) - Build absolute URLs (server-side)
+- [buildAbsoluteUrl](/docs/development/module/functions/buildabsoluteurl) - Build absolute URLs (server-side)
 - [Translation](/docs/development/knowledge-base/translation) - Locales and the URL prefix scheme

@@ -1,4 +1,5 @@
 ---
+slug: searchbox
 sidebar_position: 45
 title: SearchBox
 description: A search component with autocomplete dropdown and customizable rendering.

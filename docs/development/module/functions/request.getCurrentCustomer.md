@@ -1,4 +1,5 @@
 ---
+slug: request.getcurrentcustomer
 sidebar_position: 41
 keywords:
 - getCurrentCustomer
@@ -206,6 +207,6 @@ interface CurrentCustomer {
 
 ## See Also
 
-- [request.loginCustomerWithEmail](/docs/development/module/functions/request.loginCustomerWithEmail) - Login customer
-- [request.logoutCustomer](/docs/development/module/functions/request.logoutCustomer) - Logout customer
-- [request.isCustomerLoggedIn](/docs/development/module/functions/request.isCustomerLoggedIn) - Check login status
+- [request.loginCustomerWithEmail](/docs/development/module/functions/request.logincustomerwithemail) - Login customer
+- [request.logoutCustomer](/docs/development/module/functions/request.logoutcustomer) - Logout customer
+- [request.isCustomerLoggedIn](/docs/development/module/functions/request.iscustomerloggedin) - Check login status

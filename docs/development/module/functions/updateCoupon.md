@@ -1,4 +1,5 @@
 ---
+slug: updatecoupon
 sidebar_position: 123
 keywords:
 - updateCoupon
@@ -53,4 +54,4 @@ await updateCoupon('a1b2c3d4-e5f6-7890-abcd-ef1234567890', {
 
 ## See Also
 
-- [createCoupon](/docs/development/module/functions/createCoupon) — Create a coupon
+- [createCoupon](/docs/development/module/functions/createcoupon) — Create a coupon

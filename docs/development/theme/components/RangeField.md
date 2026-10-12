@@ -1,4 +1,5 @@
 ---
+slug: rangefield
 sidebar_position: 15
 title: RangeField
 description: A slider input field for selecting numeric values from a range.

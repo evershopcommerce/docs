@@ -1,4 +1,5 @@
 ---
+slug: starttransaction
 sidebar_position: 17
 keywords:
 - startTransaction
@@ -181,6 +182,6 @@ await insert('customer')
 
 - [commit](/docs/development/module/functions/commit) - Commit a transaction
 - [rollback](/docs/development/module/functions/rollback) - Rollback a transaction
-- [getConnection](/docs/development/module/functions/getConnection) - Get database connection
+- [getConnection](/docs/development/module/functions/getconnection) - Get database connection
 - [insert](/docs/development/module/functions/insert) - Insert records
 - [update](/docs/development/module/functions/update) - Update records

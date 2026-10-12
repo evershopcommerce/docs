@@ -338,7 +338,7 @@ You can access a file like `public/images/logo.png` using the following code:
 <img src="/images/logo.png" alt="Logo" />
 ```
 
-Or with the [StaticImage](../theme/components/StaticImage.md) component:
+Or with the [StaticImage](/docs/development/theme/components/staticimage) component:
 
 ```jsx
 import { StaticImage } from "@components/common/StaticImage";

@@ -1,4 +1,5 @@
 ---
+slug: toprice
 sidebar_position: 65
 keywords:
 - toPrice
@@ -140,5 +141,5 @@ An existing cart or order carries its own persisted `currency` — `getStoreCurr
 
 ## See Also
 
-- [getSetting](/docs/development/module/functions/getSetting) - Read an admin setting
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration
+- [getSetting](/docs/development/module/functions/getsetting) - Read an admin setting
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration

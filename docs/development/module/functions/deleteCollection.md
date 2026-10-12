@@ -1,4 +1,5 @@
 ---
+slug: deletecollection
 sidebar_position: 55
 keywords:
 - deleteCollection
@@ -73,5 +74,5 @@ try {
 
 ## See Also
 
-- [createCollection](/docs/development/module/functions/createCollection) - Create collection
-- [updateCollection](/docs/development/module/functions/updateCollection) - Update collection
+- [createCollection](/docs/development/module/functions/createcollection) - Create collection
+- [updateCollection](/docs/development/module/functions/updatecollection) - Update collection

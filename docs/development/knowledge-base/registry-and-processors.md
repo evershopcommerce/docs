@@ -285,9 +285,9 @@ export default function () {
 
 ## See Also
 
-- [addProcessor](/docs/development/module/functions/addProcessor) — Function reference
-- [getValue](/docs/development/module/functions/getValue) — Async value retrieval
-- [getValueSync](/docs/development/module/functions/getValueSync) — Sync value retrieval
+- [addProcessor](/docs/development/module/functions/addprocessor) — Function reference
+- [getValue](/docs/development/module/functions/getvalue) — Async value retrieval
+- [getValueSync](/docs/development/module/functions/getvaluesync) — Sync value retrieval
 - [hookable](/docs/development/module/functions/hookable) — The hook system (an alternative extension mechanism)
 
 import Sponsors from '@site/src/components/Sponsor';

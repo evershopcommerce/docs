@@ -1,4 +1,5 @@
 ---
+slug: addaddressvalidationrule
 sidebar_position: 82
 keywords:
 - addAddressValidationRule
@@ -88,6 +89,6 @@ addAddressValidationRule({
 
 ## See Also
 
-- [validateAddress](/docs/development/module/functions/validateAddress) - Validate address
-- [registerAddressField](/docs/development/module/functions/registerAddressField) - Add a field instead of a rule
+- [validateAddress](/docs/development/module/functions/validateaddress) - Validate address
+- [registerAddressField](/docs/development/module/functions/registeraddressfield) - Add a field instead of a rule
 - [Address formats](/docs/development/knowledge-base/address-formats) - How schemas are resolved

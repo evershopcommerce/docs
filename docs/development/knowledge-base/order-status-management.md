@@ -581,7 +581,7 @@ await updatePaymentStatus(orderId, 'paid', connection);
 
 The `conn` argument is optional. When omitted, the function opens and commits its own transaction; when supplied, it joins the caller's transaction. It throws `Invalid status` if the status is not registered.
 
-`updatePaymentStatus` only changes the status. It does not record a transaction or emit an event. To move money, use [`captureOrder`](/docs/development/module/functions/captureOrder), [`refundOrder`](/docs/development/module/functions/refundOrder) or [`recordRefund`](/docs/development/module/functions/recordRefund), which call it for you.
+`updatePaymentStatus` only changes the status. It does not record a transaction or emit an event. To move money, use [`captureOrder`](/docs/development/module/functions/captureorder), [`refundOrder`](/docs/development/module/functions/refundorder) or [`recordRefund`](/docs/development/module/functions/recordrefund), which call it for you.
 
 ### Update Shipment Status
 
@@ -645,7 +645,7 @@ export default async function (data) {
 
 ## Payment Operations
 
-Capture, void and refund are core services that work the same way for every payment method. They are driven by the status flags above and by the optional `capture`, `void` and `refund` handlers that a method registers with [`registerPaymentMethod`](/docs/development/module/functions/registerPaymentMethod).
+Capture, void and refund are core services that work the same way for every payment method. They are driven by the status flags above and by the optional `capture`, `void` and `refund` handlers that a method registers with [`registerPaymentMethod`](/docs/development/module/functions/registerpaymentmethod).
 
 <table className="table-auto not-prose">
   <thead>

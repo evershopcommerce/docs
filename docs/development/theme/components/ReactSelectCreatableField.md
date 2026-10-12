@@ -1,4 +1,5 @@
 ---
+slug: reactselectcreatablefield
 sidebar_position: 21
 title: ReactSelectCreatableField
 description: An enhanced select field with the ability to create new options on-the-fly.

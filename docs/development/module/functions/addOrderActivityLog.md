@@ -1,4 +1,5 @@
 ---
+slug: addorderactivitylog
 sidebar_position: 115
 keywords:
 - addOrderActivityLog
@@ -57,5 +58,5 @@ await addOrderActivityLog(
 
 ## See Also
 
-- [createShipment](/docs/development/module/functions/createShipment) — Creates a shipment (auto-logs activity)
-- [cancelOrder](/docs/development/module/functions/cancelOrder) — Cancels an order
+- [createShipment](/docs/development/module/functions/createshipment) — Creates a shipment (auto-logs activity)
+- [cancelOrder](/docs/development/module/functions/cancelorder) — Cancels an order

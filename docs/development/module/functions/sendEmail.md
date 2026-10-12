@@ -1,4 +1,5 @@
 ---
+slug: sendemail
 sidebar_position: 117
 keywords:
 - sendEmail
@@ -74,5 +75,5 @@ await sendEmail('order_confirmation', {
 
 ## See Also
 
-- [registerEmailService](/docs/development/module/functions/registerEmailService) — Register an email provider
+- [registerEmailService](/docs/development/module/functions/registeremailservice) — Register an email provider
 - [Email System](/docs/development/knowledge-base/email-system) — Full email system guide

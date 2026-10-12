@@ -599,7 +599,7 @@ Congratulations — you've shipped a working EverShop widget.
 2. Gates **every instance save**, from the page builder and the legacy form alike. An invalid payload is rejected.
 3. Documents the settings shape for anyone reading your extension.
 
-Keep `additionalProperties: true`. Instances saved before you added or renamed a field carry extra keys, and a strict schema would make those instances unsavable.
+Keep `additionalProperties: true`. Instances saved before you added or renamed a field carry extra keys, and a strict schema would make those instances unsavable. That makes this schema a loose first gate. The strict one is the GraphQL type of each variable, described under [What GraphQL checks](#what-graphql-checks-on-top-of-the-schema).
 
 ```ts
 schema: {
@@ -667,6 +667,43 @@ Rules that matter:
     </tr>
   </tbody>
 </table>
+
+### What GraphQL checks on top of the schema
+
+The settings schema is loose on purpose. The strict check is the GraphQL type you declare for each variable. A typed input, such as `input SlideInput` used as `$slides: [SlideInput]`, rejects any key it does not define, and one rejected variable fails the whole page query.
+
+EverShop therefore checks every widget against the GraphQL schema **as it is when the check runs**. Nothing is copied into a second list. Add a field to your input type and the new key is accepted at once; remove one and it is reported at once.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>What happens to a key the input type does not define</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>An instance is saved (page builder, legacy form, <code>createWidget</code>, <code>updateWidget</code>)</td>
+      <td>The save is refused. The message names the path and the fields the type accepts, for example <code>slides[0].imageAlt is not a field of SlideInput</code>. On update, only keys the update adds are refused, so an older instance that already carries one can still be edited.</td>
+    </tr>
+    <tr>
+      <td>A storefront page renders</td>
+      <td>The key is ignored and a warning is logged once. The widget still renders.</td>
+    </tr>
+    <tr>
+      <td>A page renders and GraphQL still rejects the settings (a string where an <code>Int</code> goes, a missing <code>!</code> field)</td>
+      <td>The widget is left out of that page and a warning is logged. The rest of the page renders.</td>
+    </tr>
+  </tbody>
+</table>
+
+When you change an input type in a later release:
+
+- **Adding a field** needs nothing.
+- **Removing or renaming a field** leaves older instances rendering without the old key. They log a warning until they are saved again.
+- **Making a field required** (`String!`) leaves older instances out of the page until their settings are updated. Ship a migration for that.
+
+Only values bound to a typed input are checked. A variable of the `JSON` scalar type takes any shape. `theme:active` does not run this check, because the CLI does not load widget registrations, so a theme's `theme.json` is checked the first time a page renders it.
 
 ### The setting component runs on two surfaces
 
@@ -840,6 +877,10 @@ npm run build
     <tr>
       <td>Documented default values never apply</td>
       <td><code>defaultProps</code> on a function component — ignored by React 19. Use ES default values.</td>
+    </tr>
+    <tr>
+      <td>The log says <em>"Widget … is left out of the page"</em> or <em>"setting(s) the current GraphQL schema does not define"</em></td>
+      <td>The saved settings do not match the GraphQL type of a variable. The message names the path (<code>slides[0].width</code>) and the reason. Fix the instance, or add the field to your input type. See <a href="#what-graphql-checks-on-top-of-the-schema">What GraphQL checks</a>.</td>
     </tr>
     <tr>
       <td>Widgets vanish after switching themes</td>

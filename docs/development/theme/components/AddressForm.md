@@ -1,4 +1,5 @@
 ---
+slug: addressform
 sidebar_position: 52
 title: Address Form
 description: The schema-driven address form used by the address book, the shipping step and the billing step, and the four ways a theme customizes it.
@@ -119,6 +120,6 @@ Use `rulesFor(field, label)` for the react-hook-form rules, `useRegions(country,
 
 ## Related
 
-- [Address Summary](./AddressSummary) — prints a saved address
-- [Cart Context](./CartContext) — `addShippingAddress`, `fetchAvailableShippingMethods`
+- [Address Summary](./addresssummary) — prints a saved address
+- [Cart Context](./cartcontext) — `addShippingAddress`, `fetchAvailableShippingMethods`
 - [Address Formats](../../knowledge-base/address-formats) — where the schema comes from

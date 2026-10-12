@@ -1,4 +1,5 @@
 ---
+slug: cartsummaryitems
 sidebar_position: 36
 title: CartSummaryItems
 description: A component for displaying cart items in a summary format with thumbnails and quantities.

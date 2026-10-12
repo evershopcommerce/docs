@@ -1,4 +1,5 @@
 ---
+slug: useappdispatch
 sidebar_position: 3
 title: useAppDispatch
 description: A React hook that provides dispatch functions to update the global application state.

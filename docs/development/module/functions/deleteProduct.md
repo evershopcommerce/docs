@@ -1,4 +1,5 @@
 ---
+slug: deleteproduct
 sidebar_position: 49
 keywords:
 - deleteProduct
@@ -70,5 +71,5 @@ await deleteProduct('product-uuid-123', {
 
 ## See Also
 
-- [createProduct](/docs/development/module/functions/createProduct) - Create product
-- [updateProduct](/docs/development/module/functions/updateProduct) - Update product
+- [createProduct](/docs/development/module/functions/createproduct) - Create product
+- [updateProduct](/docs/development/module/functions/updateproduct) - Update product

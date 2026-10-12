@@ -1,4 +1,5 @@
 ---
+slug: getallwidgets
 sidebar_position: 119
 keywords:
 - getAllWidgets
@@ -109,7 +110,7 @@ if (hasWidget('collection_products')) {
 
 ## See Also
 
-- [registerWidget](/docs/development/module/functions/registerWidget) — Register a widget
-- [updateWidget](/docs/development/module/functions/updateWidget) — Update a widget
-- [removeWidget](/docs/development/module/functions/removeWidget) — Remove a widget
+- [registerWidget](/docs/development/module/functions/registerwidget) — Register a widget
+- [updateWidget](/docs/development/module/functions/updatewidget) — Update a widget
+- [removeWidget](/docs/development/module/functions/removewidget) — Remove a widget
 - [Widget Development](/docs/development/module/widget-development) — Full widget guide

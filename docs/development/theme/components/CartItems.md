@@ -1,4 +1,5 @@
 ---
+slug: cartitems
 sidebar_position: 35
 title: CartItems
 description: A headless render props component that provides cart items data and operations without rendering UI.

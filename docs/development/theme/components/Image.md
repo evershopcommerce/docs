@@ -1,4 +1,5 @@
 ---
+slug: image
 sidebar_position: 27
 title: Image
 description: An optimized image component with automatic responsive srcset generation and lazy loading support.

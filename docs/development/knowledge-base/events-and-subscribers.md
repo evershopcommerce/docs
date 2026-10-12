@@ -83,6 +83,50 @@ This function will be executed asynchronously when the `product_created` event i
 The subscriber function must be a default export.
 :::
 
+Every subscriber also receives an optional second argument, `meta`, that tells it which event triggered it:
+
+```ts title="your-extension/subscribers/product_created/sendEmail.ts"
+import type { EventMeta } from "@evershop/evershop/lib/event/subscriber";
+
+export default async function sendMail(data, meta?: EventMeta) {
+  // meta.name: the event name, for example "product_created"
+  // meta.uuid: the ID of this event
+}
+```
+
+Most subscribers already know their event and can ignore it. It matters for the wildcard subscribers below.
+
+## Subscribe to Every Event (`_all`)
+
+A subscriber folder named `_all` is a wildcard. Its subscribers run for **every** event, not for one event name.
+
+```bash
+├── your-extension
+│   ├── subscribers
+│   │   ├── _all
+│   │   │   ├── auditEveryEvent.ts
+```
+
+```ts title="your-extension/subscribers/_all/auditEveryEvent.ts"
+import type { EventMeta } from "@evershop/evershop/lib/event/subscriber";
+
+export default async function auditEveryEvent(data: unknown, meta?: EventMeta) {
+  if (!meta) {
+    return;
+  }
+  // meta.name tells you which event this is, for example "order_placed".
+  // The shape of data depends on the event.
+}
+```
+
+A wildcard subscriber is an ordinary subscriber in every other way. It runs at the same time as the subscribers named for the event, errors are logged and do not stop the others, and the event is not retried.
+
+:::warning
+A wildcard subscriber runs for **every** event, including events that fire in bulk, such as during a product import. Make the first check cheap and return early when the event is not interesting to you, and avoid a database query per event. If you need a query, cache its result for a few seconds.
+:::
+
+The [webhooks](/docs/development/knowledge-base/webhooks) feature is built this way.
+
 ## List of Events
 
 ### A New Product Created
@@ -511,6 +555,24 @@ This event is triggered when an order's status changes.
 // }
 ```
 
+### Order Cancellation and Refund Events
+
+Both events fire **after** the transaction that caused them commits.
+
+<table className="table-auto not-prose">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Data</th>
+      <th>When</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>order_canceled</code></td><td><code>&#123; orderId, reason &#125;</code></td><td>An order is canceled. <code>reason</code> is optional. <code>order_status_updated</code> fires too, but it cannot carry the reason.</td></tr>
+    <tr><td><code>order_refunded</code></td><td><code>&#123; orderId, amount, currency, isFullRefund, transactionId, paymentMethod &#125;</code></td><td>A refund is recorded, once per refund, whether it started from the admin panel or from the payment gateway. <code>amount</code> is the amount of this refund. <code>isFullRefund</code> is <code>true</code> when the refunds so far add up to the captured amount.</td></tr>
+  </tbody>
+</table>
+
 ### Shipment Events
 
 The multi-shipment fulfillment flow emits five events. All of them fire **after** the transaction commits.
@@ -574,6 +636,10 @@ The blog module emits `blog_post_created`, `blog_post_updated`, `blog_post_delet
 :::warning
 Not every event EverShop emits is declared in `EventDataRegistry` (`types/event.ts`). The nine blog events, `recommendation_stats_recomputed`, and `account_created` are emitted at runtime but are **not** in the registry, so `EventSubscriber<'blog_post_created'>` and `createSubscriber('blog_post_created', …)` will not typecheck for them. Write those subscribers as plain default-export functions, or declare the event yourself with the module-augmentation pattern below.
 :::
+
+## Send Events to an External System
+
+To send events to another system over HTTP, you do not need to write a subscriber. The [Webhooks](/docs/development/knowledge-base/webhooks) feature lets an admin choose events and a URL, and handles signing, retries and a delivery log.
 
 ## Type-Safe Subscribers
 

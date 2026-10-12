@@ -1,4 +1,5 @@
 ---
+slug: searchcontext
 sidebar_position: 44
 title: SearchContext
 description: Context for accessing search result page data including keyword, products, and filters.

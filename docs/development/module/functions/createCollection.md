@@ -1,4 +1,5 @@
 ---
+slug: createcollection
 sidebar_position: 53
 keywords:
 - createCollection
@@ -69,6 +70,6 @@ const collection = await createCollection({
 
 ## See Also
 
-- [updateCollection](/docs/development/module/functions/updateCollection) - Update collection
-- [deleteCollection](/docs/development/module/functions/deleteCollection) - Delete collection
-- [getCollectionsBaseQuery](/docs/development/module/functions/getCollectionsBaseQuery) - Query collections
+- [updateCollection](/docs/development/module/functions/updatecollection) - Update collection
+- [deleteCollection](/docs/development/module/functions/deletecollection) - Delete collection
+- [getCollectionsBaseQuery](/docs/development/module/functions/getcollectionsbasequery) - Query collections

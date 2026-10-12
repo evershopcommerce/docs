@@ -1,4 +1,5 @@
 ---
+slug: updatecustomeraddress
 sidebar_position: 79
 keywords:
 - updateCustomerAddress
@@ -101,7 +102,7 @@ Supports hooks via registry:
 
 ## See Also
 
-- [createCustomerAddress](/docs/development/module/functions/createCustomerAddress) - Create address
-- [deleteCustomerAddress](/docs/development/module/functions/deleteCustomerAddress) - Delete address
-- [validateAddress](/docs/development/module/functions/validateAddress) - Validate address
-- [addAddressValidationRule](/docs/development/module/functions/addAddressValidationRule) - Add validation rules
+- [createCustomerAddress](/docs/development/module/functions/createcustomeraddress) - Create address
+- [deleteCustomerAddress](/docs/development/module/functions/deletecustomeraddress) - Delete address
+- [validateAddress](/docs/development/module/functions/validateaddress) - Validate address
+- [addAddressValidationRule](/docs/development/module/functions/addaddressvalidationrule) - Add validation rules

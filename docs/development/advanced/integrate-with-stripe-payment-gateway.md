@@ -262,8 +262,8 @@ registerPaymentMethod({
 
 What core does around each handler:
 
-- **Capture** ([`captureOrder`](/docs/development/module/functions/captureOrder)) requires a `capture` handler and an `isCapturable` status. It is always a full capture. Core calls the handler, saves the capture transaction with the authorization as its parent, moves the status to `stripe_captured` and logs the activity.
-- **Refund** ([`refundOrder`](/docs/development/module/functions/refundOrder)) requires a `refund` handler and an `isRefundable` status. The amount must be greater than zero and no more than what is still refundable. Core calls the handler, then `recordRefund`, which saves the refund transaction, chooses `stripe_refunded` or `stripe_partial_refunded`, logs the activity and emits `order_refunded` once.
+- **Capture** ([`captureOrder`](/docs/development/module/functions/captureorder)) requires a `capture` handler and an `isCapturable` status. It is always a full capture. Core calls the handler, saves the capture transaction with the authorization as its parent, moves the status to `stripe_captured` and logs the activity.
+- **Refund** ([`refundOrder`](/docs/development/module/functions/refundorder)) requires a `refund` handler and an `isRefundable` status. The amount must be greater than zero and no more than what is still refundable. Core calls the handler, then `recordRefund`, which saves the refund transaction, chooses `stripe_refunded` or `stripe_partial_refunded`, logs the activity and emits `order_refunded` once.
 - **Void** runs inside the cancellation transaction, before the order becomes `canceled`. If the handler throws, the cancellation rolls back and the order keeps its status.
 
 The `refund` handler's transaction id is the **idempotency key**. `recordRefund` skips a refund it has already recorded, so an admin refund and the `charge.refunded` webhook that Stripe sends for it end as one transaction and one `order_refunded` event.
@@ -705,7 +705,7 @@ The same six pieces apply. The parts most people get wrong:
 ## See also
 
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — the registration contract on its own
-- [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod) — API reference
+- [registerPaymentMethod](/docs/development/module/functions/registerpaymentmethod) — API reference
 - [Order Status Management](/docs/development/knowledge-base/order-status-management) — how payment status maps to order status
-- [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) and [recordRefund](/docs/development/module/functions/recordRefund) — the core services behind capture and refund
+- [captureOrder](/docs/development/module/functions/captureorder), [refundOrder](/docs/development/module/functions/refundorder) and [recordRefund](/docs/development/module/functions/recordrefund) — the core services behind capture and refund
 - [Payment Gateway REST API](/docs/api/payment-gateway) — the Stripe and PayPal endpoint reference

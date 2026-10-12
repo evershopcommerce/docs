@@ -1,4 +1,5 @@
 ---
+slug: checkoutcontext
 sidebar_position: 47
 title: CheckoutContext
 description: Context for managing checkout process including order placement, shipping, and payment methods.

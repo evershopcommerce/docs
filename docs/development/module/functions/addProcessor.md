@@ -1,4 +1,5 @@
 ---
+slug: addprocessor
 sidebar_position: 7
 keywords:
 - addProcessor
@@ -170,5 +171,5 @@ export default function bootstrap() {
 
 ## See Also
 
-- [getValue](/docs/development/module/functions/getValue) - Get values asynchronously
-- [getValueSync](/docs/development/module/functions/getValueSync) - Get values synchronously
+- [getValue](/docs/development/module/functions/getvalue) - Get values asynchronously
+- [getValueSync](/docs/development/module/functions/getvaluesync) - Get values synchronously

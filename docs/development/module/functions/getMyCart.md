@@ -1,4 +1,5 @@
 ---
+slug: getmycart
 sidebar_position: 60
 keywords:
 - getMyCart
@@ -85,5 +86,5 @@ export default async function cartMiddleware(
 
 ## See Also
 
-- [createNewCart](/docs/development/module/functions/createNewCart) - Create new cart
-- [getCartByUUID](/docs/development/module/functions/getCartByUUID) - Get cart by UUID
+- [createNewCart](/docs/development/module/functions/createnewcart) - Create new cart
+- [getCartByUUID](/docs/development/module/functions/getcartbyuuid) - Get cart by UUID

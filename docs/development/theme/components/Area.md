@@ -1,4 +1,5 @@
 ---
+slug: area
 sidebar_position: 26
 title: Area
 description: A component container that manages and renders components with dynamic props and widget integration.

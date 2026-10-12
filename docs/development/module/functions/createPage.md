@@ -1,4 +1,5 @@
 ---
+slug: createpage
 sidebar_position: 81
 keywords:
 - createPage
@@ -79,5 +80,5 @@ const page = await createPage({
 
 ## See Also
 
-- [browFiles](/docs/development/module/functions/browFiles) - Browse uploaded files
-- [uploadFile](/docs/development/module/functions/uploadFile) - Upload a file
+- [browFiles](/docs/development/module/functions/browfiles) - Browse uploaded files
+- [uploadFile](/docs/development/module/functions/uploadfile) - Upload a file

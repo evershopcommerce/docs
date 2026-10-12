@@ -167,6 +167,12 @@ themes/my-theme/
 
 Installed widgets are stamped `status: true` — the manifest never carries a status field. A merchant can disable an instance afterwards in the page builder.
 
+#### Settings a widget stores twice
+
+A few settings exist as both a boolean and a style. The slideshow's controls are the case a manifest meets: `arrows` / `arrowsStyle` (`bottom-right`, `sides`, `hidden`) and `dots` / `dotsStyle` (`dots`, `bars`, `numbers`, `hidden`). The page builder writes both and keeps them in step, so an exported manifest always agrees with itself.
+
+If you write one by hand, **either field can switch a control off, and neither can switch it on over the other's "no"**. `arrows: false` hides the arrows whatever `arrowsStyle` says, and `arrowsStyle: 'hidden'` hides them whatever `arrows` says. The style only chooses *which* visible style when both are willing. So to hide a control, setting either one is enough; to be unambiguous, set both.
+
 ### Placement entries
 
 <table className="table-auto not-prose">
@@ -423,7 +429,7 @@ Upgraded 'my-theme' (version 1.3.0).
 
 Validation covers structure, UUID format, cross-references, and DB collisions. It deliberately does **not** cover widget settings:
 
-- **Settings are not schema-validated at install.** The CLI never bootstraps the widget registry, so a settings object with the wrong shape installs cleanly and then fails (or silently renders nothing) at request time. Test your manifest by actually loading the storefront.
+- **Settings are not schema-validated at install.** The CLI never bootstraps the widget registry, so a settings object with the wrong shape installs cleanly. The storefront copes when it renders: a key a typed GraphQL input does not define (a slide's `imageAlt`, say) is ignored with a warning in the server log, and a widget whose settings GraphQL still rejects is left out of that page with a warning, instead of failing the whole page. The log is where you find out, so test your manifest by actually loading the storefront and reading it. See [What GraphQL checks](../module/widget-development.md#what-graphql-checks-on-top-of-the-schema).
 - **Unknown widget types produce a soft warning, not an error.** If a type in your manifest has never been instantiated on this install, you get a `[WARN]` line — legitimate when the module providing that type is brand new, a typo otherwise. The warning is suppressed on a completely empty database, where typos and new modules are indistinguishable.
 - **A uuid already owned by a different theme is a hard error.** This is the one DB check: `widget 'a1b2…' already exists under theme 'other', cannot install it under 'mine'`. It applies to widgets only — a landing page uuid that already exists is adopted, because pages are not owned by a theme.
 - **A landing page name with no Latin characters is a warning, not an error.** The generated URL falls back to `landing-page-<uuid-prefix>`; rename the page in the admin afterwards if you want something readable.

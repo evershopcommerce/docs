@@ -1,4 +1,5 @@
 ---
+slug: getconfig
 sidebar_position: 2
 keywords:
 - getConfig
@@ -147,5 +148,5 @@ Configuration values are read from files in the `config/` directory:
 
 ## See Also
 
-- [getSetting](/docs/development/module/functions/getSetting) - Read an admin setting
+- [getSetting](/docs/development/module/functions/getsetting) - Read an admin setting
 - [Configuration Guide](../../knowledge-base/configuration-guide.md) - Comprehensive guide on application configuration

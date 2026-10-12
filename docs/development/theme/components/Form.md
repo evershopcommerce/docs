@@ -1,4 +1,5 @@
 ---
+slug: form
 sidebar_position: 4
 title: Form
 description: A React Hook Form wrapper component that simplifies form submission with automatic API integration and error handling.
@@ -122,6 +123,12 @@ function MyForm() {
       <td>string</td>
       <td>'Save'</td>
       <td>Text for the submit button</td>
+    </tr>
+    <tr>
+      <td>submitBtnSize</td>
+      <td>Button size</td>
+      <td>'default'</td>
+      <td>Size of the submit button, one of the shared Button's sizes. A form that sits inside a widget passes <code>lg</code> so its button matches the 40px call-to-action buttons around it.</td>
     </tr>
     <tr>
       <td>loading</td>

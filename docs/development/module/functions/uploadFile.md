@@ -1,4 +1,5 @@
 ---
+slug: uploadfile
 sidebar_position: 72
 keywords:
 - uploadFile
@@ -67,6 +68,6 @@ The same call therefore writes to the local media directory on one deployment an
 
 ## See Also
 
-- [browFiles](/docs/development/module/functions/browFiles) - List files
-- [createFolder](/docs/development/module/functions/createFolder) - Create folders
-- [deleteFile](/docs/development/module/functions/deleteFile) - Delete files
+- [browFiles](/docs/development/module/functions/browfiles) - List files
+- [createFolder](/docs/development/module/functions/createfolder) - Create folders
+- [deleteFile](/docs/development/module/functions/deletefile) - Delete files

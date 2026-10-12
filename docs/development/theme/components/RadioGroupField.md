@@ -1,4 +1,5 @@
 ---
+slug: radiogroupfield
 sidebar_position: 17
 title: RadioGroupField
 description: A group of radio button inputs for single selection.

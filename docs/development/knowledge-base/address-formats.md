@@ -72,7 +72,7 @@ const US: AddressFormat = {
 
 Core ships one generated record per country (`lib/address/formats/`, CC-BY 4.0 attribution included) plus a `DEFAULT` record for unknown codes (`%N%n%O%n%A%n%C`, require `AC`). Countries whose native order differs from the Latin one (Japan, China, Korea, Hong Kong, Taiwan …) carry an `lfmt`; a reader whose language is not the record's native language gets the Latin layout, which is why resolution is keyed on `(country, locale)`.
 
-A package changes a record with [`patchAddressFormat`](/docs/development/module/functions/patchAddressFormat) from `bootstrap.ts`:
+A package changes a record with [`patchAddressFormat`](/docs/development/module/functions/patchaddressformat) from `bootstrap.ts`:
 
 ```ts
 patchAddressFormat('VN', {
@@ -108,11 +108,11 @@ Core's default provider enumerates one `administrative_area` level for every cou
 3. **Level type follows data.** An enumerated level is a `select` in the form, with `dependsOn` naming the outer level; anything else is text.
 4. **Display name follows the reader.** `name` is shown to readers of the record's language, `latinName` to everyone else.
 
-Writes accept **active** keys only; editing a stored address that holds a retired key shows it marked "no longer available" until the customer picks again. See [`registerRegionProvider`](/docs/development/module/functions/registerRegionProvider).
+Writes accept **active** keys only; editing a stored address that holds a retired key shows it marked "no longer available" until the customer picks again. See [`registerRegionProvider`](/docs/development/module/functions/registerregionprovider).
 
 ## Resolution
 
-[`resolveAddressSchema(country, locale, { surface })`](/docs/development/module/functions/resolveAddressSchema) turns the record into the ordered field list the form renders and the server validates:
+[`resolveAddressSchema(country, locale, { surface })`](/docs/development/module/functions/resolveaddressschema) turns the record into the ordered field list the form renders and the server validates:
 
 1. Pick the layout: `lfmt` when the reader's language is not the record's native language, else `fmt`.
 2. Expand each token into fields (`%A` into the enabled street lines, `%N` into one or two name fields), the enumerated levels into selects, and append `telephone` after the name.
@@ -129,7 +129,7 @@ The result is cached per `(country, locale)` and invalidated by every registry c
 
 ## Validation
 
-Every address write runs the same pipeline: normalize (trim, upper-case the country, telephone to E.164 with the dial code, compose or split names), then [`validateAddress`](/docs/development/module/functions/validateAddress) against the resolved schema, then the rules extensions added with [`addAddressValidationRule`](/docs/development/module/functions/addAddressValidationRule).
+Every address write runs the same pipeline: normalize (trim, upper-case the country, telephone to E.164 with the dial code, compose or split names), then [`validateAddress`](/docs/development/module/functions/validateaddress) against the resolved schema, then the rules extensions added with [`addAddressValidationRule`](/docs/development/module/functions/addaddressvalidationrule).
 
 <table className="table-auto not-prose">
   <thead>
@@ -149,7 +149,7 @@ REST answers `400` with `error.errors: [{ field, code, message }]`, every failin
 
 ## Formatting and display
 
-No display surface names an address column. They all print `formatted` — the lines [`formatAddress`](/docs/development/module/functions/formatAddress) produces from the record's layout with the resolved names, country included:
+No display surface names an address column. They all print `formatted` — the lines [`formatAddress`](/docs/development/module/functions/formataddress) produces from the record's layout with the resolved names, country included:
 
 ```text
 Chan Tai Man
@@ -216,15 +216,15 @@ A sell-to list of exactly one country is also the default country, whatever the 
 
 ## Extra fields
 
-[`registerAddressField`](/docs/development/module/functions/registerAddressField) adds a field that lives in `extra` and travels with the row through the address book, the cart and the order. Scope it to countries (`countries: ['IT']`) or to forms (`surfaces: ['account']`); give it a pattern; it renders through the same renderer map as the built-in fields and validates on both sides.
+[`registerAddressField`](/docs/development/module/functions/registeraddressfield) adds a field that lives in `extra` and travels with the row through the address book, the cart and the order. Scope it to countries (`countries: ['IT']`) or to forms (`surfaces: ['account']`); give it a pattern; it renders through the same renderer map as the built-in fields and validates on both sides.
 
 ## Integrations
 
-Payment and carrier code builds its payloads from [`toIntegrationAddress`](/docs/development/module/functions/toIntegrationAddress) — resolved names, collected lines, the ISO suffix of the state for consumers that want `CA` — and keeps its own field names on the way out (`CarrierAddress.company`, PayPal's `admin_area_1`, Stripe's `state`). A country package therefore needs no integration work.
+Payment and carrier code builds its payloads from [`toIntegrationAddress`](/docs/development/module/functions/tointegrationaddress) — resolved names, collected lines, the ISO suffix of the state for consumers that want `CA` — and keeps its own field names on the way out (`CarrierAddress.company`, PayPal's `admin_area_1`, Stripe's `state`). A country package therefore needs no integration work.
 
 ## The storefront form
 
-The storefront renders the schema: country select first, then the country's fields in the record's row order, region levels as lazy selects that load their options when the parent is chosen. The same component serves the address book (`surface="account"`), the shipping step (`shipping`, countries from `countries(scope: SHIPPING)`) and the billing step (`billing`, `SELL_TO`). Changing the country clears only the fields that disappeared or changed shape. Themes have four seams — CSS, Areas (`addressForm.<surface>`, `addressField.<id>`, `addressSummary`), the renderer map, and a replacement layout over `AddressRendererProps` — documented in [Address Form](/docs/development/theme/components/AddressForm) and [Address Summary](/docs/development/theme/components/AddressSummary).
+The storefront renders the schema: country select first, then the country's fields in the record's row order, region levels as lazy selects that load their options when the parent is chosen. The same component serves the address book (`surface="account"`), the shipping step (`shipping`, countries from `countries(scope: SHIPPING)`) and the billing step (`billing`, `SELL_TO`). Changing the country clears only the fields that disappeared or changed shape. Themes have four seams — CSS, Areas (`addressForm.<surface>`, `addressField.<id>`, `addressSummary`), the renderer map, and a replacement layout over `AddressRendererProps` — documented in [Address Form](/docs/development/theme/components/addressform) and [Address Summary](/docs/development/theme/components/addresssummary).
 
 ## Legacy orders
 

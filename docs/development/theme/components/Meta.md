@@ -1,4 +1,5 @@
 ---
+slug: meta
 sidebar_position: 31
 title: Meta
 description: A component for adding HTML meta tags with validation and helper functions.

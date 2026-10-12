@@ -1,4 +1,5 @@
 ---
+slug: createfolder
 sidebar_position: 70
 keywords:
 - createFolder
@@ -49,6 +50,6 @@ Object stores have no real directories, so the cloud providers emulate one: S3, 
 
 ## See Also
 
-- [browFiles](/docs/development/module/functions/browFiles) - List files and folders
-- [uploadFile](/docs/development/module/functions/uploadFile) - Upload files
-- [deleteFile](/docs/development/module/functions/deleteFile) - Delete files
+- [browFiles](/docs/development/module/functions/browfiles) - List files and folders
+- [uploadFile](/docs/development/module/functions/uploadfile) - Upload files
+- [deleteFile](/docs/development/module/functions/deletefile) - Delete files

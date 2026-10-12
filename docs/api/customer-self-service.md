@@ -441,7 +441,7 @@ Failures answer `400` with every failing field at once:
 }
 ```
 
-Extensions add rules from `bootstrap.ts` with [`addAddressValidationRule`](/docs/development/module/functions/addAddressValidationRule); the rules run after the schema checks, with the resolved schema as their second argument. The field vocabulary, region keys and the eight store settings that change what is required are explained in the [Address formats guide](/docs/development/knowledge-base/address-formats).
+Extensions add rules from `bootstrap.ts` with [`addAddressValidationRule`](/docs/development/module/functions/addaddressvalidationrule); the rules run after the schema checks, with the resolved schema as their second argument. The field vocabulary, region keys and the eight store settings that change what is required are explained in the [Address formats guide](/docs/development/knowledge-base/address-formats).
 
 ## Error Responses
 

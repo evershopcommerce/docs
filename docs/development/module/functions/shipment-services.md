@@ -460,7 +460,7 @@ export default () => {
 
 - [Multi-shipment and Fulfillment](/docs/development/knowledge-base/multi-shipment-and-fulfillment) — The full model
 - [Carrier Development](/docs/development/knowledge-base/carrier-development) — Implementing the `Carrier` contract
-- [createShipment](/docs/development/module/functions/createShipment) — Creating a shipment
-- [updateShipmentStatus](/docs/development/module/functions/updateShipmentStatus) — Advancing one shipment
-- [getOrderStatusList](/docs/development/module/functions/getOrderStatusList) — The registered status lists
+- [createShipment](/docs/development/module/functions/createshipment) — Creating a shipment
+- [updateShipmentStatus](/docs/development/module/functions/updateshipmentstatus) — Advancing one shipment
+- [getOrderStatusList](/docs/development/module/functions/getorderstatuslist) — The registered status lists
 - [Order Status Management](/docs/development/knowledge-base/order-status-management) — Statuses and `psoMapping`

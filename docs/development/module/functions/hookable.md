@@ -259,5 +259,5 @@ Arrow functions (`=>`) do **not** have their own `this` binding. If you use an a
 
 ## See Also
 
-- [hookBefore](/docs/development/module/functions/hookBefore) - Register before hooks
-- [hookAfter](/docs/development/module/functions/hookAfter) - Register after hooks
+- [hookBefore](/docs/development/module/functions/hookbefore) - Register before hooks
+- [hookAfter](/docs/development/module/functions/hookafter) - Register after hooks

@@ -1,4 +1,5 @@
 ---
+slug: getproductsbycategorybasequery
 sidebar_position: 45
 keywords:
 - getProductsByCategoryBaseQuery
@@ -70,6 +71,6 @@ const products = await query
 
 ## See Also
 
-- [getProductsBaseQuery](/docs/development/module/functions/getProductsBaseQuery) - Get base query for products
-- [getProductsByCollectionBaseQuery](/docs/development/module/functions/getProductsByCollectionBaseQuery) - Get products by collection
-- [getCategoriesBaseQuery](/docs/development/module/functions/getCategoriesBaseQuery) - Get base query for categories
+- [getProductsBaseQuery](/docs/development/module/functions/getproductsbasequery) - Get base query for products
+- [getProductsByCollectionBaseQuery](/docs/development/module/functions/getproductsbycollectionbasequery) - Get products by collection
+- [getCategoriesBaseQuery](/docs/development/module/functions/getcategoriesbasequery) - Get base query for categories

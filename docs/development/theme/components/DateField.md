@@ -1,4 +1,5 @@
 ---
+slug: datefield
 sidebar_position: 12
 title: DateField
 description: A date picker input field with min/max date validation.

@@ -1,4 +1,5 @@
 ---
+slug: updateproduct
 sidebar_position: 48
 keywords:
 - updateProduct
@@ -93,5 +94,5 @@ const updated = await updateProduct('product-uuid-123', {
 
 ## See Also
 
-- [createProduct](/docs/development/module/functions/createProduct) - Create product
-- [deleteProduct](/docs/development/module/functions/deleteProduct) - Delete product
+- [createProduct](/docs/development/module/functions/createproduct) - Create product
+- [deleteProduct](/docs/development/module/functions/deleteproduct) - Delete product

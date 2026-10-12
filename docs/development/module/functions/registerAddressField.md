@@ -1,4 +1,5 @@
 ---
+slug: registeraddressfield
 sidebar_position: 85
 keywords:
 - registerAddressField
@@ -93,6 +94,6 @@ The nickname is stored in `extra`, copied verbatim to the cart when the customer
 
 ## See Also
 
-- [patchAddressFormat](/docs/development/module/functions/patchAddressFormat) - Change the built-in fields instead
-- [Address Form](/docs/development/theme/components/AddressForm) - How the field renders and how a theme decorates it
+- [patchAddressFormat](/docs/development/module/functions/patchaddressformat) - Change the built-in fields instead
+- [Address Form](/docs/development/theme/components/addressform) - How the field renders and how a theme decorates it
 - [Address formats](/docs/development/knowledge-base/address-formats#extra-fields) - Storage and lifecycle of `extra`

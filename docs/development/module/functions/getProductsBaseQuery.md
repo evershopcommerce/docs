@@ -1,4 +1,5 @@
 ---
+slug: getproductsbasequery
 sidebar_position: 44
 keywords:
 - getProductsBaseQuery
@@ -82,6 +83,6 @@ console.log(product.qty);
 ## See Also
 
 - [select](/docs/development/module/functions/select) - Create SELECT queries
-- [getCategoriesBaseQuery](/docs/development/module/functions/getCategoriesBaseQuery) - Get base query for categories
-- [getProductsByCategoryBaseQuery](/docs/development/module/functions/getProductsByCategoryBaseQuery) - Get products by category
-- [getProductsByCollectionBaseQuery](/docs/development/module/functions/getProductsByCollectionBaseQuery) - Get products by collection
+- [getCategoriesBaseQuery](/docs/development/module/functions/getcategoriesbasequery) - Get base query for categories
+- [getProductsByCategoryBaseQuery](/docs/development/module/functions/getproductsbycategorybasequery) - Get products by category
+- [getProductsByCollectionBaseQuery](/docs/development/module/functions/getproductsbycollectionbasequery) - Get products by collection

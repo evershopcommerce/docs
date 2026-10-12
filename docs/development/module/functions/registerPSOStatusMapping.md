@@ -1,4 +1,5 @@
 ---
+slug: registerpsostatusmapping
 sidebar_position: 113
 keywords:
 - registerPSOStatusMapping
@@ -123,6 +124,6 @@ registerPSOStatusMapping('*', 'canceled', 'canceled');
 
 ## See Also
 
-- [registerPaymentStatus](/docs/development/module/functions/registerPaymentStatus)
-- [registerShipmentStatus](/docs/development/module/functions/registerShipmentStatus)
+- [registerPaymentStatus](/docs/development/module/functions/registerpaymentstatus)
+- [registerShipmentStatus](/docs/development/module/functions/registershipmentstatus)
 - [Order Status Management](/docs/development/knowledge-base/order-status-management)

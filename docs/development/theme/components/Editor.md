@@ -1,4 +1,5 @@
 ---
+slug: editor
 sidebar_position: 24
 title: Editor
 description: A rich text editor with drag-and-drop layout management and multiple content blocks.

@@ -1,4 +1,5 @@
 ---
+slug: urlfield
 sidebar_position: 10
 title: UrlField
 description: A URL input field with automatic URL validation.

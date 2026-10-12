@@ -1,4 +1,5 @@
 ---
+slug: telfield
 sidebar_position: 9
 title: TelField
 description: A telephone number input field component.

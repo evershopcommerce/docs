@@ -1,4 +1,5 @@
 ---
+slug: productfilter
 sidebar_position: 41
 title: ProductFilter
 description: A headless render props component for managing product filters with attributes, categories, and price ranges.

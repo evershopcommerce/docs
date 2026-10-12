@@ -1,4 +1,5 @@
 ---
+slug: captureorder
 sidebar_position: 138
 keywords:
   - captureOrder
@@ -104,7 +105,7 @@ If the provider reuses the authorization id (Stripe), the existing row is update
 
 - `captureOrder` is not wrapped in `hookable` and emits no event of its own. `order_status_updated` fires if the capture changes the order status. To react to a capture, hook `changePaymentStatus`.
 - The order row is not locked. A concurrent second call is rejected once the status is no longer capturable, and the payment providers reject a concurrent duplicate themselves.
-- The capture handler is registered with [registerPaymentMethod](/docs/development/module/functions/registerPaymentMethod). It receives `{ order, transaction }` and returns `{ transactionId, amount, currency?, offline?, raw? }`.
+- The capture handler is registered with [registerPaymentMethod](/docs/development/module/functions/registerpaymentmethod). It receives `{ order, transaction }` and returns `{ transactionId, amount, currency?, offline?, raw? }`.
 
 ## Examples
 
@@ -131,7 +132,7 @@ capture: async ({ order, transaction }) => {
 
 ## See Also
 
-- [refundOrder](/docs/development/module/functions/refundOrder) — Refund a captured payment
-- [updatePaymentStatus](/docs/development/module/functions/updatePaymentStatus) — Change the payment status
+- [refundOrder](/docs/development/module/functions/refundorder) — Refund a captured payment
+- [updatePaymentStatus](/docs/development/module/functions/updatepaymentstatus) — Change the payment status
 - [Order API: Capture An Order](/docs/api/order#capture-an-order) — The REST endpoint
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — Writing a `capture` handler

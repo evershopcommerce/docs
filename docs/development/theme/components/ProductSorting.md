@@ -1,4 +1,5 @@
 ---
+slug: productsorting
 sidebar_position: 43
 title: ProductSorting
 description: A component for sorting products with customizable options and sort direction toggle.

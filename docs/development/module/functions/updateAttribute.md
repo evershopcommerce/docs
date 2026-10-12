@@ -1,4 +1,5 @@
 ---
+slug: updateattribute
 sidebar_position: 57
 keywords:
 - updateAttribute
@@ -78,5 +79,5 @@ await updateAttribute('attribute-uuid-123', {
 
 ## See Also
 
-- [createAttribute](/docs/development/module/functions/createAttribute) - Create attribute
-- [deleteAttribute](/docs/development/module/functions/deleteAttribute) - Delete attribute
+- [createAttribute](/docs/development/module/functions/createattribute) - Create attribute
+- [deleteAttribute](/docs/development/module/functions/deleteattribute) - Delete attribute

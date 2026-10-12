@@ -1,4 +1,5 @@
 ---
+slug: numberfield
 sidebar_position: 11
 title: NumberField
 description: A numeric input field with min/max validation and optional unit display.

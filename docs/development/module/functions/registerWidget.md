@@ -1,4 +1,5 @@
 ---
+slug: registerwidget
 sidebar_position: 9
 keywords:
 - registerWidget
@@ -301,7 +302,7 @@ export default function bootstrap() {
 
 ## See Also
 
-- [updateWidget](/docs/development/module/functions/updateWidget) - Update an existing widget
-- [removeWidget](/docs/development/module/functions/removeWidget) - Remove a widget
-- [getAllWidgets](/docs/development/module/functions/getAllWidgets) - Query the widget registry
+- [updateWidget](/docs/development/module/functions/updatewidget) - Update an existing widget
+- [removeWidget](/docs/development/module/functions/removewidget) - Remove a widget
+- [getAllWidgets](/docs/development/module/functions/getallwidgets) - Query the widget registry
 - [Widget Development](/docs/development/module/widget-development) - Full widget guide

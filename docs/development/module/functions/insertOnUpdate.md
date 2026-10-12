@@ -1,4 +1,5 @@
 ---
+slug: insertonupdate
 sidebar_position: 75
 keywords:
 - insertOnUpdate

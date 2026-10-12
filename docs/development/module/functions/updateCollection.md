@@ -1,4 +1,5 @@
 ---
+slug: updatecollection
 sidebar_position: 54
 keywords:
 - updateCollection
@@ -77,5 +78,5 @@ const updated = await updateCollection('collection-uuid-123', {
 
 ## See Also
 
-- [createCollection](/docs/development/module/functions/createCollection) - Create collection
-- [deleteCollection](/docs/development/module/functions/deleteCollection) - Delete collection
+- [createCollection](/docs/development/module/functions/createcollection) - Create collection
+- [deleteCollection](/docs/development/module/functions/deletecollection) - Delete collection

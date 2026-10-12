@@ -1,4 +1,5 @@
 ---
+slug: buildabsoluteurl
 sidebar_position: 32
 keywords:
 - buildAbsoluteUrl
@@ -182,6 +183,6 @@ The variable is validated at startup: if it is set but is not a parseable absolu
 
 ## See Also
 
-- [buildUrl](/docs/development/module/functions/buildUrl) - Build relative URLs
-- [getBaseUrl](/docs/development/module/functions/getBaseUrl) - Resolve the store base URL
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration values
+- [buildUrl](/docs/development/module/functions/buildurl) - Build relative URLs
+- [getBaseUrl](/docs/development/module/functions/getbaseurl) - Resolve the store base URL
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration values

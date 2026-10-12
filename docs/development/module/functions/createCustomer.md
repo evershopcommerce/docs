@@ -1,4 +1,5 @@
 ---
+slug: createcustomer
 sidebar_position: 74
 keywords:
 - createCustomer
@@ -71,7 +72,7 @@ console.log(`Customer created with ID: ${customer.customer_id}`);
 
 ## See Also
 
-- [updateCustomer](/docs/development/module/functions/updateCustomer) - Update customer
-- [deleteCustomer](/docs/development/module/functions/deleteCustomer) - Delete customer
-- [updatePassword](/docs/development/module/functions/updatePassword) - Change password
-- [getCustomersBaseQuery](/docs/development/module/functions/getCustomersBaseQuery) - Query customers
+- [updateCustomer](/docs/development/module/functions/updatecustomer) - Update customer
+- [deleteCustomer](/docs/development/module/functions/deletecustomer) - Delete customer
+- [updatePassword](/docs/development/module/functions/updatepassword) - Change password
+- [getCustomersBaseQuery](/docs/development/module/functions/getcustomersbasequery) - Query customers

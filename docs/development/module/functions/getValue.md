@@ -1,4 +1,5 @@
 ---
+slug: getvalue
 sidebar_position: 5
 keywords:
 - getValue
@@ -264,6 +265,6 @@ export default function bootstrap() {
 
 ## See Also
 
-- [getValueSync](/docs/development/module/functions/getValueSync) - Synchronous version
-- [addProcessor](/docs/development/module/functions/addProcessor) - Register value processors
+- [getValueSync](/docs/development/module/functions/getvaluesync) - Synchronous version
+- [addProcessor](/docs/development/module/functions/addprocessor) - Register value processors
 - [hookable](/docs/development/module/functions/hookable)

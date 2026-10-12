@@ -1,4 +1,5 @@
 ---
+slug: hasdelegate
 sidebar_position: 102
 keywords:
 - hasDelegate
@@ -61,5 +62,5 @@ export default async (request, response, next) => {
 
 ## See Also
 
-- [setDelegate](/docs/development/module/functions/setDelegate) - Store a delegate value
-- [getDelegate](/docs/development/module/functions/getDelegate) - Read a delegate value
+- [setDelegate](/docs/development/module/functions/setdelegate) - Store a delegate value
+- [getDelegate](/docs/development/module/functions/getdelegate) - Read a delegate value

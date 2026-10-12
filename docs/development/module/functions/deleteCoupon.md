@@ -1,4 +1,5 @@
 ---
+slug: deletecoupon
 sidebar_position: 124
 keywords:
 - deleteCoupon
@@ -43,5 +44,5 @@ await deleteCoupon('a1b2c3d4-e5f6-7890-abcd-ef1234567890');
 
 ## See Also
 
-- [createCoupon](/docs/development/module/functions/createCoupon) — Create a coupon
-- [updateCoupon](/docs/development/module/functions/updateCoupon) — Update a coupon
+- [createCoupon](/docs/development/module/functions/createcoupon) — Create a coupon
+- [updateCoupon](/docs/development/module/functions/updatecoupon) — Update a coupon

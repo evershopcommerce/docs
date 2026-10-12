@@ -1,4 +1,5 @@
 ---
+slug: deletefile
 sidebar_position: 71
 keywords:
 - deleteFile
@@ -55,6 +56,6 @@ The same call therefore removes a file from the local media directory on one dep
 
 ## See Also
 
-- [browFiles](/docs/development/module/functions/browFiles) - List files
-- [uploadFile](/docs/development/module/functions/uploadFile) - Upload files
-- [createFolder](/docs/development/module/functions/createFolder) - Create folders
+- [browFiles](/docs/development/module/functions/browfiles) - List files
+- [uploadFile](/docs/development/module/functions/uploadfile) - Upload files
+- [createFolder](/docs/development/module/functions/createfolder) - Create folders

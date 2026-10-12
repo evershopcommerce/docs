@@ -538,9 +538,9 @@ registerPaymentMethod({
 
 ### What core does around a handler
 
-- **Capture** — [`captureOrder(uuid)`](/docs/development/module/functions/captureOrder) checks that the method has a `capture` handler and the payment status is `isCapturable`, finds the authorization, calls your handler, saves the capture as a transaction and moves the status to `<code>_captured`. It always captures the full amount.
-- **Refund** — [`refundOrder(uuid, amount)`](/docs/development/module/functions/refundOrder) checks the `refund` handler and the `isRefundable` flag, checks that the amount is greater than zero and no more than what is still refundable, calls your handler, then [`recordRefund`](/docs/development/module/functions/recordRefund) saves the refund, chooses `<code>_refunded` or `<code>_partial_refunded`, writes the activity log and emits `order_refunded`.
-- **Void** — [`cancelOrder`](/docs/development/module/functions/cancelOrder) calls your `void` handler when the order's status is `isVoidable`, inside the cancellation transaction and before the order becomes `canceled`. If the handler throws, the cancellation rolls back.
+- **Capture** — [`captureOrder(uuid)`](/docs/development/module/functions/captureorder) checks that the method has a `capture` handler and the payment status is `isCapturable`, finds the authorization, calls your handler, saves the capture as a transaction and moves the status to `<code>_captured`. It always captures the full amount.
+- **Refund** — [`refundOrder(uuid, amount)`](/docs/development/module/functions/refundorder) checks the `refund` handler and the `isRefundable` flag, checks that the amount is greater than zero and no more than what is still refundable, calls your handler, then [`recordRefund`](/docs/development/module/functions/recordrefund) saves the refund, chooses `<code>_refunded` or `<code>_partial_refunded`, writes the activity log and emits `order_refunded`.
+- **Void** — [`cancelOrder`](/docs/development/module/functions/cancelorder) calls your `void` handler when the order's status is `isVoidable`, inside the cancellation transaction and before the order becomes `canceled`. If the handler throws, the cancellation rolls back.
 
 Core calls your handler outside any database transaction. To refuse an operation, throw an `Error`: nothing is recorded, and the message reaches the admin.
 
@@ -548,13 +548,13 @@ Return what the provider actually moved. For a refund, core uses your `amount`, 
 
 ### Record the first transaction yourself
 
-Core does not create the authorization or the first capture. Your return page, webhook or hook must save a `payment_transaction` row with `payment_action` set to `authorize` or `capture` (use [`addPaymentTransaction`](/docs/development/module/functions/addPaymentTransaction) or `insertOnUpdate`), and set the payment status with [`updatePaymentStatus`](/docs/development/module/functions/updatePaymentStatus). Without that row, capture fails with `Order <uuid> has no authorization to capture` and refund fails with `Order <uuid> has no captured payment to refund`.
+Core does not create the authorization or the first capture. Your return page, webhook or hook must save a `payment_transaction` row with `payment_action` set to `authorize` or `capture` (use [`addPaymentTransaction`](/docs/development/module/functions/addpaymenttransaction) or `insertOnUpdate`), and set the payment status with [`updatePaymentStatus`](/docs/development/module/functions/updatepaymentstatus). Without that row, capture fails with `Order <uuid> has no authorization to capture` and refund fails with `Order <uuid> has no captured payment to refund`.
 
 Register your statuses before you ship. If `<code>_captured` is missing, the provider call has already succeeded when core fails to record it, and the money moved without a matching record.
 
 ### Refunds made at the provider
 
-A merchant can also refund from the provider's own dashboard. Call [`recordRefund`](/docs/development/module/functions/recordRefund) from your webhook with the provider's refund id. It is idempotent on that id, so a refund made from EverShop and the webhook that echoes it are recorded once. Lock the order row in the webhook first, as the Stripe module does, so two deliveries cannot race.
+A merchant can also refund from the provider's own dashboard. Call [`recordRefund`](/docs/development/module/functions/recordrefund) from your webhook with the provider's refund id. It is idempotent on that id, so a refund made from EverShop and the webhook that echoes it are recorded once. Lock the order row in the webhook first, as the Stripe module does, so two deliveries cannot race.
 
 ### Void replaces cancel hooks
 
@@ -667,7 +667,7 @@ export default async () => {
 
 - [Zero Total Checkout](./zero-total-checkout) — Why a zero-total cart only offers `zero_checkout`
 - [Order Status Management](./order-status-management) — Payment, shipment, and order statuses
-- [captureOrder](/docs/development/module/functions/captureOrder), [refundOrder](/docs/development/module/functions/refundOrder) and [recordRefund](/docs/development/module/functions/recordRefund) — The services behind the Capture and Refund buttons
+- [captureOrder](/docs/development/module/functions/captureorder), [refundOrder](/docs/development/module/functions/refundorder) and [recordRefund](/docs/development/module/functions/recordrefund) — The services behind the Capture and Refund buttons
 - [Integrating Stripe](/docs/development/advanced/integrate-with-stripe-payment-gateway) and [Integrating PayPal](/docs/development/advanced/integrate-with-paypal-payment-gateway) — Complete gateway walk-throughs
 - [Registry and Processors](/docs/development/knowledge-base/registry-and-processors) — How the registration system works
 - [Events and Subscribers](/docs/development/knowledge-base/events-and-subscribers) — How to react to order events

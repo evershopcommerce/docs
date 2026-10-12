@@ -1,4 +1,5 @@
 ---
+slug: createorder
 sidebar_position: 66
 keywords:
 - createOrder
@@ -92,4 +93,4 @@ console.log(`Order created: ${order.order_number}`);
 
 ## See Also
 
-- [getMyCart](/docs/development/module/functions/getMyCart) - Get cart
+- [getMyCart](/docs/development/module/functions/getmycart) - Get cart

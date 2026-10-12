@@ -1,4 +1,5 @@
 ---
+slug: getbaseurl
 sidebar_position: 8
 keywords:
 - getBaseUrl
@@ -130,5 +131,5 @@ This is the right knob for container and platform deployments, where the public 
 
 ## See Also
 
-- [buildAbsoluteUrl](/docs/development/module/functions/buildAbsoluteUrl) - Build an absolute URL from a route ID
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration values
+- [buildAbsoluteUrl](/docs/development/module/functions/buildabsoluteurl) - Build an absolute URL from a route ID
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration values

@@ -1,4 +1,5 @@
 ---
+slug: tointegrationaddress
 sidebar_position: 88
 keywords:
 - toIntegrationAddress
@@ -97,6 +98,6 @@ const paypal = {
 
 ## See Also
 
-- [formatAddress](/docs/development/module/functions/formatAddress) - Display lines rather than fields
+- [formatAddress](/docs/development/module/functions/formataddress) - Display lines rather than fields
 - [Carrier Development](/docs/development/knowledge-base/carrier-development) - The `CarrierAddress` shape
 - [Address formats](/docs/development/knowledge-base/address-formats#integrations) - Which integration reads what

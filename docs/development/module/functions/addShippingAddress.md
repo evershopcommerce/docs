@@ -1,4 +1,5 @@
 ---
+slug: addshippingaddress
 sidebar_position: 68
 keywords:
 - addShippingAddress
@@ -101,5 +102,5 @@ console.log(`Address ID: ${address.cart_address_id}`);
 
 ## See Also
 
-- [saveCart](/docs/development/module/functions/saveCart) - Save cart
-- [createOrder](/docs/development/module/functions/createOrder) - Create order
+- [saveCart](/docs/development/module/functions/savecart) - Save cart
+- [createOrder](/docs/development/module/functions/createorder) - Create order

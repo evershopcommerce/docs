@@ -1,4 +1,5 @@
 ---
+slug: inputfield
 sidebar_position: 5
 title: InputField
 description: A text input field component with validation, error handling, and icon support.

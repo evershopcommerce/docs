@@ -1,4 +1,5 @@
 ---
+slug: metafield
 sidebar_position: 51
 title: Metafield
 description: A presentational component that reads one metafield value off an entity and renders it, with declaration-aware defaults and visibility rules.

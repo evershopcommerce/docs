@@ -1,4 +1,5 @@
 ---
+slug: getcategoriesbasequery
 sidebar_position: 42
 keywords:
 - getCategoriesBaseQuery
@@ -72,5 +73,5 @@ console.log(category.description);
 ## See Also
 
 - [select](/docs/development/module/functions/select) - Create SELECT queries
-- [getProductsBaseQuery](/docs/development/module/functions/getProductsBaseQuery) - Get base query for products
-- [getCollectionsBaseQuery](/docs/development/module/functions/getCollectionsBaseQuery) - Get base query for collections
+- [getProductsBaseQuery](/docs/development/module/functions/getproductsbasequery) - Get base query for products
+- [getCollectionsBaseQuery](/docs/development/module/functions/getcollectionsbasequery) - Get base query for collections

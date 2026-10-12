@@ -1,4 +1,5 @@
 ---
+slug: checkboxfield
 sidebar_position: 18
 title: CheckboxField
 description: A checkbox input field for single or multiple selections.

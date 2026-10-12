@@ -1,4 +1,5 @@
 ---
+slug: refundorder
 sidebar_position: 139
 keywords:
   - refundOrder
@@ -16,7 +17,7 @@ description: Refund a captured payment, in full or in part, through the order's 
 
 Refund the captured payment of an order, in full or in part. `refundOrder` is the service behind the **Refund** button on the order page and the `POST /api/orders/:id/refunds` endpoint. It works for every payment method that registered a `refund` handler.
 
-Core validates the request, calls the handler (the one step that talks to the payment provider), then hands the result to [recordRefund](/docs/development/module/functions/recordRefund), which saves the refund, sets the payment status and emits `order_refunded`.
+Core validates the request, calls the handler (the one step that talks to the payment provider), then hands the result to [recordRefund](/docs/development/module/functions/recordrefund), which saves the refund, sets the payment status and emits `order_refunded`.
 
 ## Import
 
@@ -108,7 +109,7 @@ Returns `Promise<RefundOrderResult>`:
     </tr>
     <tr>
       <td>Errors from <code>recordRefund</code></td>
-      <td>See <a href="/docs/development/module/functions/recordRefund">recordRefund</a>, for example <code>Invalid status</code> when the method did not register its refund statuses.</td>
+      <td>See <a href="/docs/development/module/functions/recordrefund">recordRefund</a>, for example <code>Invalid status</code> when the method did not register its refund statuses.</td>
     </tr>
   </tbody>
 </table>
@@ -141,7 +142,7 @@ refund: async ({ order, amount }) => ({
 
 ## See Also
 
-- [recordRefund](/docs/development/module/functions/recordRefund) — Record a refund without calling a provider
-- [captureOrder](/docs/development/module/functions/captureOrder) — Capture an authorized payment
+- [recordRefund](/docs/development/module/functions/recordrefund) — Record a refund without calling a provider
+- [captureOrder](/docs/development/module/functions/captureorder) — Capture an authorized payment
 - [Order API: Refund An Order](/docs/api/order#refund-an-order) — The REST endpoint
 - [Payment Method Development](/docs/development/knowledge-base/payment-method-development) — Writing a `refund` handler

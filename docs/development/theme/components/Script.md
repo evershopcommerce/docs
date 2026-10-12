@@ -1,4 +1,5 @@
 ---
+slug: script
 sidebar_position: 32
 title: Script
 description: A component for adding script tags with validation and helper functions.

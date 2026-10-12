@@ -161,7 +161,7 @@ If your theme renders product cards much larger or much smaller than core's, cha
 
 ## What `<Image>` does with those numbers
 
-[`<Image>`](./components/Image.md) turns `src` + `width` into a `/images` proxy URL plus a responsive `srcset`:
+[`<Image>`](/docs/development/theme/components/image) turns `src` + `width` into a `/images` proxy URL plus a responsive `srcset`:
 
 ```html
 <img
@@ -237,8 +237,8 @@ After:
 
 ## See also
 
-- [Image](./components/Image.md) — the component reference: props, srcset, loading strategies
-- [ProductList](./components/ProductList.md) — the listing component
+- [Image](/docs/development/theme/components/image) — the component reference: props, srcset, loading strategies
+- [ProductList](/docs/development/theme/components/productlist) — the listing component
 - [Templating](./templating.md) — overriding and extending core components
 - [Upgrading To React 19](/blog/upgrading-to-react-19) — the other breaking changes in the 2.2.x line
 

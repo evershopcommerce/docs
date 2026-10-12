@@ -1,4 +1,5 @@
 ---
+slug: hookafter
 sidebar_position: 6
 keywords:
 - hookAfter
@@ -115,4 +116,4 @@ hookAfter('createOrder', async (order) => {
 ## See Also
 
 - [hookable](/docs/development/module/functions/hookable) - Make functions hookable
-- [hookBefore](/docs/development/module/functions/hookBefore) - Hook before function execution
+- [hookBefore](/docs/development/module/functions/hookbefore) - Hook before function execution

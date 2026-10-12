@@ -1,4 +1,5 @@
 ---
+slug: simplepagination
 sidebar_position: 29
 title: SimplePagination
 description: A simple pagination component with previous and next navigation buttons.

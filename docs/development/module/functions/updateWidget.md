@@ -1,4 +1,5 @@
 ---
+slug: updatewidget
 sidebar_position: 10
 keywords:
 - updateWidget
@@ -160,5 +161,5 @@ export default function bootstrap() {
 
 ## See Also
 
-- [registerWidget](/docs/development/module/functions/registerWidget) - Register a new widget
-- [removeWidget](/docs/development/module/functions/removeWidget) - Remove a widget
+- [registerWidget](/docs/development/module/functions/registerwidget) - Register a new widget
+- [removeWidget](/docs/development/module/functions/removewidget) - Remove a widget

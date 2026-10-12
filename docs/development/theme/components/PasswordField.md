@@ -1,4 +1,5 @@
 ---
+slug: passwordfield
 sidebar_position: 7
 title: PasswordField
 description: A password input field with optional visibility toggle and validation.

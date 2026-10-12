@@ -1,4 +1,5 @@
 ---
+slug: getsetting
 sidebar_position: 90
 keywords:
 - getSetting
@@ -86,4 +87,4 @@ export default async function loadStoreName(
 
 ## See Also
 
-- [getConfig](/docs/development/module/functions/getConfig) - Get configuration value
+- [getConfig](/docs/development/module/functions/getconfig) - Get configuration value

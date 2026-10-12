@@ -1,4 +1,5 @@
 ---
+slug: validateaddress
 sidebar_position: 81
 keywords:
 - validateAddress
@@ -123,6 +124,6 @@ const result = await validateAddressAgainstSchema(address, schema);
 
 ## See Also
 
-- [addAddressValidationRule](/docs/development/module/functions/addAddressValidationRule) - Add validation rules
-- [resolveAddressSchema](/docs/development/module/functions/resolveAddressSchema) - The schema the validation uses
+- [addAddressValidationRule](/docs/development/module/functions/addaddressvalidationrule) - Add validation rules
+- [resolveAddressSchema](/docs/development/module/functions/resolveaddressschema) - The schema the validation uses
 - [Address formats](/docs/development/knowledge-base/address-formats) - Vocabulary, region keys and settings
