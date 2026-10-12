@@ -535,7 +535,7 @@ The settings schema constrains `count` to 1–24 and `columns` to one of `[1, 2,
 const ordered = uuids.map((u) => byUuid.get(u)).filter(Boolean);
 ```
 
-An empty `postUuids` returns no posts — the widget does not auto-fill with recent posts.
+With **no posts picked**, the resolver shows the newest published posts instead, up to `count` (newest first, by `published_at`). That is what a Journal teaser usually is, and it means a theme can ship one: a manifest cannot name a store's posts (their uuids belong to the store), but it does not have to. Posts that were picked and have all since been unpublished still show nothing, because that is a choice rather than the absence of one.
 
 Like every widget, `registerWidget` must be called from `bootstrap.ts`; the registry is locked afterwards.
 
