@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: October 4, 2026**
+**Last updated: November 19, 2026**
 
 These Terms of Service ("Terms") are a legal agreement between you and EverShop LLC. They govern your use of EverShop Cloud, the EverShop Marketplace, the merchant portal at marketplace.evershop.io, and the related services described below (together, the "Services"). Please read them carefully. By creating an account, buying a plan, or using the Services, you agree to these Terms. If you do not agree, do not use the Services.
 
@@ -9,8 +9,8 @@ These Terms of Service ("Terms") are a legal agreement between you and EverShop 
 This summary is here to help you read the Terms. It is not part of the agreement; the numbered sections below are.
 
 - You buy a hosting plan for each store you run with us. Plans are paid in advance, monthly or yearly, and renew automatically on the same day of each period until you cancel. We email you before every renewal.
-- You can cancel a plan at any time. Your store keeps running until the end of the period you paid for, and you can undo the cancellation until then. We do not refund unused time, with one exception: a yearly plan can be refunded in full within 30 days of its first payment.
-- Marketplace themes and extensions are installed onto your hosted store. Paid items are billed monthly, after the month ends, for the days they were installed. Some items cost more as your store passes order milestones; the price never goes above the maximum shown to you before you install.
+- You can cancel a plan at any time. Your store keeps running until the end of the period you paid for, and you can undo the cancellation until then. We do not refund unused time, with one exception: a yearly plan can be refunded in full, together with the items bought for that store, within 30 days of its first payment.
+- Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal and never goes above the maximum shown to you before you install. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
 - If a payment fails, your store keeps running for one billing month while we retry and remind you. After that the store is suspended, but your data is kept and you can come back at any time by paying what is owed.
 - You own your content and your customers' data. We take daily backups and let you download them.
 - We keep your store's software and installed items up to date, and roll an update back automatically if it fails.
@@ -28,7 +28,7 @@ Other words used in these Terms:
 - **Billing Cycle**: monthly or yearly, chosen when you subscribe.
 - **Billing Period**: the period covered by one Plan payment. It runs from one renewal date to the next.
 - **Marketplace Item** or **Item**: a theme or extension listed in the EverShop Marketplace.
-- **Item Subscription**: the monthly charge for a paid Item installed on a Site.
+- **Item Subscription**: the recurring charge for a paid Item installed on a Site. It is paid in advance, on the same invoice as the Site's Plan (section 7.3).
 - **Portal**: the merchant area of marketplace.evershop.io where you manage your Sites, Items and billing.
 - **Lifetime Order Count**: the number of qualifying orders a Site has received since it was created, as defined in section 7.4.
 - **Stripe**: Stripe, Inc., the payment processor we use to collect payments.
@@ -76,10 +76,10 @@ We do not offer a service level agreement or an uptime guarantee (section 21). W
 ### 5.1 Payment method
 
 - You pay through Stripe, by card or by another payment method shown at checkout. In these Terms, "card" includes any such payment method. Payment details are entered on Stripe's secure payment form and never reach our servers.
-- A card you pay with is saved to your account, and you can add more cards in the Portal. Exactly one card is your default. Your default card is charged for every invoice on every Site, except that a Plan renewal is charged to the card saved with that subscription: the card the Plan was bought with, until you choose a default. You cannot remove your default card until you have made another card the default.
-- When you make a card your default in the Portal, it becomes the card for the renewals of all your Sites as well. If a Site has an unpaid Plan invoice at that moment (section 10.1), we charge that invoice to the new default card straight away.
-- You authorize us and Stripe to charge your card automatically, without further action from you, for Plan renewals, Item Subscriptions, Plan changes and any other amount you owe under these Terms, when the amount becomes due and for as long as it remains unpaid.
-- If your bank requires you to authenticate a charge, the charge waits until you complete the authentication from the invoice page or the Portal. Until then the invoice is unpaid.
+- A card you pay with is saved to your account, and you can add more cards in the Portal. Exactly one card is your default. Your default card is charged for every invoice on every Site, except that the invoices of a Site's Plan subscription, that is its renewals and the charges for installing paid Items on that Site, are charged to the card saved with that subscription: the card the Plan was bought with, until you choose a default. You cannot remove your default card until you have made another card the default.
+- When you make a card your default in the Portal, it becomes the card for the renewals and Item installations of all your Sites as well. If a Site has an unpaid renewal invoice at that moment (section 10.1), we charge that invoice to the new default card straight away.
+- You authorize us and Stripe to charge your card automatically, without further action from you, for Plan renewals and the Item Subscriptions renewed with them, Item installations, Plan changes and any other amount you owe under these Terms, when the amount becomes due and for as long as it remains unpaid.
+- If your bank requires you to authenticate a charge, the charge waits until you complete the authentication from the invoice page or the Portal. Until then the invoice is unpaid. A charge for installing an Item is an exception: if your bank requires authentication for it, the installation is cancelled and nothing is charged (section 7.3).
 
 ### 5.2 Prices, currency and taxes
 
@@ -105,7 +105,7 @@ A Plan is a subscription for one Site. Your first payment is the full price of t
 ### 6.3 Automatic renewal and renewal notices
 
 - Your Plan renews automatically at the end of every Billing Period, and we charge the price of the next period, unless you have cancelled (section 8).
-- We email you before every renewal: about 14 days before a yearly renewal and about 7 days before a monthly renewal. The email states the renewal date and the amount and contains a one-click option not to renew, which schedules a cancellation under section 8.
+- We email you before every renewal: about 14 days before a yearly renewal and about 7 days before a monthly renewal. The email states the renewal date and the amount, with the Plan and each paid Item on its own line, and contains a one-click option not to renew, which schedules a cancellation under section 8. The amount can change if you install or uninstall Items before the renewal, and account credit can lower it.
 - We do not send a renewal notice when a cancellation is already scheduled, because no renewal will happen.
 
 ### 6.4 Your price is fixed for the life of your subscription
@@ -127,7 +127,7 @@ You can move a Site to another Plan from the Portal. The change applies immediat
 - **Moving to a cheaper Plan.** We credit you the price difference over the remaining days of the current Billing Period, calculated the same way. The credit goes to your account balance and is applied automatically to your future invoices, for any of your Sites, until it is used up. Credit is not paid out in cash.
 - A move to a cheaper Plan is possible only if the Site fits the new Plan: its stored data is within the new Plan's storage limits and every installed Item is supported by the new Plan. The Portal tells you exactly what must be reduced or uninstalled first.
 - You cannot move to a more expensive Plan while any amount is past due on that Site. Moving to a cheaper Plan stays available even then.
-- Plan changes are not possible during the 24 hours before a Site's renewal date, during the 24 hours before the end of a calendar month (UTC), when Item invoices are prepared, or while a cancellation is scheduled for the Site.
+- Plan changes are not possible during the 24 hours before a Site's renewal date or while a cancellation is scheduled for the Site.
 
 ## 7. Marketplace Items
 
@@ -137,16 +137,16 @@ Items are themes and extensions that we make available for installation onto you
 
 ### 7.2 Free and paid Items
 
-Free Items cost nothing. Paid Items carry an Item Subscription: a monthly price per Site. Before you install a paid Item on a Site, the Portal shows you its full price table and what it will cost that Site now and at every future milestone, including the maximum price.
+Free Items cost nothing. Paid Items carry an Item Subscription: a price per Site for each Billing Period. An Item's price table gives monthly prices. On a monthly Plan you pay the monthly price; on a yearly Plan you pay 12 times the monthly price, with no yearly discount. Before you install a paid Item on a Site, the Portal shows you its full price table, what it will cost that Site now and at every future milestone, including the maximum price, and the amount you will be charged at once.
 
 ### 7.3 How Item Subscriptions are billed
 
-- Item Subscriptions are billed monthly in arrears. At the end of each calendar month (UTC) we issue one Item invoice per Site, covering every paid Item that was installed on that Site during the month.
-- You pay only for the days an Item was installed and running. The charge for an Item is: the number of days it ran in the month, divided by the number of days in that month, multiplied by the Item's monthly price for that month, rounded to the nearest cent.
+- Paid Items are paid in advance. When you install a paid Item, we charge your card at once for the rest of the Site's current Billing Period, in proportion to the time left in it. The Item is installed only after this charge succeeds. If the charge is declined, nothing is installed and you owe nothing for the Item. If your bank requires authentication for this charge, we cannot complete it: the installation is cancelled, and you can make another card your default and try again.
+- After that, the Item renews with the Site's Plan. Each renewal produces one invoice for the Site, covering the Plan and every paid Item installed on it, each at its price on the renewal date. That invoice is paid, retried and, if it stays unpaid, handled like any Plan renewal (section 10). There are no separate Item invoices.
+- If the charge for the rest of the current Billing Period would be less than USD 0.50, we do not make it: the Item is free until the next renewal and is billed from then on. An Item whose price for the Site's current band is zero is free until a milestone raises its price.
 - An Item's monthly price may step up with the Site's Lifetime Order Count (section 7.4). The Item's price table lists order-count milestones and the monthly price for each band, up to a final price that is the maximum the Item will ever cost on that Site. The price only moves up the table; it never moves down.
-- The price band that applies to a month is the band for the Site's Lifetime Order Count at the end of that month (UTC). It applies to the whole month, including the days before a milestone was crossed.
-- We notify you when your Site crosses a milestone that changes the price of any installed Item, so that an invoice is never the first you hear of a new price.
-- The price table of an Item is fixed for each installation at the moment you install it. If we change an Item's price table later, the change applies only to installations made after the change. An Item you uninstall and later reinstall is a new installation at the then-current price table.
+- When the Site crosses a milestone that raises the price of an installed Item, the new price applies from the next renewal. We never charge a price change in the middle of a Billing Period. We notify you of the new price and the date it starts, so that an invoice is never the first you hear of a new price.
+- The price table of an Item is fixed for each installation at the moment you install it. If we change an Item's price table later, the change applies only to installations made after the change. A reinstall within the period already paid for an Item keeps the price table of that installation (section 7.5). Any other reinstall is a new installation at the then-current price table.
 
 ### 7.4 Lifetime Order Count
 
@@ -160,27 +160,29 @@ A Site's Lifetime Order Count is the number of qualifying orders placed in that 
 ### 7.5 Installing and uninstalling
 
 - Installing an Item onto a Site requires that the Site is active, has no cancellation scheduled, has no past-due invoice, and is compatible with the Item. The Portal shows the reason when a Site is not eligible. Uninstalling is always possible, including while a payment is past due.
-- Installing or uninstalling an Item may interrupt your storefront for a few seconds while the change is applied. Before applying a change we take a restore point. If the change fails our health check, we roll it back and your Site stays as it was.
-- A Site runs exactly one theme. Installing a theme replaces the current one. The replaced theme is billed up to the day before the replacement, and the new theme from the replacement day. Uninstalling a theme without a replacement returns the Site to the default theme.
-- Uninstalling an Item stops its billing; the day you uninstall is not charged. The Item's data and configuration remain stored on your Site, so that a later reinstall finds them.
-- Item charges accrue for as long as an Item is installed. There is no way to pause an installed Item. To stop its charges, uninstall it.
+- Installing or uninstalling an Item may interrupt your storefront for a few seconds while the change is applied. Before applying a change we take a restore point. If the change fails our health check, we roll it back and your Site stays as it was. If the installation of a paid Item fails, we refund what we charged for it.
+- Uninstalling a paid Item removes it from the Site's future renewal invoices. We do not refund the current period if you change your mind. The Item stays paid until the end of that period, and until then you can reinstall it for free from the Portal, with the same price table. After that date, installing it again is a new installation (section 7.3).
+- If an uninstall is still in progress when the Site renews, the renewal invoice includes the Item. The Item is then paid for the new period, and you can reinstall it for free until that period ends.
+- A Site runs exactly one theme. Installing a theme replaces the current one. A paid new theme is charged like any paid Item, unless it is already paid for the current period. If you change your mind, we do not refund the replaced theme: it stays paid until the end of the current period, and switching back to it before then is free. Uninstalling a theme without a replacement returns the Site to the default theme.
+- When you uninstall an Item, its data and configuration remain stored on your Site, so that a later reinstall finds them.
+- A paid Item is billed at every renewal for as long as it is installed. There is no way to pause an installed Item. To stop its charges, uninstall it before the renewal.
 
 ### 7.6 Changes to the catalog
 
-We may stop listing an Item. An Item that is no longer listed cannot be newly installed, but it stays installed and continues to run and to be billed on Sites where it is already installed, until you uninstall it.
+We may stop listing an Item. An Item that is no longer listed cannot be newly installed, or reinstalled after you uninstall it, even within a period already paid for it. It stays installed and continues to run and to be billed on Sites where it is already installed, until you uninstall it.
 
-### 7.7 If an Item invoice is not paid
+### 7.7 If a payment fails
 
-Item invoices are separate from your Plan. If a Site's Item invoice fails, the Site itself is not affected: it keeps running and its Plan is unchanged. The paid Items on that Site keep running for one month, until the next month-end invoice, while Stripe retries the payment and we send you reminders. If the invoice is still unpaid after that, we disable the paid Items on that Site. A disabled theme is replaced by the default theme; a disabled extension is switched off. Disabled Items are not removed and are not billed. As soon as you pay the outstanding Item invoices, from the Portal or from the invoice page, the Items are switched back on with their settings and price tables intact.
+There are no separate Item invoices. Paid Items are renewed on the Site's renewal invoice. If that invoice is not paid, section 10 applies to the whole Site: the Site and its Items keep running during the grace period, and if the invoice stays unpaid, the Site is suspended together with its Items. A declined charge for installing an Item only means that the Item is not installed (section 7.3).
 
 ## 8. Cancelling a Plan
 
 - You can cancel a Site's Plan at any time from the Portal. There is no notice period and no deadline.
-- Cancelling schedules the subscription not to renew. The Site keeps running normally until the end of the Billing Period you have paid for. Installed Items keep running and keep being billed until then. While a cancellation is scheduled you cannot install new Items or change the Plan, but you can uninstall Items.
+- Cancelling schedules the subscription not to renew. The Site keeps running normally until the end of the Billing Period you have paid for. Installed Items keep running until then. They are already paid until the end of the period, so nothing more is charged for them. While a cancellation is scheduled you cannot install new Items or change the Plan, but you can uninstall Items.
 - You can undo a scheduled cancellation at any time before the end of the period. Nothing changes and the Plan renews as usual.
-- At the end of the period the Site and its Items stop together, and we issue a final Item invoice for the Item days since the last month-end invoice, up to the day before the stop. If this invoice cannot be collected, it remains due (section 10.4).
-- We do not refund any part of a Billing Period you have paid for, except under the money-back guarantee in section 9.
-- After the stop we keep your Site's data and a backup (section 11). You can download the backup at any time, and you can bring the Site back at any time by subscribing it again. A resubscription is a new subscription at the then-current list price, with a new renewal date. Any unpaid final Item invoice is charged first.
+- At the end of the period the Site and its Items stop together. There is no final invoice, because everything was paid in advance.
+- We do not refund any part of a Billing Period you have paid for, including the paid Items on it, except under section 9.
+- After the stop we keep your Site's data and a backup (section 11). You can download the backup at any time, and you can bring the Site back at any time by subscribing it again. A resubscription is a new subscription at the then-current list price, with a new renewal date. Its first invoice also covers the paid Items that were installed when the Site stopped (section 10.3).
 
 ## 9. Refunds and the 30-day money-back guarantee
 
@@ -189,31 +191,31 @@ Item invoices are separate from your Plan. If a Site's Item invoice fails, the S
 If you subscribe a Site to a yearly Plan, you may ask for a full refund within 30 days of your first payment for that Site. If you do:
 
 - the Site stops immediately, instead of running to the end of the year;
-- we refund every Plan payment you made for that Site, including any charge for moving to a more expensive Plan, and every Item invoice issued for that Site since your first payment: paid Item invoices are refunded and unpaid ones are cancelled;
-- refunds go to the payment method you paid with. Banks typically post a refund within 5 to 10 business days.
+- we refund every Plan payment you made for that Site, including any charge for moving to a more expensive Plan, and every charge for installing a paid Item on that Site since your first payment. An amount already refunded is not refunded again;
+- refunds go to the payment method you paid with, and any part you paid with account credit goes back to your account balance as credit. Banks typically post a refund within 5 to 10 business days.
 
 The guarantee applies once per Site and only to the first subscription of a Site. It does not apply to renewals, to monthly Plans, or to a Site you have subscribed again after it stopped. Where a Site is eligible, the Portal offers the guarantee alongside the normal cancellation.
 
-### 9.2 No other refunds
+### 9.2 Other refunds
 
-Apart from section 9.1, section 6.1 (a Site we could not create), section 20 (a Service we discontinue), and refunds required by law, all payments are final. In particular we do not refund unused time after a cancellation, Plan fees for a Billing Period that has started, or Item charges for days an Item was installed.
+Apart from section 9.1, we refund the charge for a paid Item whose installation failed (section 7.5), a Site we could not create (section 6.1), a Service we discontinue (section 20), and anything the law requires us to refund. All other payments are final. We do not give refunds if you change your mind: not for unused time after a cancellation, not for a Billing Period that has started, and not for a paid Item you uninstall or replace. An Item you uninstall stays paid until the end of its period, and you can reinstall it for free until then (section 7.5).
 
 ## 10. Failed payments, grace, suspension and reactivation
 
-### 10.1 If a Plan payment fails
+### 10.1 If a renewal payment fails
 
-- Your Site keeps running, and installed Items keep running and keep being billed. For one billing month after the failed renewal, Stripe retries the payment and we send you reminders: when the payment fails, then about 7, 14 and 21 days later, and a final reminder 3 days before the deadline. The deadline is the end of the unpaid Billing Period for a monthly Plan, and one month after the renewal date for a yearly Plan.
+- Your Site and its installed Items keep running. For one billing month after the failed renewal, Stripe retries the payment and we send you reminders: when the payment fails, then about 7, 14 and 21 days later, and a final reminder 3 days before the deadline. The deadline is the end of the unpaid Billing Period for a monthly Plan, and one month after the renewal date for a yearly Plan.
 - If the payment succeeds during this time, nothing else happens.
-- You do not have to wait for a retry. If you make another card your default in the Portal during this time, we charge the unpaid Plan invoice to that card straight away (section 5.1). If that charge does not succeed, the deadline stays the same.
+- You do not have to wait for a retry. If you make another card your default in the Portal during this time, we charge the unpaid renewal invoice to that card straight away (section 5.1). If that charge does not succeed, the deadline stays the same.
 - During this time you cannot install new Items or move to a more expensive Plan. Uninstalling Items and moving to a cheaper Plan stay available.
 
 ### 10.2 Suspension
 
-If the payment has not succeeded by the deadline, we suspend the Site: the storefront and its admin stop, and every installed Item stops with it. From that moment no further Plan or Item charges accrue. Item days before the suspension are still invoiced at the next month end. You owe exactly one month of Plan fees for the time your Site ran without payment: the unpaid renewal invoice on a monthly Plan, or one twelfth of the yearly price on a yearly Plan, plus any unpaid Item invoices. We take a backup when the Site stops and keep your data (section 11).
+If the payment has not succeeded by the deadline, we suspend the Site: the storefront and its admin stop, and every installed Item stops with it. From that moment nothing more is charged. You owe exactly one month for the time your Site ran without payment: on a monthly Plan, the unpaid renewal invoice; on a yearly Plan, one twelfth of the unpaid yearly invoice, and we cancel that invoice. In both cases the amount covers the Plan and the paid Items on that invoice, including Items you uninstalled during the grace period, because they ran during it. We take a backup when the Site stops and keep your data (section 11).
 
 ### 10.3 Reactivation
 
-You can reactivate a suspended Site at any time from the Portal by paying the amount owed. When it is paid, we start a new subscription for the Site at the then-current list price, charge its first Billing Period, give it a new renewal date, and restore the Site and its Items to how they were when the Site stopped.
+You can reactivate a suspended Site at any time from the Portal by paying the amount owed. When it is paid, we start a new subscription for the Site at the then-current list price, charge its first Billing Period, give it a new renewal date, and restore the Site and its Items to how they were when the Site stopped. The first invoice of the new subscription covers the Plan and the paid Items that were installed when the Site stopped, each at its current price, for the full first Billing Period. The Portal shows this invoice before you confirm.
 
 ### 10.4 Amounts remain due
 
