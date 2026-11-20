@@ -13,7 +13,7 @@ This summary is here to help you read the Terms. It is not part of the agreement
 - Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal and never goes above the maximum shown to you before you install. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
 - If you run EverShop on your own server, you can also buy a theme or extension once and download it. Free items are free downloads. You download it from your orders, always in its latest version, and you may use, change and share it under the GNU General Public License version 3.
 - If a payment fails, your store keeps running for one billing month while we retry and remind you. After that the store is suspended, but your data is kept and you can come back at any time by paying what is owed.
-- You own your content and your customers' data. We take daily backups and let you download them.
+- You own your content and your customers' data. We take daily backups, and we send you a copy when you ask.
 - We keep your store's software and installed items up to date, and roll an update back automatically if it fails.
 
 ## 1. Who we are, and some definitions
@@ -65,7 +65,7 @@ The Marketplace lists themes and extensions. Items are provided by EverShop. You
 
 - Transactional email sending (section 14)
 - One custom domain per Site with a managed SSL certificate (section 13)
-- Daily database backups that you can download (section 11)
+- Daily database backups (section 11)
 - Platform-managed updates (section 12)
 - Support: email support at support@evershop.io during our business hours. Our business hours are Monday to Friday, 9:00 to 18:00 Indochina Time (UTC+7), excluding public holidays in Vietnam. Response times vary with the severity of the issue.
 
@@ -197,7 +197,7 @@ If you run EverShop on your own server, you can buy an Item once and download it
 - You can undo a scheduled cancellation at any time before the end of the period. Nothing changes and the Plan renews as usual.
 - At the end of the period the Site and its Items stop together. There is no final invoice, because everything was paid in advance.
 - We do not refund any part of a Billing Period you have paid for, including the paid Items on it, except under section 9.
-- After the stop we keep your Site's data and a backup (section 11). You can download the backup at any time, and you can bring the Site back at any time by subscribing it again. A resubscription is a new subscription at the then-current list price, with a new renewal date. Its first invoice also covers the paid Items that were installed when the Site stopped (section 10.3).
+- After the stop we keep your Site's data and a backup (section 11). You can ask for a copy of the backup at any time, and you can bring the Site back at any time by subscribing it again. A resubscription is a new subscription at the then-current list price, with a new renewal date. Its first invoice also covers the paid Items that were installed when the Site stopped (section 10.3).
 
 ## 9. Refunds and the 30-day money-back guarantee
 
@@ -254,9 +254,9 @@ Your Sites collect personal data from your customers on your behalf. You decide 
 
 ### 11.3 Backups
 
-- We take an automatic backup of each Site's database every day and keep it for at least 7 days. The Portal shows how long the backups of your Site are kept.
+- We take an automatic backup of each Site's database every day and keep it for at least 7 days.
 - When a Site stops (section 8 or 10), we take a backup and keep it for as long as we keep the Site's data.
-- You can download any retained backup from the Portal. A backup download contains your Site's database. Media files are not included in the download at this time, so keep your own copies of your images and files.
+- To get a copy of a retained backup, write to support@evershop.io. The copy contains your Site's database. Media files are not included at this time, so keep your own copies of your images and files.
 - Restoring a Site is something we do, not something you trigger: we restore your Site when you reactivate it, and we roll a failed install or update back to its restore point. We do not currently offer restoring a Site to an earlier backup on request.
 - Backups are a safety measure, not a guarantee. Keep your own copies of anything critical to your business.
 
@@ -266,7 +266,7 @@ A Plan is meant for running one online store of normal size and activity. We do 
 
 ### 11.5 Retention after a Site stops
 
-We keep the data and the stop backup of a cancelled or suspended Site so that you can download it or reactivate the Site. You can ask us to delete a stopped Site's data at any time by writing to support@evershop.io. We delete it within 30 days of confirming your request, and deletion is permanent. We may also delete the data of a Site that has been stopped for more than 12 months, after giving you at least 30 days' notice by email.
+We keep the data and the stop backup of a cancelled or suspended Site so that you can get a copy of it (section 11.3) or reactivate the Site. You can ask us to delete a stopped Site's data at any time by writing to support@evershop.io. We delete it within 30 days of confirming your request, and deletion is permanent. We may also delete the data of a Site that has been stopped for more than 12 months, after giving you at least 30 days' notice by email.
 
 ## 12. Updates and maintenance
 
@@ -330,7 +330,7 @@ Our Privacy Policy describes how we collect and use personal data about you and 
 
 - We may suspend a Site or your account if you violate these Terms, if the law requires us to, or if a Site threatens the security or stability of the Services or of other merchants. Where practical we tell you first and give you a chance to fix the problem.
 - We may terminate your account and these Terms if a violation is serious or is not fixed after notice.
-- If we suspend or terminate because of a violation, unpaid amounts remain due and we do not refund payments already made, except where the law requires. Unless the law prevents it, we keep your data available for download for at least 30 days after termination.
+- If we suspend or terminate because of a violation, unpaid amounts remain due and we do not refund payments already made, except where the law requires. Unless the law prevents it, we keep your data for at least 30 days after termination, and send you a copy if you ask (section 11.3).
 - We may stop offering the Services or a part of them. If we discontinue a Plan or the Services as a whole, we will give you at least 30 days' notice and refund any prepaid fees for the period after the discontinuation.
 
 ## 21. Disclaimers
