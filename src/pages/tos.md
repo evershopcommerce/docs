@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: November 19, 2026**
+**Last updated: November 20, 2026**
 
 These Terms of Service ("Terms") are a legal agreement between you and EverShop LLC. They govern your use of EverShop Cloud, the EverShop Marketplace, the merchant portal at marketplace.evershop.io, and the related services described below (together, the "Services"). Please read them carefully. By creating an account, buying a plan, or using the Services, you agree to these Terms. If you do not agree, do not use the Services.
 
@@ -11,6 +11,7 @@ This summary is here to help you read the Terms. It is not part of the agreement
 - You buy a hosting plan for each store you run with us. Plans are paid in advance, monthly or yearly, and renew automatically on the same day of each period until you cancel. We email you before every renewal.
 - You can cancel a plan at any time. Your store keeps running until the end of the period you paid for, and you can undo the cancellation until then. We do not refund unused time, with one exception: a yearly plan can be refunded in full, together with the items bought for that store, within 30 days of its first payment.
 - Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal and never goes above the maximum shown to you before you install. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
+- If you run EverShop on your own server, you can also buy a theme or extension once and download it. Free items are free downloads. You download it from your orders, always in its latest version, and you may use, change and share it under the GNU General Public License version 3.
 - If a payment fails, your store keeps running for one billing month while we retry and remind you. After that the store is suspended, but your data is kept and you can come back at any time by paying what is owed.
 - You own your content and your customers' data. We take daily backups and let you download them.
 - We keep your store's software and installed items up to date, and roll an update back automatically if it fails.
@@ -29,6 +30,7 @@ Other words used in these Terms:
 - **Billing Period**: the period covered by one Plan payment. It runs from one renewal date to the next.
 - **Marketplace Item** or **Item**: a theme or extension listed in the EverShop Marketplace.
 - **Item Subscription**: the recurring charge for a paid Item installed on a Site. It is paid in advance, on the same invoice as the Site's Plan (section 7.3).
+- **Download**: an Item bought once and downloaded, to run on an EverShop store that you host yourself rather than on a Site (section 7.8).
 - **Portal**: the merchant area of marketplace.evershop.io where you manage your Sites, Items and billing.
 - **Lifetime Order Count**: the number of qualifying orders a Site has received since it was created, as defined in section 7.4.
 - **Stripe**: Stripe, Inc., the payment processor we use to collect payments.
@@ -57,7 +59,7 @@ A Plan is meant for running one online store of normal size and activity. Sectio
 
 ### 4.2 EverShop Marketplace
 
-The Marketplace lists themes and extensions that you can install onto your Sites. Items are provided by EverShop. Items are used only on Sites we host: there is no download and no standalone purchase, and you may not copy or redistribute them. Section 7 describes how Items work and how they are billed.
+The Marketplace lists themes and extensions. Items are provided by EverShop. You can install an Item onto one of your Sites, where it runs as part of EverShop Cloud. Where the item page offers it, you can instead buy the Item once as a Download, for an EverShop store you run yourself. Section 7 describes how Items work and how they are billed; section 7.8 covers Downloads.
 
 ### 4.3 Included services
 
@@ -80,16 +82,17 @@ We do not offer a service level agreement or an uptime guarantee (section 21). W
 - When you make a card your default in the Portal, it becomes the card for the renewals and Item installations of all your Sites as well. If a Site has an unpaid renewal invoice at that moment (section 10.1), we charge that invoice to the new default card straight away.
 - You authorize us and Stripe to charge your card automatically, without further action from you, for Plan renewals and the Item Subscriptions renewed with them, Item installations, Plan changes and any other amount you owe under these Terms, when the amount becomes due and for as long as it remains unpaid.
 - If your bank requires you to authenticate a charge, the charge waits until you complete the authentication from the invoice page or the Portal. Until then the invoice is unpaid. A charge for installing an Item is an exception: if your bank requires authentication for it, the installation is cancelled and nothing is charged (section 7.3).
+- A Download (section 7.8) is paid once, at checkout, with a payment method you enter there. That payment is separate from the billing of your Sites: it does not use the cards saved in the Portal, the card you enter is not saved to your account, and the order is not on a Site's invoices.
 
 ### 5.2 Prices, currency and taxes
 
 - All prices are in US dollars.
-- Prices do not include taxes. We do not currently add tax to invoices. If we become required to collect sales tax, VAT or a similar tax on the Services, we will add it to your invoices and tell you before we do. You are responsible for any tax that applies to your purchase, and for the taxes of your own business.
+- Prices do not include taxes. We do not currently add tax to invoices or to orders for Downloads. If we become required to collect sales tax, VAT or a similar tax on the Services, we will add it to your invoices and orders and tell you before we do. You are responsible for any tax that applies to your purchase, and for the taxes of your own business.
 - You pay amounts in full, without set-off or deduction.
 
-### 5.3 Invoices
+### 5.3 Invoices and orders
 
-Every charge appears as an invoice in the Portal, under the Site it belongs to, with a link to the Stripe-hosted invoice page and its PDF. If you think an invoice is wrong, contact us within 30 days of the invoice date.
+Every charge for a Site appears as an invoice in the Portal, under the Site it belongs to, with a link to the Stripe-hosted invoice page and its PDF. A Download appears as an order in your account, under Orders, and we email you an order confirmation. If you think an invoice or an order is wrong, contact us within 30 days of its date.
 
 ## 6. Plan subscriptions
 
@@ -133,7 +136,9 @@ You can move a Site to another Plan from the Portal. The change applies immediat
 
 ### 7.1 What Items are
 
-Items are themes and extensions that we make available for installation onto your Sites. We may add Items, change them, or stop listing them at any time (section 7.6). You receive no copy of an Item, and you may not download, copy, modify, redistribute or resell it. Your right to use an Item lasts for as long as it is installed on a Site under these Terms.
+Items are themes and extensions that we make available for installation onto your Sites. Where the item page offers it, you can also buy an Item as a Download (section 7.8). We may add Items, change them, or stop listing them at any time (section 7.6).
+
+An Item you install on a Site runs there as part of the Services: you receive no copy of it, and you may not copy, modify, redistribute or resell it. Your right to use it lasts for as long as it is installed on a Site under these Terms. Sections 7.2 to 7.7 cover Items installed on Sites. Section 7.8 covers Downloads, which you do receive a copy of.
 
 ### 7.2 Free and paid Items
 
@@ -174,6 +179,16 @@ We may stop listing an Item. An Item that is no longer listed cannot be newly in
 ### 7.7 If a payment fails
 
 There are no separate Item invoices. Paid Items are renewed on the Site's renewal invoice. If that invoice is not paid, section 10 applies to the whole Site: the Site and its Items keep running during the grace period, and if the invoice stays unpaid, the Site is suspended together with its Items. A declined charge for installing an Item only means that the Item is not installed (section 7.3).
+
+### 7.8 Downloads for self-hosted stores
+
+If you run EverShop on your own server, you can buy an Item once and download it, instead of installing it on a Site.
+
+- **Buying.** The item page shows the one-time price. An Item with a price of zero is a free Download and goes through the same checkout. You need an account to buy a Download, because your Downloads are kept in it. You buy an Item only once: one purchase covers all its future versions and any number of stores.
+- **Downloading.** Once the order is paid, or at once for a free Download, you can download the Item from your account, under Orders, as often as you like. You always get the Item's current published version: when we publish a new version, you download it from the same order, with no time limit and no further charge. If we stop listing an Item (section 7.6), you can still download its last published version, unless we withdraw it for a legal or security reason.
+- **License.** Each Download is licensed to you under the GNU General Public License version 3, or under another open-source license if its package states one. You may use, modify and share it as that license allows. The license does not cover our trademarks and logos (section 18).
+- **Running it.** You install, configure, update and secure a Download yourself, on servers you control. A Download does not include installation, hosting, the email support of section 4.3, or any other service of EverShop Cloud.
+- **Not tied to a Site.** A Download is not billed on a Site's invoices and is not affected when a Site is cancelled, suspended or reactivated.
 
 ## 8. Cancelling a Plan
 
@@ -303,7 +318,7 @@ You may connect third-party services to your Site, such as payment gateways, shi
 ## 18. Intellectual property
 
 - The EverShop platform software is open source and licensed under the GNU General Public License version 3. Nothing in these Terms limits your rights under that license.
-- The Services beyond the open-source software, including the Portal, the Marketplace, our infrastructure, our documentation, our trademarks, and the Items we provide, are owned by EverShop or its licensors. Items are licensed to you only for use on the Site they are installed on, for as long as they are installed. Where an Item includes open-source components, their licenses apply to those components.
+- The Services beyond the open-source software, including the Portal, the Marketplace, our infrastructure, our documentation, our trademarks, and the Items we provide, are owned by EverShop or its licensors. An Item installed on a Site is licensed to you only for use on that Site, for as long as it is installed. Where an installed Item includes open-source components, their licenses apply to those components. A Download is licensed to you under the open-source license described in section 7.8.
 - You may not use our trademarks or logos without our written permission.
 - If you send us feedback or suggestions, we may use them without any obligation to you.
 
