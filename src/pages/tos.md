@@ -11,7 +11,7 @@ This summary is here to help you read the Terms. It is not part of the agreement
 - You buy a hosting plan for each store you run with us. Plans are paid in advance, monthly or yearly, and renew automatically on the same day of each period until you cancel. We email you before every renewal.
 - You can cancel a plan at any time. Your store keeps running until the end of the period you paid for, and you can undo the cancellation until then. We do not refund unused time, with one exception: a yearly plan can be refunded in full, together with the items bought for that store, within 30 days of its first payment.
 - Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal and never goes above the maximum shown to you before you install. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
-- If you run EverShop on your own server, you can also buy a theme or extension once and download it. Free items are free downloads. You download it from your orders, always in its latest version, and you may use, change and share it under the GNU General Public License version 3. We do not refund downloads.
+- If you run EverShop on your own server, you can also buy a theme or extension once and download it. Free items are free downloads. You download it from your orders, always in its latest version, and you may use, change and share it under the GNU General Public License version 3.
 - If a payment fails, your store keeps running for one billing month while we retry and remind you. After that the store is suspended, but your data is kept and you can come back at any time by paying what is owed.
 - You own your content and your customers' data. We take daily backups and let you download them.
 - We keep your store's software and installed items up to date, and roll an update back automatically if it fails.
@@ -188,8 +188,7 @@ If you run EverShop on your own server, you can buy an Item once and download it
 - **Downloading.** Once the order is paid, or at once for a free Download, you can download the Item from your account, under Orders, as often as you like. You always get the Item's current published version: when we publish a new version, you download it from the same order, with no time limit and no further charge. If we stop listing an Item (section 7.6), you can still download its last published version, unless we withdraw it for a legal or security reason. If an order is refunded or cancelled, its Download is no longer available from your account.
 - **License.** Each Download is licensed to you under the GNU General Public License version 3, or under another open-source license if its package states one. You may use, modify and share it as that license allows. The license does not cover our trademarks and logos (section 18).
 - **Running it.** You install, configure, update and secure a Download yourself, on servers you control. A Download does not include installation, hosting, the email support of section 4.3, or any other service of EverShop Cloud.
-- **Not tied to a Site.** A Download is not billed on a Site's invoices, is not part of the 30-day money-back guarantee (section 9.1), and is not affected when a Site is cancelled, suspended or reactivated.
-- **Payments are final.** We do not refund a Download (section 9.2).
+- **Not tied to a Site.** A Download is not billed on a Site's invoices and is not affected when a Site is cancelled, suspended or reactivated.
 
 ## 8. Cancelling a Plan
 
@@ -214,7 +213,7 @@ The guarantee applies once per Site and only to the first subscription of a Site
 
 ### 9.2 Other refunds
 
-Apart from section 9.1, we refund the charge for a paid Item whose installation failed (section 7.5), a Site we could not create (section 6.1), a Service we discontinue (section 20), and anything the law requires us to refund. All other payments are final. We do not give refunds if you change your mind: not for unused time after a cancellation, not for a Billing Period that has started, not for a paid Item you uninstall or replace, and not for a Download. An Item you uninstall stays paid until the end of its period, and you can reinstall it for free until then (section 7.5).
+Apart from section 9.1, we refund the charge for a paid Item whose installation failed (section 7.5), a Site we could not create (section 6.1), a Service we discontinue (section 20), and anything the law requires us to refund. All other payments are final. We do not give refunds if you change your mind: not for unused time after a cancellation, not for a Billing Period that has started, and not for a paid Item you uninstall or replace. An Item you uninstall stays paid until the end of its period, and you can reinstall it for free until then (section 7.5).
 
 ## 10. Failed payments, grace, suspension and reactivation
 
