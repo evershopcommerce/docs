@@ -4,6 +4,69 @@ import serverless from "serverless-http";
 const api = express();
 api.use(express.json());
 const router = Router();
+
+// Spam protection for the contact form. Bots post straight to this endpoint,
+// so the browser checks in the form do not stop them. Two checks need the
+// form's own page:
+//  - `website_url` is a trap field. People never see it (it is hidden off
+//    screen), but bots fill every field they find.
+//  - `elapsed` is how many milliseconds the form was open. The form sends it,
+//    and bots that post only name, email and message do not.
+const MAX_NAME = 100;
+const MAX_EMAIL = 254;
+const MAX_MESSAGE = 5000;
+// Loading the page, typing a message and pressing Submit takes longer.
+const MIN_FILL_MS = 3000;
+const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+type ContactCheck =
+  | { ok: true; name: string; email: string; message: string }
+  | { ok: false; reason: string; silent?: boolean };
+
+function checkContact(body: any): ContactCheck {
+  const { name, email, message, website_url, elapsed } = body || {};
+
+  // The trap field is filled: a bot. Answer "success" (see `silent`) so it
+  // does not learn that it was caught.
+  if (website_url !== undefined && website_url !== "") {
+    return { ok: false, reason: "trap-field", silent: true };
+  }
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    typeof message !== "string"
+  ) {
+    return { ok: false, reason: "not-text" };
+  }
+  const cleanName = name.trim();
+  const cleanEmail = email.trim();
+  const cleanMessage = message.trim();
+  if (!cleanName || !cleanEmail || !cleanMessage) {
+    return { ok: false, reason: "empty-field" };
+  }
+  if (
+    cleanName.length > MAX_NAME ||
+    cleanEmail.length > MAX_EMAIL ||
+    cleanMessage.length > MAX_MESSAGE
+  ) {
+    return { ok: false, reason: "too-long" };
+  }
+  // The name goes into the email subject, so it must stay on one line.
+  if (/[\r\n]/.test(cleanName)) {
+    return { ok: false, reason: "new-line-in-name" };
+  }
+  if (!EMAIL_PATTERN.test(cleanEmail)) {
+    return { ok: false, reason: "bad-email" };
+  }
+  if (typeof elapsed !== "number" || !Number.isFinite(elapsed)) {
+    return { ok: false, reason: "no-timer" };
+  }
+  if (elapsed < MIN_FILL_MS) {
+    return { ok: false, reason: "too-fast" };
+  }
+  return { ok: true, name: cleanName, email: cleanEmail, message: cleanMessage };
+}
+
 router.post("/contact", async (req, res) => {
   function escapeHTML(str) {
     const escapeChars = {
@@ -19,14 +82,21 @@ router.post("/contact", async (req, res) => {
     });
   }
   try {
-    const { name, email, message } = req.body;
-    if (!name || !email || !message) {
-      res.json({
-        status: "error",
-        message: "Internal server error. Please try again later.",
-      });
+    const check = checkContact(req.body);
+    if (check.ok === false) {
+      // Only the reason is logged, never what the visitor wrote.
+      console.log(`contact: blocked (${check.reason})`);
+      if (check.silent) {
+        res.json({ status: "success", message: "Message sent successfully." });
+      } else {
+        res.status(400).json({
+          status: "error",
+          message: "Please check the form and try again.",
+        });
+      }
       return;
     }
+    const { name, email, message } = check;
     // Check if the API keys are set
     const apiKey = process.env.MAILJET_API_KEY;
     const apiSecret = process.env.MAILJET_API_SECRET;
@@ -49,7 +119,7 @@ router.post("/contact", async (req, res) => {
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <meta name="x-apple-disable-message-reformatting" />
   </head>
-  <div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0">The sales intelligence platform that helps you uncover qualified leads.<div> ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿</div>
+  <div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0">${escapedName}<div> ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿</div>
   </div>
 
   <body style="background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Oxygen-Sans,Ubuntu,Cantarell,&quot;Helvetica Neue&quot;,sans-serif">
