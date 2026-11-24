@@ -34,6 +34,14 @@ We use cookies and similar tracking technologies to improve performance, persona
 
 You can manage cookie preferences through your browser settings.
 
+**On evershop.io specifically:**
+
+- **Your cookie choice.** We save your choice in your browser's local storage, so we do not ask you again on every visit. This is needed for the site to respect your choice, so it does not require consent.
+- **Analytics cookies (Google Analytics).** These show us which pages are visited and how people find them, so we can improve our documentation. We load Google Analytics and set its cookies (`_ga` and `_ga_*`) only if you click **Accept** in the cookie banner. If you click **Decline**, or do not answer, we do not load it.
+- **Embedded videos.** Some documentation pages embed YouTube videos using YouTube's privacy-enhanced mode. YouTube may set cookies once you play a video.
+
+You can change or withdraw your choice at any time with **Cookie settings** at the bottom of every page. We ask again after 12 months.
+
 ---
 
 ## 2. How We Use Your Information
