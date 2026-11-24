@@ -1,6 +1,9 @@
 import React from "react";
 import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
+import { marketplaceUrl } from "../data/marketplace";
+import { CLOUD_CTA, planUrl } from "../data/cloud";
 import HomepageWebDevFeatures from "@site/src/components/HomepageWebDevFeatures";
 import Separator from "../components/Separator";
 import BorderBlock from "../components/BorderBlock";
@@ -22,6 +25,9 @@ import DataFetching from "../components/Animations/Coding";
 import Builder from "../components/Animations/BuilderSVG";
 
 function HomepageHeader() {
+  const {
+    siteConfig: { customFields },
+  } = useDocusaurusContext();
   return (
     <header className="hero hero--primary text-center">
       <div className="container text-center">
@@ -80,17 +86,16 @@ function HomepageHeader() {
           <div className="flex justify-end">
             <Link
               className="button button--secondary rounded-xl button--large"
-              to="https://demo.evershop.io/"
-              rel="nofollow">
-              Explore our demo
+              to="/cloud">
+              EverShop Cloud
             </Link>
           </div>
           <div className="flex justify-start">
             <Link
               className="button button--primary rounded-xl button--large"
-              to="/docs/development/getting-started/introduction">
+              to={marketplaceUrl(customFields)}>
               <span className="flex items-center">
-                <span>Get started</span>{" "}
+                <span>Marketplace</span>{" "}
                 <span className="pl-2 flex justify-center">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -494,7 +499,37 @@ function Integrations() {
   );
 }
 
+// The text link with an arrow at the bottom of each "Elevate your online
+// store" card.
+function CardLink({ href, children }) {
+  return (
+    <a
+      href={href}
+      className="text-primary hover:underline flex items-center gap-1 font-semibold">
+      <span>{children}</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden="true">
+        <path
+          d="M3.33301 10H16.6663M16.6663 10L11.6663 5M16.6663 10L11.6663 15"
+          stroke="#008060"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </a>
+  );
+}
+
 function ElevateYourStore() {
+  const {
+    siteConfig: { customFields },
+  } = useDocusaurusContext();
   return (
     <div className="container">
       <div>
@@ -528,25 +563,9 @@ function ElevateYourStore() {
                 Explore a wide range of customizable modules, extensions, and
                 themes to enhance customer experience and drive more sales.
               </div>
-              <a
-                href="/extensions"
-                className="text-primary hover:underline flex items-center gap-1 font-semibold">
-                <span>Explore the Marketplace</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none">
-                  <path
-                    d="M3.33301 10H16.6663M16.6663 10L11.6663 5M16.6663 10L11.6663 15"
-                    stroke="#008060"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </a>
+              <CardLink href={marketplaceUrl(customFields)}>
+                Explore the Marketplace
+              </CardLink>
             </div>
           </BorderBlock>
           <BorderBlock
@@ -556,7 +575,7 @@ function ElevateYourStore() {
             <div className="bg-Other-01 rounded-t-xl flex justify-center flex-col items-center pt-5 px-8 h-48 lg:h-80">
               <img
                 src="/img/cloud.webp"
-                alt="EverShop cloud"
+                alt="EverShop Cloud"
                 width={558}
                 height={312}
                 className="max-h-full w-auto"
@@ -564,15 +583,15 @@ function ElevateYourStore() {
             </div>
             <div className="mt-2 p-4 flex flex-col justify-items-end">
               <div className="text-xl font-semibold text-Neutrals-01">
-                Scale with EverShop cloud Solutions
+                Run your store on EverShop Cloud
               </div>
               <div className="mt-3 mb-[15px]">
-                Coming soon! Discover optimized cloud modules designed to boost
-                performance and adapt to your unique needs.
+                Managed hosting for your EverShop store. You bring the products
+                and the customers. We run the servers.
               </div>
-              <span className="text-primary flex items-center gap-2 font-semibold">
-                Coming Soon
-              </span>
+              <CardLink href={planUrl(customFields, "monthly")}>
+                {CLOUD_CTA}
+              </CardLink>
             </div>
           </BorderBlock>
         </div>

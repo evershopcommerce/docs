@@ -233,7 +233,7 @@ Shaping metafields loads the owner's definitions from the database. To keep list
 
 A definition carries an optional `provisioned_by_theme` attribution column. Themes declare the metafields they depend on, and the provisioner seeds them at install/boot, stamping the theme name onto each row it creates. Rows created by hand (admin UI, migration, `createMetafieldDefinition`) leave the column `NULL`. A definition that already exists and is *unowned* can be claimed by the first theme that seeds it — first seeder wins.
 
-The base module seeds one such definition itself: `shop / custom / copyright` (`modules/base/migration/Version-1.0.6.ts`), a `short_text` field that drives the storefront footer copyright line. The `themeConfig` GraphQL resolver overlays its value onto `themeConfig.copyRight`, so the merchant-edited value wins and the config value is only the fallback.
+The base module seeds one such definition itself: `shop / custom / copyright` (`modules/base/migration/Version-1.0.6.ts`), a `short_text` field that drives the storefront footer copyright line. The `themeConfig` GraphQL resolver overlays its value onto `themeConfig.copyRight`, so the merchant-edited value wins and the config value is only the fallback. While this field is empty, the resolver also returns `themeConfig.showPoweredBy: true`, and the storefront and admin footers add "Powered by EverShop" after the copyright line, a link to evershop.io that opens in a new tab. Saving your own copyright text removes it. A `themeConfig.copyRight` in config does not.
 
 ## Deleting a definition
 

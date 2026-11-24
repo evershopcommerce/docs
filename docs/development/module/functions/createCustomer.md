@@ -48,11 +48,15 @@ createCustomer(data: CustomerData, context?: Record<string, unknown>): Promise<C
 
 **Type:** `Record<string, unknown>`
 
-Additional context for hooks.
+Additional context for hooks. Code (never a request body) can also set these options here:
+
+- `allowNoPassword: true`: create the account without a password when `data.password` is not given. A password nobody knows is stored, and the customer can choose one later with "Forgot your password?". Use it for a social login instead of making up a password.
+- `passwordHash`: a bcrypt hash to store as it is, for an account moved from another store. It cannot be combined with `data.password`.
+- `suppressRegistrationEvent: true`: emit neither `customer_registered` (which sends the welcome email) nor `account_created`, for a bulk import.
 
 ## Return Value
 
-Returns `Promise<Customer>` without password field.
+Returns `Promise<Customer>`: the new customer row. It includes the stored password hash, so never send it to a browser as it is.
 
 ## Examples
 

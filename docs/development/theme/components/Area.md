@@ -196,7 +196,7 @@ function HeaderRight() {
 }
 ```
 
-`component.default` also accepts an already-created element, which is how core's `Footer` renders its static payment-icon row:
+`component.default` also accepts an already-created element, which is how core's `Footer` renders its copyright line:
 
 ```tsx
 <Area

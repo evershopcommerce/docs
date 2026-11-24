@@ -150,6 +150,11 @@ Two of these have failure modes worth knowing before you set them: `EVERSHOP_HOM
       <td>Signs the anonymous order-tracking links embedded in shipment emails. If unset, those links cannot be generated and the tracking page renders "this link is no longer valid". Set it if guests can place orders.</td>
     </tr>
     <tr>
+      <td><code>CART_RECOVERY_TOKEN_SECRET</code></td>
+      <td>—</td>
+      <td>Signs the cart recovery links (<a href="/docs/development/module/functions/buildcartrecoveryurl"><code>buildCartRecoveryUrl</code></a>), for example in abandoned-cart emails. If unset, no link is built. Changing it cancels every link already sent. Set it if you send abandoned-cart emails.</td>
+    </tr>
+    <tr>
       <td colSpan="3"><strong>Images</strong></td>
     </tr>
     <tr>

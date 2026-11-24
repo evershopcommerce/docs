@@ -48,27 +48,24 @@ const baseUrl = getBaseUrl();
 // Returns: 'https://myshop.com' or 'http://localhost:3000'
 ```
 
-### Building Full URLs
-
-```typescript
-import { getBaseUrl } from '@evershop/evershop/lib/util/getBaseUrl';
-
-const baseUrl = getBaseUrl();
-const productUrl = `${baseUrl}/product/${product.url_key}`;
-const categoryUrl = `${baseUrl}/category/${category.url_key}`;
-```
-
 ### Email Templates
 
 ```typescript
 import { getBaseUrl } from '@evershop/evershop/lib/util/getBaseUrl';
 
 const emailData = {
-  shopUrl: getBaseUrl(),
-  orderLink: `${getBaseUrl()}/account/orders/${orderId}`,
-  logoUrl: `${getBaseUrl()}/assets/logo.png`
+  shopUrl: getBaseUrl()
 };
 ```
+
+:::tip Build other URLs with the helpers
+Prefer a helper to adding a path to `getBaseUrl()` by hand. A hand-written path breaks when a route changes, and a stored file can already be a full cloud storage URL.
+
+- A route: [buildAbsoluteUrl](/docs/development/module/functions/buildabsoluteurl)
+- A product: [getProductUrl](/docs/development/module/functions/getproducturl) with `{ absolute: true }`
+- A stored file: [getAssetUrl](/docs/development/module/functions/getasseturl)
+- A resized image: [getImageUrl](/docs/development/module/functions/getimageurl)
+:::
 
 ## Resolution order
 
@@ -132,4 +129,6 @@ This is the right knob for container and platform deployments, where the public 
 ## See Also
 
 - [buildAbsoluteUrl](/docs/development/module/functions/buildabsoluteurl) - Build an absolute URL from a route ID
+- [getAssetUrl](/docs/development/module/functions/getasseturl) - Absolute URL of a stored file
+- [getImageUrl](/docs/development/module/functions/getimageurl) - URL of a resized image
 - [getConfig](/docs/development/module/functions/getconfig) - Get configuration values

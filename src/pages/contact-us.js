@@ -6,17 +6,34 @@ function ContactForm() {
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
 
-  const send = (email, name, message, setSubmitting) => {
+  // When the form opened. It is sent with the message so the server can tell a
+  // person (who needs a few seconds) from a bot (which sends at once).
+  const openedAt = React.useRef(null);
+  React.useEffect(() => {
+    openedAt.current = Date.now();
+  }, []);
+
+  const send = (
+    { email, name, message, website_url },
+    setSubmitting
+  ) => {
     // use fetch to call api to localhost:8080/contact/send with email, name, message
     // if success, show success message
     // if error, show error message
+    setError(false);
 
     fetch("https://evershop.io/api/contact", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, name, message }),
+      body: JSON.stringify({
+        email,
+        name,
+        message,
+        website_url,
+        elapsed: openedAt.current ? Date.now() - openedAt.current : 0,
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -142,7 +159,12 @@ function ContactForm() {
           </div>
           <div className="p-5 lg:p-10 border border-Neutrals-06 rounded-3xl relative bg-white shadow-extension">
             <Formik
-              initialValues={{ email: "", name: "", message: "" }}
+              initialValues={{
+                email: "",
+                name: "",
+                message: "",
+                website_url: "",
+              }}
               validate={(values) => {
                 const errors = {};
                 if (!values.email) {
@@ -162,7 +184,7 @@ function ContactForm() {
               }}
               onSubmit={(values, { setSubmitting }) => {
                 setSubmitting(true);
-                send(values.email, values.name, values.message, setSubmitting);
+                send(values, setSubmitting);
               }}>
               {({
                 values,
@@ -175,6 +197,28 @@ function ContactForm() {
                 /* and other goodies */
               }) => (
                 <form onSubmit={handleSubmit}>
+                  {/* Trap field for bots. People never see it, tab to it or
+                      hear it read out; bots fill every field they find. */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-10000px",
+                      width: "1px",
+                      height: "1px",
+                      overflow: "hidden",
+                    }}>
+                    <label htmlFor="website_url">Leave this field empty</label>
+                    <input
+                      type="text"
+                      id="website_url"
+                      name="website_url"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      onChange={handleChange}
+                      value={values.website_url}
+                    />
+                  </div>
                   <div className="">
                     <div>
                       <label

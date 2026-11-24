@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import { openSettings } from "@site/src/consent/consent";
 
 // Footer layout: a brand block (logo, tagline, social icons), the link columns
 // (themeConfig.footer.links, drawn by Footer/Links/MultiColumn), and a bottom
@@ -78,11 +79,20 @@ export default function FooterLayout({ style, links, logo, copyright }) {
             <ul className="footer__legal" aria-label="Legal">
               {legal.map((item) => (
                 <li key={item.label}>
-                  <Link
-                    className="footer__legal-link"
-                    {...(item.href ? { href: item.href } : { to: item.to })}>
-                    {item.label}
-                  </Link>
+                  {item.action === "cookie-settings" ? (
+                    <button
+                      type="button"
+                      className="footer__legal-link footer__legal-button"
+                      onClick={openSettings}>
+                      {item.label}
+                    </button>
+                  ) : (
+                    <Link
+                      className="footer__legal-link"
+                      {...(item.href ? { href: item.href } : { to: item.to })}>
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

@@ -2,39 +2,11 @@ import React from "react";
 import Layout from "@theme/Layout";
 import Label from "../components/Label";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+// The plan, its prices and the "Get EverShop Cloud" button are shared with the
+// /cloud page: change them in src/data/cloud.js.
+import { CLOUD_PLAN, CLOUD_CTA, planUrl } from "../data/cloud";
 
-// EverShop Cloud is ONE plan. In the marketplace it is the `basic` tier, sold
-// under the name "EverShop Cloud" (`marketplace.plans.offered`), and these are
-// its list prices in US dollars — the same figures the marketplace charges
-// (extensions/mp-lifecycle, Version-1.0.6: basic-monthly 19, basic-yearly 190).
-// The yearly price is ten monthly payments, so "2 months free" is exact.
-const CLOUD_PLAN = {
-  // The tier key the marketplace checkout expects in `?plan=`. It is never
-  // shown to a visitor.
-  tier: "basic",
-  name: "EverShop Cloud",
-  monthly: 19,
-  yearly: 190,
-};
-
-// Where the "Get EverShop Cloud" button sends people. The marketplace captures
-// `?plan=<tier>&billing=<cycle>` on any URL and carries it through login to
-// checkout. Production stays "Coming Soon" until the production marketplace
-// is live — switch it to `https://marketplace.evershop.io/${query}` then.
-const planUrl = (customFields, billing) => {
-  const where = customFields?.where_is_this;
-  const query = `?plan=${CLOUD_PLAN.tier}&billing=${billing}`;
-  if (where === "local") return `http://localhost:3000/${query}`;
-  if (where === "acc") return `https://marketplace-uat.evershop.io/${query}`;
-  return "#";
-};
-
-const ctaLabel = (customFields) =>
-  customFields?.where_is_this === "production"
-    ? "Coming Soon"
-    : `Get ${CLOUD_PLAN.name}`;
-
-// "$19/month" or "$190/year" — the Cloud price for the chosen billing cycle.
+// "$29/month" or "$290/year" — the Cloud price for the chosen billing cycle.
 const cloudPrice = (billing) =>
   billing === "yearly"
     ? `$${CLOUD_PLAN.yearly}/year`
@@ -52,6 +24,9 @@ const comparison = [
     selfHosted: "Free",
     cloud: (billing) => cloudPrice(billing),
   },
+  // We take no cut of the merchant's sales (confirmed by the owner,
+  // 2026-11-23). Their payment provider still charges its own fees.
+  { label: "Transaction fees", selfHosted: "None", cloud: "None", included: true },
   { label: "Hosting", selfHosted: "~$10–30/month", cloud: "Included", included: true },
   { label: "Custom domain", selfHosted: "~$10–20/year", cloud: "Bring your own" },
   { label: "SSL certificate", selfHosted: "Free", cloud: "Included", included: true },
@@ -241,7 +216,7 @@ const CloudHeader = ({ customFields, selected }) => (
     <a
       className="button button--primary w-full p-3 text-base"
       href={planUrl(customFields, selected)}>
-      {ctaLabel(customFields)}
+      {CLOUD_CTA}
     </a>
   </div>
 );
@@ -387,12 +362,12 @@ const faqs = [
   {
     question: "How are marketplace themes and extensions priced?",
     answer:
-      "Free items cost nothing. A paid item has a monthly price per store, billed at the end of each month for the days it was installed. Some items step up in price as your store passes lifetime order milestones, up to a maximum that is shown before you install. Uninstall an item at any time to stop its charges.",
+      "Free items cost nothing. A paid item has a monthly price per store. You pay when you install it, for the rest of your billing period, and then it renews with your plan on the same invoice. On a yearly plan, an item costs 12 times its monthly price. Some items step up in price as your store passes lifetime order milestones. You see the full price table before you install. Uninstall an item at any time and it will not renew. We do not refund the period you already paid.",
   },
   {
-    question: "Will my price change later?",
+    question: "Do you take a cut of my sales?",
     answer:
-      "No. Your price stays fixed for as long as your subscription continues, including at renewals. A new list price applies only to new subscriptions.",
+      "No. EverShop Cloud has no transaction fees. You pay the plan price and any paid marketplace items you choose. Your payment provider, such as Stripe or PayPal, still charges its own fee for each payment.",
   },
   {
     question: "Is there a free trial?",

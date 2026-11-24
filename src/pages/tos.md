@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: November 20, 2026**
+**Last updated: November 24, 2026**
 
 These Terms of Service ("Terms") are a legal agreement between you and EverShop LLC. They govern your use of EverShop Cloud, the EverShop Marketplace, the merchant portal at marketplace.evershop.io, and the related services described below (together, the "Services"). Please read them carefully. By creating an account, buying a plan, or using the Services, you agree to these Terms. If you do not agree, do not use the Services.
 
@@ -8,9 +8,9 @@ These Terms of Service ("Terms") are a legal agreement between you and EverShop 
 
 This summary is here to help you read the Terms. It is not part of the agreement; the numbered sections below are.
 
-- You buy a hosting plan for each store you run with us. Plans are paid in advance, monthly or yearly, and renew automatically on the same day of each period until you cancel. We email you before every renewal.
+- You buy a hosting plan for each store you run with us. Plans are paid in advance, monthly or yearly, and renew automatically on the same day of each period until you cancel. We email you before every renewal. We may change plan prices, and we tell you at least 30 days before a new price applies to your plan.
 - You can cancel a plan at any time. Your store keeps running until the end of the period you paid for, and you can undo the cancellation until then. We do not refund unused time, with one exception: a yearly plan can be refunded in full, together with the items bought for that store, within 30 days of its first payment.
-- Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal and never goes above the maximum shown to you before you install. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
+- Marketplace themes and extensions are installed onto your hosted store. A paid item is charged when you install it, for the rest of your current billing period, and then renews with your plan on the same invoice. Some items cost more as your store passes order milestones; a new price starts at your next renewal. We may change item prices, and we tell you at least 30 days before a new price applies to an item you have installed. If you change your mind and uninstall a paid item, we do not refund it, but it stays paid until the end of the period and you can reinstall it for free until then.
 - If you run EverShop on your own server, you can also buy a theme or extension once and download it. Free items are free downloads. You download it from your orders, always in its latest version, and you may use, change and share it under the GNU General Public License version 3.
 - If a payment fails, your store keeps running for one billing month while we retry and remind you. After that the store is suspended, but your data is kept and you can come back at any time by paying what is owed.
 - You own your content and your customers' data. We take daily backups, and we send you a copy when you ask.
@@ -111,10 +111,12 @@ A Plan is a subscription for one Site. Your first payment is the full price of t
 - We email you before every renewal: about 14 days before a yearly renewal and about 7 days before a monthly renewal. The email states the renewal date and the amount, with the Plan and each paid Item on its own line, and contains a one-click option not to renew, which schedules a cancellation under section 8. The amount can change if you install or uninstall Items before the renewal, and account credit can lower it.
 - We do not send a renewal notice when a cancellation is already scheduled, because no renewal will happen.
 
-### 6.4 Your price is fixed for the life of your subscription
+### 6.4 Price changes
 
-- The price you pay for a Plan does not change for as long as that subscription continues, including at renewals.
-- We may change the list price of a Plan at any time. A new list price applies only to new subscriptions, to Plan changes you make (section 6.6), and to a Site you subscribe again after it stopped (sections 8 and 10).
+- We may change the price of a Plan.
+- For an existing subscription, we notify you at least 30 days before a new price applies, by email to your account address and by a notice in the Portal. The new price applies from your first renewal after that notice period.
+- If you do not accept the new price, you can cancel before that renewal (section 8). Your Site keeps running until the end of the period you already paid for.
+- A new price applies at once to new subscriptions, to Plan changes you make (section 6.6), and to a Site you subscribe again after it stopped (sections 8 and 10).
 
 ### 6.5 Billing Cycle
 
@@ -142,16 +144,18 @@ An Item you install on a Site runs there as part of the Services: you receive no
 
 ### 7.2 Free and paid Items
 
-Free Items cost nothing. Paid Items carry an Item Subscription: a price per Site for each Billing Period. An Item's price table gives monthly prices. On a monthly Plan you pay the monthly price; on a yearly Plan you pay 12 times the monthly price, with no yearly discount. Before you install a paid Item on a Site, the Portal shows you its full price table, what it will cost that Site now and at every future milestone, including the maximum price, and the amount you will be charged at once.
+Free Items cost nothing. Paid Items carry an Item Subscription: a price per Site for each Billing Period. An Item's price table gives monthly prices. On a monthly Plan you pay the monthly price; on a yearly Plan you pay 12 times the monthly price, with no yearly discount. Before you install a paid Item on a Site, the Portal shows you its full price table, what it will cost that Site now and at every future milestone, and the amount you will be charged at once.
 
 ### 7.3 How Item Subscriptions are billed
 
 - Paid Items are paid in advance. When you install a paid Item, we charge your card at once for the rest of the Site's current Billing Period, in proportion to the time left in it. The Item is installed only after this charge succeeds. If the charge is declined, nothing is installed and you owe nothing for the Item. If your bank requires authentication for this charge, we cannot complete it: the installation is cancelled, and you can make another card your default and try again.
 - After that, the Item renews with the Site's Plan. Each renewal produces one invoice for the Site, covering the Plan and every paid Item installed on it, each at its price on the renewal date. That invoice is paid, retried and, if it stays unpaid, handled like any Plan renewal (section 10). There are no separate Item invoices.
 - If the charge for the rest of the current Billing Period would be less than USD 0.50, we do not make it: the Item is free until the next renewal and is billed from then on. An Item whose price for the Site's current band is zero is free until a milestone raises its price.
-- An Item's monthly price may step up with the Site's Lifetime Order Count (section 7.4). The Item's price table lists order-count milestones and the monthly price for each band, up to a final price that is the maximum the Item will ever cost on that Site. The price only moves up the table; it never moves down.
+- An Item's monthly price may step up with the Site's Lifetime Order Count (section 7.4). The Item's price table lists order-count milestones and the monthly price for each band, up to a final band with the highest price in the table. As the order count grows, the price only moves up the table; it never moves down.
 - When the Site crosses a milestone that raises the price of an installed Item, the new price applies from the next renewal. We never charge a price change in the middle of a Billing Period. We notify you of the new price and the date it starts, so that an invoice is never the first you hear of a new price.
-- The price table of an Item is fixed for each installation at the moment you install it. If we change an Item's price table later, the change applies only to installations made after the change. A reinstall within the period already paid for an Item keeps the price table of that installation (section 7.5). Any other reinstall is a new installation at the then-current price table.
+- We may change an Item's price table. For an Item already installed on a Site, we notify you at least 30 days before the new price table applies, by email to your account address and by a notice in the Portal. The new table applies from the Site's first renewal after that notice period, and the Site's price band is then read from the new table.
+- If you do not accept the new price, uninstall the Item before that renewal (section 7.5). It is then not renewed.
+- A new price table applies at once to new installations. A reinstall within the period already paid for an Item keeps the price table of that installation (section 7.5). Any other reinstall is a new installation at the then-current price table.
 
 ### 7.4 Lifetime Order Count
 
@@ -273,7 +277,7 @@ We keep the data and the stop backup of a cancelled or suspended Site so that yo
 - We keep your Site's platform software and installed Items up to date. We test updates centrally, apply them behind a restore point, and check the Site afterwards. If an update fails the check, we roll it back and your Site keeps running on the previous version. You take no action, and you are never asked to fix a compatibility problem yourself.
 - Updates are applied at midnight in your Site's configured time zone. We tell you in advance before a platform upgrade. An upgrade may interrupt your storefront for a short time, measured in minutes at most.
 - You can freeze updates for a Site from the Portal. While frozen, updates are skipped and are applied when you lift the freeze. Security updates may override a freeze, because keeping the platform secure takes priority.
-- Updates never change the price table of an installed Item.
+- Updates never change the price table of an installed Item. Price changes follow section 7.3.
 - You authorize us to make these changes to your Site.
 
 ## 13. Custom domains

@@ -158,7 +158,10 @@ export default function Base({ myCart, customer, themeConfig, /* ...apis */ }) {
           wrapper="main"
           editableInPageBuilder
         />
-        <Footer copyRight={themeConfig.copyRight} />
+        <Footer
+          copyRight={themeConfig.copyRight}
+          showPoweredBy={themeConfig.showPoweredBy}
+        />
       </CartProvider>
     </CustomerProvider>
   );

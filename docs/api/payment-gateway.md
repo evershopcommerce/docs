@@ -262,11 +262,11 @@ Five event types are handled. For `payment_intent.*` events the order is located
   <tbody>
     <tr>
       <td><code>payment_intent.succeeded</code></td>
-      <td>Upserts the <code>payment_transaction</code> row. If this is the first transaction for the order, sets payment status <code>stripe_captured</code>, adds an activity log entry and emits <code>order_placed</code>.</td>
+      <td>Upserts the <code>payment_transaction</code> row. If this is the first transaction for the order, sets payment status <code>stripe_captured</code>, adds an activity log entry and marks the order placed (<a href="/docs/development/module/functions/markorderplaced"><code>markOrderPlaced</code></a>, which emits <code>order_placed</code> once per order).</td>
     </tr>
     <tr>
       <td><code>payment_intent.amount_capturable_updated</code></td>
-      <td>Upserts the <code>payment_transaction</code> row. If this is the first transaction for the order, sets payment status <code>stripe_authorized</code>, adds an activity log entry and emits <code>order_placed</code>.</td>
+      <td>Upserts the <code>payment_transaction</code> row. If this is the first transaction for the order, sets payment status <code>stripe_authorized</code>, adds an activity log entry and marks the order placed. The capture that follows does not send <code>order_placed</code> again.</td>
     </tr>
     <tr>
       <td><code>payment_intent.payment_failed</code></td>
@@ -289,7 +289,7 @@ Every other event type, an event whose order cannot be found, and an event for a
 
 Before `payment_intent.succeeded` or `payment_intent.amount_capturable_updated` can mark an order paid, the handler checks that the PaymentIntent's amount and currency equal the order's grand total and currency. On a mismatch nothing is written, an error is logged, the order stays `pending` for manual review, and the response is still `200` because retrying cannot fix it.
 
-The handler runs in one database transaction and locks the order row (`SELECT ... FOR UPDATE`). "First transaction" is decided under that lock, so a redelivered or overlapping event cannot fire `order_placed` twice.
+The handler runs in one database transaction and locks the order row (`SELECT ... FOR UPDATE`). "First transaction" is decided under that lock, so a redelivered or overlapping event cannot record the payment twice. `order_placed` is written in the same transaction, once per order.
 
 <hr />
 
@@ -372,11 +372,11 @@ Events can arrive out of order, so each one only acts from a state where it make
     </tr>
     <tr>
       <td><code>PAYMENT.CAPTURE.COMPLETED</code></td>
-      <td>Upserts the <code>payment_transaction</code> row and sets payment status <code>paypal_captured</code>. Ignored for refunded, partially refunded and canceled orders. Emits <code>order_placed</code> only if this is the first record of the capture.</td>
+      <td>Upserts the <code>payment_transaction</code> row and sets payment status <code>paypal_captured</code>. Ignored for refunded, partially refunded and canceled orders. On the first record of the capture, marks the order placed (<a href="/docs/development/module/functions/markorderplaced"><code>markOrderPlaced</code></a>, which emits <code>order_placed</code> once per order: not again after an authorization or a pending capture).</td>
     </tr>
     <tr>
       <td><code>PAYMENT.CAPTURE.PENDING</code></td>
-      <td>Records the capture and sets payment status <code>paypal_pending</code> (eCheck, manual review — money in flight, not yet settled). Never downgrades a settled or canceled order.</td>
+      <td>Records the capture and sets payment status <code>paypal_pending</code> (eCheck, manual review — money in flight, not yet settled), and marks the order placed on its first record. Never downgrades a settled or canceled order.</td>
     </tr>
     <tr>
       <td><code>PAYMENT.CAPTURE.DENIED</code></td>
@@ -389,7 +389,7 @@ Events can arrive out of order, so each one only acts from a state where it make
   </tbody>
 </table>
 
-All handlers share the same idempotency guard as the storefront return page (the `payment_transaction` row keyed on transaction id), so duplicate deliveries and out-of-order deliveries cannot double-record a payment. The `order_placed` guard is per PayPal transaction id.
+All handlers share the same idempotency guard as the storefront return page (the `payment_transaction` row keyed on transaction id), so duplicate deliveries and out-of-order deliveries cannot double-record a payment. `order_placed` is sent once per order, however many PayPal transactions it has.
 
 <hr />
 

@@ -344,11 +344,11 @@ Configure theme-specific settings like your copyright notice and custom scripts 
 ```
 
 :::warning
-**Breaking change:** `themeConfig.logo` was removed. The typed `getConfig` surface keeps only `themeConfig.headTags` and `themeConfig.copyRight`, and the `ThemeConfig` GraphQL type exposes only those two fields. There is **no fallback** — a `logo` block left in `config/default.json` is simply ignored. The storefront logo now comes from admin settings (`logo`, `logoWidth`, `logoHeight` on **Settings → Store**), exposed through the `BrandingSetting` GraphQL type.
+**Breaking change:** `themeConfig.logo` was removed. The typed `getConfig` surface keeps only `themeConfig.headTags` and `themeConfig.copyRight`, and the `ThemeConfig` GraphQL type exposes only those two fields, plus `showPoweredBy` (see [Metafields](./metafields)). There is **no fallback** — a `logo` block left in `config/default.json` is simply ignored. The storefront logo now comes from admin settings (`logo`, `logoWidth`, `logoHeight` on **Settings → Store**), exposed through the `BrandingSetting` GraphQL type.
 :::
 
 :::info
-`themeConfig.copyRight` is itself only a fallback: the seeded `shop / custom / copyright` metafield overrides it when set. See [Metafields](./metafields).
+`themeConfig.copyRight` is itself only a fallback: the seeded `shop / custom / copyright` metafield overrides it when set. Only that metafield removes the "Powered by EverShop" link from the footers; `themeConfig.copyRight` does not. See [Metafields](./metafields).
 :::
 
 ### Order Management (OMS) Configuration

@@ -247,14 +247,15 @@ It returns immediately unless `order.payment_method === 'zero_checkout'`, so it 
 
 1. `updatePaymentStatus(orderId, 'paid', connection)` — whose `changePaymentStatus` after-hook recomputes `order.status` from the PSO mapping on the same connection.
 2. Writes an activity log entry, `Payment completed automatically (zero-total order)`.
+3. Calls [`markOrderPlaced`](/docs/development/module/functions/markorderplaced), which sets `placed_at` and emits `order_placed` with the order row, so subscribers — the confirmation email among them — see `payment_status: 'paid'` rather than a half-finished order.
 
-After the commit it re-loads the order row and emits `order_placed` with it, so subscribers — the confirmation email among them — see `payment_status: 'paid'` rather than a half-finished order.
+If the event cannot be saved, the whole transaction rolls back and the order stays `pending`.
 
 :::note
 Errors inside the hook are logged and swallowed. The order transaction has already committed by then, so throwing would fail the checkout response for an order that exists. A zero-total order left in `pending` is the same failure class as a lost gateway webhook: visible in admin, fixable by hand.
 :::
 
-This is also why `zero_checkout` does not need an `order_placed` emitter of its own the way COD, Stripe, and PayPal do — the auto-payment path emits it.
+So `zero_checkout` needs nothing more to mark its orders placed: the auto-payment path calls `markOrderPlaced`, as COD, Stripe and PayPal do at their own moment.
 
 ## Billing address is now optional at zero total
 
