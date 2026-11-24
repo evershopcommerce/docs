@@ -1,0 +1,1580 @@
+/*
+ * /cloud landing page.
+ *
+ * Same family as the rest of the site (Inter, EverShop green, light surfaces),
+ * but calmer and more spacious than the homepage. Inter is loaded in two
+ * weights only (400 and 600, see src/css/fonts.css), so the page uses only
+ * those two. Nothing here relies on Tailwind: the page does not depend on
+ * output.css being regenerated.
+ *
+ * Motion: two moments (the checks in the hero and the strike-through list).
+ * Each one starts from a finished, visible state, so it still reads right
+ * when animations do not run, and each is switched off for
+ * prefers-reduced-motion.
+ */
+
+.page {
+  --ink: #101828;
+  --body: #475467;
+  --muted: #5b6578;
+  --line: #e6e8ec;
+  --surface: #f5f8f7;
+  --mint: #e5fff9;
+  --mint-2: #cdf3f2;
+  --green: #008060;
+  --green-hover: #007356;
+  --green-ink: #006b50;
+  --deep: #062f26;
+  --on-deep: #eaf6f2;
+  --on-deep-muted: #b3d4ca;
+  --shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.04),
+    0 12px 32px -14px rgba(16, 24, 40, 0.16);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-h: 4.5rem;
+
+  color: var(--body);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+.wrap {
+  width: min(100% - 2.5rem, 76rem);
+  margin-inline: auto;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ type */
+
+/* Headings follow the homepage (.hero__title and .sub__hero__title in
+   src/css/heading.scss): same sizes, line heights, tracking and weights. The
+   homepage hero asks for weight 500, but only Inter 400 and 600 are loaded, so
+   it renders as 400 on desktop and 600 on mobile. Keep the same values here so
+   both pages change together. */
+
+.h1,
+.h2,
+.h3 {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.h1 {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+/* Two sentences, one per line, so a line never breaks between them */
+.h1 > span {
+  display: block;
+  text-wrap: balance;
+}
+
+.h2 {
+  font-size: 1.875rem;
+  line-height: 2.375rem;
+}
+
+.h3 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+@media (min-width: 40rem) {
+  .h1 {
+    font-size: 3.75rem;
+    line-height: 4.5rem;
+    letter-spacing: -0.075rem;
+    font-weight: 500;
+  }
+
+  .h2 {
+    font-size: 2.5rem;
+    line-height: 3.25rem;
+  }
+}
+
+.lead {
+  max-width: 36rem;
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.leadLink {
+  margin: 1.5rem 0 0;
+}
+
+.leadLink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--green-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.leadLink a:hover {
+  color: var(--green-hover);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* Keeps "Performance-aligned" on one line when there is room for it */
+@media (min-width: 40rem) {
+  .nowrap {
+    white-space: nowrap;
+  }
+}
+
+.section {
+  padding-block: clamp(4rem, 2.6rem + 5.5vw, 7.5rem);
+  scroll-margin-top: var(--nav-h);
+}
+
+.sectionHead {
+  max-width: 44rem;
+  margin-bottom: clamp(2.25rem, 4vw, 3.5rem);
+}
+
+/* --------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.btn svg {
+  transition: transform 0.2s var(--ease);
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.btnPrimary {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 1px 2px rgba(16, 24, 40, 0.2);
+}
+
+.btnPrimary:hover {
+  background: var(--green-hover);
+  color: #fff;
+}
+
+.btnLight {
+  background: #fff;
+  color: var(--deep);
+}
+
+.btnLight:hover {
+  background: var(--mint);
+  color: var(--deep);
+}
+
+.btnBlock {
+  width: 100%;
+}
+
+.onDeep .btn:focus-visible {
+  outline-color: #fff;
+}
+
+/* ------------------------------------------------------------------ hero */
+
+.hero {
+  position: relative;
+  overflow-x: clip;
+  padding: clamp(2.5rem, 1.5rem + 4vw, 5rem) 0 clamp(3.5rem, 2.5rem + 5vw, 6.5rem);
+  background: radial-gradient(
+      55% 70% at 100% 100%,
+      rgba(40, 179, 136, 0.16) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    radial-gradient(
+      45% 55% at 0% 0%,
+      rgba(205, 243, 242, 0.55) 0%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    #fcfcfc;
+}
+
+.heroGrid {
+  display: grid;
+  gap: clamp(3rem, 6vw, 4.5rem);
+  align-items: center;
+}
+
+@media (min-width: 62rem) {
+  .heroGrid {
+    /* The copy column must fit "We run the servers." in the h1 on one line */
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+}
+
+.heroCopy {
+  max-width: 36rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1.5rem;
+  padding: 0.3rem 0.85rem 0.3rem 0.6rem;
+  border: 1px solid var(--mint-2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--green-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pillDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px var(--mint-2);
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+  margin-top: 2rem;
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.textLink:hover {
+  color: var(--green-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.fine {
+  margin: 1.1rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+/* Hero illustration: a storefront at its own domain, plus what we handle */
+
+.heroArt {
+  position: relative;
+  width: 100%;
+  max-width: 38rem;
+}
+
+@media (min-width: 62rem) {
+  .heroArt {
+    max-width: none;
+  }
+}
+
+.browser {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-soft), 0 44px 80px -44px rgba(0, 128, 96, 0.4);
+}
+
+.browserBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background: #f6f7f9;
+}
+
+.winDots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.winDots i {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #d9dce2;
+}
+
+.address {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.address svg {
+  color: var(--green);
+}
+
+/* The bottom padding is the room the "Handled for you" card overlaps, so the
+   card never covers a product name. */
+.shop {
+  padding: 1rem 1.25rem 3.25rem;
+}
+
+.shopNav {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.shopNav b {
+  margin-right: auto;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.shopCart {
+  display: inline-flex;
+  color: var(--ink);
+}
+
+.shopBanner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e9fbf5 0%, #d6f1ea 100%);
+}
+
+.shopBannerTitle {
+  display: block;
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.shopBannerText .sk:first-of-type {
+  margin-top: 0.7rem;
+}
+
+.sk {
+  display: block;
+  height: 0.4rem;
+  margin-top: 0.4rem;
+  border-radius: 999px;
+  background: rgba(16, 24, 40, 0.1);
+}
+
+.shopBtn {
+  display: inline-block;
+  margin-top: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bannerMug {
+  display: block;
+  width: 100%;
+  max-width: 8.5rem;
+  margin-inline: auto;
+}
+
+.shopGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.shopItem {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.shopThumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  margin-bottom: 0.35rem;
+  padding: 0.55rem;
+  border-radius: 10px;
+}
+
+.shopThumb svg,
+.libTile svg,
+.listingThumb svg,
+.mailThumb svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.shopItemName {
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.shopItemPrice {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.toneSage {
+  background: #e7f0eb;
+}
+
+.toneClay {
+  background: #f6e8e1;
+}
+
+.toneSky {
+  background: #e6edf4;
+}
+
+.status {
+  position: relative;
+  width: calc(100% - 1.5rem);
+  max-width: 25rem;
+  margin: -2.75rem 0 0 0.75rem;
+  padding: 1rem 1.25rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-soft), 0 28px 48px -22px rgba(16, 24, 40, 0.3);
+}
+
+@media (min-width: 48rem) {
+  .status {
+    width: 100%;
+    margin-left: -1.75rem;
+  }
+}
+
+.statusTitle {
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.status li {
+  display: grid;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+@media (max-width: 26rem) {
+  .status ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The round green check, used by the hero card, the chores and the plan */
+.tick {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+}
+
+.tick svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.checkPath {
+  stroke-dasharray: 16;
+  stroke-dashoffset: 0;
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 16;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .status .tick {
+    animation: pop 0.4s var(--ease) calc(0.5s + var(--i) * 0.15s) backwards;
+  }
+
+  .status .checkPath {
+    animation: draw 0.5s var(--ease) calc(0.62s + var(--i) * 0.15s) backwards;
+  }
+}
+
+@media (max-width: 30rem) {
+  .shop {
+    padding-inline: 0.9rem;
+  }
+
+  .shopNav {
+    gap: 0.7rem;
+  }
+
+  .shopBanner {
+    padding: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------- chores */
+
+.chores {
+  background: #fff;
+}
+
+.choresGrid {
+  display: grid;
+  gap: 2.75rem;
+}
+
+@media (min-width: 62rem) {
+  .choresGrid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .choresHead {
+    position: sticky;
+    top: calc(var(--nav-h) + 2rem);
+  }
+}
+
+.choreList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.chore {
+  display: grid;
+  gap: 0.45rem 1.5rem;
+  padding: 1.3rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 40rem) {
+  .chore {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+}
+
+.choreText {
+  position: relative;
+  color: var(--muted);
+  font-size: clamp(1.2rem, 1rem + 0.7vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+/* The strike line is a background, not text-decoration, so it can draw in. It
+   is fully drawn by default. */
+.choreStrike {
+  background: linear-gradient(var(--green), var(--green)) no-repeat 0 58% / 100%
+    2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.choreBy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--green-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+@keyframes strike {
+  from {
+    background-size: 0% 2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .choreStrike {
+      animation: strike linear both;
+      animation-timeline: view();
+      animation-range: entry 0% contain 35%;
+    }
+  }
+}
+
+/* -------------------------------------------------------------- features */
+
+.features {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+
+.bento {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 62rem) {
+  .bento {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .c7 {
+    grid-column: span 7;
+  }
+
+  .c5 {
+    grid-column: span 5;
+  }
+}
+
+/* A cell is one surface: the tinted picture area runs to the card's edges
+   (no card inside a card), with the text underneath. */
+.cell {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #fff;
+}
+
+.stage {
+  display: grid;
+  flex: 1 1 auto;
+  place-items: center;
+  min-height: 13rem;
+  padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem) 1.5rem;
+}
+
+.stageMint {
+  background: linear-gradient(160deg, #f1fffb 0%, #e0f5ef 100%);
+  border-bottom: 1px solid #d5eee6;
+}
+
+.cellText {
+  padding: 1.4rem clamp(1.25rem, 1rem + 1vw, 1.75rem) 1.6rem;
+}
+
+.cellText h3 {
+  margin: 0;
+}
+
+.cellText p {
+  max-width: 34rem;
+  margin: 0.55rem 0 0;
+  text-wrap: pretty;
+}
+
+/* Who runs what: the store sits on top of a layer we run */
+.layers {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 29rem;
+}
+
+.layerTop,
+.layerBase {
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: 14px;
+}
+
+.layerTop {
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.layerBase {
+  background: var(--deep);
+  color: var(--on-deep);
+}
+
+.layerLabel {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.layerBase .layerLabel {
+  color: #fff;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chips span {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--mint-2);
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--green-ink);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.layerBase .chips span {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--on-deep);
+}
+
+.layerLine {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.1rem 0.25rem;
+  color: var(--green-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.layerLine i {
+  flex: 1;
+  border-top: 1.5px dashed #8db7a8;
+}
+
+/* One click, one store */
+.install {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 1.1rem;
+  width: 100%;
+  max-width: 17rem;
+}
+
+/* A dashed line from the button to its result */
+.install::before {
+  content: "";
+  position: absolute;
+  left: 2.6rem;
+  top: 2.6rem;
+  height: 1.2rem;
+  border-left: 2px dashed #8db7a8;
+}
+
+.installBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 1.3rem;
+  border-radius: 12px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 6px 14px -6px rgba(0, 128, 96, 0.6);
+}
+
+.installPointer {
+  position: absolute;
+  right: -0.85rem;
+  bottom: -1.05rem;
+  display: inline-flex;
+  filter: drop-shadow(0 2px 3px rgba(16, 24, 40, 0.28));
+}
+
+.installDone {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-left: 1.5rem;
+  padding: 0.65rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-soft);
+}
+
+/* The store's address bar */
+.addrBig {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.addrBig svg {
+  color: var(--green);
+}
+
+.addrBig em {
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--mint-2);
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--green-ink);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Custom domain: three steps that end at the finished address */
+.domainFlow {
+  display: grid;
+  justify-items: start;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 25rem;
+}
+
+.flowSteps {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flowSteps li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.flowSteps li span {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--mint);
+  color: var(--green-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* A store email */
+.mail {
+  width: 100%;
+  max-width: 18.5rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.mailHead {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #f0f2f4;
+}
+
+.mailHead b {
+  display: block;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mailHead small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.mailAvatar {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.mailBody {
+  padding: 0.9rem 1rem 1.1rem;
+}
+
+.mailHello {
+  display: block;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.mailItem {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.75rem 0 0.9rem;
+  padding: 0.55rem;
+  border: 1px solid #f0f2f4;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 0.8125rem;
+}
+
+.mailThumb {
+  display: block;
+  padding: 0.2rem;
+  border-radius: 7px;
+}
+
+/* Storage: a media library */
+.library {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 17rem;
+}
+
+.libTile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+/* Backups, security, performance: no picture, so a plain list */
+.cellList {
+  justify-content: center;
+  padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+}
+
+.facts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.facts > div {
+  padding: 1.1rem 0;
+}
+
+.facts > div + div {
+  border-top: 1px solid var(--line);
+}
+
+.facts > div:first-child {
+  padding-top: 0;
+}
+
+.facts > div:last-child {
+  padding-bottom: 0;
+}
+
+.facts dt {
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.facts dd {
+  max-width: 34rem;
+  margin: 0.35rem 0 0;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------- marketplace and pricing */
+
+.deepBand {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+      60% 55% at 100% 0%,
+      rgba(0, 160, 120, 0.28) 0%,
+      rgba(6, 47, 38, 0) 100%
+    ),
+    var(--deep);
+  color: var(--on-deep);
+}
+
+.deepBand .h2,
+.deepBand .h3 {
+  color: #fff;
+}
+
+.deepBand .lead {
+  color: var(--on-deep);
+}
+
+.deepBand .leadLink a {
+  color: #fff;
+}
+
+.deepBand .leadLink a:hover {
+  color: var(--mint);
+}
+
+.bandGrid {
+  display: grid;
+  gap: 2.5rem 4.5rem;
+  align-items: center;
+}
+
+.bandGridSecond {
+  margin-top: clamp(3rem, 2rem + 4vw, 5.5rem);
+  padding-top: clamp(3rem, 2rem + 4vw, 5.5rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+@media (min-width: 62rem) {
+  .bandGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.bandList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.bandList li {
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.45;
+}
+
+/* Marketplace listings (an example) */
+.market {
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--body);
+  box-shadow: 0 40px 70px -36px rgba(0, 0, 0, 0.6);
+}
+
+.marketHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid var(--line);
+  background: #f6f7f9;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.marketHead em {
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-style: normal;
+}
+
+.listing {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+}
+
+.listing + .listing {
+  border-top: 1px solid #f0f2f4;
+}
+
+.listingThumb {
+  display: block;
+  padding: 0.35rem;
+  border-radius: 10px;
+}
+
+.listingText b {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.listingText small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.listingInstall,
+.listingInstalled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.listingInstall {
+  background: var(--green);
+  color: #fff;
+}
+
+.listingInstalled {
+  background: var(--mint);
+  color: var(--green-ink);
+}
+
+/* --------------------------------------------------------------- pricing */
+
+.pricing {
+  background: #fff;
+}
+
+.pricingGrid {
+  display: grid;
+  gap: 3rem 5rem;
+  align-items: center;
+}
+
+@media (min-width: 62rem) {
+  .pricingGrid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+}
+
+.plan {
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(180deg, #fbfffd 0%, #fff 40%);
+  box-shadow: var(--shadow-soft), 0 40px 70px -48px rgba(0, 128, 96, 0.5);
+}
+
+.planTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.planName {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f5f6f8;
+}
+
+.toggleOption {
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+}
+
+.toggleOption input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.toggleOption span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9px;
+  color: var(--body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.toggleOption small {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--green-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.toggleOption input:checked + span {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+}
+
+.toggleOption input:focus-visible + span {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+}
+
+.price {
+  color: var(--ink);
+  font-size: clamp(3rem, 2.4rem + 2.4vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.per {
+  color: var(--muted);
+  font-size: 1.125rem;
+}
+
+.priceNote {
+  margin: 0.75rem 0 0;
+  color: var(--body);
+}
+
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin: 1.75rem 0 2rem;
+  padding: 1.75rem 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.checklist .tick {
+  margin-top: 0.15rem;
+}
+
+.planFine {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.planFine a {
+  color: var(--green-ink);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------- faq */
+
+.faq {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+
+.faqGrid {
+  display: grid;
+  gap: 2.5rem 5rem;
+}
+
+@media (min-width: 62rem) {
+  .faqGrid {
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    align-items: start;
+  }
+}
+
+.faq .lead a {
+  color: var(--green-ink);
+  font-weight: 600;
+}
+
+.faqList {
+  border-top: 1px solid var(--line);
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--line);
+}
+
+.faqItem summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.3rem 0;
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faqItem summary::-webkit-details-marker {
+  display: none;
+}
+
+.faqItem summary::after {
+  content: "";
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--green);
+  background: linear-gradient(currentColor, currentColor) center / 100% 2px
+      no-repeat,
+    linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+  transition: background-size 0.25s var(--ease);
+}
+
+.faqItem[open] summary::after {
+  background-size: 100% 2px, 2px 0%;
+}
+
+.faqItem summary:hover {
+  color: var(--green-ink);
+}
+
+.faqItem summary:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.faqBody {
+  max-width: 40rem;
+  margin: 0;
+  padding: 0 2.5rem 1.5rem 0;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------ final call */
+
+.finalWrap {
+  padding-block: clamp(3rem, 2rem + 4vw, 5.5rem) clamp(4rem, 3rem + 5vw, 7rem);
+  background: var(--surface);
+}
+
+.final {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 2rem 3rem;
+  align-items: end;
+  padding: clamp(2rem, 1rem + 4vw, 4.5rem);
+  border-radius: clamp(24px, 3vw, 36px);
+  background: radial-gradient(
+      70% 90% at 100% 0%,
+      rgba(95, 209, 174, 0.28) 0%,
+      rgba(0, 128, 96, 0) 100%
+    ),
+    var(--green);
+  color: #fff;
+}
+
+@media (min-width: 62rem) {
+  .final {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+/* The EverShop mark, large and faint, in the top-right corner. It is hidden on
+   narrow screens and kept clear of the text: small white text on top of it
+   would fall under 4.5:1 contrast. The button has its own background. */
+.finalMark {
+  display: none;
+}
+
+@media (min-width: 62rem) {
+  .finalMark {
+    position: absolute;
+    right: -3rem;
+    top: -4.5rem;
+    display: block;
+    width: 22rem;
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.09);
+    -webkit-mask: url("/img/logo.svg") center / contain no-repeat;
+    mask: url("/img/logo.svg") center / contain no-repeat;
+    pointer-events: none;
+  }
+}
+
+.final > :not(.finalMark) {
+  position: relative;
+}
+
+.final .h2 {
+  max-width: 40rem;
+  color: #fff;
+}
+
+.final .lead {
+  color: #fff;
+}
+
+.finalActions {
+  display: grid;
+  justify-items: start;
+}
+
+@media (min-width: 62rem) {
+  .finalActions {
+    justify-items: end;
+  }
+}

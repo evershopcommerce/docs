@@ -1,6 +1,14 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+import { marketplaceUrl } from "./src/data/marketplace.js";
+
+// The navbar and footer "Marketplace" links. The marketplace address depends
+// on the build environment (WHERE_IS_THIS), like every other marketplace link.
+const MARKETPLACE_URL = marketplaceUrl({
+  where_is_this: process.env.WHERE_IS_THIS,
+});
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   noIndex: process.env.WHERE_IS_THIS === "acc" ? true : false,
@@ -11,6 +19,9 @@ const config = {
   customFields: {
     // Put your custom environment here
     where_is_this: process.env.WHERE_IS_THIS || "production", // "local", "acc", "production"
+    // Google Analytics. It loads only after the visitor accepts analytics
+    // cookies; see src/consent/analytics.js.
+    analytics: { gtagId: "G-54D6B5061F" },
     // Footer content that is not part of the standard footer config:
     // the brand block (tagline + social icons) and the legal links in the bottom bar.
     // The link columns live in themeConfig.footer.links. Rendered by src/theme/Footer/Layout.
@@ -43,6 +54,8 @@ const config = {
           href: "https://github.com/evershopcommerce/evershop/blob/main/LICENSE",
         },
         { label: "Code of Conduct", to: "/code-of-conduct" },
+        // A button, not a link: it opens the cookie banner (src/consent).
+        { label: "Cookie settings", action: "cookie-settings" },
       ],
     },
   },
@@ -69,14 +82,10 @@ const config = {
   plugins: [
     "docusaurus-plugin-sass",
     "@docusaurus/plugin-ideal-image",
-    [
-      "@docusaurus/plugin-google-gtag",
-      {
-        trackingID: "G-54D6B5061F",
-        anonymizeIP: true,
-      },
-    ],
   ],
+  // Replaces @docusaurus/plugin-google-gtag, which loaded Google Analytics for
+  // every visitor. This one waits for consent.
+  clientModules: [require.resolve("./src/consent/analytics.js")],
   presets: [
     [
       "classic",
@@ -172,7 +181,8 @@ const config = {
           ],
         },
         sitemap: {
-          ignorePatterns: ["/docs/tags/**", "/blog/authors"],
+          // /extensions redirects to the marketplace in production (_redirects).
+          ignorePatterns: ["/docs/tags/**", "/blog/authors", "/extensions"],
         },
       }),
     ],
@@ -200,7 +210,7 @@ const config = {
             label: "Docs",
           },
           {
-            href: "/extensions",
+            href: MARKETPLACE_URL,
             position: "left",
             label: "Marketplace",
           },
@@ -241,7 +251,7 @@ const config = {
             title: "Product",
             items: [
               { label: "Documentation", to: "/documentation" },
-              { label: "Marketplace", to: "/extensions" },
+              { label: "Marketplace", href: MARKETPLACE_URL },
               { label: "Release Notes", to: "/blog/tags/release" },
             ],
           },

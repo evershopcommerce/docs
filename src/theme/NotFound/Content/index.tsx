@@ -2,7 +2,9 @@ import React from "react";
 import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import type { Props } from "@theme/NotFound/Content";
+import { marketplaceUrl } from "@site/src/data/marketplace";
 
 // Opens the same Algolia search modal as the navbar search button.
 function openSearch() {
@@ -12,14 +14,16 @@ function openSearch() {
   }
 }
 
-const SHORTCUTS = [
-  { label: "Documentation", to: "/documentation" },
-  { label: "API reference", to: "/docs/api/overview" },
-  { label: "Marketplace", to: "/extensions" },
-  { label: "Blog", to: "/blog" },
-];
-
 export default function NotFoundContent({ className }: Props): JSX.Element {
+  const {
+    siteConfig: { customFields },
+  } = useDocusaurusContext();
+  const SHORTCUTS = [
+    { label: "Documentation", to: "/documentation" },
+    { label: "API reference", to: "/docs/api/overview" },
+    { label: "Marketplace", to: marketplaceUrl(customFields) },
+    { label: "Blog", to: "/blog" },
+  ];
   return (
     <main className={clsx("container margin-vert--xl", className)}>
       <div className="row">
