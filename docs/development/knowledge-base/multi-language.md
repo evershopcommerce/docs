@@ -335,7 +335,7 @@ buildUrl('cmsPageView', { url_key: 'about-us' });
 // → /page/about-us
 ```
 
-`buildUrl(routeId, params, query)` builds the path, applies the locale prefix, then appends the query string. It is **isomorphic** — it reads the locale context through the isomorphic accessor, so the same call produces the same URL during SSR and after hydration. `buildAbsoluteUrl(routeId, params)` prepends the store base URL and takes no query argument.
+`buildUrl(routeId, params, query)` builds the path, applies the locale prefix, then appends the query string. It is **isomorphic** — it reads the locale context through the isomorphic accessor, so the same call produces the same URL during SSR and after hydration. `buildAbsoluteUrl(routeId, params, query)` does the same and prepends the store base URL.
 
 Because `buildUrl` localizes for you, **never hand-build a prefixed path**. Writing `` `/${locale}/cart` `` breaks the moment the locale is the default one.
 
@@ -360,7 +360,7 @@ url: (product) => localizeUrl(`/${product.url_key}`)
   </thead>
   <tbody>
     <tr><td>A route ID and params</td><td><code>buildUrl(routeId, params, query)</code></td></tr>
-    <tr><td>An absolute URL from a route ID</td><td><code>buildAbsoluteUrl(routeId, params)</code></td></tr>
+    <tr><td>An absolute URL from a route ID</td><td><code>buildAbsoluteUrl(routeId, params, query)</code></td></tr>
     <tr><td>An already-built path, server-side (resolver, controller)</td><td><code>localizeUrl(path)</code></td></tr>
   </tbody>
 </table>

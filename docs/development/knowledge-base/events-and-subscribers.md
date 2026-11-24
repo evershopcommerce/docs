@@ -304,9 +304,11 @@ The `shipping_method` and `shipping_method_name` varchar columns were **dropped*
 
 ### An Order Placed
 
-This event is triggered when an order is placed. This event is triggered by the payment gateway.
+This event is triggered once per order, when the order is placed. The payment method decides when that is and calls [`markOrderPlaced`](/docs/development/module/functions/markorderplaced), the only code that emits it.
 For example, with offline payment methods like COD, this event will be triggered when the order is created.
-With online payment gateways like Stripe or PayPal, this event will be triggered when the payment is successful.
+With online payment gateways like Stripe or PayPal, this event will be triggered when the gateway accepts the payment, authorized or captured. PayPal also places an order whose capture is pending review.
+
+The data is the order row as it is when placed, with the new payment status and `placed_at`. The row is read by Node.js, so the decimal columns are strings and the times are UTC (`order_created` differs: the database writes that one itself, with numbers and its own time format).
 
 ```js
 // Event name: order_placed
@@ -325,15 +327,15 @@ With online payment gateways like Stripe or PayPal, this event will be triggered
   "user_ip": null,
   "user_agent": null,
   "coupon": null,
-  "shipping_fee_excl_tax": 5,
-  "shipping_fee_incl_tax": 5,
-  "discount_amount": 0,
-  "sub_total": 504,
+  "shipping_fee_excl_tax": "5.0000",
+  "shipping_fee_incl_tax": "5.0000",
+  "discount_amount": "0.0000",
+  "sub_total": "504.0000",
   "total_qty": 1,
-  "total_weight": 6.4,
-  "tax_amount": 0,
+  "total_weight": "6.4000",
+  "tax_amount": "0.0000",
   "shipping_note": null,
-  "grand_total": 509,
+  "grand_total": "509.0000",
   "shipping_method_data": {
     "provider_code": "core",
     "method_code": "7d0aba1a-fa8a-4b37-8b0c-5162cb34997e",
@@ -349,10 +351,12 @@ With online payment gateways like Stripe or PayPal, this event will be triggered
   "payment_method_name": "Credit Card",
   "billing_address_id": 4142,
   "shipment_status": "pending",
-  "payment_status": "paid",
-  "created_at": "2024-05-08T10:13:00.138845+00:00",
-  "updated_at": "2024-05-08T10:13:00.138845+00:00",
-  "sub_total_incl_tax": 504
+  "payment_status": "stripe_captured",
+  "status": "processing",
+  "created_at": "2024-05-08T10:13:00.138Z",
+  "updated_at": "2024-05-08T10:13:04.512Z",
+  "placed_at": "2024-05-08T10:13:04.512Z",
+  "sub_total_incl_tax": "504.0000"
 }
 
 // Example subscriber
@@ -363,12 +367,17 @@ With online payment gateways like Stripe or PayPal, this event will be triggered
 
 ### Inventory Updated
 
-This event is triggered when the inventory of a product is updated.
+This event is triggered when the inventory of a product changes: an admin save, an order taking stock, a restock when an order is canceled, an import. A database trigger on `product_inventory` writes it, and only when a column changed: saving a product with the same stock triggers nothing.
+
+The data names the product (`product_id`, `product_uuid`, `sku`) and holds the inventory row before (`old`) and after (`new`) the change.
 
 ```js
 // Event name: inventory_updated
 // Data object:
 {
+  "product_id": 110,
+  "product_uuid": "1a2c1ee6-8b6e-4b0a-a8e5-63b2d1a6b0f4",
+  "sku": "NJC90842-Blue-L",
   "old": {
     "product_inventory_id": 110,
     "product_inventory_product_id": 110,
@@ -387,14 +396,39 @@ This event is triggered when the inventory of a product is updated.
 
 // Example subscriber
 // export default async function syncInventory(data) {
-//     const productID = data.old.product_inventory_product_id;
+//     const productID = data.product_id;
 //     const newStock = data.new.qty;
 // }
 ```
 
+### A Product Back in Stock
+
+This event is triggered when a product that was out of stock can be bought again. It comes together with `inventory_updated`, from the same database trigger, so every way the stock can come back counts: an admin save, a restock when an order is canceled, an import.
+
+A product is in stock, as the storefront shows it, when its stock is not managed (`manage_stock` is false), or when its quantity is above 0 and `stock_availability` is on. The event fires when that turns from false to true. Use it for "notify me when it is back" alerts.
+
+```js
+// Event name: product_back_in_stock
+// Data object:
+{
+  "product_id": 110,
+  "product_uuid": "1a2c1ee6-8b6e-4b0a-a8e5-63b2d1a6b0f4",
+  "sku": "NJC90842-Blue-L",
+  "qty": 5,
+  "manage_stock": true,
+  "stock_availability": true
+}
+```
+
+:::note
+The event does not look at the product's status or visibility. A disabled product that gets stock back fires it too; check `product.status` in your subscriber if that matters.
+:::
+
 ### A New Customer Registered
 
 This event is triggered when a customer is registered and their account is active (status = 1).
+
+The customer events (`customer_registered`, `account_created`, `customer_created`, `customer_updated` and `customer_deleted`) never carry the password hash.
 
 ```js
 // Event name: customer_registered
@@ -470,6 +504,20 @@ This event is triggered when a customer record is deleted.
   "full_name": "David Nguyen",
   "created_at": "2024-05-14T02:11:25.917Z",
   "updated_at": "2024-05-14T02:11:25.917Z"
+}
+```
+
+### A Cart Gets an Email
+
+This event is triggered when an open cart gets an email, or its email changes: a guest enters it at checkout, a customer signs in with a cart, or a signed-in customer's cart is created. The same email saved again triggers nothing, nor does an ordered cart. Use it for abandoned-cart emails, with a link from [`buildCartRecoveryUrl`](/docs/development/module/functions/buildcartrecoveryurl). A guest's email is not verified.
+
+```js
+// Event name: cart_email_added
+// Data object: the cart's id (not its uuid), the email and the customer's id (null for a guest)
+{
+  "cart_id": 42,
+  "customer_email": "jane@example.com",
+  "customer_id": null
 }
 ```
 

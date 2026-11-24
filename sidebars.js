@@ -999,6 +999,72 @@ const sidebars = {
         },
       ],
     },
+    {
+      type: "category",
+      label: "Import",
+      className: "api-menu-item",
+      link: {
+        type: "doc",
+        id: "api/import",
+      },
+      items: [
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#upload-a-file"><span class="method POST">POST</span><span>Upload a file</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#get-a-job"><span class="method GET">GET</span><span>Get a job</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#list-the-open-jobs"><span class="method GET">GET</span><span>List the open jobs</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#list-the-problems-of-a-job"><span class="method GET">GET</span><span>List the problems of a job</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#download-the-file-with-errors"><span class="method GET">GET</span><span>Download the file with errors</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#download-a-template"><span class="method GET">GET</span><span>Download a template</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#start-an-import"><span class="method POST">POST</span><span>Start an import</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#cancel"><span class="method POST">POST</span><span>Cancel</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#resume"><span class="method POST">POST</span><span>Resume</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#check-again"><span class="method POST">POST</span><span>Check again</span></a>',
+        },
+        {
+          type: "html",
+          value:
+            '<a class="menu__link" href="/docs/api/import#delete-a-job"><span class="method DELETE">DELETE</span><span>Delete a job</span></a>',
+        },
+      ],
+    },
   ],
 };
 

@@ -31,7 +31,7 @@ Two safety nets sit behind the redirect, because the return leg depends on the b
 - **The webhook** (`POST /api/paypal/webhook`): if the buyer approves and then closes the tab, PayPal's `CHECKOUT.ORDER.APPROVED` event triggers the same server-side finalization the return page would have run. It also confirms pending (eCheck) captures, reports denials, and mirrors refunds made elsewhere.
 - **The reconciliation cron**: every 30 minutes, PayPal orders still `pending` past a TTL (6 hours by default) are checked against PayPal — approved ones are finalized, abandoned ones are canceled and restocked. See [Abandoned-order reconciliation](#abandoned-order-reconciliation).
 
-All three paths — return page, webhook, cron — share one idempotent finalization service. Each PayPal transaction id is recorded once and fires `order_placed` at most once, and the PayPal requests carry a request id, so duplicate deliveries and the race between the return page and the webhook cannot capture the same payment twice.
+All three paths — return page, webhook, cron — share one idempotent finalization service. Each PayPal transaction id is recorded once, the order gets one `order_placed` (from [`markOrderPlaced`](/docs/development/module/functions/markorderplaced)), and the PayPal requests carry a request id, so duplicate deliveries and the race between the return page and the webhook cannot capture the same payment twice.
 
 ## Setting it up
 
@@ -213,7 +213,7 @@ These actions come from three flags on each status: `paypal_authorized` is `isCa
 
 Each status also maps to the order's overall status. `paypal_authorized`, `paypal_captured`, `paypal_pending` and `paypal_partial_refunded` map to `processing`, `paypal_failed` maps to `new` and `paypal_refunded` maps to `closed`. Note that `paypal_pending` still shows the order as `processing`, so check the **payment** status before you ship.
 
-`order_placed` — the event that sends the confirmation email and feeds every other subscriber — fires when the PayPal flow completes successfully, including a `PENDING` (eCheck) capture. It never fires on a declined or failed payment.
+`order_placed` — the event that sends the confirmation email and feeds every other subscriber — fires once per order when the PayPal flow completes successfully, including a `PENDING` (eCheck) capture. When that capture completes later, the order is already placed, so it does not fire again. It never fires on a declined or failed payment.
 
 ## Capture modes
 

@@ -64,3 +64,18 @@ my-extension/
 :::warning
 Migration scripts are wrapped in a database transaction. If any query fails, the entire migration is rolled back. Each migration runs independently — a failure in one version does not prevent earlier versions from being committed.
 :::
+
+## Keeping `updated_at` Current
+
+PostgreSQL does not refresh an `updated_at` column by itself. If your extension's table has one, add the trigger EverShop uses on its own tables, in a migration:
+
+```ts title="src/migration/Version-1.0.1.ts"
+import { addUpdatedAtTrigger } from '@evershop/evershop/lib/postgres/updatedAtTrigger';
+import type { PoolClient } from 'pg';
+
+export default async (connection: PoolClient) => {
+  await addUpdatedAtTrigger(connection, 'my_table');
+};
+```
+
+After that, every `UPDATE` of a row sets `updated_at` to the time of the transaction, unless the statement sets `updated_at` itself (for example an import that keeps a historical date). Existing rows keep their value until their next update. The table must have an `updated_at` column; the migration fails otherwise. Available since EverShop 2.4.0.

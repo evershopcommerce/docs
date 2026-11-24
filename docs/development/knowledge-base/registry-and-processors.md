@@ -264,6 +264,34 @@ export default function () {
 }
 ```
 
+### Protecting a Customer Column
+
+The public customer routes, the sign-up `POST /api/customers` and the profile update `PATCH /api/customers/me`, remove the fields only the store may set before they save the request body: `group_id`, `status`, `meta_data`, `customer_id`, `uuid`, `created_at` and `updated_at`. An admin creating a customer keeps them.
+
+A column your extension adds to the `customer` table is saved from the request body like any other field. If only the store should set it, add it to the `protectedCustomerFields` value:
+
+```ts title="extensions/credit/src/bootstrap.ts"
+import { addProcessor } from '@evershop/evershop/lib/util/registry';
+
+export default function () {
+  // Never from a visitor or a customer's own request
+  addProcessor('protectedCustomerFields', (fields) => [...fields, 'credit_limit']);
+
+  // Only on sign-up: customers may change it later on their profile
+  addProcessor('protectedCustomerFields', function (this: { routeId: string }, fields) {
+    return this.routeId === 'createCustomer'
+      ? [...fields, 'newsletter_source']
+      : fields;
+  });
+}
+```
+
+The context carries `routeId` (`createCustomer` or `updateCustomerProfile`). Use the `function` keyword to read it, because an arrow function has no `this`.
+
+:::info You can only add fields
+Removing a core field from the list has no effect: core always protects its own fields. To let customers choose something like their customer group, write a route of your own that checks the choice.
+:::
+
 ## Registry vs Hooks
 
 <table className="table-auto not-prose">

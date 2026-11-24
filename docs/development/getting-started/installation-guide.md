@@ -52,11 +52,11 @@ The public Docker image is for installing EverShop in your local environment onl
 ## Install EverShop manually using Npm
 
 <div className="block md:hidden">
-<iframe width="100%" height="300" src="https://www.youtube.com/embed/-KBh_Lw8AC0?si=o2bNvvFQccvzaZ7W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="100%" height="300" src="https://www.youtube-nocookie.com/embed/-KBh_Lw8AC0?si=o2bNvvFQccvzaZ7W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
 <div className="hidden md:block">
-<iframe width="100%" height="600" src="https://www.youtube.com/embed/-KBh_Lw8AC0?si=o2bNvvFQccvzaZ7W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="100%" height="600" src="https://www.youtube-nocookie.com/embed/-KBh_Lw8AC0?si=o2bNvvFQccvzaZ7W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
 ### Step 1: Install The @evershop/evershop Npm Package

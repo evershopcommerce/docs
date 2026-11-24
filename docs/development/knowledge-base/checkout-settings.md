@@ -55,7 +55,7 @@ Three layers, highest priority first:
     <tr>
       <td>Admin setting</td>
       <td><code>setting</code> table, key <code>allowGuestCheckout</code></td>
-      <td>Set from <strong>Settings → Store Settings → Checkout</strong>. Wins whenever present.</td>
+      <td>Set from <strong>Settings → Customer Settings → Checkout</strong> (on Store Settings in 2.3.0 and earlier). Wins whenever present.</td>
     </tr>
     <tr>
       <td>Legacy config</td>

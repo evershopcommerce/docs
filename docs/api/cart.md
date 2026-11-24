@@ -18,6 +18,8 @@ description: "EverShop Cart REST API reference: create carts, add and update ite
 
 The Cart API provides endpoints for managing shopping carts in your EverShop store. These endpoints allow you to create carts, add or remove items, set customer information, specify shipping and billing addresses, and select shipping and payment methods.
 
+Every endpoint with a cart id in its path (`/api/carts/:cart_id/...`, `/api/cart/:cart_id/...`) answers `404` with the message `Invalid cart` when there is no active cart with that id: the id is unknown, it is not a UUID, or the cart's order has already been placed.
+
 import Api from '@site/src/components/rest/Api';
 
 ## Endpoints

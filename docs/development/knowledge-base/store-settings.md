@@ -561,7 +561,7 @@ The logo is now three setting rows, saved from the admin store-settings screen:
   </tbody>
 </table>
 
-Related branding keys that are settings and never had a config equivalent: `favicon`, `socialSharingImage`, `gaMeasurementId`. Themes read all of these through the GraphQL `BrandingSetting` type rather than from config.
+Related branding keys that are settings and never had a config equivalent: `favicon`, `socialSharingImage`, `gaMeasurementId`, `gaConsentDefault` (`granted` or `denied`, the Google Consent Mode default for GA4; see [Commerce events → Google Analytics 4](./commerce-events.md#google-analytics-4)). Themes read all of these as fields of the GraphQL `Setting` type (`query { setting { gaMeasurementId gaConsentDefault } }`, declared in the setting module's `BrandingSetting.graphql`) rather than from config.
 
 `themeConfig` still exists and still holds `headTags` (`links`, `metas`, `scripts`, `bases`) and `copyRight`.
 

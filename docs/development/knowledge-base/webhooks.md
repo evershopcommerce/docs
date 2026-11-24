@@ -21,7 +21,7 @@ You set webhooks up in the admin panel, with no code. Each request is signed, fa
 
 ## What it does
 
-- Sends **21 store events** to up to **10 URLs**. Each webhook chooses which events it wants.
+- Sends **22 store events** to up to **10 URLs**. Each webhook chooses which events it wants.
 - Signs every request with an **HMAC-SHA256** signature so your server can verify that it came from your store.
 - **Retries** failed deliveries up to 5 times, then lets an admin retry by hand.
 - Keeps a **delivery log** per webhook, with the payload, attempts and result of each delivery.
@@ -271,10 +271,11 @@ These are the events an admin can choose. Each sends the same data as the matchi
     <tr><td><code>shipment_delivered</code></td><td>A shipment reaches the delivered phase. Sends the shipment ID and the order ID.</td></tr>
     <tr><td><code>shipment_label_created</code></td><td>A carrier label is purchased. Sends the shipment ID, order ID, label URL (can be empty) and tracking number.</td></tr>
     <tr><td><code>shipment_label_voided</code></td><td>An admin voids a shipping label. Sends the shipment ID, order ID and tracking number.</td></tr>
-    <tr><td rowSpan={4}>Products</td><td><code>product_created</code></td><td>A product is created. Sends the product.</td></tr>
+    <tr><td rowSpan={5}>Products</td><td><code>product_created</code></td><td>A product is created. Sends the product.</td></tr>
     <tr><td><code>product_updated</code></td><td>A product is updated. Sends the product.</td></tr>
     <tr><td><code>product_deleted</code></td><td>A product is deleted. Sends the deleted product.</td></tr>
-    <tr><td><code>inventory_updated</code></td><td>A product's inventory changes. Sends the inventory before and after. This event also fires when a product is saved without a stock change, so compare <code>old</code> and <code>new</code>.</td></tr>
+    <tr><td><code>inventory_updated</code></td><td>A product's inventory changes. Sends the product's ID, uuid and SKU, and the inventory before (<code>old</code>) and after (<code>new</code>). A save that changes nothing sends nothing.</td></tr>
+    <tr><td><code>product_back_in_stock</code></td><td>A product that was out of stock can be bought again. Sends the product ID, uuid and SKU, and its inventory now.</td></tr>
     <tr><td rowSpan={3}>Categories</td><td><code>category_created</code></td><td>A category is created. Sends the category.</td></tr>
     <tr><td><code>category_updated</code></td><td>A category is updated. Sends the category.</td></tr>
     <tr><td><code>category_deleted</code></td><td>A category is deleted. Sends the deleted category.</td></tr>
@@ -282,6 +283,7 @@ These are the events an admin can choose. Each sends the same data as the matchi
     <tr><td><code>customer_registered</code></td><td>A customer account is created and active. Sends the customer.</td></tr>
     <tr><td><code>customer_updated</code></td><td>A customer account is updated. Sends the customer.</td></tr>
     <tr><td><code>customer_deleted</code></td><td>A customer account is deleted. Sends the deleted customer.</td></tr>
+    <tr><td>Carts</td><td><code>cart_email_added</code></td><td>An open cart gets an email: a guest enters it at checkout, or a signed-in customer has a cart. Use this for abandoned-cart emails. Sends the cart ID, the email and the customer ID.</td></tr>
   </tbody>
 </table>
 

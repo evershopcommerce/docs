@@ -27,7 +27,11 @@ import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 ## Syntax
 
 ```typescript
-buildAbsoluteUrl(routeId: string, params?: Record<string, any>): string
+buildAbsoluteUrl(
+  routeId: string,
+  params?: Record<string, any>,
+  query?: Record<string, any>
+): string
 ```
 
 ### Parameters
@@ -43,6 +47,12 @@ The unique identifier of the route.
 **Type:** `Record<string, any>` (optional)
 
 Route parameters to replace placeholders in the route path.
+
+**`query`**
+
+**Type:** `Record<string, any>` (optional)
+
+Query string parameters, encoded the same way `buildUrl` encodes them (an array becomes `key[]=a&key[]=b`; `null` and `undefined` values are left out). Available since EverShop 2.4.0.
 
 ## Return Value
 
@@ -88,9 +98,9 @@ import { buildAbsoluteUrl } from '@evershop/evershop/lib/router';
 const orderUrl = buildAbsoluteUrl('orderView', { uuid: order.uuid });
 
 // The reset-password page route is `resetPasswordPage` (/account/reset-password)
-// and takes no path parameter — the token rides as a query string, exactly as
-// `sendResetPasswordEmail` does it. (`resetPassword` is the POST API route.)
-const resetPasswordUrl = `${buildAbsoluteUrl('resetPasswordPage')}?token=${token}`;
+// and takes no path parameter — the token rides as a query string.
+// (`resetPassword` is the POST API route.)
+const resetPasswordUrl = buildAbsoluteUrl('resetPasswordPage', {}, { token });
 
 const emailData = {
   orderLink: orderUrl,

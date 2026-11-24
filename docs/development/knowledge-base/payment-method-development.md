@@ -294,16 +294,17 @@ For offline payments, the order is placed immediately and no provider is involve
 1. **Registers its own statuses**, `cod_pending`, `cod_captured`, `cod_refunded` and `cod_partial_refunded`, flagged so that the **Capture** and **Refund** buttons appear.
 2. **Supplies offline `capture` and `refund` handlers.** They call nothing; they report the amount and return a generated transaction id with `offline: true`.
 3. **Initializes the payment inside order creation.** A `hookAfter('saveOrder')` hook records an offline `authorize` transaction for the amount to collect and moves the order to `cod_pending`. This runs in the order-creation transaction, so a failure rolls the whole order back.
-4. **Emits `order_placed`** from a `hookAfter('createOrderFunc')` hook.
+4. **Marks the order placed** with [`markOrderPlaced`](/docs/development/module/functions/markorderplaced) from a `hookAfter('createOrderFunc')` hook, which runs after the order is saved.
 
 A simplified version for a bank transfer method:
 
 ```ts title="extensions/my-payment/src/bootstrap.ts"
-import { emit } from '@evershop/evershop/lib/event';
+import { error } from '@evershop/evershop/lib/log';
 import { hookAfter } from '@evershop/evershop/lib/util/hookable';
 import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
 import {
   addPaymentTransaction,
+  markOrderPlaced,
   updatePaymentStatus
 } from '@evershop/evershop/oms/services';
 
@@ -349,8 +350,14 @@ export default async () => {
 
   // When an order is created with this method, mark it as placed
   hookAfter('createOrderFunc', async function (order) {
-    if (order.payment_method === 'bank_transfer') {
-      await emit('order_placed', order);
+    if (order.payment_method !== 'bank_transfer') {
+      return;
+    }
+    try {
+      await markOrderPlaced(order.insertId);
+    } catch (e) {
+      // The order exists: a failure here must not fail the checkout
+      error(e);
     }
   });
 };
@@ -358,7 +365,7 @@ export default async () => {
 
 ### Online Payment (e.g., Stripe, PayPal)
 
-For online payments, the order is created first with a `pending` payment status. After the payment provider confirms the payment, you record the transaction, update the payment status and emit `order_placed`.
+For online payments, the order is created first with a `pending` payment status. After the payment provider confirms the payment, you record the transaction, update the payment status and call `markOrderPlaced`.
 
 The typical flow:
 
@@ -402,6 +409,70 @@ export default async (request, response) => {
 ```
 
 The [Stripe](/docs/development/advanced/integrate-with-stripe-payment-gateway) and [PayPal](/docs/development/advanced/integrate-with-paypal-payment-gateway) guides walk through complete implementations.
+
+### Marking the Order Placed
+
+Every payment method must tell EverShop when its order is placed, by calling `markOrderPlaced`. It sets `order.placed_at` and emits the `order_placed` event, which sends the order confirmation email, the `order_placed` webhook and every other subscriber. You decide the moment:
+
+- An **offline** method (Cash on Delivery, bank transfer): when the order is created.
+- An **online** method: when the gateway accepts the payment, authorized or captured. PayPal also places an order whose capture is pending review.
+
+`markOrderPlaced` emits `order_placed` **once per order**. A later call, or a call at the same time from another request, changes nothing and returns `null`. So your return page, your webhook and a cron job can all call it, and a gateway that sends the same webhook twice causes no second email.
+
+Call it after you update the payment status, in the same transaction, so the event carries the new status:
+
+```ts title="extensions/my-payment/src/api/myPaymentWebhook/webhook.ts"
+import { getConnection } from '@evershop/evershop/lib/postgres';
+import {
+  commit,
+  insertOnUpdate,
+  rollback,
+  startTransaction
+} from '@evershop/evershop/lib/postgres/query';
+import {
+  markOrderPlaced,
+  updatePaymentStatus
+} from '@evershop/evershop/oms/services';
+
+export default async (request, response, next) => {
+  // Verify the gateway's signature and find `order` and `payment` (not shown)
+  const connection = await getConnection();
+  try {
+    await startTransaction(connection);
+    // Safe to repeat: the same webhook can arrive twice
+    await insertOnUpdate('payment_transaction', [
+      'transaction_id',
+      'payment_transaction_order_id'
+    ])
+      .given({
+        payment_transaction_order_id: order.order_id,
+        transaction_id: payment.id,
+        amount: Number(order.grand_total),
+        transaction_type: 'online',
+        payment_action: 'capture'
+      })
+      .execute(connection);
+    await updatePaymentStatus(order.order_id, 'my_payment_captured', connection);
+    // Emits order_placed the first time only
+    await markOrderPlaced(order.order_id, connection);
+    await commit(connection);
+    response.json({ received: true });
+  } catch (e) {
+    await rollback(connection);
+    response.status(500).json({ error: e.message });
+  }
+};
+```
+
+:::warning
+Pass the connection of your transaction, started with `startTransaction`; `markOrderPlaced` refuses any other. Never call it without the connection while your transaction is open: your `updatePaymentStatus` holds a lock on the order row, the call waits for that lock, and your transaction waits for the call. Both wait forever.
+:::
+
+A second delivery of this webhook emits nothing, but it sets the status again: a late one could move a refunded order back to captured. So in a real webhook, lock the order row (`SELECT ... FOR UPDATE`), check whether this payment was already recorded, and skip the status change and any activity log line when it was. The Stripe module does both.
+
+:::warning
+Do not emit `order_placed` yourself. Without `markOrderPlaced`, a method sends no confirmation email and no `order_placed` webhook, and `placed_at` stays empty. An extension that still emits the event directly keeps working, because core does not emit it a second time, but its orders get no `placed_at`.
+:::
 
 ## Adding Custom Payment Statuses
 
@@ -577,13 +648,14 @@ Here is the Cash on Delivery module, trimmed slightly, as a reference for the si
 
 ```ts title="modules/cod/bootstrap.ts"
 import config from 'config';
-import { emit } from '@evershop/evershop/lib/event';
+import { error } from '@evershop/evershop/lib/log';
 import { getConfig } from '@evershop/evershop/lib/util/getConfig';
 import { hookAfter } from '@evershop/evershop/lib/util/hookable';
 import { getSetting } from '@evershop/evershop/setting/services';
 import { registerPaymentMethod } from '@evershop/evershop/checkout/services';
 import {
   addPaymentTransaction,
+  markOrderPlaced,
   updatePaymentStatus
 } from '@evershop/evershop/oms/services';
 
@@ -652,10 +724,16 @@ export default async () => {
     await updatePaymentStatus(order.insertId, 'cod_pending', connection);
   });
 
-  // 4. Announce the order
+  // 4. Mark the order placed, after the order transaction has committed
   hookAfter('createOrderFunc', async function EmitOrderPlacedEvent(order) {
-    if (order.payment_method === 'cod') {
-      await emit('order_placed', order);
+    if (order.payment_method !== 'cod') {
+      return;
+    }
+    try {
+      await markOrderPlaced(order.insertId);
+    } catch (e) {
+      // The order exists: a failure here must not fail the checkout
+      error(e);
     }
   });
 };

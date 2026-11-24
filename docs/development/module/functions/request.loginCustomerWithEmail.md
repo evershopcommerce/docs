@@ -239,6 +239,7 @@ try {
 
 ## See Also
 
+- [request.loginCustomer](/docs/development/module/functions/request.logincustomer) - Sign in without a password (social login)
 - [request.logoutCustomer](/docs/development/module/functions/request.logoutcustomer) - Logout customer
 - [request.isCustomerLoggedIn](/docs/development/module/functions/request.iscustomerloggedin) - Check login status
 - [request.getCurrentCustomer](/docs/development/module/functions/request.getcurrentcustomer) - Get current customer

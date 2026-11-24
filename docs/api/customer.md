@@ -26,6 +26,8 @@ import Api from '@site/src/components/rest/Api';
 
 Creates a new customer account in the system. This endpoint registers a new user with their basic information and credentials.
 
+Anyone can call this endpoint, because the storefront sign-up form uses it. Only an admin (a logged-in admin session or an admin token) can set `status`, `group_id`, `meta_data`, `uuid`, `created_at` and `updated_at`. For any other caller these fields are ignored, and the account gets the default status and group. Extensions can protect their own customer columns the same way (see [Registry and processors](../development/knowledge-base/registry-and-processors.md#protecting-a-customer-column)).
+
 <Api
 method="POST"
 url="/api/customers"
