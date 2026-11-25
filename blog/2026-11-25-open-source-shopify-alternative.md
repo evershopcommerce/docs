@@ -4,6 +4,7 @@ title: "EverShop: an Open-Source Shopify Alternative with No Transaction Fees"
 description: "Looking for an open-source Shopify alternative? EverShop is a Node.js and React ecommerce platform with no transaction fees and no lock-in. Self-host it for free or let EverShop Cloud run it for you."
 authors: [evershop]
 tags: [comparison, shopify]
+image: /img/blog/open-source-shopify-alternative/cover.png
 keywords:
   - shopify alternative open source
   - self-hosted shopify alternative
