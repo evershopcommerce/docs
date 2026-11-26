@@ -112,30 +112,6 @@ The EverShop frontend is designed to optimize storefront customization, with hig
 Check out the theme documentation [here](/docs/development/theme/theme-overview).
 :::
 
-## Demo Store
-
-Explore our demo store.
-
-import Link from '@docusaurus/Link';
-
-<div className="flex justify-center gap-5 pb-6">
-<Link
-            className="button button--primary button--md"
-            to="https://demo.evershop.io/admin/">
-            Admin Panel
-          </Link>
-<Link
-            className="button button--primary button--md"
-            to="https://demo.evershop.io/">
-            Front Store
-          </Link>
-</div>
-
-
-:::info
-The demo admin account email is `demo@evershop.io` and the password is `123456`
-:::
-
 ## Next Steps
 
 Ready to get started? Here's the recommended path:

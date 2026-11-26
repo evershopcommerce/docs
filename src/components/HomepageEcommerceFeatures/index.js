@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "@docusaurus/Link";
 
+// The cards used to link to demo.evershop.io, which was shut down for good
+// (2026-11-26). `readMore` is optional: add it back to link a card somewhere.
 const FeatureList = [
   [
     {
@@ -12,8 +14,6 @@ const FeatureList = [
           collection management.
         </>
       ),
-      readMore: "https://demo.evershop.io/admin/products",
-      readMoreText: "See the demo ->",
     },
     {
       image: "/img/checkout.webp",
@@ -24,8 +24,6 @@ const FeatureList = [
           shopping cart. Integration with multiple payment gateways.
         </>
       ),
-      readMore: "https://demo.evershop.io/",
-      readMoreText: "See the demo ->",
     },
   ],
   [
@@ -38,8 +36,6 @@ const FeatureList = [
           groups, time period, products, and categories.
         </>
       ),
-      readMore: "https://demo.evershop.io/admin/coupons",
-      readMoreText: "See the demo ->",
     },
     {
       image: "/img/product-filter.webp",
@@ -50,8 +46,6 @@ const FeatureList = [
           and search results. Filter products by price and attributes.
         </>
       ),
-      readMore: "https://demo.evershop.io/category/women",
-      readMoreText: "See the demo ->",
     },
   ],
   [
@@ -64,8 +58,6 @@ const FeatureList = [
           more.
         </>
       ),
-      readMore: "https://demo.evershop.io/admin",
-      readMoreText: "See the demo ->",
     },
     {
       image: "/img/cms.webp",
@@ -76,8 +68,6 @@ const FeatureList = [
           friendly.
         </>
       ),
-      readMore: "https://demo.evershop.io/admin/pages/",
-      readMoreText: "See the demo ->",
     },
   ],
 ];
@@ -110,9 +100,11 @@ function Feature({
         <div>
           <h3 className="mb-3">{title}</h3>
           <div className="mb-2">{description}</div>
-          <Link to={readMore} rel="nofollow">
-            {readMoreText}
-          </Link>
+          {readMore && (
+            <Link to={readMore} rel="nofollow">
+              {readMoreText}
+            </Link>
+          )}
         </div>
       </div>
     </div>
