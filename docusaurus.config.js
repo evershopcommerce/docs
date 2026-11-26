@@ -1,13 +1,19 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import { marketplaceUrl } from "./src/data/marketplace.js";
+import {
+  DEFAULT_MARKETPLACE_ORIGIN,
+  marketplaceUrl,
+} from "./src/data/marketplace.js";
 
-// The navbar and footer "Marketplace" links. The marketplace address depends
-// on the build environment (WHERE_IS_THIS), like every other marketplace link.
-const MARKETPLACE_URL = marketplaceUrl({
-  where_is_this: process.env.WHERE_IS_THIS,
-});
+// The marketplace address for this build: the MARKETPLACE_URL environment
+// variable, or production. Only this one address reaches the pages (through
+// customFields), so a production build never contains the UAT address.
+const MARKETPLACE_ORIGIN =
+  process.env.MARKETPLACE_URL || DEFAULT_MARKETPLACE_ORIGIN;
+
+// The navbar and footer "Marketplace" links.
+const MARKETPLACE_URL = marketplaceUrl({ marketplace_url: MARKETPLACE_ORIGIN });
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -19,6 +25,8 @@ const config = {
   customFields: {
     // Put your custom environment here
     where_is_this: process.env.WHERE_IS_THIS || "production", // "local", "acc", "production"
+    // Read by src/data/marketplace.js for every marketplace link.
+    marketplace_url: MARKETPLACE_ORIGIN,
     // Google Analytics. It loads only after the visitor accepts analytics
     // cookies; see src/consent/analytics.js.
     analytics: { gtagId: "G-54D6B5061F" },
