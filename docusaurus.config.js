@@ -214,16 +214,12 @@ const config = {
             position: "left",
             label: "Marketplace",
           },
+          // Blog is still linked from the footer (Resources).
           {
-            to: "/blog",
+            to: "/pricing",
             position: "left",
-            label: "Blog",
+            label: "Pricing",
           },
-          // {
-          //   href: "/pricing",
-          //   position: "left",
-          //   label: "Pricing",
-          // },
           {
             href: "/contact-us",
             position: "left",
