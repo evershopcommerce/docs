@@ -46,7 +46,7 @@ This repository hosts the documentation and marketing site for Evershop (eversho
 - **Scripts**:
   - `yarn start`: Local dev server.
   - `yarn build`: Production build (moves `_redirects` and `robots.txt` post-build).
-- **Environment**: `WHERE_IS_THIS` variable controls SEO indexing (`noIndex` in `docusaurus.config.js`).
+- **Environment**: `WHERE_IS_THIS` variable controls SEO indexing (`noIndex` in `docusaurus.config.js`). `MARKETPLACE_URL` sets the marketplace address for every marketplace link (default: production; `start` uses `http://localhost:3000`; a UAT build must set it). Never write the UAT address in the repo: it is public.
 
 ## Common Tasks
 
