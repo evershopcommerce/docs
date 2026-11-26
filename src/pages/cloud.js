@@ -49,7 +49,7 @@ const INCLUDED = [
   "Secure, high-performance hosting",
   "One-click themes and extensions",
   "Performance-aligned marketplace pricing",
-  "Email support",
+  "Ticket support",
   "No transaction fees on your sales",
 ];
 
