@@ -68,7 +68,7 @@ const FAQS = [
   },
   {
     q: "How does performance-aligned pricing work?",
-    a: "When your shop is new and has few orders, we charge less for marketplace items. This is how we support new merchants. Free items cost nothing. A paid item has a monthly price for each store. You pay when you install it, for the rest of your billing period, and then it renews with your plan. Uninstall an item at any time and it will not renew.",
+    a: "When your shop is new and has few orders, we charge less for marketplace items. This is how we support new merchants. Free items cost nothing. A paid item follows your plan's billing cycle: you pay for it monthly on a monthly plan, and yearly on a yearly plan. You pay when you install it, for the rest of your billing period, and then it renews with your plan. Uninstall an item at any time and it will not renew.",
   },
   {
     q: "How do I pay, and can I cancel?",
