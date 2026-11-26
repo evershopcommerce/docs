@@ -37,9 +37,9 @@ const comparison = [
   { label: "Deployment", selfHosted: "You manage", cloud: "Managed", included: true },
   { label: "Email service", selfHosted: "You manage", cloud: "Included", included: true },
   { label: "Updates", selfHosted: "You manage", cloud: "Managed", included: true },
-  // What the Terms of Service promise (section 4.3): email support during
-  // business hours. Self-hosted users have the community channels.
-  { label: "Support", selfHosted: "Community", cloud: "Email support", included: true },
+  // Cloud merchants open support tickets in the marketplace account
+  // (/account/support). Self-hosted users have the community channels.
+  { label: "Support", selfHosted: "Community", cloud: "Ticket support", included: true },
 ];
 
 const cloudValue = (row, billing) =>
