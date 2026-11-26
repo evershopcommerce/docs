@@ -33,7 +33,7 @@ function HomepageHeader() {
       <div className="container text-center">
         <div className="flex justify-center">
           <div className="flex justify-center gap-3 text-primary font-medium bg-primary-02 max-w-fit p-1 pr-2 rounded-[16px] text-sm leading-5">
-            <div className="flex justify-center gap-[3px] bg-white rounded-[16px] px-2 py-[2px]">
+            {/* <div className="flex justify-center gap-[3px] bg-white rounded-[16px] px-2 py-[2px]">
               <div className="flex justify-center items-center">
                 <img
                   alt="Version"
@@ -43,8 +43,8 @@ function HomepageHeader() {
                 />
               </div>
               <span>Version 2.3</span>
-            </div>
-            <div className="flex gap-[5px] items-center justify-center">
+            </div> */}
+            {/* <div className="flex gap-[5px] items-center justify-center">
               <a
                 href="https://github.com/evershopcommerce/evershop"
                 target="_blank"
@@ -65,7 +65,7 @@ function HomepageHeader() {
                   strokeLinejoin="round"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex justify-center">
