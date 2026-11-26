@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last updated: November 24, 2026**
+**Last updated: November 26, 2026**
 
 These Terms of Service ("Terms") are a legal agreement between you and EverShop LLC. They govern your use of EverShop Cloud, the EverShop Marketplace, the merchant portal at marketplace.evershop.io, and the related services described below (together, the "Services"). Please read them carefully. By creating an account, buying a plan, or using the Services, you agree to these Terms. If you do not agree, do not use the Services.
 
@@ -67,7 +67,7 @@ The Marketplace lists themes and extensions. Items are provided by EverShop. You
 - One custom domain per Site with a managed SSL certificate (section 13)
 - Daily database backups (section 11)
 - Platform-managed updates (section 12)
-- Support: email support at support@evershop.io during our business hours. Our business hours are Monday to Friday, 9:00 to 18:00 Indochina Time (UTC+7), excluding public holidays in Vietnam. Response times vary with the severity of the issue.
+- Support: support tickets, which you open from the Portal. We answer them during our business hours: Monday to Friday, 9:00 to 18:00 Indochina Time (UTC+7), excluding public holidays in Vietnam. Response times vary with the severity of the issue.
 
 ### 4.4 What is not included
 
@@ -191,7 +191,7 @@ If you run EverShop on your own server, you can buy an Item once and download it
 - **Buying.** The item page shows the one-time price. An Item with a price of zero is a free Download and goes through the same checkout. You need an account to buy a Download, because your Downloads are kept in it. You buy an Item only once: one purchase covers all its future versions and any number of stores.
 - **Downloading.** Once the order is paid, or at once for a free Download, you can download the Item from your account, under Orders, as often as you like. You always get the Item's current published version: when we publish a new version, you download it from the same order, with no time limit and no further charge. If we stop listing an Item (section 7.6), you can still download its last published version, unless we withdraw it for a legal or security reason.
 - **License.** Each Download is licensed to you under the GNU General Public License version 3, or under another open-source license if its package states one. You may use, modify and share it as that license allows. The license does not cover our trademarks and logos (section 18).
-- **Running it.** You install, configure, update and secure a Download yourself, on servers you control. A Download does not include installation, hosting, the email support of section 4.3, or any other service of EverShop Cloud.
+- **Running it.** You install, configure, update and secure a Download yourself, on servers you control. A Download does not include installation, hosting, the support of section 4.3, or any other service of EverShop Cloud.
 - **Not tied to a Site.** A Download is not billed on a Site's invoices and is not affected when a Site is cancelled, suspended or reactivated.
 
 ## 8. Cancelling a Plan

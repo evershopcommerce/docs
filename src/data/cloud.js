@@ -18,11 +18,15 @@ export const CLOUD_PLAN = {
   yearly: 290,
 };
 
-// Where the "Get EverShop Cloud" button sends people. The marketplace captures
-// `?plan=<tier>&billing=<cycle>` on any URL and carries it through login to
-// checkout. The marketplace address depends on the environment (see
-// ./marketplace.js).
+// Where the "Get EverShop Cloud" button sends people: the marketplace plan
+// checkout, `/subscribe`. Only that page reads `?plan=<tier>&billing=<cycle>`
+// (the marketplace homepage ignores them). A visitor who is not logged in is
+// sent to login and comes back to `/subscribe` with the same parameters.
+// The marketplace address depends on the environment (see ./marketplace.js).
 export const planUrl = (customFields, billing) =>
-  marketplaceUrl(customFields, `?plan=${CLOUD_PLAN.tier}&billing=${billing}`);
+  marketplaceUrl(
+    customFields,
+    `subscribe?plan=${CLOUD_PLAN.tier}&billing=${billing}`
+  );
 
 export const CLOUD_CTA = `Get ${CLOUD_PLAN.name}`;

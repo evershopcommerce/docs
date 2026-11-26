@@ -17,6 +17,10 @@ const cloudPrice = (billing) =>
 // depends on this list. Figures marked "~" are typical market prices, not
 // ours, and the note under the table says so.
 //
+// Marketplace items are left out on purpose (owner, 2026-11-26): their prices
+// vary by item and change over time. The item FAQ below explains how they are
+// billed.
+//
 // `included: true` draws a check mark beside the Cloud value.
 const comparison = [
   {
@@ -29,70 +33,57 @@ const comparison = [
   { label: "Transaction fees", selfHosted: "None", cloud: "None", included: true },
   { label: "Hosting", selfHosted: "~$10–30/month", cloud: "Included", included: true },
   { label: "Custom domain", selfHosted: "~$10–20/year", cloud: "Bring your own" },
-  { label: "SSL certificate", selfHosted: "Free", cloud: "Included", included: true },
+  { label: "SSL certificate", selfHosted: "You manage", cloud: "Included", included: true },
   { label: "Deployment", selfHosted: "You manage", cloud: "Managed", included: true },
   { label: "Email service", selfHosted: "You manage", cloud: "Included", included: true },
   { label: "Updates", selfHosted: "You manage", cloud: "Managed", included: true },
-  // What the Terms of Service promise (section 4.3): email support during
-  // business hours. Self-hosted users have the community channels.
-  { label: "Support", selfHosted: "Community", cloud: "Email support", included: true },
-  {
-    label: "Extensions",
-    selfHosted: "~$99 one-time / item",
-    cloud: "~$5/month / item",
-  },
-  {
-    label: "Themes",
-    selfHosted: "~$149 one-time / item",
-    cloud: "~$8/month / item",
-  },
+  // Cloud merchants open support tickets in the marketplace account
+  // (/account/support). Self-hosted users have the community channels.
+  { label: "Support", selfHosted: "Community", cloud: "Ticket support", included: true },
 ];
 
 const cloudValue = (row, billing) =>
   typeof row.cloud === "function" ? row.cloud(billing) : row.cloud;
 
-function FakeSelect({ selected, setSelected }) {
-  const [show, setShow] = React.useState(false);
+// Monthly or yearly. Two real buttons, so the choice works with a keyboard
+// and a screen reader announces which one is pressed.
+const BILLING_OPTIONS = [
+  { value: "monthly", label: "Pay monthly" },
+  { value: "yearly", label: "Pay yearly", note: "2 months free" },
+];
+
+function BillingToggle({ selected, setSelected }) {
   return (
     <div
-      className="border border-gray-200 p-2 relative cursor-pointer rounded-sm min-w-56"
-      onClick={() => setShow(!show)}>
-      <div className="flex justify-between items-center">
-        {selected === "monthly" ? (
-          <span>Pay monthly</span>
-        ) : (
-          <span>
-            Pay yearly <span className="text-green-500">2 months free</span>
-          </span>
-        )}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-4 h-4">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m19.5 8.25-7.5 7.5-7.5-7.5"
-          />
-        </svg>
-      </div>
-      {show && (
-        <div className="absolute top-full left-0 right-0 w-full bg-white border border-gray-200 rounded-sm translate-y-6">
-          <div className="p-2 hover:bg-gray-100">
-            <span className="block" onClick={() => setSelected("monthly")}>
-              Pay monthly
-            </span>
-          </div>
-          <div className="p-2 hover:bg-gray-100">
-            <span className="block" onClick={() => setSelected("yearly")}>
-              Pay yearly <span className="text-green-500">2 months free</span>
-            </span>
-          </div>
-        </div>
-      )}
+      role="group"
+      aria-label="Billing cycle"
+      className="inline-flex gap-1 p-1 border border-solid border-gray-200 rounded-md bg-white">
+      {BILLING_OPTIONS.map((option) => {
+        const active = selected === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={active}
+            onClick={() => setSelected(option.value)}
+            className={`px-3 py-2 rounded-sm border-0 text-sm cursor-pointer ${
+              active
+                ? "bg-primary text-white"
+                : "bg-transparent text-gray-700 hover:bg-gray-100"
+            }`}>
+            {option.label}
+            {option.note && (
+              <span
+                className={`font-semibold ${
+                  active ? "text-white" : "text-primary"
+                }`}>
+                {" "}
+                {option.note}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -316,15 +307,14 @@ function Pricing() {
             Run EverShop yourself for free, or let us host it for you.
           </p>
           <div className="flex justify-center">
-            <FakeSelect selected={selected} setSelected={setSelected} />
+            <BillingToggle selected={selected} setSelected={setSelected} />
           </div>
         </div>
         <ComparisonTable customFields={customFields} selected={selected} />
         <ComparisonCards customFields={customFields} selected={selected} />
         <p className="text-center text-xs text-gray-500 mt-6 max-w-3xl mx-auto">
           Prices in USD, before any applicable taxes. Amounts marked with ~ are
-          typical prices: they depend on the provider or on the item you
-          choose.
+          typical prices: they depend on the provider you choose.
         </p>
         <p className="text-center text-sm text-gray-500 mt-4 max-w-3xl mx-auto">
           {CLOUD_PLAN.name} renews automatically on the day you subscribed, and
@@ -362,17 +352,12 @@ const faqs = [
   {
     question: "How are marketplace themes and extensions priced?",
     answer:
-      "Free items cost nothing. A paid item has a monthly price per store. You pay when you install it, for the rest of your billing period, and then it renews with your plan on the same invoice. On a yearly plan, an item costs 12 times its monthly price. Some items step up in price as your store passes lifetime order milestones. You see the full price table before you install. Uninstall an item at any time and it will not renew. We do not refund the period you already paid.",
+      "Free items cost nothing. A paid item follows your plan's billing cycle: you pay for it monthly on a monthly plan, and yearly on a yearly plan. Item prices are shown per month, so on a yearly plan an item costs 12 times that price. You pay when you install it, for the rest of your billing period, and then it renews with your plan on the same invoice. When your shop is new and has few orders, we charge less for marketplace items. This is how we support new merchants. You see the full price table before you install. Uninstall an item at any time and it will not renew. We do not refund the period you already paid.",
   },
   {
     question: "Do you take a cut of my sales?",
     answer:
       "No. EverShop Cloud has no transaction fees. You pay the plan price and any paid marketplace items you choose. Your payment provider, such as Stripe or PayPal, still charges its own fee for each payment.",
-  },
-  {
-    question: "Is there a free trial?",
-    answer:
-      "No. Paying monthly is the low-commitment way to try EverShop Cloud, and yearly billing carries a 30-day full money-back guarantee on the first payment.",
   },
 ];
 
@@ -454,7 +439,7 @@ export default function PricingPage() {
   return (
     <Layout
       title="Pricing"
-      description="EverShop pricing: self-hosted for free, or EverShop Cloud, hosted and managed for you.">
+      description={`Self-host EverShop for free, or use ${CLOUD_PLAN.name} for $${CLOUD_PLAN.monthly}/month: hosting, updates and email included. No transaction fees.`}>
       <main className="bg-green-conner bg-[#FCFCFC] py-16">
         <Pricing />
         <FAQ />
