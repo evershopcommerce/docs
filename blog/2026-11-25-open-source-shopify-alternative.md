@@ -154,7 +154,7 @@ Then open `http://localhost:3000` for the storefront and `http://localhost:3000/
 npm run user:create -- --email "you@example.com" --password "yourpassword1" --name "Your Name"
 ```
 
-The full walkthrough, including a manual npm install, is in the [installation guide](/docs/development/getting-started/installation-guide). Just want to look around? Open the [demo store](https://demo.evershop.io).
+The full walkthrough, including a manual npm install, is in the [installation guide](/docs/development/getting-started/installation-guide).
 
 ## Moving from Shopify to EverShop
 
